@@ -1,0 +1,41 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`r Sys.Date()`
+
+# Overview 
+
+This problem is considered in the context of the VWP (details later). Some assumptions that may be made include:
+
+- $x$ is some underlying cognitive process of interest that will implicity be understood to be a function of time, i.e., $x \equiv x(t)$
+- $H(x) = \mathcal{Y}$ represents theoretical eye movement curve (logistic, double gauss)
+- Because of saccades, overlapping phonetics, extrogenous/introgenous variables, we actually observe
+$$ h(\mathcal{Y}) =z$$
+where $h$ is some function dependent on a potentially infinite number of exogenous/endogenous variables
+- Letting $z_{ijt} = \{0,1\}$ represent subject $i = 1, \dots, n$, trial (single instance of vwp) $j = 1, \dots, J$, at time $t = 1, \dots, T$,  we define
+
+$$
+y_{it} = \frac{1}{J} \sum_{j=1}^J z_{itj}
+$$
+
+- where $y_{it}$ represents the *proportions of fixations* towards a target for a particular individual at time $t$
+- where we might call $z$ the unaggregated data, and $y$ the aggregated data for each subject. OR, it may be simpler to call $z$ a *looking curve* (as it indicates whether a look is occuring or not), whereas $y$ could be a *fixation curve*, defined as proportion of fixations of a target over a number of trials.
+
+The scope of this project will omit any discussion re. the recovery of the underlying cognitive process, $x$, and will instead focus on the recovery of the construction of $\mathcal{Y}$ through a fitted parametric curve $f_{\theta}$. We will have considered this construction satisfactory once we are able to recover an underlying fixation function from simulated eyetracking data. 
+
+## High-Frequency Sampling (HFS)
+
+The current theory operates under a high-frequency sampling assumption -- that is, it is assumed that at any measured time point in the eye tracking data, the recorded measurement is a real-time measure of the underlying fixation. In other words, "the idea is that the underlyinkg activation sets the probvability of fixating an object. If the researcher is sampling at 4 msec intervals, the fixation curve is assumed to derive from a probabilistic sample every 4 msec." (princess bride paper).
+
+This assumption is patently untrue. In any given trial, a subject initiates a **saccade**, typically lasting 30-50 msec, before setting their **fixation** in a particular location, typically for a minimum of 200ms. A saccade and its subsequent fixation is known as a **look**. Nonetheless, the current methodology places no emphasis on the saccade, but rather codes the fixation as a $0$ or $1$ at each 4ms sample, conditional on whether the fixation is on the target object.
+
+Consequently, we let $z_{ijt}$ represent subject $i = 1, \dots, n$, trial (single instance of vwp) $j = 1, \dots, J$, at time $t = 1, \dots, T$. For every value $i, j, t$, $z$ is coded as either a $0$ or a $1$, with no sparsity in the observed data. Summing across trials for each individual at each time point gives us the subject-level proportion of fixations curve, 
+
+$$
+y_{it} = \frac{1}{J} \sum_{j=1}^J z_{itj}
+$$

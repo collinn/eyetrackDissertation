@@ -1,0 +1,13 @@
+---
+output: html_document
+---
+
+`r Sys.Date()`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#eyetrackSim
+
+This "package" is actually in a few pieces right now -- part of it is to run through an actual simulation, along with associated functions. The rest is designed to work with and analyze observed eyetrack data as it exists. As the simulated data should match the format of observed, these need to be merged together

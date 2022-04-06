@@ -19,3 +19,5 @@ knitr::opts_chunk$set(
 [bdots](subdir/bdots.html)
 
 [eyetrackSim](subdir/eyetrackSim.html)
+
+[prospectus slides](subdir/)

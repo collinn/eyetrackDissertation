@@ -39,3 +39,10 @@ Consequently, we let $z_{ijt}$ represent subject $i = 1, \dots, n$, trial (singl
 $$
 y_{it} = \frac{1}{J} \sum_{j=1}^J z_{itj}
 $$
+
+Through simulation, we know that this curve is biased, and evidence so far at least suggests that we are better off focusing on saccades
+
+## Saccade Approach
+
+Here, rather than extrapolating a fixation from the end of one saccade to the beginning of another, we instead only retain data from when a saccade occurs, coding it as $0, 1$ conditional on the subseqent fixation being the target object. Data collected in this manner more closely represents what we presume our "looks" to be, namely a sample from the underlying activation curve at a particular point in time. The data is much more sparse, but simple simulations have demonstrated that the construction of the underlying curve based on this data is less biased than that under the HFS assumption. 
+

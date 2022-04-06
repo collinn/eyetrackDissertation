@@ -348,7 +348,7 @@ pre code {
 </div>
 
 
-<p>2022-03-24</p>
+<p>2022-04-06</p>
 <div id="overview" class="section level1">
 <h1>Overview</h1>
 <p>This problem is considered in the context of the VWP (details later). Some assumptions that may be made include:</p>
@@ -374,6 +374,11 @@ y_{it} = \frac{1}{J} \sum_{j=1}^J z_{itj}
 <p><span class="math display">\[
 y_{it} = \frac{1}{J} \sum_{j=1}^J z_{itj}
 \]</span></p>
+<p>Through simulation, we know that this curve is biased, and evidence so far at least suggests that we are better off focusing on saccades</p>
+</div>
+<div id="saccade-approach" class="section level2">
+<h2>Saccade Approach</h2>
+<p>Here, rather than extrapolating a fixation from the end of one saccade to the beginning of another, we instead only retain data from when a saccade occurs, coding it as <span class="math inline">\(0, 1\)</span> conditional on the subseqent fixation being the target object. Data collected in this manner more closely represents what we presume our “looks” to be, namely a sample from the underlying activation curve at a particular point in time. The data is much more sparse, but simple simulations have demonstrated that the construction of the underlying curve based on this data is less biased than that under the HFS assumption.</p>
 </div>
 </div>
 

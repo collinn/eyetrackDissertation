@@ -21,6 +21,7 @@
 \usepackage{dsfont}
 \usepackage{verbatim} 
 \usepackage{tikz}
+\usepackage{caption}
 \usepackage{multirow}
 \usepackage{venndiagram}
 \usepackage{xcolor}
@@ -188,7 +189,7 @@ Together, a saccade, followed by a subsequent fixation, is known as a \textit{lo
 
 \begin{frame}{Fixation curve}
 We define a \textit{fixation curve}, $f_{\theta}(t)$ or $f(t  | \theta)$ to represent a (usually parametric) function indicating the probability of fixating on a target at some time, $t$. \newline \\
-To disambuigize the term ``target" when used in the VWP, we will let ``Target" denote the object corresponding to a spoken word, while ``target" will denote an object of interest \newline \\
+To disambiguate the term ``target" when used in the VWP, we will let ``Target" denote the object corresponding to a spoken word, while ``target" will denote an object of interest \newline \\
 
 For example, with the four-parameter logistic, our target is typically the Target, while for the six-parameter double-gauss, our target is the Cohort
 \end{frame}
@@ -290,18 +291,142 @@ In most contexts, we have $f_{\theta}(t) \sim Bern(p(t))$ where $var(p(t)) = p(t
 Taking the logistic curve as an example, this will be towards the beginnings and ends of a trial, with maximal variability occuring at the crossover points
 \end{frame}
 
+\begin{frame}{window sims}
+Here, we run simulations assuming fbst and reconstruct fits using bdots \newline \\
+
+Plot them as-is, along with 200ms shift to account for occulomotor delay \newline \\
+
+To examine various time windows, have included simulations that will sample at a fixed rate (every 25ms) within a specified time interval, rather than relying on length of fixations or identified target \newline \\
+
+Each simulation is based off a singular underlying fixation function with identical parameters across trials
+\end{frame}
+
 \begin{frame}{both}
-d
+\begin{center}
+\includegraphics[scale=0.35]{img/reg_fit.png}
+\end{center}
+% latex table generated in R 4.1.2 by xtable 1.8-4 package
+% Thu Apr  7 11:49:44 2022
+{\scriptsize
+\begin{table}[H]
+\captionsetup{font=scriptsize}
+\caption*{MISE}
+\centering
+\begin{tabular}{cccccc}
+  \hline
+ & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
+  \hline
+ & 57.86 & 58.10 & 20.65 & 10.84 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
 \end{frame}
 
 \begin{frame}{early window}
-d
+\begin{center}
+\includegraphics[scale=0.35]{img/early_fit.png}
+\end{center}
+{\scriptsize
+\begin{table}[ht]
+\captionsetup{font=scriptsize}
+\caption*{MISE}
+\centering
+\begin{tabular}{cccccc}
+  \hline
+ & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
+  \hline
+ & 22.51 & 29.94 & 4.18 & 1.14 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
 \end{frame}
+
 \begin{frame}{mid window}
-d
+\begin{center}
+\includegraphics[scale=0.35]{img/mid_fit.png}
+\end{center}
+{\scriptsize
+\begin{table}[ht]
+\captionsetup{font=scriptsize}
+\caption*{MISE}
+\centering
+\begin{tabular}{cccccc}
+  \hline
+ & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
+  \hline
+ & 21.16 & 10.74 & 4.75 & 10.76 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
 \end{frame}
+
 \begin{frame}{late window}
-d
+\begin{center}
+\includegraphics[scale=0.35]{img/late_fit.png}
+\end{center}
+{\scriptsize
+\begin{table}[ht]
+\captionsetup{font=scriptsize}
+\caption*{MISE}
+\centering
+\begin{tabular}{cccccc}
+  \hline
+ & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
+  \hline
+ & 61.89 & 42.18 & 12.77 & 2.18 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
+\end{frame}
+
+\begin{frame}{asymptotics}
+\begin{center}
+\includegraphics[scale=0.35]{img/asy_fit.png}
+\end{center}
+{\scriptsize
+\begin{table}[ht]
+\captionsetup{font=scriptsize}
+\caption*{MISE}
+\centering
+\begin{tabular}{cccc}
+ \hline
+ & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
+  \hline
+  & 15.57 & 4.31 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
+\end{frame}
+
+\begin{frame}{mise}
+
+It's worth pointing out that each time window will appear better than the trial with no time window, as these ultimately ended up including more samples per trial
+
+{\scriptsize
+% latex table generated in R 4.1.2 by xtable 1.8-4 package
+% Thu Apr  7 12:22:35 2022
+\begin{table}[ht]
+\centering
+\captionsetup{font=scriptsize}
+\caption*{MISE}
+\begin{tabular}{cccccc}
+  \hline
+ & Standard & Early & Mid & Late & N \\ 
+  \hline
+Aggregate & 57.86 & 22.51 & 21.16 & 61.89 & NA \\ 
+  Saccade & 58.10 & 29.94 & 10.74 & 42.18 & NA \\ 
+  Aggregate -- Shifted & 20.65 & 4.18 & 4.75 & 12.77 & 15.57 \\ 
+  Saccade -- Shifted & 10.84 & 1.14 & 10.76 & 2.18 & 4.31 \\ 
+  Underlying & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
 \end{frame}
 
 \begin{frame}{other issues}

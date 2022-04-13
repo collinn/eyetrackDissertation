@@ -1,0 +1,260 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', 
+                      fig.height = 8, fig.width = 8)
+```
+
+`r Sys.Date()`
+
+
+Basically just a sanity check to verify that I can indeed recover the true curve if I were to observe it exactly
+
+Maybe try this using few time points
+
+## logistic
+
+```{r, message=FALSE}
+library(eyetrackSim)
+library(bdots)
+
+ci <- as.data.table(ci)
+ci <- ci[LookType == "Target" & Subject %in% 2:6, ]
+
+fit <- bdotsFit(data = ci, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "protocol", 
+                curveType = logistic())
+
+plot(fit)
+
+## Get realistic parameter values
+mm <- coef(fit)
+
+## Create new fixations based on pars
+newdat <- Map(function(x, y) {
+  x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+}, split(ci, by = "Subject"), split(mm, row(mm)))
+newdat <- rbindlist(newdat)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "protocol", 
+                curveType = logistic())
+
+plot(fit)
+
+coef(fit)
+mm
+```
+
+## dg
+
+```{r}
+dat <- as.data.table(cohort_unrelated)
+dat <- dat[Subject %in% 1:4 & Group == "50" & LookType == "Cohort", ]
+
+fit <- bdotsFit(data = dat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "Group", 
+                curveType = doubleGauss(concave = TRUE))
+plot(fit)
+
+## Get realistic parameter values
+mm <- coef(fit)
+
+## Create new fixations based on pars
+newdat <- Map(function(x, y) {
+  x[, Fixations := eyetrackSim:::doubleGauss_f(y, Time)]
+}, split(dat, by = "Subject"), split(mm, row(mm)))
+newdat <- rbindlist(newdat)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "Group", 
+                doubleGauss(concave = TRUE))
+plot(fit)
+coef(fit)
+mm
+```
+
+# Ok, but if we do different time densities
+
+### 250 time points
+
+```{r}
+ci <- as.data.table(ci)
+ci <- ci[LookType == "Target" & Subject %in% 2:6, ]
+
+fit <- bdotsFit(data = ci, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "protocol", 
+                curveType = logistic())
+
+## Get realistic parameter values
+mm <- coef(fit)
+
+## Create new fixations based on pars
+newdat <- Map(function(x, y) {
+  x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+}, split(ci, by = "Subject"), split(mm, row(mm)))
+newdat <- rbindlist(newdat)
+
+## But now lets spruce up the time sample (length 501)
+wts <- exp(-(1:501/501))
+TIME <- unique(ci$Time)
+earlyT <- sort(sample(TIME, 250, prob = wts))
+lateT <- sort(sample(TIME, 250, prob = rev(wts)))
+
+tt <- split(newdat, by = "Subject")
+tt[[1]] <- tt[[1]][Time %in% earlyT]
+tt[[2]] <- tt[[2]][Time %in% earlyT]
+tt[[3]] <- tt[[3]][Time %in% lateT]
+tt[[4]] <- tt[[4]][Time %in% lateT]
+newdat <- rbindlist(tt)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "protocol", 
+                curveType = logistic())
+
+## not cool with weird times
+# plot(fit)
+fv <- lapply(split(fit, by = "Subject"), function(x) {
+  data.table(sub = x$Subject, fv = fitted.values(x$fit[[1]]))
+})
+fv <- rbindlist(fv)
+fv[, Time := c(earlyT, earlyT, lateT, lateT)]
+fv[, Fixations := newdat$Fixations]
+```
+
+Subjects 2 and 3 are early, 4 and 6 are late
+
+```{r}
+ggplot(fv, aes(x = Time, y = fv, color = sub)) +
+  geom_line() + 
+  geom_line(aes(x = Time, y = Fixations, color = sub), linetype = "dashed", size = 1) + 
+  facet_wrap(~sub)
+
+coef(fit)
+mm
+```
+
+
+### 50 time points
+
+```{r}
+## Create new fixations based on pars
+newdat <- Map(function(x, y) {
+  x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+}, split(ci, by = "Subject"), split(mm, row(mm)))
+newdat <- rbindlist(newdat)
+
+## But now lets spruce up the time sample (length 501)
+wts <- exp(-(1:501/501))
+TIME <- unique(ci$Time)
+earlyT <- sort(sample(TIME, 50, prob = wts))
+lateT <- sort(sample(TIME, 50, prob = rev(wts)))
+
+tt <- split(newdat, by = "Subject")
+tt[[1]] <- tt[[1]][Time %in% earlyT]
+tt[[2]] <- tt[[2]][Time %in% earlyT]
+tt[[3]] <- tt[[3]][Time %in% lateT]
+tt[[4]] <- tt[[4]][Time %in% lateT]
+newdat <- rbindlist(tt)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "protocol", 
+                curveType = logistic())
+
+## not cool with weird times
+# plot(fit)
+fv <- lapply(split(fit, by = "Subject"), function(x) {
+  data.table(sub = x$Subject, fv = fitted.values(x$fit[[1]]))
+})
+fv <- rbindlist(fv)
+fv[, Time := c(earlyT, earlyT, lateT, lateT)]
+fv[, Fixations := newdat$Fixations]
+```
+
+Subjects 2 and 3 are early, 4 and 6 are late
+
+```{r}
+ggplot(fv, aes(x = Time, y = fv, color = sub)) +
+  geom_line() + 
+  geom_line(aes(x = Time, y = Fixations, color = sub), linetype = "dashed", size = 1) + 
+  facet_wrap(~sub)
+
+coef(fit)
+mm
+```
+
+
+### ok, 50 time points, mostly in the middle
+
+```{r}
+## Create new fixations based on pars
+newdat <- Map(function(x, y) {
+  x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+}, split(ci, by = "Subject"), split(mm, row(mm)))
+newdat <- rbindlist(newdat)
+
+## But now lets spruce up the time sample (length 501)
+#wts <- exp(-(1:501/501))
+wts <- seq(from = -2, to = 2, length.out = length(TIME))
+wts <- dnorm(wts)
+earlyT <- sort(sample(TIME, 50, prob = wts))
+lateT <- sort(sample(TIME, 50, prob = rev(wts)))
+
+tt <- split(newdat, by = "Subject")
+tt[[1]] <- tt[[1]][Time %in% earlyT]
+tt[[2]] <- tt[[2]][Time %in% earlyT]
+tt[[3]] <- tt[[3]][Time %in% lateT]
+tt[[4]] <- tt[[4]][Time %in% lateT]
+newdat <- rbindlist(tt)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "Fixations", 
+                group = "protocol", 
+                curveType = logistic())
+
+## not cool with weird times
+# plot(fit)
+fv <- lapply(split(fit, by = "Subject"), function(x) {
+  data.table(sub = x$Subject, fv = fitted.values(x$fit[[1]]))
+})
+fv <- rbindlist(fv)
+fv[, Time := c(earlyT, earlyT, lateT, lateT)]
+fv[, Fixations := newdat$Fixations]
+```
+
+Subjects 2 and 3 are early, 4 and 6 are late
+
+```{r}
+ggplot(fv, aes(x = Time, y = fv, color = sub)) +
+  geom_line() + 
+  geom_line(aes(x = Time, y = Fixations, color = sub), linetype = "dashed", size = 1) + 
+  facet_wrap(~sub)
+
+coef(fit)
+mm
+```

@@ -21,3 +21,5 @@ knitr::opts_chunk$set(
 [eyetrackSim](subdir/eyetrackSim.html)
 
 [prospectus slides](pdf/prospectus.pdf)
+
+[recovering true pars](subdir/recover_true_pars.html)

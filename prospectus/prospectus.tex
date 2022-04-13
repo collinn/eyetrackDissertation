@@ -147,19 +147,19 @@ Here, we perform $B$ bootstraps of the subject parameters to construct bootstrap
 \begin{align*}
 \hat{\theta}_{ib} \sim N \left(\hat{\theta_i},  \Sigma_{\hat{\theta}_i} \right)
 \end{align*}
-resulting in a $B\times p$ matrix, denoted $M_{\hat{\theta}_i}$. \newline 
+resulting in a $B\times p$ matrix, denoted $M_i$. \newline 
 
 Doing this for each subject, we construct a $B\times p$ matrix of the average of bootstraps across iterations, 
 \begin{align*}
-\overline{M}_{\hat{\theta}} = \frac1n \sum_{i}^n M_{\hat{\theta}_i}
+\overline{M} = \frac1n \sum_{i}^n M_i
 \end{align*}
 (potentially confusing here -- each subject has their own set of parameters, as distinct from group level pars?)
 \end{frame}
 
 \begin{frame}{bootstrap cont}
-$\overline{M}_{\theta}$ is again a $B \times p$ matrix, each row  representing the average parameter estimate of $\theta$ at each bootstrap $b$. \newline 
+$\overline{M}$ is again a $B \times p$ matrix, each row  representing the average parameter estimate of $\theta$ at each bootstrap $b$. \newline 
 
-Each $1\times p$ row of $\overline{M}_{\hat{\theta}}$ returns a $1 \times T$ vector representing estimations of $f_{\theta}$ at each point $t$. Together, we have the $B \times T$ matrix $\overline{M}_f$. This gives an estimated fixation curve, 
+Each $1\times p$ row of $\overline{M}$ returns a $1 \times T$ vector representing estimations of $f_{\theta}$ at each point $t$. Together, we have the $B \times T$ matrix $\overline{M}_f$. This gives an estimated fixation curve, 
 \begin{align*}
 \hat{f} = \frac1B \sum_{b=1}^B \overline{M}_{\{b, \cdot\}_f}, \qquad \widehat{\text{se}}_{f} = \left[ \frac{1}{B-1} \sum_{b=1}^B \left( \overline{M}_{\{i, \cdot\}_{f}} - \hat{f} \right)^2 \right]^{1/2} 
 \end{align*}

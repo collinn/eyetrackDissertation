@@ -4,7 +4,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', 
-                      fig.height = 8, fig.width = 8)
+                      fig.height = 8, fig.width = 8, 
+                      warning = FALSE, message = FALSE)
 ```
 
 `r Sys.Date()`
@@ -258,3 +259,186 @@ ggplot(fv, aes(x = Time, y = fv, color = sub)) +
 coef(fit)
 mm
 ```
+
+
+# Sample based on curve
+
+Here, we will generate an exact curve, but rather than punching that into bdots, we will use it as a probabilitic function to sample new points some number of times and see what shakes (this accounts for fact that the proprotion at any time may asymptotically approach true value $f_{\theta}(t)$, but any finite collection will necessarily have some variability).
+
+## n = 50, all time points
+
+```{r}
+
+## Make mini 0
+mm[, "mini"] <- 0
+
+newdat <- Map(function(x, y) {
+  x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+}, split(ci, by = "Subject"), split(mm, row(mm)))
+# newdat <- rbindlist(newdat)
+
+## Create new sample of observed values
+newdat <- lapply(newdat, function(x, n = 50) {
+  x[, probFixation := mean(rbinom(n, 1, Fixations)), by = .(Subject, Time)]
+})
+newdat <- rbindlist(newdat)
+
+makenewdat <- function(x, y, nn = 50) {
+  newdat <- Map(function(x, y) {
+    x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+  }, split(ci, by = "Subject"), split(mm, row(mm)))
+  newdat <- lapply(newdat, function(x, n = nn) {
+    x[, probFixation := mean(rbinom(n, 1, Fixations)), by = .(Subject, Time)]
+  })
+  newdat <- rbindlist(newdat)
+}
+
+newdat <- makenewdat(ci, mm, 50)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "probFixation", 
+                group = "protocol", 
+                curveType = logistic())
+plot(fit)
+
+coef(fit)
+mm
+```
+
+
+## ok, once more, but with varying time points {.tabset}
+
+Sampling 50 of the 501 time points
+
+### Early and Late time
+
+Early is subjects 2,3, late is 4,6
+
+```{r}
+# newdat <- Map(function(x, y) {
+#   x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+# }, split(ci, by = "Subject"), split(mm, row(mm)))
+# # newdat <- rbindlist(newdat)
+# 
+# ## Create new sample of observed values
+# newdat <- lapply(newdat, function(x, n = 50) {
+#   x[, probFixation := mean(rbinom(n, 1, Fixations)), by = .(Subject, Time)]
+# })
+# newdat <- rbindlist(newdat)
+
+makenewdat <- function(x, y, nn = 50) {
+  newdat <- Map(function(x, y) {
+    x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+  }, split(ci, by = "Subject"), split(mm, row(mm)))
+  newdat <- lapply(newdat, function(x, n = nn) {
+    x[, probFixation := mean(rbinom(n, 1, Fixations)), by = .(Subject, Time)]
+  })
+  newdat <- rbindlist(newdat)
+}
+
+newdat <- makenewdat(ci, mm, 50)
+
+
+wts <- seq(from = -2, to = 2, length.out = length(TIME))
+wts <- dnorm(wts)
+TIME <- unique(ci$Time)
+earlyT <- sort(sample(TIME, 50, prob = wts))
+lateT <- sort(sample(TIME, 50, prob = rev(wts)))
+
+tt <- split(newdat, by = "Subject")
+tt[[1]] <- tt[[1]][Time %in% earlyT]
+tt[[2]] <- tt[[2]][Time %in% earlyT]
+tt[[3]] <- tt[[3]][Time %in% lateT]
+tt[[4]] <- tt[[4]][Time %in% lateT]
+newdat <- rbindlist(tt)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "probFixation", 
+                group = "protocol", 
+                curveType = logistic())
+# plot(fit)
+
+fv <- lapply(split(fit, by = "Subject"), function(x) {
+  data.table(sub = x$Subject, fv = fitted.values(x$fit[[1]]))
+})
+fv <- rbindlist(fv)
+fv[, Time := c(earlyT, earlyT, lateT, lateT)]
+fv[, probFixation := newdat$probFixation]
+ggplot(fv, aes(x = Time, y = fv, color = sub)) +
+  geom_line() + 
+  geom_line(aes(x = Time, y = probFixation, color = sub), linetype = "dashed", size = 1) + 
+  facet_wrap(~sub)
+
+
+coef(fit)
+mm
+```
+
+### Mid time
+
+```{r}
+# newdat <- Map(function(x, y) {
+#   x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+# }, split(ci, by = "Subject"), split(mm, row(mm)))
+# # newdat <- rbindlist(newdat)
+# 
+# ## Create new sample of observed values
+# newdat <- lapply(newdat, function(x, n = 50) {
+#   x[, probFixation := mean(rbinom(n, 1, Fixations)), by = .(Subject, Time)]
+# })
+# newdat <- rbindlist(newdat)
+
+makenewdat <- function(x, y, nn = 50) {
+  newdat <- Map(function(x, y) {
+    x[, Fixations := eyetrackSim:::logistic_f(y, Time)]
+  }, split(ci, by = "Subject"), split(mm, row(mm)))
+  newdat <- lapply(newdat, function(x, n = nn) {
+    x[, probFixation := mean(rbinom(n, 1, Fixations)), by = .(Subject, Time)]
+  })
+  newdat <- rbindlist(newdat)
+}
+
+newdat <- makenewdat(ci, mm, 50)
+
+
+wts <- seq(from = -2, to = 2, length.out = length(TIME))
+wts <- dnorm(wts)
+earlyT <- sort(sample(TIME, 50, prob = wts))
+lateT <- sort(sample(TIME, 50, prob = rev(wts)))
+
+tt <- split(newdat, by = "Subject")
+tt[[1]] <- tt[[1]][Time %in% earlyT]
+tt[[2]] <- tt[[2]][Time %in% earlyT]
+tt[[3]] <- tt[[3]][Time %in% lateT]
+tt[[4]] <- tt[[4]][Time %in% lateT]
+newdat <- rbindlist(tt)
+
+fit <- bdotsFit(data = newdat, 
+                subject = "Subject", 
+                time = "Time", 
+                y = "probFixation", 
+                group = "protocol", 
+                curveType = logistic())
+#plot(fit)
+
+fv <- lapply(split(fit, by = "Subject"), function(x) {
+  data.table(sub = x$Subject, fv = fitted.values(x$fit[[1]]))
+})
+fv <- rbindlist(fv)
+fv[, Time := c(earlyT, earlyT, lateT, lateT)]
+fv[, probFixation := newdat$probFixation]
+ggplot(fv, aes(x = Time, y = fv, color = sub)) +
+  geom_line() + 
+  geom_line(aes(x = Time, y = probFixation, color = sub), linetype = "dashed", size = 1) + 
+  facet_wrap(~sub)
+
+coef(fit)
+mm
+```
+
+
+## {-}

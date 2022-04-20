@@ -23,3 +23,7 @@ knitr::opts_chunk$set(
 [prospectus slides](pdf/prospectus.pdf)
 
 [recovering true pars](subdir/recover_true_pars.html)
+
+[recovering pars with 200ms delay](subdir/fbst_w_200ms_delay.html)
+
+[tumr data](subdir/tumr_bdots.html)

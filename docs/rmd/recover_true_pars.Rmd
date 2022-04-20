@@ -360,7 +360,7 @@ fit <- bdotsFit(data = newdat,
                 y = "probFixation", 
                 group = "protocol", 
                 curveType = logistic())
-# plot(fit)
+ plot(fit)
 
 fv <- lapply(split(fit, by = "Subject"), function(x) {
   data.table(sub = x$Subject, fv = fitted.values(x$fit[[1]]))
@@ -368,9 +368,11 @@ fv <- lapply(split(fit, by = "Subject"), function(x) {
 fv <- rbindlist(fv)
 fv[, Time := c(earlyT, earlyT, lateT, lateT)]
 fv[, probFixation := newdat$probFixation]
+fv[, trueFix :=  newdat$Fixations]
 ggplot(fv, aes(x = Time, y = fv, color = sub)) +
   geom_line() + 
   geom_line(aes(x = Time, y = probFixation, color = sub), linetype = "dashed", size = 1) + 
+  geom_line(aes(x = Time, y = trueFix, color = "gray"), size = 1) + 
   facet_wrap(~sub)
 
 

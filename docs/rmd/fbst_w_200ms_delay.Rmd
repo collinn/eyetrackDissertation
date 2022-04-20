@@ -1,0 +1,187 @@
+---
+output: html_document
+---
+
+`r Sys.Date()`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.width = 8, fig.height = 10, 
+                      fig.align = 'center')
+```
+
+<!-- Copied code from bob_review with 200ms delay -->
+
+
+```{r, message=FALSE, warning=FALSE}
+library(eyetrackSim)
+library(data.table)
+library(knitr)
+library(kableExtra)
+
+load("~/packages/eyetrackSim/analysis/allSims3.RData")
+
+mise <- function(ff) {
+  curves <- ff$curves
+  times <- ff$times
+
+  cc <- lapply(ff$bfits, coef)
+  cc[["true_f"]] <- ff$true_coef
+
+  misev <- vapply(cc, function(x) {
+    ## tt = time
+    g <- function(tt) {
+      (eyetrackSim:::logistic_f(x, tt) - eyetrackSim:::logistic_f(ff$true_coef, tt))^2
+    }
+    integrate(g, lower = min(times), upper = max(times))$value
+  }, 1)
+
+  if (length(misev) == 3) {
+    names(misev) <- c("Aggregate -- Shifted", "Saccade -- Shifted", "Underlying")
+  } else {
+    names(misev) <- c("Aggregate", "Aggregate -- Shifted","Saccade", "Saccade -- Shifted", "Underlying")
+  }
+  misev
+}
+
+plotBfits <- function(ff, mm = NULL) {
+  obs <- ff$obs_ag
+  times <- obs$times
+  curves <- ff$curves
+  sac <- ff$raw_sac
+  par(mfrow = c(2, 1))
+
+  if (length(curves) == 5) {
+    plot(obs, lty = 2, col = 'gray', ylim = c(0, 1),
+         main = mm, xlab = "time", ylab = "activation")
+    c_lty <- c("longdash", "solid", "longdash", "solid", "solid")
+    c_lwd <- c(2, 3, 2, 3, 4)
+    c_col <- c("firebrick1", "firebrick1", "chartreuse", "chartreuse", " darkorchid1")
+    for (i in rev(seq_along(curves))) {
+      lines(times, curves[[i]], lty = c_lty[i], col = c_col[i], lwd = c_lwd[i])
+    }
+    legend(1250, 0.5, col = c("gray", c_col), lwd = c(1, c_lwd), lty = c("solid", c_lty),
+           legend = c("Obs aggregate", "Aggregated fit", "Aggregated fit -- shifted",
+                      "Saccade fit", "Saccade fit -- shifted", "Underlying Curve"))
+  } else {
+    plot(obs, lty = 2, col = 'gray', ylim = c(0, 1),
+         main = mm)
+    c_lty <- c("solid", "solid", "solid")
+    c_lwd <- c(3, 3, 4)
+    c_col <- c("firebrick1", "chartreuse", " darkorchid1")
+    for (i in rev(seq_along(curves))) {
+      lines(times, curves[[i]], lty = c_lty[i], col = c_col[i], lwd = c_lwd[i])
+    }
+    legend(1250, 0.5, col = c("gray", c_col), lwd = c(1, c_lwd), lty = c("solid", c_lty),
+           legend = c("Obs aggregate",  "Aggregated fit -- shifted",
+                      "Saccade fit -- shifted", "Underlying Curve"))
+  }
+  hist(sac$starttime, main = "Saccades", xlab = "time")
+}
+
+## Creates table of mise for all in simulation
+miseFit <- function(ff) {
+  mm <- lapply(ff, function(x) {
+    mise(x[['fit']])
+  })
+  #mm[[5]] <- c(NA, mm[[5]][1], NA, mm[[5]][2:3])
+  rr <- Reduce(cbind, mm)
+  colnames(rr) <- c("Standard", "Early", "Mid", "Late", "N")
+  rr <- rr[c(1, 3, 2, 4, 5), ]
+  #kable(rr, caption = "MISE") |> kable_styling(full_width = FALSE)
+}
+
+```
+
+
+
+With 200ms delay instead of `lasttime` for drawing fixation probability
+
+
+<!-- There was something wrong with these plots -->
+<!-- # ```{r} -->
+<!-- # ff <- res_69_fbst -->
+<!-- # rr <- miseFit(ff) -->
+<!-- # kable(rr, caption = "MISE") |> kable_styling(full_width = FALSE) -->
+<!-- # ``` -->
+
+<!-- ## Simulation 1 {.tabset} -->
+
+<!-- ### Standard -->
+
+<!-- ```{r} -->
+<!-- plotBfits(ff$reg$fit, mm = "Aggregate vs Saccade, N = 300") -->
+<!-- ``` -->
+
+<!-- ### Early -->
+
+<!-- ```{r} -->
+<!-- plotBfits(ff$early$fit, mm = "Early Window (100-400), N = 300") -->
+<!-- ``` -->
+
+<!-- ### Mid -->
+
+<!-- ```{r} -->
+<!-- plotBfits(ff$mid$fit, mm = "Mid Window (700-1000), N = 300") -->
+<!-- ``` -->
+
+<!-- ### Late -->
+
+<!-- ```{r} -->
+<!-- plotBfits(ff$late$fit, mm = "Late Window (1400-1700), N = 300") -->
+<!-- ``` -->
+
+<!-- ### Large N -->
+
+<!-- ```{r} -->
+<!-- plotBfits(ff$nlist$fit, mm = "Aggregate vs Saccade, N = 100,000") -->
+<!-- ``` -->
+
+<!-- ## {-} -->
+
+
+<!-- --- -->
+
+
+
+
+## FBST Simulation {.tabset}
+
+```{r}
+ff <- res_6969_fbst
+rr <- miseFit(ff)
+kable(rr, caption = "MISE") |> kable_styling(full_width = FALSE)
+```
+
+### Standard
+
+```{r}
+
+plotBfits(ff$reg$fit, mm = "Aggregate vs Saccade, N = 300")
+```
+
+### Early
+
+```{r}
+plotBfits(ff$early$fit, mm = "Early Window (100-400), N = 300")
+```
+
+### Mid
+
+```{r}
+plotBfits(ff$mid$fit, mm = "Mid Window (700-1000), N = 300")
+```
+
+### Late
+
+```{r}
+plotBfits(ff$late$fit, mm = "Late Window (1400-1700), N = 300")
+```
+
+### Large N
+
+```{r}
+plotBfits(ff$nlist$fit, mm = "Aggregate vs Saccade, N = 100,000")
+```
+
+## {-}
+

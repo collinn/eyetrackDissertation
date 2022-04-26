@@ -46,7 +46,16 @@
     el/.style = {inner sep=2pt, align=left, sloped}
 }
 
-
+\usepackage{listings}
+\lstdefinestyle{rstyle}{
+	language=R,
+    %stringstyle=\color{green},
+    otherkeywords={0,1,2,3,4,5,6,7,8,9},
+    morekeywords={TRUE,FALSE},
+    deletekeywords={data,frame,length,as,character}
+    %keywordstyle=\color{blue},
+    commentstyle=\color{cyan},
+}
 
 \setitemize{label=\usebeamerfont*{itemize item}%
   \usebeamercolor[fg]{itemize item}
@@ -87,9 +96,25 @@
 \end{center}
 \end{frame}
 
+\begin{frame}{bdots2}
+Bootstrapped difference in time series, paper originally by olseon, ecavanaugh, mcmurray, and brown \newline
 
+package written by seedorff \newline
 
-\begin{frame}{overview 2}
+blah blah blah
+\end{frame}
+
+\begin{frame}{bdots}
+Current implementation of \code{bdots} involves three steps:
+\begin{enumerate}
+\item[1.] \textbf{Curve Fitting:} Fitting parametric curve to observed data
+\item[2.] \textbf{Curve Refitting:} Manually estimating parameters in case of poor fit
+\item[3.] \textbf{Bootstrap} Bootstrap curves to estimate group population curve \newline
+\end{enumerate}
+I also added a whole bunch of shit to make this package better
+\end{frame}
+
+\begin{frame}{Fitting Process}
 The current method employed by \code{bdots} is to fit the observed $y_{it}$ to an underlying curve $f_{\theta}$, the fitting step given by 
   \begin{align*}
   F: \{y\} \times f \rightarrow N \left(\hat{\theta}_i, \hat{\Sigma}_{\theta_i} \right)
@@ -103,46 +128,8 @@ Such that
 These could be further specified by indicating a group for the observation $g = 1, \dots, G$, where an individual may be in multiple groups (and ultimately, it will be group values being compared)
 \end{frame}
 
-\begin{frame}{bdots}
-Bootstrapped difference in time series, paper originally by olseon, ecavanaugh, mcmurray, and brown \newline
 
-package written by seedorff \newline
-
-blah blah blah
-\end{frame}
-
-\begin{frame}{bdots2}
-Current implementation of \code{bdots} involves three steps:
-\begin{enumerate}
-\item[1.] \textbf{Curve Fitting:} Fitting parametric curve to observed data
-\item[2.] \textbf{Curve Refitting:} Manually estimating parameters in case of poor fit
-\item[3.] \textbf{Bootstrap} Bootstrap curves to estimate group population curve \newline
-\end{enumerate}
-I also added a whole bunch of shit to make this package better
-\end{frame}
-
-\begin{frame}{bdots add stuff}
-One function, \code{bdotsFit}, which can fit any curve to data (previously, one function for each curve) \newline 
-
-Allows for arbitrary user-defined function to be used \newline 
-
-Object returned by bdotsFit very flexible, allows formula definition of bootstrapping difference in bootstrap step \newline 
-
-ggplot, correlation with fixed vector, just general all around better
-
-Refitting step is interactive, can upload external data, saves progress \newline 
-
-\end{frame}
-
-\begin{frame}{compare}
-maybe show old bdots vs new bdots, if i can find working code
-\end{frame}
-
-\begin{frame}{bdots fit process}
-really, this covered in overview 2 slide
-\end{frame}
-
-\begin{frame}{bdots bootstrap process}
+\begin{frame}{Bootstrapping Process}
 Here, we perform $B$ bootstraps of the subject parameters to construct bootstrapped curves and confidence intervals. Assuming that each subject is in one \textit{group}, we draw $B$ samples of $\hat{\theta}_i$, where 
 \begin{align*}
 \hat{\theta}_{ib} \sim N \left(\hat{\theta_i},  \Sigma_{\hat{\theta}_i} \right)
@@ -153,7 +140,6 @@ Doing this for each subject, we construct a $B\times p$ matrix of the average of
 \begin{align*}
 \overline{M} = \frac1n \sum_{i}^n M_i
 \end{align*}
-(potentially confusing here -- each subject has their own set of parameters, as distinct from group level pars?)
 \end{frame}
 
 \begin{frame}{bootstrap cont}
@@ -161,24 +147,127 @@ $\overline{M}$ is again a $B \times p$ matrix, each row  representing the averag
 
 Each $1\times p$ row of $\overline{M}$ returns a $1 \times T$ vector representing estimations of $f_{\theta}$ at each point $t$. Together, we have the $B \times T$ matrix $\overline{M}_f$. This gives an estimated fixation curve, 
 \begin{align*}
-\hat{f} = \frac1B \sum_{b=1}^B \overline{M}_{\{b, \cdot\}_f}, \qquad \widehat{\text{se}}_{f} = \left[ \frac{1}{B-1} \sum_{b=1}^B \left( \overline{M}_{\{i, \cdot\}_{f}} - \hat{f} \right)^2 \right]^{1/2} 
+\hat{f} = \frac1B \sum_{b=1}^B \overline{M}_{\{b, \cdot\}_f}, \qquad \widehat{\text{se}}_{f} = \left[ \frac{1}{B-1} \sum_{b=1}^B \left( \overline{M}_{\{b, \cdot\}_{f}} - \hat{f} \right)^2 \right]^{1/2} 
 \end{align*}
 \end{frame}
 
-\begin{frame}{bdots need}
-Have to tighten up functions \newline 
 
-possibly jacknife \newline 
 
-Look at replacing gnls with something else \newline 
+\begin{frame}{Updates}
+Fitting process has been reduced to a single function, \texttt{bdotsFit} which can accept arbitrary functions provided by the user, as well as an arbitrary number of experimental groups or conditions \newline
 
-still focus on not making vwp specific \newline
+Object returned by \texttt{bdotsFit} inherits \texttt{data.frame} class \newline
 
-What to do if time points for observations don't match?
+Introduction of a number of useful generics including \texttt{plot}, \texttt{summary}, \texttt{coef}, etc., \newline 
+
+Allows for arbitrary user-defined function to be used \newline 
+
+Formula definition introduced in bootstrapping step, removing need to prespecify differences or differences of differences between curves \newline 
+
+Refitting step is interactive, can upload external data, saves progress \newline 
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Fitting with \texttt{bdots}}
+\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
+\begin{lstlisting}[language=R, showstringspaces=false]
+## Old bdots
+fit0 <- doubleGauss.fit(
+  data = dat, # Requires columns "Subject", "Time", and "Group
+  col = 4, # Specify outcome with numeric position
+  concave = TRUE, # argument tied to curve function
+  diffs = TRUE) # Requires column "Curve" with values 1,2
+  
+## New bdots
+fit <- bdotsFit(data = dat,
+  subject = "Subject",
+  time = "Time",
+  y = "Fixations",
+  group = c("Group", "LookType"),
+  curveType = doubleGauss(concave = TRUE))
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Bootstrap with \texttt{bdots}}
+\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
+\begin{lstlisting}[language=R, showstringspaces=false]
+## Old bdots
+boot0 <- doubleGauss.boot(
+  part1.list = fit0, 
+  paired = TRUE) # Must indicate if observations paired
+  
+## New bdots
+boot <- bdotsBoot(
+  Fixations ~ Group(50, 65) + LookType(Cohort), 
+  bdObj = fit)
+  
+boot <- bdotsBoot(
+  diffs(Fixations, Group(50, 65)) ~ LookType(Cohort, Unrelated), 
+  bdObj = fit)
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Non-vwp data}
+Data for 451LuBR cell line (metastatic melanoma) growth with repeated measures in mice with five treatment groups \newline \\
+
+\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
+\begin{lstlisting}[language=R, showstringspaces=false]
+## Using custom curve for fitting data
+fit <- bdotsFit(data = dat, 
+                subject = "ID", 
+                time = "Day", 
+                y = "Volume", 
+                group = "Treatment", 
+                curveType = expCurve())
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}{Plots}
+Representative curves for individual mice, as well as comparisons between two treatments with bootstrapped curves
+\begin{columns}
+\begin{column}{0.45\textwidth}
+\begin{center}
+\includegraphics[scale=0.45]{img/tumr_fit.png}
+\end{center}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{center}
+\includegraphics[scale=0.3]{img/tumr_boot.png}
+\end{center}
+\end{column}
+\end{columns}
+
+
+
+\end{frame}
+
+
+\begin{frame}{Future work}
+Making package more robost to different types of data \newline 
+
+Handling inconsistencies in time of observations \newline 
+
+Investigate different optimization methods for improving fitted curves \newline 
+
+Convenience functions \newline
+
+\end{frame}
+
+\begin{frame}{Visual World Paradigm}
+Broadly speaking, the visual world paradigm (vwp) is a paradigm in which subjects are placed in a ``visual world" in which they are prompted to select an item in response to spoken language \newline \\
+
+Eyetracking software collects location of eye movement in real time as it responds to spoken language \newline \\
+
+``An increasingly popular approach to visual world data is to fit some nonlinear function of time to visualizations of the data...as descriptors of how the trajectories change over time" (Oleson, 2017) \newline \\
+
+This leads to the idea of using eyetracking data to construct a \textit{fixation curve}, a (typically) parametric function fit to the data collected
+
+
 \end{frame}
 
 \begin{frame}{Eyetracking data}
-In the context of vwp, subjects are lead through trials, with headsets monitoring eye position every 4ms. \newline \\
 
 Two types of events make up eyetracking data: \textit{saccades} and \textit{fixations} \newline \\
 
@@ -189,6 +278,14 @@ A \textit{fixation} is characterized by a lack of movement, in which the eye is 
 Together, a saccade, followed by a subsequent fixation, is known as a \textit{look}
 \end{frame}
 
+\begin{frame}{Saccade, Fixations, and Looks (oh my!)}
+\vspace{10mm}
+\begin{center}
+\includegraphics[scale=0.45]{img/saccade_def2.png}
+\end{center}
+\end{frame}
+
+
 \begin{frame}{Fixation curve}
 We define a \textit{fixation curve}, $f_{\theta}(t)$ or $f(t  | \theta)$ to represent a (usually parametric) function indicating the probability of fixating on a target at some time, $t$. \newline \\
 To disambiguate the term ``target" when used in the VWP, we will let ``Target" denote the object corresponding to a spoken word, while ``target" will denote an object of interest \newline \\
@@ -196,87 +293,159 @@ To disambiguate the term ``target" when used in the VWP, we will let ``Target" d
 For example, with the four-parameter logistic, our target is typically the Target, while for the six-parameter double-gauss, our target is the Cohort
 \end{frame}
 
-\begin{frame}{VWP and looks}
-Need for a grounding hypothesis linking eye tracking to cognitive activity \newline \\
 
-Magnuson paper on this, also assumptions from Bob's princess bride \newline \\
 
-For this dissertation, we will ignore the cognitive process and instead focus on recovering underlying fixation curves from observed data. The link between these two can be somebody elses' dissertation. \newline \\
+\begin{frame}{Aggregation of Data}
+\begin{columns}
+\begin{column}{0.5\textwidth}
+Subjects are measured across a series of trials in which they are asked to identify the Target \newline 
 
-What we will consider here in review is high frequency sampling (HFS) and fixation-based sampling, augmented for target (FBS+T)
+Fixations are captured in real time and aggregated across trials, with each time point representing the proportions of trials in which a subject was fixed on any item \newline 
 
+The resulting proportion of fixations then serves as the empirical observation of the \textit{fixation curve}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{center}
+\includegraphics[scale=0.5]{img/bob_aggregate.png}
+\\
+{\tiny source: Princess Bride paper}
+\end{center}
+\end{column}
+\end{columns}
 \end{frame}
 
-\begin{frame}{Sampling Paradigms}
-Two main assumptions focusing on right now: HFS and FBS+T (bob's paper) \newline
-
-\textbf{HFS:} High frequency sampling assumption, "if researcher is sampling at 4ms intervals, the fixation curve is assumped to derive from a probabilistic sample every 4ms" \newline 
-
-\textbf{FBS+T:} Fixation-based sampling + target, series of discrete fixations with reasonable refractory period, treats fixations as primarily a readout ouf the unfolding decision, ignores the role of the fixation as an information gather behavior (pg 26 of princess bride), allows fixations to target to be slightly longer (once fixated, subject more likely to stay)
-\end{frame}
-
-\begin{frame}{Importance of sampling paradigms}
-Why do we care? Well, it's relevant to the reconstruction of the curve. Specifically, either of these assumptions can be used to simulate eyetracking data. With recovery of the underlying fixation curve being our goal, we should be able to recover the underlying curve according to a particular hypothesis \newline 
-
-To be covered later, but ideally we have a simulation the empirically matches data collected from eyetracking. While we don't quite have that yet, we have two we can explore
-\end{frame}
-
-\begin{frame}{High Frequency Sampling}
-
+\begin{frame}{Mathematical Expression of Aggregate Data}
 For subjects $i = 1, \dots, n$, trials $j = 1, \dots, J$, and time points $t = 1, \dots, T$, the current method of estimating this curve is 
 
 \begin{align*}
 y_{it} = \frac{1}{J} \sum_{j=1}^J z_{ijt}
 \end{align*}
 where $z_{ijt} = \{0,1\}$, conditional on the measured fixation at timepoint $t$ in trial $j$. \newline \\
-Everything above this is independent of HFS and should go on slide comparing saccades to proportion fixations \newline \\
 
-Under the HFS assumption (employed by bdots), the vector $y_i$ serves as a direct observation of $f_{\theta}(t)$ for subject $i$ ($f_{\theta_i}(t)$?)
+Here, the vector $y_i$ serves as a direct observation of $f_{\theta}(t)$ for subject $i$ 
 \end{frame}
 
-\begin{frame}{HFS wrong}
-its wrong. bob even said so \newline \\
+\begin{frame}{VWP and looks}
+Of critical importance here are the underlying assumptions relating cognitive activation of an object and the resulting fixations, referred to as a grounding hypothesis (Magnuson) \newline \\
 
-but look, plots are fine
+We can begin by assuming that there is some underlying function dictating fixations, though how this is mediated with observed data is still up for debate \newline \\
+
+Bob explored a number of these assumptions in his Princess Bride paper, and here we will focus on two: high frequency sampling and fixation-based sampling, augmented for target
+
+\end{frame}
+
+
+\begin{frame}{Sampling Paradigms}
+
+\textbf{HFS:} High frequency sampling assumption, "if researcher is sampling at 4ms intervals, the fixation curve is assumped to derive from a probabilistic sample every 4ms" \newline 
+
+\textbf{FBS+T:} Fixation-based sampling + target, series of discrete fixations with reasonable refractory period, treats fixations as primarily a readout ouf the unfolding decision, ignores the role of the fixation as an information gather behavior, allows fixations to target to be slightly longer (once fixated, subject more likely to stay)
+\end{frame}
+
+\begin{frame}{Why do we care?}
+
+The differences in sampling assumptions raises questions as to biases introduced in our estimate of the fixation curve. \newline
+
+\begin{itemize}
+  \item[-] Can each observed time point be considered an independent draw from a fixation curve?
+  \item[-] How do the lengths of each fixation impact potential bias?
+  \item[-] Does the duration of these fixations change over time and in response to previously identified items?
+\end{itemize}
+
+\vspace{4mm}
+
+With recovery of the underlying fixation curve being our goal, we should be able to recover the underlying curve from observed data according to a particular hypothesis \newline 
+
+
+\end{frame}
+
+\begin{frame}{High Frequency Sampling}
+
+
+
+On the positive side, simulations run with the HFS assumption were able to correctly recover the underlying fixation curve \newline \\
+
+As Bob has noted, however, the HFS assumption is ``patently untrue" \newline \\
+
+While the bdots package was originally created as a means of modeling the data to account for autocorrelation, it is unable to take into consideration the dynamics of fixations \newline \\
+
+We will then limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
+
+\end{frame}
+
+\begin{frame}{High Frequency Sampling}
+On the positive side, simulations run with the HFS assumption were able to correctly recover the underlying fixation curve \newline \\
+
+As Bob has noted, however, the HFS assumption is ``patently untrue" \newline \\
+
+While the bdots package was originally created as a means of modeling the data to account for autocorrelation, it is unable to take into consideration the dynamics of fixations \newline \\
+
+We will then limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
+
+
+\begin{tikzpicture}[remember picture,overlay]
+\node at (current page.center){\includegraphics[scale=0.5]{img/gump.jpeg}};
+\end{tikzpicture}
 \end{frame}
 
 \begin{frame}{FBS+T}
-\begin{enumerate}
-  \item[1] fixations follow gamma distribution
-  \item[2] extra time for target
-  \item[3] doesn't take into account prior information (no learning)
-\end{enumerate}
-\vspace{5mm}
-there are also some plots showing bias
+Fixation based sampling introduces a more realistic situation in which looks to a particular target are initiated at some point, but then remain fixated for a random period of time \newline \\
+
+Empirically, fixations on the Target tend to last longer than others, adding an additional mechanic to the generation of data \newline \\
+
+Finally, there is the adjustment for oculomotor delay; when a saccade occurs at 1200ms, it is likely that it was planned around 1000ms \newline \\
+
+We will briefly review how this simulation is conducted
+
 \end{frame}
 
-\begin{frame}{Mathematical Structure of Problem}
-The primary variable of interest is the \textit{underlying activation curve}, $x \equiv x(t)$, a cognitive process neither measured or observed \newline
+\begin{frame}[fragile]
+\frametitle{current simulation (fbs+t)}
+Begin by creating a subject \newline \\
 
-Some function of this process is captured by a \textit{fixation curve}, $H(x) = y$(?), which, depending on the context (target or competitor), is represented by a parametric function $f(t|\theta)$ or $f_{\theta}(t)$ \newline 
+  \begin{enumerate}
+  \item[1.] Draw $\theta \sim N(\theta^*, \Sigma_{\theta^*})$ s.t $max(f_{\theta}) \in (0.6, 1)$
+  \item[2.] Draw parameters from distribution $\Gamma$ for duration of fixation to non-target
+  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to Target
+  \item[4.] Return $(\theta, \Gamma, \Gamma_T)$
+  \end{enumerate}
 
-For subjects $i = 1, \dots, n$, trials $j = 1, \dots, J$, and time points $t = 1, \dots, T$, the current method of estimating this curve is 
+\end{frame}
+
+\begin{frame}{Current sim (fbs+t)}
+Single trial. With vector of times, \code{time}, run the following simulation:\newline \\
+
+\code{pars <- makeSubject()} \\
+\code{currTime <- min(time) - runif(1)}$E(\Gamma)$ \\
+\code{lastTime <- currTime - }$\Gamma$\code{ - runif(1)}$E(\Gamma)$\newline \\
+\code{while(currTime < max(time)) \{} \\
+\hspace{4mm} \code{p <- f(lasttime|}$\theta$\code{)} \\
+\hspace{4mm} \code{target <- runif(1) < p} \\
+\hspace{4mm} \code{duration <- ifelse(target, }$\Gamma$\code{, }$\Gamma_T$\code{)} \\
+\hspace{4mm} \code{lasttime <- currTime} \\
+\hspace{4mm} \code{currTime <- currTime + duration} \\
+\code{\}}
+\end{frame}
+
+\begin{frame}{fbst plot}
+plot with only aggregate data for fbst
+\end{frame}
+
+\begin{frame}{Fixation vs Saccade}
+Here, we reflect again on the construction of our empirical fixation curve, 
 
 \begin{align*}
-y_{it} = \frac{1}{J} \sum_{j=1}^J z_{ijt}
+y_{it} = \frac1J \sum_{j=1}^J z_{ijt}.
 \end{align*}
-where $z_{ijt} = \{0,1\}$, conditional on the measured fixation at timepoint $t$ in trial $j$.
+
+Critically, we realize that the only sample from the fixation curve that we observe \textit{is at the saccade}. \newline \\
+
+In other words, if the subject fixates on the target at $t$ for 500ms, we have introduced ``observed" data at $t + 500$ from a sample of the fixation curve taken at time $t$
 \end{frame}
 
 
-
-\begin{frame}{Fixation vs Sacade}
-Current methods employ
-\begin{align*}
-y_{it} = \frac1J \sum_{j=1}^J z_{ijt}
-\end{align*}
-where $z_{ijt}$ denotes the \textit{fixation} of subject $i$ in trial $j$ at time $t$. Insomuch as $y_{it}$ represents the observed $f_{\theta}(t)$, we have an issue in that $f_{\theta}(t)$ represents the probability of \textit{fixating} on a target at time $t$, rather than the proportion of fixations already on the target at $t$ \newline \\
-
-In other words, we looking at the wrong thing
-\end{frame}
-
-\begin{frame}{fix vs saccade sim}
-just use fbs+t paradigm, really, since other one is wrong (and not biased)
+\begin{frame}{fix vs saccade plots}
+First plots showing aggregate vs saccade
 \end{frame}
 
 \begin{frame}{identity theroem and time windows}
@@ -440,36 +609,14 @@ still does 0-2000ms (how to deal with identifying target/RT) \newline \\
 Can show sims demonstrating time/density/etc with saccades and  wolololo
 \end{frame}
 
-\begin{frame}[fragile]
-\frametitle{current simulation (fbs+t)}
-Begin by creating a subject \newline \\
 
-  \begin{enumerate}
-  \item[1.] Draw $\theta \sim N(\theta^*, \Sigma_{\theta^*})$ s.t $max(f_{\theta}) \in (0.6, 1)$
-  \item[2.] Draw parameters for distribution $\Gamma$ for duration of fixation to non-target
-  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to target
-  \item[4.] Return $(\theta, \Gamma, \Gamma_T)$
-  \end{enumerate}
-
-\end{frame}
-
-\begin{frame}{Current sim (fbs+t)}
-Single trial. With vector of times, \code{time}, run the following simulation:\newline \\
-
-\code{pars <- makeSubject()} \\
-\code{currTime <- min(time) - runif(1)}$E(\Gamma)$ \\
-\code{lastTime <- currTime - }$\Gamma$\code{ - runif(1)}$E(\Gamma)$\newline \\
-\code{while(currTime < max(time) \{} \\
-\hspace{4mm} \code{p <- f(lasttime|}$\theta$\code{)} \\
-\hspace{4mm} \code{target <- runif(1) < p} \\
-\hspace{4mm} \code{duration <- ifelse(target, }$\Gamma$\code{, }$\Gamma_T$\code{)} \\
-\hspace{4mm} \code{lasttime <- currTime} \\
-\hspace{4mm} \code{currTime <- currTime + duration} \\
-\code{\}}
-\end{frame}
 
 \begin{frame}{Limitations}
 Not really recovering cognitive curve \newline 
+
+Assumes that all trials are drawn from the same functional curve (that is, independent of trial conditions) \newline 
+
+
 
 \end{frame}
 

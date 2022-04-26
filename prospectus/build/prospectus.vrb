@@ -3,8 +3,8 @@ Begin by creating a subject \newline \\
 
   \begin{enumerate}
   \item[1.] Draw $\theta \sim N(\theta^*, \Sigma_{\theta^*})$ s.t $max(f_{\theta}) \in (0.6, 1)$
-  \item[2.] Draw parameters for distribution $\Gamma$ for duration of fixation to non-target
-  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to target
+  \item[2.] Draw parameters from distribution $\Gamma$ for duration of fixation to non-target
+  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to Target
   \item[4.] Return $(\theta, \Gamma, \Gamma_T)$
   \end{enumerate}
 

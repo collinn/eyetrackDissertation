@@ -1,10 +1,13 @@
-\frametitle{current simulation (fbs+t)}
-Begin by creating a subject \newline \\
+\frametitle{Non-vwp data}
+Data for 451LuBR cell line (metastatic melanoma) growth with repeated measures in mice with five treatment groups \newline \\
 
-  \begin{enumerate}
-  \item[1.] Draw $\theta \sim N(\theta^*, \Sigma_{\theta^*})$ s.t $max(f_{\theta}) \in (0.6, 1)$
-  \item[2.] Draw parameters from distribution $\Gamma$ for duration of fixation to non-target
-  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to Target
-  \item[4.] Return $(\theta, \Gamma, \Gamma_T)$
-  \end{enumerate}
-
+\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
+\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,}]
+## Using custom curve for fitting data
+fit <- bdotsFit(data = dat,
+                subject = "ID",
+                time = "Day",
+                y = "Volume",
+                group = "Treatment",
+                curveType = expCurve())
+\end{lstlisting}

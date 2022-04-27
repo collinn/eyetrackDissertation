@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.12.14)  25 APR 2022 18:18
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.12.14)  27 APR 2022 18:08
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1179,55 +1179,44 @@ Package caption Info: End \AtBeginDocument code.
 (build/prospectus.nav) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
-(build/prospectus.toc) [2
+[2
 
 ] [3
 
 ]
-<img/visual_world_display.png, id=81, 271.0125pt x 240.9pt>
-File: img/visual_world_display.png Graphic file (type png)
-<use img/visual_world_display.png>
-Package pdftex.def Info: img/visual_world_display.png  used on input line 97.
-(pdftex.def)             Requested size: 108.40306pt x 96.35828pt.
- [4
-
- <./img/visual_world_display.png>] [5
-
-]
 LaTeX Font Info:    Trying to load font information for OT1+pcr on input line 1
-15.
-
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
+23.
+ (/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
-) [6
+) [4
 
 ]
-LaTeX Font Info:    Trying to load font information for U+msa on input line 129
+LaTeX Font Info:    Trying to load font information for U+msa on input line 136
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 129
+LaTeX Font Info:    Trying to load font information for U+msb on input line 136
 .
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Trying to load font information for OT1+mathkerncmss on inp
-ut line 129.
+ut line 136.
 
 (/usr/share/texlive/texmf-dist/tex/latex/sansmathaccent/ot1mathkerncmss.fd
 File: ot1mathkerncmss.fd 2020/01/31 Fontinst v1.933 font definitions for OT1/ma
 thkerncmss.
 )
-[7
+[5
+
+] [6
+
+] [7
 
 ] [8
-
-] [9
-
-] [10
 
 ]
 \openout4 = `prospectus.vrb'.
@@ -1244,13 +1233,27 @@ File: lstlang3.sty 2019/09/10 1.8c listings language file
 )
 LaTeX Font Info:    Font shape `OT1/pcr/m/it' in size <9> not available
 (Font)              Font shape `OT1/pcr/m/sl' tried instead on input line 4.
-) [11
+) [9
 
 ]
 \openout4 = `prospectus.vrb'.
 
 
-(build/prospectus.vrb
+(build/prospectus.vrb)
+Overfull \vbox (74.02943pt too high) detected at line 244
+ []
+
+[10
+
+]
+\openout4 = `prospectus.vrb'.
+
+ (build/prospectus.vrb) [11
+
+]
+\openout4 = `prospectus.vrb'.
+
+ (build/prospectus.vrb
 Overfull \hbox (3.30821pt too wide) in paragraph at lines 15--16
 [][][][][][][][][][][][][][][][][][][][][][] 
  []
@@ -1263,49 +1266,54 @@ Overfull \hbox (3.30821pt too wide) in paragraph at lines 15--16
  (build/prospectus.vrb) [13
 
 ]
-<img/tumr_fit.png, id=158, 450.9347pt x 385.44pt>
+<img/tumr_fit.png, id=116, 450.9347pt x 385.44pt>
 File: img/tumr_fit.png Graphic file (type png)
 <use img/tumr_fit.png>
-Package pdftex.def Info: img/tumr_fit.png  used on input line 244.
+Package pdftex.def Info: img/tumr_fit.png  used on input line 317.
 (pdftex.def)             Requested size: 202.91873pt x 173.4464pt.
 
-Overfull \hbox (48.8869pt too wide) in paragraph at lines 244--244
+Overfull \hbox (48.8869pt too wide) in paragraph at lines 317--317
  [] 
  []
 
-<img/tumr_boot.png, id=159, 477.28313pt x 385.44pt>
+<img/tumr_boot.png, id=117, 477.28313pt x 385.44pt>
 File: img/tumr_boot.png Graphic file (type png)
 <use img/tumr_boot.png>
-Package pdftex.def Info: img/tumr_boot.png  used on input line 244.
+Package pdftex.def Info: img/tumr_boot.png  used on input line 317.
 (pdftex.def)             Requested size: 143.18604pt x 115.63289pt.
 [14
 
- <./img/tumr_fit.png (PNG copy)> <./img/tumr_boot.png (PNG copy)>] [15
+ <./img/tumr_fit.png (PNG copy)> <./img/tumr_boot.png (PNG copy)>]
+<img/four_boot.png, id=124, 481.8pt x 481.8pt>
+File: img/four_boot.png Graphic file (type png)
+<use img/four_boot.png>
+Package pdftex.def Info: img/four_boot.png  used on input line 323.
+(pdftex.def)             Requested size: 216.80798pt x 216.80798pt.
+ [15
 
-]
-[16
+ <./img/four_boot.png (PNG copy)>] [16
 
 ] [17
 
+] [18
+
 ]
-<img/saccade_def2.png, id=185, 616.3025pt x 817.0525pt>
+<img/saccade_def2.png, id=150, 616.3025pt x 817.0525pt>
 File: img/saccade_def2.png Graphic file (type png)
 <use img/saccade_def2.png>
-Package pdftex.def Info: img/saccade_def2.png  used on input line 286.
+Package pdftex.def Info: img/saccade_def2.png  used on input line 365.
 (pdftex.def)             Requested size: 277.33356pt x 367.67023pt.
 
-Overfull \vbox (175.05238pt too high) detected at line 286
+Overfull \vbox (175.05238pt too high) detected at line 365
  []
 
-[18
+[19
 
- <./img/saccade_def2.png>] [19
-
-]
-<img/bob_aggregate.png, id=200, 276.03125pt x 378.41376pt>
+ <./img/saccade_def2.png>]
+<img/bob_aggregate.png, id=161, 276.03125pt x 378.41376pt>
 File: img/bob_aggregate.png Graphic file (type png)
 <use img/bob_aggregate.png>
-Package pdftex.def Info: img/bob_aggregate.png  used on input line 315.
+Package pdftex.def Info: img/bob_aggregate.png  used on input line 394.
 (pdftex.def)             Requested size: 138.01527pt x 189.2064pt.
  [20
 
@@ -1313,117 +1321,93 @@ Package pdftex.def Info: img/bob_aggregate.png  used on input line 315.
 
 ] [22
 
-]
-[23
+] [23
 
-] [24
+]
+[24
 
 ] [25
 
-]
-<img/gump.jpeg, id=239, 349.305pt x 319.1925pt>
-File: img/gump.jpeg Graphic file (type jpg)
-<use img/gump.jpeg>
-Package pdftex.def Info: img/gump.jpeg  used on input line 389.
-(pdftex.def)             Requested size: 174.65207pt x 159.59586pt.
- [26
+] [26
 
- <./img/gump.jpeg>] [27
+] [27
+
+] [28
 
 ]
-\openout4 = `prospectus.vrb'.
-
- (build/prospectus.vrb) [28
-
-]
-LaTeX Font Info:    Trying to load font information for OMS+pcr on input line 4
-28.
-
-(/usr/share/texlive/texmf-dist/tex/latex/psnfss/omspcr.fd
-File: omspcr.fd 
-)
-LaTeX Font Info:    Font shape `OMS/pcr/m/n' in size <10.95> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 428.
+<img/occulomotor_delay_1.png, id=218, 641.39626pt x 234.8775pt>
+File: img/occulomotor_delay_1.png Graphic file (type png)
+<use img/occulomotor_delay_1.png>
+Package pdftex.def Info: img/occulomotor_delay_1.png  used on input line 532.
+(pdftex.def)             Requested size: 288.62564pt x 105.6939pt.
  [29
 
-] [30
+ <./img/occulomotor_delay_1.png>]
+<img/aggregate_fit_only.png, id=226, 481.8pt x 481.8pt>
+File: img/aggregate_fit_only.png Graphic file (type png)
+<use img/aggregate_fit_only.png>
+Package pdftex.def Info: img/aggregate_fit_only.png  used on input line 538.
+(pdftex.def)             Requested size: 216.80798pt x 216.80798pt.
+ [30
 
-] [31
-
-]
-[32
-
-] [33
-
-] [34
-
-] [35
+ <./img/aggregate_fit_only.png (PNG copy)>] [31
 
 ]
-<img/reg_fit.png, id=303, 602.25pt x 481.8pt>
-File: img/reg_fit.png Graphic file (type png)
-<use img/reg_fit.png>
-Package pdftex.def Info: img/reg_fit.png  used on input line 495.
-(pdftex.def)             Requested size: 210.79065pt x 168.63252pt.
+<img/aggregate_sac_1.png, id=240, 481.8pt x 481.8pt>
+File: img/aggregate_sac_1.png Graphic file (type png)
+<use img/aggregate_sac_1.png>
+Package pdftex.def Info: img/aggregate_sac_1.png  used on input line 557.
+(pdftex.def)             Requested size: 216.80798pt x 216.80798pt.
+ [32
 
-Overfull \vbox (0.26187pt too high) detected at line 495
+ <./img/aggregate_sac_1.png (PNG copy)>]
+<img/aggregate_sac_2.png, id=247, 481.8pt x 481.8pt>
+File: img/aggregate_sac_2.png Graphic file (type png)
+<use img/aggregate_sac_2.png>
+Package pdftex.def Info: img/aggregate_sac_2.png  used on input line 579.
+(pdftex.def)             Requested size: 192.71658pt x 192.71658pt.
+
+Overfull \vbox (0.84595pt too high) detected at line 579
  []
 
-[36
+[33
 
- <./img/reg_fit.png (PNG copy)>]
-<img/early_fit.png, id=310, 602.25pt x 481.8pt>
-File: img/early_fit.png Graphic file (type png)
-<use img/early_fit.png>
-Package pdftex.def Info: img/early_fit.png  used on input line 515.
-(pdftex.def)             Requested size: 210.79065pt x 168.63252pt.
+ <./img/aggregate_sac_2.png (PNG copy)>]
+<img/asy_fit.png, id=254, 602.25pt x 481.8pt>
+File: img/asy_fit.png Graphic file (type png)
+<use img/asy_fit.png>
+Package pdftex.def Info: img/asy_fit.png  used on input line 585.
+(pdftex.def)             Requested size: 271.01pt x 216.80798pt.
+ [34
 
-Overfull \vbox (0.26187pt too high) detected at line 515
- []
+ <./img/asy_fit.png (PNG copy)>]
+<img/occulomotor_delay_2.png, id=261, 641.39626pt x 514.92375pt>
+File: img/occulomotor_delay_2.png Graphic file (type png)
+<use img/occulomotor_delay_2.png>
+Package pdftex.def Info: img/occulomotor_delay_2.png  used on input line 591.
+(pdftex.def)             Requested size: 256.55396pt x 205.96585pt.
+[35
+
+ <./img/occulomotor_delay_2.png>]
+<img/new_delay1.png, id=269, 481.8pt x 481.8pt>
+File: img/new_delay1.png Graphic file (type png)
+<use img/new_delay1.png>
+Package pdftex.def Info: img/new_delay1.png  used on input line 597.
+(pdftex.def)             Requested size: 216.80798pt x 216.80798pt.
+ [36
+
+ <./img/new_delay1.png (PNG copy)>]
+<img/new_delay2.png, id=276, 481.8pt x 481.8pt>
+File: img/new_delay2.png Graphic file (type png)
+<use img/new_delay2.png>
+Package pdftex.def Info: img/new_delay2.png  used on input line 603.
+(pdftex.def)             Requested size: 216.80798pt x 216.80798pt.
 
 [37
 
- <./img/early_fit.png (PNG copy)>]
-<img/mid_fit.png, id=318, 602.25pt x 481.8pt>
-File: img/mid_fit.png Graphic file (type png)
-<use img/mid_fit.png>
-Package pdftex.def Info: img/mid_fit.png  used on input line 535.
-(pdftex.def)             Requested size: 210.79065pt x 168.63252pt.
+ <./img/new_delay2.png (PNG copy)>] [38
 
-Overfull \vbox (0.26187pt too high) detected at line 535
- []
-
-[38
-
- <./img/mid_fit.png (PNG copy)>]
-<img/late_fit.png, id=325, 602.25pt x 481.8pt>
-File: img/late_fit.png Graphic file (type png)
-<use img/late_fit.png>
-Package pdftex.def Info: img/late_fit.png  used on input line 555.
-(pdftex.def)             Requested size: 210.79065pt x 168.63252pt.
-
-Overfull \vbox (0.26187pt too high) detected at line 555
- []
-
-[39
-
- <./img/late_fit.png (PNG copy)>]
-<img/asy_fit.png, id=332, 602.25pt x 481.8pt>
-File: img/asy_fit.png Graphic file (type png)
-<use img/asy_fit.png>
-Package pdftex.def Info: img/asy_fit.png  used on input line 575.
-(pdftex.def)             Requested size: 210.79065pt x 168.63252pt.
-
-Overfull \vbox (0.26187pt too high) detected at line 575
- []
-
-[40
-
- <./img/asy_fit.png (PNG copy)>] [41
-
-] [42
-
-] [43
+] [39
 
 ]
 \tf@nav=\write6
@@ -1435,23 +1419,23 @@ Overfull \vbox (0.26187pt too high) detected at line 575
 \tf@snm=\write8
 \openout8 = `prospectus.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 625.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 625.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 652.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 652.
  (build/prospectus.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 625.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 625.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 652.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 652.
 Package rerunfilecheck Info: File `prospectus.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
  ) 
 Here is how much of TeX's memory you used:
- 29591 strings out of 483065
- 589457 string characters out of 5963549
- 1055967 words of memory out of 5000000
- 43828 multiletter control sequences out of 15000+600000
- 544061 words of font info for 66 fonts, out of 8000000 for 9000
+ 29467 strings out of 483065
+ 586714 string characters out of 5963549
+ 1139030 words of memory out of 5000000
+ 43719 multiletter control sequences out of 15000+600000
+ 545091 words of font info for 70 fonts, out of 8000000 for 9000
  81 hyphenation exceptions out of 8191
- 58i,15n,103p,796b,2058s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{Navigation44} has been referenced but does not ex
+ 58i,15n,103p,796b,2054s stack positions out of 5000i,500n,10000p,200000b,80000s
+pdfTeX warning (dest): name{Navigation40} has been referenced but does not ex
 ist, replaced by a fixed one
 
 {/usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/share/texlive/
@@ -1464,15 +1448,14 @@ msfonts/cm/cmss8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
 /cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi
 8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/s
-hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/te
-xlive/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/texmf-d
-ist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fonts/typ
-e1/urw/courier/ucrro8a.pfb>
-Output written on build/prospectus.pdf (43 pages, 574054 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dist/fo
+nts/type1/urw/courier/ucrro8a.pfb>
+Output written on build/prospectus.pdf (39 pages, 611107 bytes).
 PDF statistics:
- 433 PDF objects out of 1000 (max. 8388607)
- 343 compressed objects within 4 object streams
- 95 named destinations out of 1000 (max. 500000)
- 184 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 365 PDF objects out of 1000 (max. 8388607)
+ 280 compressed objects within 3 object streams
+ 80 named destinations out of 1000 (max. 500000)
+ 126 words of extra memory for PDF output out of 10000 (max. 10000000)
 

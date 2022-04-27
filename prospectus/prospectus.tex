@@ -50,11 +50,11 @@
 \lstdefinestyle{rstyle}{
 	language=R,
     %stringstyle=\color{green},
-    otherkeywords={0,1,2,3,4,5,6,7,8,9},
-    morekeywords={TRUE,FALSE},
-    deletekeywords={data,frame,length,as,character}
+    %otherkeywords={0,1,2,3,4,5,6,7,8,9},
+    %morekeywords={TRUE,FALSE},
+    %deletekeywords={data,frame,length,as,character}
     %keywordstyle=\color{blue},
-    commentstyle=\color{cyan},
+    %commentstyle=\color{cyan},
 }
 
 \setitemize{label=\usebeamerfont*{itemize item}%
@@ -66,7 +66,7 @@
 \title[UIowa Biostatistics]{Prospectus title}
 \subtitle{and subtitle!}
 \author{Collin Nolte}
-\date{April 22, 2022}
+\date{April 29, 2022}
 
 \begin{document}
 
@@ -75,47 +75,55 @@
 \end{frame}
 
 \begin{frame}{Outline}
-  \tableofcontents
+\begin{itemize}
+\item[1.] bdots
+  \begin{itemize}
+  \item[a.] Methodology
+  \item[b.] Updates
+  \item[c.] Non-vwp data
+  \end{itemize}
+\item[2.] Visual World Paradigm
+  \begin{itemize}
+  \item[a.] Eyetracking data
+  \item[b.] Mathematical description
+  \item[c.] Sampling and curves
+  \end{itemize}
+\item[3.] Simulations
+  \begin{itemize}
+  \item[a.] Saccades
+  \item[b.] Oculomotor delay
+  \end{itemize}
+\end{itemize}
 \end{frame}
 
-\section{Problem statement}
-\section{Existing results}
-    \subsection{Method 1}
-    \subsection{Method 2}
-    \subsection{Method 3}
-\section{Comparative study}
-\section*{References}
 
-\begin{frame}{Problem statement}
+%
+%\begin{frame}{Overview}
+%\begin{center}
+%\includegraphics[scale=0.4]{img/visual_world_display.png}
+%\end{center}
+%\end{frame}
 
-\end{frame}
+\begin{frame}{bdots}
 
-\begin{frame}{Overview}
-\begin{center}
-\includegraphics[scale=0.4]{img/visual_world_display.png}
-\end{center}
-\end{frame}
+The idea behind bdots (bootstrapped difference in time series) was originally proposed by Oleson, Cavanaugh, McMurray and Brown (2017) \newline \\
 
-\begin{frame}{bdots2}
-Bootstrapped difference in time series, paper originally by olseon, ecavanaugh, mcmurray, and brown \newline
+First packaged version for CRAN written by Michael Seedorff, with subsequent updates made by Brad Loeffler \newline \\
 
-package written by seedorff \newline
 
-blah blah blah
 \end{frame}
 
 \begin{frame}{bdots}
-Current implementation of \code{bdots} involves three steps:
+Current implementation of \code{bdots} involves two steps:
 \begin{enumerate}
 \item[1.] \textbf{Curve Fitting:} Fitting parametric curve to observed data
-\item[2.] \textbf{Curve Refitting:} Manually estimating parameters in case of poor fit
-\item[3.] \textbf{Bootstrap} Bootstrap curves to estimate group population curve \newline
+\item[2.] \textbf{Bootstrap} Bootstrap curves to estimate group population curve \newline
 \end{enumerate}
-I also added a whole bunch of shit to make this package better
+Additionally, there functions available to assist with refitting poorly fit curves, either with a manual refitting or batch uploading of new starting parameters
 \end{frame}
 
 \begin{frame}{Fitting Process}
-The current method employed by \code{bdots} is to fit the observed $y_{it}$ to an underlying curve $f_{\theta}$, the fitting step given by 
+The current method employed by \code{bdots} is to fit for each observed subject, $y_{it}$, an underlying curve $f_{\theta}$, the fitting step given by 
   \begin{align*}
   F: \{y\} \times f \rightarrow N \left(\hat{\theta}_i, \hat{\Sigma}_{\theta_i} \right)
   \end{align*}
@@ -125,12 +133,11 @@ Such that
   \hat{\theta}_i = \text{argmin}_{\theta} \  ||y_{it} - f_{\theta}(t)||^2
   \end{align*}
 
-These could be further specified by indicating a group for the observation $g = 1, \dots, G$, where an individual may be in multiple groups (and ultimately, it will be group values being compared)
 \end{frame}
 
 
 \begin{frame}{Bootstrapping Process}
-Here, we perform $B$ bootstraps of the subject parameters to construct bootstrapped curves and confidence intervals. Assuming that each subject is in one \textit{group}, we draw $B$ samples of $\hat{\theta}_i$, where 
+Here, we perform $B$ bootstraps of the subject parameters to construct bootstrapped curves and confidence intervals. Taking parameter estimates from the fitting step, for each subject we draw $B$ samples of $\hat{\theta}_i$, where 
 \begin{align*}
 \hat{\theta}_{ib} \sim N \left(\hat{\theta_i},  \Sigma_{\hat{\theta}_i} \right)
 \end{align*}
@@ -142,7 +149,7 @@ Doing this for each subject, we construct a $B\times p$ matrix of the average of
 \end{align*}
 \end{frame}
 
-\begin{frame}{bootstrap cont}
+\begin{frame}{Bootstrapping, cont.}
 $\overline{M}$ is again a $B \times p$ matrix, each row  representing the average parameter estimate of $\theta$ at each bootstrap $b$. \newline 
 
 Each $1\times p$ row of $\overline{M}$ returns a $1 \times T$ vector representing estimations of $f_{\theta}$ at each point $t$. Together, we have the $B \times T$ matrix $\overline{M}_f$. This gives an estimated fixation curve, 
@@ -154,13 +161,11 @@ Each $1\times p$ row of $\overline{M}$ returns a $1 \times T$ vector representin
 
 
 \begin{frame}{Updates}
-Fitting process has been reduced to a single function, \texttt{bdotsFit} which can accept arbitrary functions provided by the user, as well as an arbitrary number of experimental groups or conditions \newline
+Fitting process has been simplified to a single function, \texttt{bdotsFit} which can accept arbitrary functions provided by the user, as well as an arbitrary number of experimental groups or conditions \newline
 
-Object returned by \texttt{bdotsFit} inherits \texttt{data.frame} class \newline
+Object returned by \texttt{bdotsFit} are of class \texttt{bdObj}, inheriting from \texttt{data.frame} class \newline
 
 Introduction of a number of useful generics including \texttt{plot}, \texttt{summary}, \texttt{coef}, etc., \newline 
-
-Allows for arbitrary user-defined function to be used \newline 
 
 Formula definition introduced in bootstrapping step, removing need to prespecify differences or differences of differences between curves \newline 
 
@@ -172,7 +177,7 @@ Refitting step is interactive, can upload external data, saves progress \newline
 
 \begin{frame}[fragile]{Fitting with \texttt{bdots}}
 \lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
-\begin{lstlisting}[language=R, showstringspaces=false]
+\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,}]
 ## Old bdots
 fit0 <- doubleGauss.fit(
   data = dat, # Requires columns "Subject", "Time", and "Group
@@ -190,9 +195,80 @@ fit <- bdotsFit(data = dat,
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}[fragile]{Output (old)}
+\lstset{basicstyle=\tiny\ttfamily, style = rstyle}
+\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,factor, summary, numeric,table,list,coef, all, model, logical, character}]
+> summary(fit0)
+             Length Class      Mode     
+data           7    data.table list     
+col            1    -none-     numeric  
+rho.0          1    -none-     numeric  
+N.time         1    -none-     numeric  
+N.sub1         1    -none-     numeric  
+N.sub2         1    -none-     numeric  
+coef.id1     150    -none-     numeric  
+coef.id2     150    -none-     numeric  
+sdev.id1     150    -none-     numeric  
+sdev.id2     150    -none-     numeric  
+sigma.id1     25    -none-     numeric  
+sigma.id2     25    -none-     numeric  
+coef.id3     150    -none-     numeric  
+coef.id4     150    -none-     numeric  
+sdev.id3     150    -none-     numeric  
+sdev.id4     150    -none-     numeric  
+sigma.id3     25    -none-     numeric  
+sigma.id4     25    -none-     numeric  
+id.nums.g1    25    factor     numeric  
+id.nums.g2    25    factor     numeric  
+groups         2    -none-     numeric  
+time.all     501    -none-     numeric  
+N.g1           1    -none-     numeric  
+N.g2           1    -none-     numeric  
+concave        2    -none-     logical  
+model          1    -none-     character
+R2.g1.1       25    -none-     numeric  
+R2.g2.1       25    -none-     numeric  
+R2.g1.2       25    -none-     numeric  
+R2.g2.2       25    -none-     numeric  
+diffs          1    -none-     logical  
+cor            1    -none-     logical  
+cor.1         25    -none-     logical  
+cor.2         25    -none-     logical  
+cor.3         25    -none-     logical  
+cor.4         25    -none-     logical  
+sdev.id1.cov  25    -none-     list     
+sdev.id2.cov  25    -none-     list     
+sdev.id3.cov  25    -none-     list     
+sdev.id4.cov  25    -none-     list     
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Output (new)}
+\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
+\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,}]
+> head(fit, n = 15)
+    Subject Group LookType        fit      R2   AR1 fitCode
+ 1:       1    50   Cohort <gnls[18]> 0.96972  TRUE       0
+ 2:       1    65   Cohort <gnls[18]> 0.98049  TRUE       0
+ 3:       2    50   Cohort <gnls[18]> 0.98117  TRUE       0
+ 4:       2    65   Cohort <gnls[18]> 0.96975  TRUE       0
+ 5:       3    50   Cohort <gnls[18]> 0.97619  TRUE       0
+ 6:       3    65   Cohort <gnls[18]> 0.95349 FALSE       3
+ 7:       4    50   Cohort <gnls[18]> 0.97079  TRUE       0
+ 8:       4    65   Cohort <gnls[18]> 0.64374 FALSE       5
+ 9:       5    50   Cohort <gnls[18]> 0.97876  TRUE       0
+10:       5    65   Cohort <gnls[18]> 0.97656  TRUE       0
+11:       6    50   Cohort <gnls[18]> 0.93516  TRUE       1
+12:       6    65   Cohort <gnls[18]> 0.92825  TRUE       1
+13:       7    50   Cohort <gnls[18]> 0.84164  TRUE       1
+14:       7    65   Cohort <gnls[18]> 0.93777  TRUE       1
+15:       8    50   Cohort <gnls[18]> 0.98621  TRUE       0
+\end{lstlisting}
+\end{frame}
+
 \begin{frame}[fragile]{Bootstrap with \texttt{bdots}}
 \lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
-\begin{lstlisting}[language=R, showstringspaces=false]
+\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,list}]
 ## Old bdots
 boot0 <- doubleGauss.boot(
   part1.list = fit0, 
@@ -213,7 +289,7 @@ boot <- bdotsBoot(
 Data for 451LuBR cell line (metastatic melanoma) growth with repeated measures in mice with five treatment groups \newline \\
 
 \lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
-\begin{lstlisting}[language=R, showstringspaces=false]
+\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,}]
 ## Using custom curve for fitting data
 fit <- bdotsFit(data = dat, 
                 subject = "ID", 
@@ -238,14 +314,17 @@ Representative curves for individual mice, as well as comparisons between two tr
 \end{center}
 \end{column}
 \end{columns}
+\end{frame}
 
-
-
+\begin{frame}{Other comparisons}
+\begin{center}
+\includegraphics[scale=0.45]{img/four_boot.png}
+\end{center}
 \end{frame}
 
 
 \begin{frame}{Future work}
-Making package more robost to different types of data \newline 
+Making package more robust to different types of data \newline 
 
 Handling inconsistencies in time of observations \newline 
 
@@ -262,7 +341,7 @@ Eyetracking software collects location of eye movement in real time as it respon
 
 ``An increasingly popular approach to visual world data is to fit some nonlinear function of time to visualizations of the data...as descriptors of how the trajectories change over time" (Oleson, 2017) \newline \\
 
-This leads to the idea of using eyetracking data to construct a \textit{fixation curve}, a (typically) parametric function fit to the data collected
+%This leads to the idea of using eyetracking data to construct a \textit{fixation curve}, a (typically) parametric function fit to the data collected
 
 
 \end{frame}
@@ -286,12 +365,12 @@ Together, a saccade, followed by a subsequent fixation, is known as a \textit{lo
 \end{frame}
 
 
-\begin{frame}{Fixation curve}
-We define a \textit{fixation curve}, $f_{\theta}(t)$ or $f(t  | \theta)$ to represent a (usually parametric) function indicating the probability of fixating on a target at some time, $t$. \newline \\
-To disambiguate the term ``target" when used in the VWP, we will let ``Target" denote the object corresponding to a spoken word, while ``target" will denote an object of interest \newline \\
-
-For example, with the four-parameter logistic, our target is typically the Target, while for the six-parameter double-gauss, our target is the Cohort
-\end{frame}
+%\begin{frame}{Fixation curve}
+%We define a \textit{fixation curve}, $f_{\theta}(t)$ or $f(t  | \theta)$ to represent a (usually parametric) function indicating the probability of fixating on a target at some time, $t$. \newline \\
+%To disambiguate the term ``target" when used in the VWP, we will let ``Target" denote the object corresponding to a spoken word, while ``target" will denote an object of interest \newline \\
+%
+%For example, with the four-parameter logistic, our target is typically the Target, while for the six-parameter double-gauss, our target is the Cohort
+%\end{frame}
 
 
 
@@ -302,7 +381,7 @@ Subjects are measured across a series of trials in which they are asked to ident
 
 Fixations are captured in real time and aggregated across trials, with each time point representing the proportions of trials in which a subject was fixed on any item \newline 
 
-The resulting proportion of fixations then serves as the empirical observation of the \textit{fixation curve}
+The resulting proportion of fixations then serves as the empirical observation of the \textit{fixation curve}, a (usually parametric) function indicating the probability of fixating on a target at some time, $t$.
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
 \begin{center}
@@ -325,12 +404,24 @@ where $z_{ijt} = \{0,1\}$, conditional on the measured fixation at timepoint $t$
 Here, the vector $y_i$ serves as a direct observation of $f_{\theta}(t)$ for subject $i$ 
 \end{frame}
 
+\begin{frame}{What's in a name?}
+Briefly, we need to address the fact that there are a few distinct but similar ``curves" in question here \newline \\
+
+First, there is what we might call an ``activation" curve, representing some latent mental process corresponding to activation of a word \newline \\
+
+There are also empirical fixation ``curves", either a set of discrete fixations for a single trial, or the proportions of fixations, aggregated at each time point \newline \\
+
+Finally, we have the idealized ``looking" curve, the (possibly parametric) curve indicating the probability of fixating on a target at a particular time \newline \\
+
+Still unsettled
+\end{frame}
+
 \begin{frame}{VWP and looks}
-Of critical importance here are the underlying assumptions relating cognitive activation of an object and the resulting fixations, referred to as a grounding hypothesis (Magnuson) \newline \\
+Of critical importance here are the underlying assumptions relating cognitive activation of an object and the resulting fixations, referred to as a grounding hypothesis (Magnuson 2019) \newline \\
 
 We can begin by assuming that there is some underlying function dictating fixations, though how this is mediated with observed data is still up for debate \newline \\
 
-Bob explored a number of these assumptions in his Princess Bride paper, and here we will focus on two: high frequency sampling and fixation-based sampling, augmented for target
+Bob explored a number of these assumptions in his Princess Bride paper (\textit{Fixation Curves in the Visual World Paradigm}, 2022?), and here we will focus on two: high frequency sampling and fixation-based sampling, augmented for target
 
 \end{frame}
 
@@ -356,12 +447,9 @@ The differences in sampling assumptions raises questions as to biases introduced
 
 With recovery of the underlying fixation curve being our goal, we should be able to recover the underlying curve from observed data according to a particular hypothesis \newline 
 
-
 \end{frame}
 
 \begin{frame}{High Frequency Sampling}
-
-
 
 On the positive side, simulations run with the HFS assumption were able to correctly recover the underlying fixation curve \newline \\
 
@@ -369,66 +457,84 @@ As Bob has noted, however, the HFS assumption is ``patently untrue" \newline \\
 
 While the bdots package was originally created as a means of modeling the data to account for autocorrelation, it is unable to take into consideration the dynamics of fixations \newline \\
 
+
 We will then limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
 
 \end{frame}
 
-\begin{frame}{High Frequency Sampling}
-On the positive side, simulations run with the HFS assumption were able to correctly recover the underlying fixation curve \newline \\
-
-As Bob has noted, however, the HFS assumption is ``patently untrue" \newline \\
-
-While the bdots package was originally created as a means of modeling the data to account for autocorrelation, it is unable to take into consideration the dynamics of fixations \newline \\
-
-We will then limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
-
-
-\begin{tikzpicture}[remember picture,overlay]
-\node at (current page.center){\includegraphics[scale=0.5]{img/gump.jpeg}};
-\end{tikzpicture}
-\end{frame}
+%\begin{frame}{High Frequency Sampling}
+%On the positive side, simulations run with the HFS assumption were able to correctly recover the underlying fixation curve \newline \\
+%
+%As Bob has noted, however, the HFS assumption is ``patently untrue" \newline \\
+%
+%While the bdots package was originally created as a means of modeling the data to account for autocorrelation, it is unable to take into consideration the dynamics of fixations \newline \\
+%
+%We will then limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
+%
+%
+%\begin{tikzpicture}[remember picture,overlay]
+%\node at (current page.center){\includegraphics[scale=0.5]{img/gump.jpeg}};
+%\end{tikzpicture}
+%\end{frame}
 
 \begin{frame}{FBS+T}
 Fixation based sampling introduces a more realistic situation in which looks to a particular target are initiated at some point, but then remain fixated for a random period of time \newline \\
 
-Empirically, fixations on the Target tend to last longer than others, adding an additional mechanic to the generation of data \newline \\
+Empirically, fixations on the target tend to last longer than others, adding an additional mechanic to the generation of data \newline \\
 
 Finally, there is the adjustment for oculomotor delay; when a saccade occurs at 1200ms, it is likely that it was planned around 1000ms \newline \\
 
-We will briefly review how this simulation is conducted
 
 \end{frame}
 
-\begin{frame}[fragile]
-\frametitle{current simulation (fbs+t)}
-Begin by creating a subject \newline \\
+%
+%\begin{frame}[fragile]
+%\frametitle{current simulation (fbs+t)}
+%Begin by creating a subject \newline \\
+%
+%  \begin{enumerate}
+%  \item[1.] Draw $\theta \sim N(\theta^*, \Sigma_{\theta^*})$ s.t $max(f_{\theta}) \in (0.6, 1)$
+%  \item[2.] Draw parameters from distribution $\Gamma$ for duration of fixation to non-target
+%  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to Target
+%  \item[4.] Return $(\theta, \Gamma, \Gamma_T)$
+%  \end{enumerate}
+%
+%\end{frame}
+%
+%\begin{frame}{Current sim (fbs+t)}
+%Single trial. With vector of times, \code{time}, run the following simulation:\newline \\
+%
+%\code{pars <- makeSubject()} \\
+%\code{currTime <- min(time) - runif(1)}$E(\Gamma)$ \\
+%\code{lastTime <- currTime - }$\Gamma$\code{ - runif(1)}$E(\Gamma)$\newline \\
+%\code{while(currTime < max(time)) \{} \\
+%\hspace{4mm} \code{p <- f(lasttime|}$\theta$\code{)} \\
+%\hspace{4mm} \code{target <- runif(1) < p} \\
+%\hspace{4mm} \code{duration <- ifelse(target, }$\Gamma$\code{, }$\Gamma_T$\code{)} \\
+%\hspace{4mm} \code{lasttime <- currTime} \\
+%\hspace{4mm} \code{currTime <- currTime + duration} \\
+%\code{\}}
+%\end{frame}
 
-  \begin{enumerate}
-  \item[1.] Draw $\theta \sim N(\theta^*, \Sigma_{\theta^*})$ s.t $max(f_{\theta}) \in (0.6, 1)$
-  \item[2.] Draw parameters from distribution $\Gamma$ for duration of fixation to non-target
-  \item[3.] Draw parameters for distribution $\Gamma_T$ for duration of fixation to Target
-  \item[4.] Return $(\theta, \Gamma, \Gamma_T)$
-  \end{enumerate}
+\begin{frame}{Simulations}
+Simulations were run with a single subject with $N = 300$ trials \newline \\
+
+Following FBS+T to generate eyetracking data \newline \\
+
+Plots include the data generating curve, observed data from the simulation, estimated curve with bdots, along with second bdots curve with 200ms oculomotor shift \textit{prior} to fitting
 
 \end{frame}
 
-\begin{frame}{Current sim (fbs+t)}
-Single trial. With vector of times, \code{time}, run the following simulation:\newline \\
-
-\code{pars <- makeSubject()} \\
-\code{currTime <- min(time) - runif(1)}$E(\Gamma)$ \\
-\code{lastTime <- currTime - }$\Gamma$\code{ - runif(1)}$E(\Gamma)$\newline \\
-\code{while(currTime < max(time)) \{} \\
-\hspace{4mm} \code{p <- f(lasttime|}$\theta$\code{)} \\
-\hspace{4mm} \code{target <- runif(1) < p} \\
-\hspace{4mm} \code{duration <- ifelse(target, }$\Gamma$\code{, }$\Gamma_T$\code{)} \\
-\hspace{4mm} \code{lasttime <- currTime} \\
-\hspace{4mm} \code{currTime <- currTime + duration} \\
-\code{\}}
+\begin{frame}{FBS+T}
+\begin{center}
+\includegraphics[scale=0.45]{img/occulomotor_delay_1.png}
+\end{center}
 \end{frame}
 
-\begin{frame}{fbst plot}
-plot with only aggregate data for fbst
+\begin{frame}{FBS+T plot}
+\begin{center}
+\includegraphics[scale=0.45]{img/aggregate_fit_only.png}
+\end{center}
 \end{frame}
 
 \begin{frame}{Fixation vs Saccade}
@@ -440,186 +546,107 @@ y_{it} = \frac1J \sum_{j=1}^J z_{ijt}.
 
 Critically, we realize that the only sample from the fixation curve that we observe \textit{is at the saccade}. \newline \\
 
-In other words, if the subject fixates on the target at $t$ for 500ms, we have introduced ``observed" data at $t + 500$ from a sample of the fixation curve taken at time $t$
+In other words, if the subject fixates on the target at $t$ for 500ms, we have introduced ``observed" data through $(t+1, t + 500)$ from a sample of the fixation curve taken at time $t$
 \end{frame}
 
 
-\begin{frame}{fix vs saccade plots}
-First plots showing aggregate vs saccade
-\end{frame}
-
-\begin{frame}{identity theroem and time windows}
-The identity theorem for analytic functions states: given functions $f$ and $g$ analytic on (open and connected) domain $D$, if $f = g$ on some $S \subseteq D$, where $S$ has an accumulation point, then $f = g$ on $D$ (wikipedia) \newline \\
-
-In other words, letting $D$ be time, if we were able to identify values $\hat{\theta}$ such that $f_{\hat{\theta}} = f_{\theta}$  some interval $S$, then we should find that $f_{\hat{\theta}} = f_{\theta}$ on $D$ \newline \\
-
-In other words again, if we could identify some interval where our approximation of $f$ was best, we could extrapolate this for the rest of the domain
-\end{frame}
-
-\begin{frame}{id theorem + window}
-In most contexts, we have $f_{\theta}(t) \sim Bern(p(t))$ where $var(p(t)) = p(t) (1-p(t))$, the least amount of variability will occur as $p(t)$ approaches $0$ or $1$ \newline \\
-
-Taking the logistic curve as an example, this will be towards the beginnings and ends of a trial, with maximal variability occuring at the crossover points
-\end{frame}
-
-\begin{frame}{window sims}
-Here, we run simulations assuming fbst and reconstruct fits using bdots \newline \\
-
-Plot them as-is, along with 200ms shift to account for occulomotor delay \newline \\
-
-To examine various time windows, have included simulations that will sample at a fixed rate (every 25ms) within a specified time interval, rather than relying on length of fixations or identified target \newline \\
-
-Each simulation is based off a singular underlying fixation function with identical parameters across trials
-\end{frame}
-
-\begin{frame}{both}
+\begin{frame}{Aggregate vs Saccade}
 \begin{center}
-\includegraphics[scale=0.35]{img/reg_fit.png}
+\includegraphics[scale=0.45]{img/aggregate_sac_1.png}
 \end{center}
-% latex table generated in R 4.1.2 by xtable 1.8-4 package
-% Thu Apr  7 11:49:44 2022
+\end{frame}
+
+\begin{frame}{Aggregate vs Saccade}
+\begin{center}
+\includegraphics[scale=0.4]{img/aggregate_sac_2.png}
+\end{center}
+% latex table generated in R 4.1.3 by xtable 1.8-4 package
+% Wed Apr 27 15:30:52 2022
 {\scriptsize
 \begin{table}[H]
 \captionsetup{font=scriptsize}
-\caption*{MISE}
 \centering
-\begin{tabular}{cccccc}
+\begin{tabular}{rccccc}
   \hline
- & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
+ & Aggregate & Saccade  & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
   \hline
- & 57.86 & 58.10 & 20.65 & 10.84 & 0.00 \\ 
+MISE & 21.96 & 19.34
+& 5.04 & 1.77 & 0.00 \\ 
    \hline
 \end{tabular}
 \end{table}
 }
 \end{frame}
 
-\begin{frame}{early window}
+\begin{frame}{Asymptotic}
 \begin{center}
-\includegraphics[scale=0.35]{img/early_fit.png}
+\includegraphics[scale=0.45]{img/asy_fit.png}
 \end{center}
-{\scriptsize
-\begin{table}[ht]
-\captionsetup{font=scriptsize}
-\caption*{MISE}
-\centering
-\begin{tabular}{cccccc}
-  \hline
- & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
-  \hline
- & 22.51 & 29.94 & 4.18 & 1.14 & 0.00 \\ 
-   \hline
-\end{tabular}
-\end{table}
-}
 \end{frame}
 
-\begin{frame}{mid window}
+\begin{frame}{Adjusting Occulomotor Delay}
 \begin{center}
-\includegraphics[scale=0.35]{img/mid_fit.png}
+\includegraphics[scale=0.4]{img/occulomotor_delay_2.png}
 \end{center}
-{\scriptsize
-\begin{table}[ht]
-\captionsetup{font=scriptsize}
-\caption*{MISE}
-\centering
-\begin{tabular}{cccccc}
-  \hline
- & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
-  \hline
- & 21.16 & 10.74 & 4.75 & 10.76 & 0.00 \\ 
-   \hline
-\end{tabular}
-\end{table}
-}
 \end{frame}
 
-\begin{frame}{late window}
+\begin{frame}{200ms delay}
 \begin{center}
-\includegraphics[scale=0.35]{img/late_fit.png}
+\includegraphics[scale=0.45]{img/new_delay1.png}
 \end{center}
-{\scriptsize
-\begin{table}[ht]
-\captionsetup{font=scriptsize}
-\caption*{MISE}
-\centering
-\begin{tabular}{cccccc}
-  \hline
- & Aggregate & Saccade & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
-  \hline
- & 61.89 & 42.18 & 12.77 & 2.18 & 0.00 \\ 
-   \hline
-\end{tabular}
-\end{table}
-}
 \end{frame}
 
-\begin{frame}{asymptotics}
+\begin{frame}{200ms delay}
 \begin{center}
-\includegraphics[scale=0.35]{img/asy_fit.png}
+\includegraphics[scale=0.45]{img/new_delay2.png}
 \end{center}
-{\scriptsize
-\begin{table}[ht]
-\captionsetup{font=scriptsize}
-\caption*{MISE}
-\centering
-\begin{tabular}{cccc}
- \hline
- & Aggregate -- Shifted & Saccade -- Shifted & Underlying \\ 
-  \hline
-  & 15.57 & 4.31 & 0.00 \\ 
-   \hline
-\end{tabular}
-\end{table}
-}
 \end{frame}
 
-\begin{frame}{mise}
+\begin{frame}{Future Directions?}
+Revist fitting/refitting process to make more robust to bad fits \newline \\
 
-It's worth pointing out that each time window will appear better than the trial with no time window, as these ultimately ended up including more samples per trial
+Investigate bootstrap confidence intervals for correct coverage \newline \\
 
-{\scriptsize
-% latex table generated in R 4.1.2 by xtable 1.8-4 package
-% Thu Apr  7 12:22:35 2022
-\begin{table}[ht]
-\centering
-\captionsetup{font=scriptsize}
-\caption*{MISE}
-\begin{tabular}{cccccc}
-  \hline
- & Standard & Early & Mid & Late & N \\ 
-  \hline
-Aggregate & 57.86 & 22.51 & 21.16 & 61.89 & NA \\ 
-  Saccade & 58.10 & 29.94 & 10.74 & 42.18 & NA \\ 
-  Aggregate -- Shifted & 20.65 & 4.18 & 4.75 & 12.77 & 15.57 \\ 
-  Saccade -- Shifted & 10.84 & 1.14 & 10.76 & 2.18 & 4.31 \\ 
-  Underlying & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\ 
-   \hline
-\end{tabular}
-\end{table}
-}
+Consideration of nonparametric fits for data \newline \\
+
+Window/variability theory \newline \\
+
+``Information gathering behavior"
 \end{frame}
 
-\begin{frame}{other issues}
-Density of saccades over time \newline \\
-identity theorem \newline \\
-still does 0-2000ms (how to deal with identifying target/RT) \newline \\
-``Ignores the role of the fixation as an information gathering behavior" \newline \\
+%\begin{frame}{identity theroem and time windows}
+%The identity theorem for analytic functions states: given functions $f$ and $g$ analytic on (open and connected) domain $D$, if $f = g$ on some $S \subseteq D$, where $S$ has an accumulation point, then $f = g$ on $D$ (wikipedia) \newline \\
+%
+%In other words, letting $D$ be time, if we were able to identify values $\hat{\theta}$ such that $f_{\hat{\theta}} = f_{\theta}$  some interval $S$, then we should find that $f_{\hat{\theta}} = f_{\theta}$ on $D$ \newline \\
+%
+%In other words again, if we could identify some interval where our approximation of $f$ was best, we could extrapolate this for the rest of the domain
+%\end{frame}
 
-Can show sims demonstrating time/density/etc with saccades and  wolololo
+
+%\begin{frame}{other issues}
+%Density of saccades over time \newline \\
+%identity theorem \newline \\
+%still does 0-2000ms (how to deal with identifying target/RT) \newline \\
+%``Ignores the role of the fixation as an information gathering behavior" \newline \\
+%
+%Can show sims demonstrating time/density/etc with saccades and  wolololo
+%\end{frame}
+
+
+
+%\begin{frame}{Limitations}
+%Not really recovering cognitive curve \newline 
+%
+%Assumes that all trials are drawn from the same functional curve (that is, independent of trial conditions) \newline 
+%
+%\end{frame}
+
+\begin{frame}{References}
+Magnuson, James S. \textbf{Fixations in the visual world paradigm: where, when, why?} 2019-09 \textit{Journal of Cultural Cognitive Science}, Vol. 3, No. 2 Springer  Science and Business Media LLC p. 113-139 \newline \\
+
+McMurray, Bob \textbf{Fixation Curves in the Visual World Paradigm} 2020 \newline \\
+
+Oleson, Jacob J / Cavanaugh, Joseph E, McMurray, Bob / Brown, Grant \textbf{Detecting time-specific differences between temporal nonlinear curves: Analyzing data from the visual world paradigm} 2017 \textit{Statistical Methods in Medical Research}, Vol. 26, No. 6 p 2708-2725 \newline \\
 \end{frame}
-
-
-
-\begin{frame}{Limitations}
-Not really recovering cognitive curve \newline 
-
-Assumes that all trials are drawn from the same functional curve (that is, independent of trial conditions) \newline 
-
-
-
-\end{frame}
-
-
 
 \end{document}

@@ -122,48 +122,13 @@ Current implementation of \code{bdots} involves two steps:
 Additionally, there functions available to assist with refitting poorly fit curves, either with a manual refitting or batch uploading of new starting parameters
 \end{frame}
 
-\begin{frame}{Fitting Process}
-The current method employed by \code{bdots} is to fit for each observed subject, $y_{it}$, an underlying curve $f_{\theta}$, the fitting step given by 
-  \begin{align*}
-  F: \{y\} \times f \rightarrow N \left(\hat{\theta}_i, \hat{\Sigma}_{\theta_i} \right)
-  \end{align*}
-
-Such that
-  \begin{align*}
-  \hat{\theta}_i = \text{argmin}_{\theta} \  ||y_{it} - f_{\theta}(t)||^2
-  \end{align*}
-
-\end{frame}
-
-
-\begin{frame}{Bootstrapping Process}
-Here, we perform $B$ bootstraps of the subject parameters to construct bootstrapped curves and confidence intervals. Taking parameter estimates from the fitting step, for each subject we draw $B$ samples of $\hat{\theta}_i$, where 
-\begin{align*}
-\hat{\theta}_{ib} \sim N \left(\hat{\theta_i},  \Sigma_{\hat{\theta}_i} \right)
-\end{align*}
-resulting in a $B\times p$ matrix, denoted $M_i$. \newline 
-
-Doing this for each subject, we construct a $B\times p$ matrix of the average of bootstraps across iterations, 
-\begin{align*}
-\overline{M} = \frac1n \sum_{i}^n M_i
-\end{align*}
-\end{frame}
-
-\begin{frame}{Bootstrapping, cont.}
-$\overline{M}$ is again a $B \times p$ matrix, each row  representing the average parameter estimate of $\theta$ at each bootstrap $b$. \newline 
-
-Each $1\times p$ row of $\overline{M}$ returns a $1 \times T$ vector representing estimations of $f_{\theta}$ at each point $t$. Together, we have the $B \times T$ matrix $\overline{M}_f$. This gives an estimated fixation curve, 
-\begin{align*}
-\hat{f} = \frac1B \sum_{b=1}^B \overline{M}_{\{b, \cdot\}_f}, \qquad \widehat{\text{se}}_{f} = \left[ \frac{1}{B-1} \sum_{b=1}^B \left( \overline{M}_{\{b, \cdot\}_{f}} - \hat{f} \right)^2 \right]^{1/2} 
-\end{align*}
-\end{frame}
 
 
 
 \begin{frame}{Updates}
 Fitting process has been simplified to a single function, \texttt{bdotsFit} which can accept arbitrary functions provided by the user, as well as an arbitrary number of experimental groups or conditions \newline
 
-Object returned by \texttt{bdotsFit} are of class \texttt{bdObj}, inheriting from \texttt{data.frame} class \newline
+Object returned by \texttt{bdotsFit} are of class \texttt{bdObj}, inheriting from \texttt{data.table} class \newline
 
 Introduction of a number of useful generics including \texttt{plot}, \texttt{summary}, \texttt{coef}, etc., \newline 
 
@@ -376,16 +341,16 @@ Together, a saccade, followed by a subsequent fixation, is known as a \textit{lo
 
 \begin{frame}{Aggregation of Data}
 \begin{columns}
-\begin{column}{0.5\textwidth}
-Subjects are measured across a series of trials in which they are asked to identify the Target \newline 
+\begin{column}{0.35\textwidth}
 
-Fixations are captured in real time and aggregated across trials, with each time point representing the proportions of trials in which a subject was fixed on any item \newline 
 
-The resulting proportion of fixations then serves as the empirical observation of the \textit{fixation curve}, a (usually parametric) function indicating the probability of fixating on a target at some time, $t$.
+Fixations are captured in real time and aggregated across trials \newline \\
+
+The resulting proportion of fixations then serves as the empirical observation of the \textit{fixation curve}
 \end{column}
-\begin{column}{0.5\textwidth}  %%<--- here
+\begin{column}{0.65\textwidth}  %%<--- here
 \begin{center}
-\includegraphics[scale=0.5]{img/bob_aggregate.png}
+\includegraphics[scale=0.55]{img/bob_aggregate.png}
 \\
 {\tiny source: Princess Bride paper}
 \end{center}
@@ -404,33 +369,54 @@ where $z_{ijt} = \{0,1\}$, conditional on the measured fixation at timepoint $t$
 Here, the vector $y_i$ serves as a direct observation of $f_{\theta}(t)$ for subject $i$ 
 \end{frame}
 
+%\begin{frame}{What's in a name?}
+%Briefly, we need to address the fact that there are a few distinct but similar ``curves" in question here \newline \\
+%
+%First, there is what we might call an ``activation" curve, representing some latent mental process corresponding to activation of a word \newline \\
+%
+%There are also empirical fixation ``curves", either a set of discrete fixations for a single trial, or the proportions of fixations, aggregated at each time point \newline \\
+%
+%Finally, we have the idealized ``looking" curve, the (possibly parametric) curve indicating the probability of fixating on a target at a particular time \newline \\
+%
+%Still unsettled
+%\end{frame}
+
+
 \begin{frame}{What's in a name?}
 Briefly, we need to address the fact that there are a few distinct but similar ``curves" in question here \newline \\
 
-First, there is what we might call an ``activation" curve, representing some latent mental process corresponding to activation of a word \newline \\
+\begin{itemize}
+  \item[1.] ``Activation" curve, latent mental process
+  \item[2.] ``Empirical fixation" curve, single trial or aggregate
+  \item[3.] Idealized ``looking" curve, data generating mechanism
+\end{itemize}
 
-There are also empirical fixation ``curves", either a set of discrete fixations for a single trial, or the proportions of fixations, aggregated at each time point \newline \\
-
-Finally, we have the idealized ``looking" curve, the (possibly parametric) curve indicating the probability of fixating on a target at a particular time \newline \\
+\vspace{4mm}
 
 Still unsettled
 \end{frame}
 
 \begin{frame}{VWP and looks}
-Of critical importance here are the underlying assumptions relating cognitive activation of an object and the resulting fixations, referred to as a grounding hypothesis (Magnuson 2019) \newline \\
+Underlying assumptions relating cognitive activation of an object and the resulting fixations, referred to as a grounding hypothesis (Magnuson 2019) \newline \\
 
-We can begin by assuming that there is some underlying function dictating fixations, though how this is mediated with observed data is still up for debate \newline \\
+We begin by assuming that there is some underlying function dictating fixations, though how this is mediated with observed data is still up for debate \newline \\
 
-Bob explored a number of these assumptions in his Princess Bride paper (\textit{Fixation Curves in the Visual World Paradigm}, 2022?), and here we will focus on two: high frequency sampling and fixation-based sampling, augmented for target
+Bob explored a number of these assumptions in his Princess Bride paper (\textit{Fixation Curves in the Visual World Paradigm}, 2022?), and here we will focus on two: 
+\begin{itemize}
+  \item[-] High frequency sampling (HFS)
+  \item[-] Fixation-based sampling, augmented for target (FBS+T)
+\end{itemize}
 
 \end{frame}
 
 
 \begin{frame}{Sampling Paradigms}
 
-\textbf{HFS:} High frequency sampling assumption, "if researcher is sampling at 4ms intervals, the fixation curve is assumped to derive from a probabilistic sample every 4ms" \newline 
+\textbf{HFS:} High frequency sampling assumption, "if researcher is sampling at 4ms intervals, the fixation curve is assumped to derive from a probabilistic sample every 4ms"  \newline 
 
-\textbf{FBS+T:} Fixation-based sampling + target, series of discrete fixations with reasonable refractory period, treats fixations as primarily a readout ouf the unfolding decision, ignores the role of the fixation as an information gather behavior, allows fixations to target to be slightly longer (once fixated, subject more likely to stay)
+\vspace{4mm}
+
+\textbf{FBS+T:} Fixation-based sampling + target, series of discrete fixations with reasonable refractory period
 \end{frame}
 
 \begin{frame}{Why do we care?}
@@ -455,10 +441,10 @@ On the positive side, simulations run with the HFS assumption were able to corre
 
 As Bob has noted, however, the HFS assumption is ``patently untrue" \newline \\
 
-While the bdots package was originally created as a means of modeling the data to account for autocorrelation, it is unable to take into consideration the dynamics of fixations \newline \\
+bdots to account for autocorrelation \newline \\
 
 
-We will then limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
+Limit our attention to FBS+T in consideration of potential biases introduced by the mechanics of eye movement
 
 \end{frame}
 
@@ -478,11 +464,11 @@ We will then limit our attention to FBS+T in consideration of potential biases i
 %\end{frame}
 
 \begin{frame}{FBS+T}
-Fixation based sampling introduces a more realistic situation in which looks to a particular target are initiated at some point, but then remain fixated for a random period of time \newline \\
+Fixation based sampling introduces a more realistic situation \newline \\
 
 Empirically, fixations on the target tend to last longer than others, adding an additional mechanic to the generation of data \newline \\
 
-Finally, there is the adjustment for oculomotor delay; when a saccade occurs at 1200ms, it is likely that it was planned around 1000ms \newline \\
+Finally, there is the adjustment for oculomotor delay
 
 
 \end{frame}
@@ -516,19 +502,25 @@ Finally, there is the adjustment for oculomotor delay; when a saccade occurs at 
 %\code{\}}
 %\end{frame}
 
-\begin{frame}{Simulations}
-Simulations were run with a single subject with $N = 300$ trials \newline \\
-
-Following FBS+T to generate eyetracking data \newline \\
-
-Plots include the data generating curve, observed data from the simulation, estimated curve with bdots, along with second bdots curve with 200ms oculomotor shift \textit{prior} to fitting
-
-\end{frame}
 
 \begin{frame}{FBS+T}
 \begin{center}
 \includegraphics[scale=0.45]{img/occulomotor_delay_1.png}
 \end{center}
+\end{frame}
+
+\begin{frame}{Simulations}
+Simulations were run with a single subject with $N = 300$ trials \newline \\
+
+Following FBS+T to generate eyetracking data \newline \\
+
+Plots include
+\begin{enumerate}
+  \item[-] data generating curve
+  \item[-] observed data from simulation
+  \item[-] estimated bdots curve, with shift
+\end{enumerate}
+
 \end{frame}
 
 \begin{frame}{FBS+T plot}
@@ -644,9 +636,47 @@ Window/variability theory \newline \\
 \begin{frame}{References}
 Magnuson, James S. \textbf{Fixations in the visual world paradigm: where, when, why?} 2019-09 \textit{Journal of Cultural Cognitive Science}, Vol. 3, No. 2 Springer  Science and Business Media LLC p. 113-139 \newline \\
 
-McMurray, Bob \textbf{Fixation Curves in the Visual World Paradigm} 2020 \newline \\
+McMurray, Bob \textbf{Fixation Curves in the Visual World Paradigm} 2020(?) \newline \\
 
-Oleson, Jacob J / Cavanaugh, Joseph E, McMurray, Bob / Brown, Grant \textbf{Detecting time-specific differences between temporal nonlinear curves: Analyzing data from the visual world paradigm} 2017 \textit{Statistical Methods in Medical Research}, Vol. 26, No. 6 p 2708-2725 \newline \\
+Oleson, Jacob J; Cavanaugh, Joseph E, McMurray, Bob; Brown, Grant \textbf{Detecting time-specific differences between temporal nonlinear curves: Analyzing data from the visual world paradigm} 2017 \textit{Statistical Methods in Medical Research}, Vol. 26, No. 6 p 2708-2725 \newline \\
 \end{frame}
+
+%%%% Stuff thats not important
+\begin{frame}{Fitting Process}
+The current method employed by \code{bdots} is to fit for each observed subject, $y_{it}$, an underlying curve $f_{\theta}$, the fitting step given by 
+  \begin{align*}
+  F: \{y\} \times f \rightarrow N \left(\hat{\theta}_i, \hat{\Sigma}_{\theta_i} \right)
+  \end{align*}
+
+Such that
+  \begin{align*}
+  \hat{\theta}_i = \text{argmin}_{\theta} \  ||y_{it} - f_{\theta}(t)||^2
+  \end{align*}
+
+\end{frame}
+
+
+\begin{frame}{Bootstrapping Process}
+Here, we perform $B$ bootstraps of the subject parameters to construct bootstrapped curves and confidence intervals. Taking parameter estimates from the fitting step, for each subject we draw $B$ samples of $\hat{\theta}_i$, where 
+\begin{align*}
+\hat{\theta}_{ib} \sim N \left(\hat{\theta_i},  \Sigma_{\hat{\theta}_i} \right)
+\end{align*}
+resulting in a $B\times p$ matrix, denoted $M_i$. \newline 
+
+Doing this for each subject, we construct a $B\times p$ matrix of the average of bootstraps across iterations, 
+\begin{align*}
+\overline{M} = \frac1n \sum_{i}^n M_i
+\end{align*}
+\end{frame}
+
+\begin{frame}{Bootstrapping, cont.}
+$\overline{M}$ is again a $B \times p$ matrix, each row  representing the average parameter estimate of $\theta$ at each bootstrap $b$. \newline 
+
+Each $1\times p$ row of $\overline{M}$ returns a $1 \times T$ vector representing estimations of $f_{\theta}$ at each point $t$. Together, we have the $B \times T$ matrix $\overline{M}_f$. This gives an estimated fixation curve, 
+\begin{align*}
+\hat{f} = \frac1B \sum_{b=1}^B \overline{M}_{\{b, \cdot\}_f}, \qquad \widehat{\text{se}}_{f} = \left[ \frac{1}{B-1} \sum_{b=1}^B \left( \overline{M}_{\{b, \cdot\}_{f}} - \hat{f} \right)^2 \right]^{1/2} 
+\end{align*}
+\end{frame}
+
 
 \end{document}

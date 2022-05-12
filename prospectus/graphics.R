@@ -225,8 +225,8 @@ curves <- ff$curves
 sac <- ff$raw_sac
 
 mm <- "Aggregate Fit (N = 300)"
-png("img/aggregate_fit_only.png")
-plot(obs, lty = 2, col = 'gray', ylim = c(0, 1),
+png("img/aggregate_fit_only.png", width = 600)
+plot(obs, lty = 2, col = 'gray', ylim = c(0.2, 1),
      main = mm, xlab = "time", ylab = "activation")
 lines(times, curves[["true_f"]], lty = "solid", lwd = 4, col = "darkorchid1")
 lines(times, curves[["ag_f2"]], lty = "solid", lwd = 3, col = "firebrick1")
@@ -267,7 +267,7 @@ dev.off()
 
 
 ## Fuck these things still
-load("~/packages/eyetrackSim/analysis/allSims3.RData")
+
 
 # Since allSims3 apparently has plotBfits that I don't want
 plotBfits <- function(ff, mm = NULL, yy = c(0, 1)) {
@@ -305,13 +305,13 @@ plotBfits <- function(ff, mm = NULL, yy = c(0, 1)) {
   #hist(sac$starttime, main = "Saccades", xlab = "time")
 }
 
-
+load("~/packages/eyetrackSim/analysis/allSims3.RData")
 ff <- res_6969_fbst
 
-png("img/new_delay1.png")
+png("img/new_delay1.png", width = 600)
 plotBfits(ff$reg$fit, mm = "Aggregate vs Saccade (N = 300)", yy = c(0.15, 0.85))
 dev.off()
-png("img/new_delay2.png")
+png("img/new_delay2.png", width = 600)
 plotBfits(ff$nlist$fit, mm = "Aggregate vs Saccade (N = 100,000)", yy = c(0.15, 0.85))
 dev.off()
 

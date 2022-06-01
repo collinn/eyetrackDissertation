@@ -3,6 +3,10 @@
 
 \usepackage{enumerate}
 
+% Control margin sizes
+\usepackage{geometry}
+\newgeometry{vmargin={25mm}, hmargin={12mm,17mm}}
+
 \pagenumbering{gobble}
 
 
@@ -17,21 +21,35 @@
 \maketitle
 
 \begin{enumerate}[I.]
+\item Introduction
+
+\textit{Introduce main components of thesis (bdots, saccade curve, other) in context of VWP. What is the state of things, what have we contributed, etc., etc.,.). It is generally understood that each of the sections of this thesis will be stand alone documents.}
 \item \texttt{bdots}
+
+\textit{Overview of bdots package, use cases, extensions, and examples}
   \begin{enumerate}[1.]
   \item Fitting
+
+\textit{Review of major changes to fitting process, a mathematical description of the internal code, demonstration of use cases and extensions to generic functions}  
+  
     \begin{enumerate}[i.]
     \item User-created curves
     \item Grouping
     \item Generics
     \end{enumerate}
   \item Bootstrap
+
+\textit{Review of major changes to bootstrapping process, a mathematical description of the internal code, demonstration of use cases and extensions to generic functions. Extra attention given to analysis of results}    
+  
     \begin{enumerate}[i.]
     \item Formula syntax
     \item Bootstrap process
     \item Generics
     \end{enumerate}
   \item Extensions
+
+  \textit{Here we consider major extensions made to the bdots package not mentioned above. This includes ancillary functions for analysis of vwp data, as well as demonstrated extensions to non-vwp data} 
+  
     \begin{enumerate}[i.]
     \item Correlation function
     \item Refitting step
@@ -39,8 +57,14 @@
     \end{enumerate}
   \end{enumerate}
 \item Saccade Curve
+
+\textit{This section introduces the bulk of the theoretical contributions made to the VWP paradigm, namely the focus on the data generating mechanism producing saccades as well as the recovery of this underlying curve. A comparison will be made with existing methods, with enumerated advantages for the proposed method}
+
   \begin{enumerate}[1.]
   \item VWP Overview
+
+\textit{overview}  
+  
     \begin{enumerate}[i.]
     \item Competition and activation
     \item History, ``looking" curve
@@ -52,18 +76,31 @@
     \item Mathematical description
     \item Discussion
     \end{enumerate}
-  \item Simulations
+  \item Simulations (logistic and dg)
+
+\textit{With the simulations here, we are wanting to highlight three things: First, in a situation in which there is no occulomotor delay, we are able to recover the data-generating curve. Second, in a situation in which there is known occulomotor delay, we are able to recover the underlying data-generating curve with a horizontal shift in the observations. Lastly, we consider cases in which there is random occulomotor delay. We consider the implications of this, along with various methods to mitigate our uncertainty in recovering the data-generating curve.}  
+  
     \begin{enumerate}[i.]
     \item Recovery, no delay
     \item Recovery, fixed delay
     \item Recovery, random delay
     \end{enumerate}
+  \item Discussion
+
+  \textit{Review implications of what was found. Leave space for further inquiries}  
+  
   \end{enumerate}
 \item Other
+
+\textit{tbd}
   \begin{enumerate}[1.]
-  \item Real-world data/validation
-  \item Time window sensitivity(?)
+  \item Real-world data/validation (ask bob) (?)
+  \item Time window sensitivity (?)
   \end{enumerate}
+\item Discussion
+
+\textit{Here, we investigate the perennial question of our existence: what's the point?}
+
 \end{enumerate}
 
 \end{document}

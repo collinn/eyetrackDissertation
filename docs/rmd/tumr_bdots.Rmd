@@ -1,0 +1,88 @@
+---
+date: "4/8/2022"
+output: 
+  html_document:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## bdots + tumr = <3
+
+Ok, so it turns out I have some serious issues with how I manage the time variable. This didn't come up when I tested on saccades with a single subject, but most of what I have has been written with the assumption that the observed time values were the same for each subject. The primary consequences of this show up when trying to plot.
+
+Dev branch removes all of the errors that appear, but some plots won't show up, and the actual intervals for which the bootstrapped curves are tested are going to be technically incorrect. This is something to think about going forward. At any rate...
+
+```{r, message=FALSE}
+# devtools::install_github("collinn/bdots@dev")
+library(bdots)
+library(ggplot2)
+
+dat <- fread("Analytic-DeIdentified_GJZ16-091_.csv")
+
+## Define user curve
+expCurve <- function(dat, y, time, params = NULL, ...) {
+  estExpPars <- function(dat, y, time) {
+    tt <- lm(log(dat[[y]]) ~ dat[[time]])
+    x0 <- exp(coef(tt)[1])
+    k <- coef(tt)[2]
+    names(x0) <- names(k) <- NULL
+    return(c(x0 = x0, k = k))
+  }
+  
+  if (is.null(params)) {
+    params <- estExpPars(dat, y, time)
+  } else {
+    # put checks here
+  }
+  y <- str2lang(y)
+  time <- str2lang(time)
+  ff <- bquote(.(y) ~ x0 * exp(.(time) * k))
+  attr(ff, "parnames") <- names(params)
+  return(list(formula = ff, params = params))
+}
+
+## Issues with values at 0, so remove
+dat <- dat[Volume != 0, ]
+fit <- bdotsFit(data = dat, 
+                subject = "ID", 
+                time = "Day", 
+                y = "Volume", 
+                group = "Treatment", 
+                curveType = expCurve())
+```
+
+Plots have been replot with ggplot separate from bdots (pending time issue in plot functions)
+
+```{r, fig.align='center', warning=FALSE}
+#plot(fit[ID %in% c(32,34,37,38), ])
+fv <- lapply(split(fit, by = "ID"), function(x) {
+  data.table(ID = x$ID, fv = fitted.values(x$fit[[1]]))
+})
+fv <- rbindlist(fv)
+fv[, `:=`(Day = dat$Day, Volume = dat$Volume)]
+
+ggplot(fv[ID %in% 1:4, ], aes(x = Day, y = fv, color = ID)) +
+  geom_line() + 
+  geom_line(aes(x = Day, y = Volume, color = ID), linetype = "dashed", size = 1) + 
+  facet_wrap(~ID, scales = "free")
+```
+
+
+
+If you just run `plot(fit)` in the console, it will plot all the ones its able to without issue. Skipping the refit step, we can go straight to bootstrap
+
+```{r}
+boot <- bdotsBoot(formula = Volume ~ Treatment(A, B), 
+                  bdObj = fit)
+
+summary(boot)
+```
+
+And finally, a plot of the curves
+
+```{r, fig.align='center'}
+plot(boot)
+```

@@ -14,16 +14,14 @@ sub2 <- runSub(pars = params, saccadeDelay = 200)
 ## Gamma
 sub3 <- runSub(pars = params, saccadeDelay = NULL)
 
-## Test
-tt <- buildSaccadeSub(sub1)
-
 ## Weird error I should investigate
 time <- 0:2000
+ID <- c("No Delay", "200ms Delay", "Random Delay")
+id_idx <- 1
 tt <- lapply(list(sub1, sub2, sub3), function(x) {
   y <- buildSaccadeSub(x)
   y$ID <- 1
   y$group <- 1
-  #y <- y[order(starttime), ]
   fit <- bdotsFit(data = y,
                   subject = "ID",
                   group = "group",
@@ -31,25 +29,30 @@ tt <- lapply(list(sub1, sub2, sub3), function(x) {
                   curveType = logistic())
   cc <- coef(fit)
   fv <- eyetrackSim:::logistic_f(p = cc, t = time)
-  fv <- data.table(time = time, fit = fv)
+  fv <- data.table(Condition = ID[id_idx], time = time, fit = fv)
+  id_idx <<- id_idx + 1
   return(list("coef" = cc, "fit" = fv))
 })
 
+cc <- lapply(tt, `[[`, 1) |> (function(x) Reduce(rbind, x))()
+dt <- lapply(tt, `[[`, 2) |> rbindlist()
+dt[, Condition := factor(Condition, levels = ID)]
+
+## Wth underlying curve
+dt2 <- data.table(time = time, fit = eyetrackSim:::logistic_f(p = params, t = time))
+
+ll <- list(fits = dt, original = dt2)
+saveRDS(ll, "data/data.rds")
+ggplot(data = dt2, aes(x = time, y = fit), color = col) +
+  geom_line(size = 1, aes(color = "Underlying")) +
+  geom_line(data = dt, aes(x = time, y = fit, color = Condition), size = 1) +
+#  xlab("Time") + ylab("f(t)") +
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  facet_wrap(~Condition) +
+  scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D", "200ms Delay" = "#00BA38", "Random Delay" = "#619CFF"),
+                     labels = c("Underlying", "No Delay", "200ms Delay", "Random Delay")) +
+  theme_bw() +
+  theme(legend.position = "bottom")
 
 
 
-
-tt <- rbindlist(tt)
-
-tt <- buildSaccadeSub(sub1)
-tt$ID <- 1
-tt$group <- "a"
-fit <- bdotsFit(data = tt,
-                y = "looks",
-                time = "starttime",
-                subject = "ID",
-                group = "group",
-                curveType = logistic())
-
-
-qq <- aggregateSub(sub1)

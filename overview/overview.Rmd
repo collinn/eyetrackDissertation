@@ -3,7 +3,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
 ```
 
 # Overview
@@ -18,22 +18,21 @@ saccade, fixation, look
 
 # Main Idea
 
-As the latent "activation" of a target is not measured, we instead rely on what can be  gained from eyetracking data. There are a number of readily enumerated characteristics that can be considered such as
+As the latent "activation" of a target is not measured, we instead rely on what can be gained from eyetracking data. There are a number of readily enumerated characteristics that can be considered such as
 
-- frequency of saccade
-- duration of fixation
-- repeated fixations to target
-- response time in trial
-- searching patterns
+-   frequency of saccade
+-   duration of fixation
+-   repeated fixations to target
+-   response time in trial
+-   searching patterns
 
-What we will focus on here is a fixation curve/saccade curve (NAME), $f_{\theta}(t)$, the underlying data generating mechanism for saccade fixation (where a saccade will land, i.e., the saccade's fixation). Specifically, this (assumed) parametric indicates the probability that a subject, upon completion of an initiated saccade movement, then fixates on a target object. 
+What we will focus on here is a fixation curve/saccade curve (NAME), $f_{\theta}(t)$, the underlying data generating mechanism for saccade fixation (where a saccade will land, i.e., the saccade's fixation). Specifically, this (assumed) parametric indicates the probability that a subject, upon completion of an initiated saccade movement, then fixates on a target object.
 
-The four parameter logistic curve, identified as 
+The four parameter logistic curve, identified as
 
 $$
 f(t|\theta) = \frac{h-b}{1 + \exp\left(4 \cdot \frac{s}{h-b}(xo - t) \right)} +b,
-$$
-if often used to describe the trajectory of probability of a subject launching a saccade and fixating on the target location. As the plot below illustrates in an example case, a subject with the depicted fixation curve may initiate a saccade ending at time $t = 970$, with a probability of $p = 0.5$ of the subsequent fixation resting on target:
+$$ if often used to describe the trajectory of probability of a subject launching a saccade and fixating on the target location. As the plot below illustrates in an example case, a subject with the depicted fixation curve may initiate a saccade ending at time $t = 970$, with a probability of $p = 0.5$ of the subsequent fixation resting on target:
 
 ```{r, echo=FALSE}
 library(ggplot2)
@@ -51,18 +50,17 @@ ggplot(dat, aes(x = time, y = fixation)) + geom_line() +
   ggtitle("Logistic Fixation Curve")
 ```
 
-As saccade data is easily gathered from available eyetracking data, we are, in principle, able to collect samples directly from this curve. This goal is, however, complicated by "oculomotor delay", the phenomenon in which the cognitive decision to launch a saccade and choose its subsequent target occurs some period of time before the movement itself. 
+As saccade data is easily gathered from available eyetracking data, we are, in principle, able to collect samples directly from this curve. This goal is, however, complicated by "oculomotor delay", the phenomenon in which the cognitive decision to launch a saccade and choose its subsequent target occurs some period of time before the movement itself.
 
 In other words, an observed saccade at $t_j$ is likely a sample from the fixation curve $f_{\theta}(t)$ at some point prior to $t_j$. The degree to which this delay occurs, as well as the between and within subject variability is a matter of active investigation. Most generally, we may consider an observation $y_j$ at time $t_j$ to be
 
 $$
 y_j = f_{\theta}(t_j - \rho(t_j))
-$$ 
-where $\rho(t)$ represents oculomotor delay. As written, we may consider circumstances in which
+$$ where $\rho(t)$ represents oculomotor delay. As written, we may consider circumstances in which
 
-1. $\rho(t)$ is a constant function (including 0)
-2. $\rho(t)$ is a random variable, independent of the value of $t_j$
-3. $\rho(t)$ is a random variable, dependent on $t_j$ and possibly other aspects of the trial
+1.  $\rho(t)$ is a constant function (including 0)
+2.  $\rho(t)$ is a random variable, independent of the value of $t_j$
+3.  $\rho(t)$ is a random variable, dependent on $t_j$ and possibly other aspects of the trial
 
 We will consider a variety of scenarios for oculomotor delay and the subsequent impacts on the recovery of the underlying fixation curve from the observed data
 
@@ -74,24 +72,84 @@ Each simulation will be conducted with the same underlying fixation curve, with 
 
 ### No delay
 
-### 200ms delay 
+```{r, fig.width=12}
+ll <- readRDS("data/data.rds")
+dt <- ll$fits
+dt2 <- ll$original
+dt2[, `:=`(col = NULL, Condition = "Underlying")]
+dt2 <- dt2[, .(Condition, time, fit)]
 
-### Random delay 
+dtlist <- split(dt, by = "Condition")
+
+newdt <- rbind(dt2, dtlist[[1]])
+
+ggplot(newdt, aes(x = time, y = fit, color = Condition)) + 
+  geom_line(size = 2) + 
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D"),
+                     labels = c("Underlying", "No Delay" )) +
+  theme_bw() + theme(legend.position = "bottom") + ggtitle("No Delay")
+
+```
+
+### 200ms delay
+
+```{r}
+newdt <- rbind(dt2, dtlist[[2]])
+ggplot(newdt, aes(x = time, y = fit, color = Condition)) + 
+  geom_line(size = 2) + 
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  scale_color_manual(values = c("Underlying" = "black", "200ms Delay" = "#00BA38"),
+                     labels = c("Underlying", "200ms Delay" )) +
+  theme_bw() + theme(legend.position = "bottom") + ggtitle("200ms Delay")
+```
+
+### Random delay
+
+```{r}
+newdt <- rbind(dt2, dtlist[[3]])
+ggplot(newdt, aes(x = time, y = fit, color = Condition)) + 
+  geom_line(size = 2) + 
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"),
+                     labels = c("Underlying", "Random Delay" )) +
+  theme_bw() + theme(legend.position = "bottom") + ggtitle("Random Delay")
+```
+
+### Together
+
+```{r, fig.width=12}
+
+ll <- readRDS("data/data.rds")
+dt <- ll$fits
+dt2 <- ll$original
+ggplot(data = dt2, aes(x = time, y = fit), color = col) +
+  geom_line(size = 1, aes(color = "Underlying")) +
+  geom_line(data = dt, aes(x = time, y = fit, color = Condition), size = 1) +
+#  xlab("Time") + ylab("f(t)") +
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  facet_wrap(~Condition) +
+  scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D", "200ms Delay" = "#00BA38", "Random Delay" = "#619CFF"),
+                     labels = c("Underlying", "No Delay", "200ms Delay", "Random Delay")) +
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
 
 ## Impact of time of sample (early, mid, late)
 
 # Current Method
 
-> An increasingly popular approach to visual world data is to fit some nonlinear function of time to visualizations of the data. The parameters of the individuqal specific functions can then be used as descriptors of how the trajectories change over time (Oleson, et. al 2018)
+> An increasingly popular approach to visual world data is to fit some nonlinear function of time to visualizations of the data. The parameters of the individual specific functions can then be used as descriptors of how the trajectories change over time (Oleson, et. al 2018)
 
 Here, I need to do somethink akin to a lit review
 
 How I understand it, though, there are a few points
 
-- It seems like "fixation curve", as used up to this point, is poorly defined. What is it, exactly? It seems as if the data visualization came first, and justification followed
-- Really, we are looking at different things
-- Realization that what I have, in its entirety, its based off the reconstruction of bob's curve generating mechansim, NOT anything that necessarily existed prior
-- There is benefit, I think, to what we are doing. It is specific, measurable, and has a more obvious relationship with underlying activation
+-   It seems like "fixation curve", as used up to this point, is poorly defined. What is it, exactly? It seems as if the data visualization came first, and justification followed
+-   Really, we are looking at different things
+-   Realization that what I have, in its entirety, its based off the reconstruction of bob's curve generating mechansim, NOT anything that necessarily existed prior
+-   There is benefit, I think, to what we are doing. It is specific, measurable, and has a more obvious relationship with underlying activation
 
 # Limitations and notes
 
@@ -100,5 +158,3 @@ Should be monotonic relationship with "activation" and "fixation curve"
 Ignores length of fixation and "information gathering"
 
 It is, however, rigorously defined and able to be measured
-
-

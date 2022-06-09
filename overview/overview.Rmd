@@ -6,19 +6,26 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
 ```
 
+`r Sys.Date()`
+
 # Overview
 
 Attempt to better characerize dissertation proposal
 
 # Intro
 
-VWP, looking at things, desire to identify qualitative differences in groups re. eyetracking behavior, interested in "activation" of a word, some latent cognitive process
+Everything covered within considered in the context of VWP in which there is often a desire to identify quantitative differences between study groups re. eyetracking behavior, "activation" of word, latent processes, etc., 
 
-saccade, fixation, look
+In contrast to current methods commonly utilized in VWP which rely on an aggregation of trials to produce a curve indicating the proportion of trials in which a participant is fixated on a particular point at a particular time, we instead use saccades as our observed data, treating them as observations sampled from a latent cognitive process. In particular, although we are limited to observable mechanics of eye movement, it is this latent process of "activation"
+in which we are interested in identifying. 
+
+Through this document, we will briefly consider the motivation for this curve, simulated scenarios for a variety of conditions, and the implications for its use in the VWP.
+
+
 
 # Main Idea
 
-As the latent "activation" of a target is not measured, we instead rely on what can be gained from eyetracking data. There are a number of readily enumerated characteristics that can be considered such as
+As the latent "activation" of a target is not measured, we instead rely on what can be observed directly from eyetracking data. There are a number of readily enumerated characteristics that can be considered such as
 
 -   frequency of saccade
 -   duration of fixation
@@ -26,7 +33,23 @@ As the latent "activation" of a target is not measured, we instead rely on what 
 -   response time in trial
 -   searching patterns
 
-What we will focus on here is a fixation curve/saccade curve (NAME), $f_{\theta}(t)$, the underlying data generating mechanism for saccade fixation (where a saccade will land, i.e., the saccade's fixation). Specifically, this (assumed) parametric indicates the probability that a subject, upon completion of an initiated saccade movement, then fixates on a target object.
+What we will focus on here is a curve representing the probability, over time, of a subject initiating a saccade and fixating on a particular object. While this (usually parametric) curve, $f_{\theta}(t)$ is functionally the data-generating mechanism for saccade fixation, we more closely identify it as a proxy measure of the underlying cognitive state without placing undue emphasis on the ocular mechanics themselves. In other words, letting $y_t$ represent the outcome of a saccade fixating on a particular target at time $t$, we have
+
+
+$$
+y_t \sim Bern(f_{\theta}(t)).
+$$
+where $y_t = 1$ indicates a saccade at time $t$ fixated on a target object
+
+---
+
+### A note on nomenclature
+
+With regards to naming this curve, we are in a bit of a gray area: calling it an "activation" curve obscures the fact that this is not a direct measure of this otherwise latent process; calling it a "saccade" curve appears to place more emphasis on the ocular mechanics. For now, we will refer to it as a saccade curve, as it is understood literally to be the curve generating saccade data, though we actively remain open to other suggestions.
+
+---
+
+<!-- What we will focus on here is a fixation curve/saccade curve (NAME), $f_{\theta}(t)$, the underlying data generating mechanism for saccade fixation (where a saccade will land, i.e., the saccade's fixation). Specifically, this (assumed) parametric indicates the probability that a subject, upon completion of an initiated saccade movement, then fixates on a target object. -->
 
 The four parameter logistic curve, identified as
 
@@ -55,8 +78,9 @@ As saccade data is easily gathered from available eyetracking data, we are, in p
 In other words, an observed saccade at $t_j$ is likely a sample from the fixation curve $f_{\theta}(t)$ at some point prior to $t_j$. The degree to which this delay occurs, as well as the between and within subject variability is a matter of active investigation. Most generally, we may consider an observation $y_j$ at time $t_j$ to be
 
 $$
-y_j = f_{\theta}(t_j - \rho(t_j))
-$$ where $\rho(t)$ represents oculomotor delay. As written, we may consider circumstances in which
+y_j \sim  Bern \large[f_{\theta}(t_j - \rho(t_j)) \large]
+$$ 
+where $\rho(t)$ represents oculomotor delay. As written, we may consider circumstances in which
 
 1.  $\rho(t)$ is a constant function (including 0)
 2.  $\rho(t)$ is a random variable, independent of the value of $t_j$
@@ -66,13 +90,21 @@ We will consider a variety of scenarios for oculomotor delay and the subsequent 
 
 ## Simulation
 
-Here, we consider a variety of circumstances. We do begin with the explicit assumption that there is an underlying activation curve that may be described parametrically. In the simulations that follow, we will generate data according to this assumption with the goal being the recovery of this underlying fixation curve.
+We begin with the implicit assumption that there is an underlying activation curve that may be described parametrically. The following simulations will generate data according to three scenarios:
 
-Each simulation will be conducted with the same underlying fixation curve, with $N = 300$ trials.
+1. A situation in which the occulomotor delay is known
+2. A situation in which the occulomotor delay is unknown, but of a fixed quantity
+3. A situation in which the occulomotor delay is an unknown random variable, independent of time
 
-### No delay
+Each simulation will be conducted with $N = 300$ trials, sampled from the same data generating function for each, with the attempted recovery of the generating curve done using the `bdots` pacakge. 
 
-```{r, fig.width=12}
+
+### Known delay
+
+In the case in which the occulomotor delay is known, an unbiased recovery of the data generating curve is not an issue -- we simply horizontally shift each observed saccade by it's known occulmotor delay.
+
+```{r}
+library(ggplot2)
 ll <- readRDS("data/data.rds")
 dt <- ll$fits
 dt2 <- ll$original
@@ -87,12 +119,18 @@ ggplot(newdt, aes(x = time, y = fit, color = Condition)) +
   geom_line(size = 2) + 
   labs(x = "Time", y = "f(t)", color = "Condition") +
   scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D"),
-                     labels = c("Underlying", "No Delay" )) +
-  theme_bw() + theme(legend.position = "bottom") + ggtitle("No Delay")
+                     labels = c("Underlying", "Known Delay" )) +
+  theme_bw() + theme(legend.position = "bottom") + ggtitle("Known Delay")
 
 ```
 
-### 200ms delay
+### Unknown fixed delay
+
+The simulation was conducted using a fixed occulomotor delay of $\rho = 200ms$. Although the resulting recovered curve is biased, this bias simply results in a horizontal shift, $g(t) = f(t - \rho)$. This is especially relevant in a situation in which we are interested in comparing the data generating curve between two groups. 
+
+For example, one method of analyzing VWP data (which inspired the `bdots` package) was to determine on which intervals $I = \cup_{k} I_k$ two data generating curves were statistically different. Suppose, for simplicity, that there is an interval $I = [t_1, t_2]$ on which the difference between two curves, $f(t | \theta_1) - f(t|\theta_2)$, is statistically significant. Given that we observe $g_i(t) = f(t - \rho | \theta_i)$, we would simply find that a significant difference occurs at $I + \{\rho\} = [t_1 + \rho, t_2 + \rho]$, a horizontal shift resulting from the occulomotor delay.
+
+In other words, the size of the interval would remain the same, and the relative differences between curves would be preserved under a horizontal shift. 
 
 ```{r}
 newdt <- rbind(dt2, dtlist[[2]])
@@ -100,11 +138,15 @@ ggplot(newdt, aes(x = time, y = fit, color = Condition)) +
   geom_line(size = 2) + 
   labs(x = "Time", y = "f(t)", color = "Condition") +
   scale_color_manual(values = c("Underlying" = "black", "200ms Delay" = "#00BA38"),
-                     labels = c("Underlying", "200ms Delay" )) +
-  theme_bw() + theme(legend.position = "bottom") + ggtitle("200ms Delay")
+                     labels = c("Underlying", "Unknown Fixed Delay" )) +
+  theme_bw() + theme(legend.position = "bottom") + ggtitle("Unknown Fixed Delay")
 ```
 
-### Random delay
+### Unknown random delay
+
+The final scenario for consideration involves a situation is which the occulomotor delay is unknown and random. Here, the bias will not involve a simple horizontal shift, and the shape of the curve itself may be different between the one generating the data and the one observed. 
+
+We will interogate a number of potential methods for dealing with this issue, though we do feel confident that, even with this known bias, our proposed method will still be preferable to existing ones. 
 
 ```{r}
 newdt <- rbind(dt2, dtlist[[3]])
@@ -112,8 +154,8 @@ ggplot(newdt, aes(x = time, y = fit, color = Condition)) +
   geom_line(size = 2) + 
   labs(x = "Time", y = "f(t)", color = "Condition") +
   scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"),
-                     labels = c("Underlying", "Random Delay" )) +
-  theme_bw() + theme(legend.position = "bottom") + ggtitle("Random Delay")
+                     labels = c("Underlying", "Unknown Random Delay" )) +
+  theme_bw() + theme(legend.position = "bottom") + ggtitle("Unknown Random Delay")
 ```
 
 ### Together
@@ -123,6 +165,8 @@ ggplot(newdt, aes(x = time, y = fit, color = Condition)) +
 ll <- readRDS("data/data.rds")
 dt <- ll$fits
 dt2 <- ll$original
+
+
 ggplot(data = dt2, aes(x = time, y = fit), color = col) +
   geom_line(size = 1, aes(color = "Underlying")) +
   geom_line(data = dt, aes(x = time, y = fit, color = Condition), size = 1) +
@@ -130,31 +174,40 @@ ggplot(data = dt2, aes(x = time, y = fit), color = col) +
   labs(x = "Time", y = "f(t)", color = "Condition") +
   facet_wrap(~Condition) +
   scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D", "200ms Delay" = "#00BA38", "Random Delay" = "#619CFF"),
-                     labels = c("Underlying", "No Delay", "200ms Delay", "Random Delay")) +
+                     labels = c("Underlying", "Known Delay", "Unknown Fixed Delay", "Unknown Random Delay")) +
   theme_bw() +
   theme(legend.position = "bottom")
 ```
 
 
-## Impact of time of sample (early, mid, late)
+## Concluding Remarks
 
-# Current Method
+With regards to the curve described, there are a number of avenues seemingly worthy of investigation. The most pressing of these appears to be methods to minimize the amount of bias present in scenario three, which presents the largest obstacle in the functional recovery of the data generating mechanism. Of special note here is the fact that the particular intervals in which this bias occurs can have a large effect on the overall bias, over and above that introduced by the occulomotor delay. 
 
-> An increasingly popular approach to visual world data is to fit some nonlinear function of time to visualizations of the data. The parameters of the individual specific functions can then be used as descriptors of how the trajectories change over time (Oleson, et. al 2018)
+For example, consider the plot above in the situation in which there is a known delay of $\rho = 200ms$ (green curve). We may observe at 500ms the value of the data generating mechanism at 300ms (that is, $g_{\theta}(500) = f_{\theta}(500 - 200)$), while $g_{\theta}(500) \approx f_{\theta}(500)$. In other words, the bias over this interval is small if we make no correction. 
 
-Here, I need to do somethink akin to a lit review
+In contrast, an observation at $t = 1000$ results in a highly biased estimate, as $g_{\theta}(1000) \ll f_{\theta}(1000)$. Accordingly, we note that the amount of bias at an observed point is a function of the derivative of the data generating function in a neighborhood of that point. Whether or not this observation proves profitable remains to be seen. 
 
-How I understand it, though, there are a few points
 
--   It seems like "fixation curve", as used up to this point, is poorly defined. What is it, exactly? It seems as if the data visualization came first, and justification followed
--   Really, we are looking at different things
--   Realization that what I have, in its entirety, its based off the reconstruction of bob's curve generating mechansim, NOT anything that necessarily existed prior
--   There is benefit, I think, to what we are doing. It is specific, measurable, and has a more obvious relationship with underlying activation
 
-# Limitations and notes
 
-Should be monotonic relationship with "activation" and "fixation curve"
+<!-- # Current Method -->
 
-Ignores length of fixation and "information gathering"
+<!-- > An increasingly popular approach to visual world data is to fit some nonlinear function of time to visualizations of the data. The parameters of the individual specific functions can then be used as descriptors of how the trajectories change over time (Oleson, et. al 2018) -->
 
-It is, however, rigorously defined and able to be measured
+<!-- Here, I need to do somethink akin to a lit review -->
+
+<!-- How I understand it, though, there are a few points -->
+
+<!-- -   It seems like "fixation curve", as used up to this point, is poorly defined. What is it, exactly? It seems as if the data visualization came first, and justification followed -->
+<!-- -   Really, we are looking at different things -->
+<!-- -   Realization that what I have, in its entirety, its based off the reconstruction of bob's curve generating mechansim, NOT anything that necessarily existed prior -->
+<!-- -   There is benefit, I think, to what we are doing. It is specific, measurable, and has a more obvious relationship with underlying activation -->
+
+<!-- # Limitations and notes -->
+
+<!-- Should be monotonic relationship with "activation" and "fixation curve" -->
+
+<!-- Ignores length of fixation and "information gathering" -->
+
+<!-- It is, however, rigorously defined and able to be measured -->

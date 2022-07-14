@@ -1,0 +1,481 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = 'center', 
+                      message = FALSE, warning = FALSE,
+                      fig.width = 12, fig.height = 6)
+```
+
+`r Sys.Date()`
+
+# Overview
+
+Investigating bootstrapped curves from observed dataset. Two groups, `"CI"` and `"NH"` specified by `protocol`, with 28 and 26 subjects in each group, respectively
+
+For part one of this, we are going to look at observed data, fit it, and compare the distribution of fitted curves to the bootstrapped output. It'll look super wonky, so to try and control for variability, we will try it again by using only about 10% of the subjects
+
+Part two of this will involve a simulation to see if our results are as nonsensical as they seem
+
+Part 3 repeated with more discrete points
+
+Part 4 examines using quantiles instead of sd
+
+# Part 1
+
+## Original Fit
+
+First, the fitting step is done, with all fits having zero fit code. Coefficients were extracted from each group and used to construct subject level curves within each group
+
+```{r, fig.width=12, fig.height=6}
+library(eyetrackSim)
+library(bdots)
+
+load("~/packages/bdots/data/ci.rda")
+ci <- as.data.table(ci)
+ci <- ci[LookType == "Target", ]
+res.l <- bdotsFit(data = ci,
+                  subject = "Subject",
+                  time = "Time",
+                  y = "Fixations",
+                  group = "protocol",
+                  curveType = logistic(),
+                  cor = TRUE,
+                  numRefits = 2)
+
+mm <- coef(res.l[protocol == "CI", ])
+mm2 <- coef(res.l[protocol != "CI", ])
+time <- unique(ci$Time)
+
+mmF <- apply(mm, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+mmF2 <- apply(mm2, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+
+par(mfrow = c(1, 2))
+matplot(mmF, type = 'l', ylab = "proportion", main = "CI -- N = 28 (Fit)")
+matplot(mmF2, type = 'l', ylab = "proportion", main = "NH -- N = 26 (Fit)")
+```
+
+Following this, we go to the bootstrap. This first plot returned is from the plotting method for the boot object
+
+```{r, fig.width=12, fig.height=6}
+boot.l <- bdotsBoot(formula = y ~ protocol(CI, NH),
+                    bdObj = res.l,
+                    Niter = 1000,
+                    alpha = 0.05,
+                    padj = "oleson",
+                    cores = 4)
+
+plot(boot.l, plotDiffs = FALSE)
+```
+
+But we can also extact the individual curves from each of the 1000 simulations. Though that is what is shown here, it looks nearly identical with 100 instead. Recall how this works is that each subject draws $N$ sets of parameters from the distribution returned by `gnls`, creating the $N\times p$ matrix $M_i$. We get the group level matrix $M_{\theta} = \frac1n \sum M_i$, also $N \times p$, with the group mean and sd derived from the rows.
+
+```{r, fig.width=12, fig.height=6}
+
+cci <- boot.l$curveList$CI
+
+ccfit <- cci$fit
+ccsd <- cci$sd
+ccp <- cci$parMat
+ccm <- cci$curveMat
+par(mfrow = c(1, 2))
+matplot(t(ccm), type = 'l', ylab = "proportion", main = "CI -- N = 28 (Bootstrap)")
+matplot(t(boot.l$curveList$NH$curveMat), type = 'l', ylab = "proportion", main = "NH -- N = 26 (Bootstrap)")
+```
+
+## Subset of original
+
+As there seems to be pretty minimal variability between the rows of $M_{\theta}$, I figured it might be a consequence of the number of subjects in each group. To add additional variability, I subset the first four subjects from each group, and then repeated the construction of the curves above
+
+Starting with the four chosen from the fit object (these haven't been refit, so they are four of the original 28/26 in the plot above)
+
+```{r}
+keepidx <- c(2,3,4,6, 
+             36,38,40,42)
+res.l <- res.l[Subject %in% keepidx, ]
+
+
+mm <- coef(res.l[protocol == "CI", ])
+mm2 <- coef(res.l[protocol != "CI", ])
+time <- unique(ci$Time)
+
+mmF <- apply(mm, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+mmF2 <- apply(mm2, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+
+par(mfrow = c(1, 2))
+matplot(mmF, type = 'l', ylab = "proportion", main = "CI -- N = 4 (Fit)")
+matplot(mmF2, type = 'l', ylab = "proportion", main = "NH -- N = 4 (Fit)")
+```
+
+And again bootstrapping these, plotting with both the CI and the full collection of curves
+
+```{r}
+boot.l <- bdotsBoot(formula = y ~ protocol(CI, NH),
+                    bdObj = res.l,
+                    Niter = 1000,
+                    alpha = 0.05,
+                    padj = "oleson",
+                    cores = 4)
+
+plot(boot.l, plotDiffs = FALSE)
+```
+```{r}
+par(mfrow = c(1, 2))
+matplot(t(ccm), type = 'l', ylab = "proportion", main = "CI -- N = 4 (Bootstrap)")
+matplot(t(boot.l$curveList$NH$curveMat), type = 'l', ylab = "proportion", main = "NH -- N = 4 (Bootstrap)")
+```
+
+
+# Part 2
+
+In considering our simulation, here's what we do: I'm going to select one subject from each of the groups, get the parameter estimates and covariance matrix from `gnls`, multiply that matrix by 15, and then use the resulting distribution to draw 20 subjects from each group. We will then repeat what we did above.
+
+
+Note: I went ahead and added a part 3 which is identical to part 2 (including a seed), but with time at 2ms intervals rather than 4, in case that was adding any discrepancy (can't do more than 1000 observed points thanks to mvtnorm)
+
+
+```{r}
+library(mvtnorm)
+
+library(MASS)
+
+sub1 <- res.l[Subject == 2, ]$fit[[1]]
+sub2 <- res.l[Subject == 38, ]$fit[[1]]
+
+createSets <- function(x, n = 20, time = seq(0, 2000, by = 4), group = "A") {
+  set.seed(69)
+  pars <- coef(x)
+  vv <- vcov(x)
+  vv <- 15*diag(nrow(vv)) %*% vv
+  #vv <- 15*vv
+  mm <- mvrnorm(n, mu = pars, Sigma = vv)
+  mmF <- apply(mm, 1, function(x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  #matplot(mmF, type = 'l')
+  dt <- data.table(sub = rep(1:n, each = length(time)), 
+                   time = time, 
+                   group = group, 
+                   fixation = as.numeric(mmF))
+  return(list(pars = mm, fits = mmF, dt = dt))
+}
+
+dt1 <- createSets(sub1)
+dt2 <- createSets(sub2, group = "B")
+
+dt2$dt[, sub := sub + 20]
+
+dt <- rbindlist(list(dt1$dt, dt2$dt))
+
+res <- bdotsFit(data = dt, 
+                y = "fixation", 
+                group = "group", 
+                subject = "sub", 
+                time = "time", 
+                curveType = logistic(), 
+                cores = 7)
+```
+
+I'll skip showing the "observed" curves, as they're recovered pretty well by the fitting function (as to be expected).  Superimposed on each plot is a thick black line indicating the mean of the generating distribution for parameters
+
+```{r}
+
+mm <- coef(res[group == "A", ])
+mm2 <- coef(res[group == "B", ])
+time <- unique(ci$Time)
+mmF <- apply(mm, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+mmF2 <- apply(mm2, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+par(mfrow = c(1, 2))
+matplot(mmF, type = 'l', ylab = "proportions",  main = "Fitted Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+matplot(mmF2, type = 'l', ylab = "proportions", main = "Fitted Curves, Group B")
+lines(eyetrackSim:::logistic_f(coef(sub2), t = time), lwd = 4)
+```
+
+Unsurprisingly, the confidence intervals for this curve are virtually nonexistent. 
+
+```{r}
+boot <- bdotsBoot(formula = y ~ group(A, B),
+                   bdObj = res,
+                   Niter = 1000,
+                   alpha = 0.05,
+                   padj = "oleson",
+                   cores = 7)
+
+plot(boot, plotDiffs = FALSE)
+```
+
+Plotting just the bootstrapped curves, along with, again, a thick black line indicating the generating parameters, we do see that it's suprisingly close
+
+```{r}
+par(mfrow = c(1, 2))
+matplot(t(boot$curveList$A$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+matplot(t(boot$curveList$B$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group B")
+lines(eyetrackSim:::logistic_f(coef(sub2), t = time), lwd = 4)
+```
+
+But they're not exact exact. We can see that by zooming in on one of the groups
+
+```{r, fig.height=15, fig.width=15}
+matplot(t(boot$curveList$A$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+```
+
+### Parameters
+
+Note that the original parameters used
+
+```{r}
+pm1 <- boot$curveList$A$parMat
+pm2 <- boot$curveList$B$parMat
+
+c1 <- coef(sub1)
+c2 <- coef(sub2)
+
+makemat <- function(cc, pp) {
+  tt <- matrix(c(cc, colMeans(pp)), ncol = length(cc), byrow = TRUE)
+  colnames(tt) <- names(cc)
+  rownames(tt) <- c("Starting coefficient", "Mean bootstrapped value")
+  tt
+}
+
+library(knitr)
+library(kableExtra)
+
+tt <- makemat(c1, pm1)
+kable(tt, caption = "Group A") |> kable_styling(full_width = FALSE)
+
+
+
+
+par(mfrow = c(2,2))
+idx <- 1
+hist(pm1[, idx], main = "mini, group A", xlab = "mini", xlim = c(min(min(pm1[, idx], c1[idx])), max(max(pm1[, idx], c1[idx]))))
+abline(v = c1[idx], col = 'red')
+idx <- 2
+hist(pm1[, idx], main = "peak, group A", xlab = "peak", xlim = c(min(min(pm1[, idx], c1[idx])), max(max(pm1[, idx], c1[idx]))))
+abline(v = c1[idx], col = 'red')
+idx <- 3
+hist(pm1[, idx], main = "slope, group A", xlab = "slope", xlim = c(min(min(pm1[, idx], c1[idx])), max(max(pm1[, idx], c1[idx]))))
+abline(v = c1[idx], col = 'red')
+idx <- 4
+hist(pm1[, idx], main = "crossover, group A", xlab = "crossover", xlim = c(min(min(pm1[, idx], c1[idx])), max(max(pm1[, idx], c1[idx]))))
+abline(v = c1[idx], col = 'red')
+
+```
+
+```{r}
+tt <- makemat(c2, pm2)
+kable(tt, caption = "Group B") |> kable_styling(full_width = FALSE)
+
+par(mfrow = c(2,2))
+idx <- 1
+hist(pm2[, idx], main = "peak, group B", xlab = "peak", xlim = c(min(min(pm1[, idx], c2[idx])), max(max(pm1[, idx], c2[idx]))))
+abline(v = c2[idx], col = 'red')
+idx <- 2
+hist(pm2[, idx], main = "peak, group B", xlab = "peak", xlim = c(min(min(pm2[, idx], c2[idx])), max(max(pm2[, idx], c2[idx]))))
+abline(v = c2[idx], col = 'red')
+idx <- 3
+hist(pm2[, idx], main = "slope, group B", xlab = "slope", xlim = c(min(min(pm2[, idx], c2[idx])), max(max(pm2[, idx], c2[idx]))))
+abline(v = c2[idx], col = 'red')
+idx <- 4
+hist(pm2[, idx], main = "crossover, group B", xlab = "crossover", xlim = c(min(min(pm2[, idx], c2[idx])), max(max(pm2[, idx], c2[idx]))))
+abline(v = c2[idx], col = 'red')
+```
+
+### Observed vs Bootstrapped
+
+To come back to the comparison between the distribution of fitted curves and the bootstrapped curves, maybe it doesn't do as terrible of a job capturing the group mean as I would have imagined, though certainly not at the rate advertised
+
+```{r}
+par(mfrow = c(1, 2))
+matplot(mmF, type = 'l', ylab = "proportions",  main = "Fitted Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+matplot(t(boot$curveList$A$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+```
+
+
+
+# Part 3
+
+I'll skip everything and just move down to the plots at the end. The difference here is sampling is at 2ms rather than 4
+
+
+```{r}
+library(mvtnorm)
+
+library(MASS)
+
+sub1 <- res.l[Subject == 2, ]$fit[[1]]
+sub2 <- res.l[Subject == 38, ]$fit[[1]]
+
+createSets <- function(x, n = 20, time = seq(1, 2000, by = 2), group = "A") {
+  set.seed(69)
+  pars <- coef(x)
+  vv <- vcov(x)
+  vv <- 15*diag(nrow(vv)) %*% vv
+  #vv <- 15*vv
+  mm <- mvrnorm(n, mu = pars, Sigma = vv)
+  mmF <- apply(mm, 1, function(x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  #matplot(mmF, type = 'l')
+  dt <- data.table(sub = rep(1:n, each = length(time)), 
+                   time = time, 
+                   group = group, 
+                   fixation = as.numeric(mmF))
+  return(list(pars = mm, fits = mmF, dt = dt))
+}
+
+dt1 <- createSets(sub1)
+dt2 <- createSets(sub2, group = "B")
+
+dt2$dt[, sub := sub + 20]
+
+dt <- rbindlist(list(dt1$dt, dt2$dt))
+
+res <- bdotsFit(data = dt, 
+                y = "fixation", 
+                group = "group", 
+                subject = "sub", 
+                time = "time", 
+                curveType = logistic(), 
+                cores = 7)
+```
+
+
+
+```{r}
+
+time = seq(1, 2000, by = 2)
+# 
+mm <- coef(res[group == "A", ])
+mm2 <- coef(res[group == "B", ])
+mmF <- apply(mm, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+mmF2 <- apply(mm2, 1, function(x) {
+  eyetrackSim:::logistic_f(x, time)
+})
+# par(mfrow = c(1, 2))
+# matplot(mmF, type = 'l', ylab = "proportions",  main = "Fitted Curves, Group A")
+# lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+# matplot(mmF2, type = 'l', ylab = "proportions", main = "Fitted Curves, Group B")
+# lines(eyetrackSim:::logistic_f(coef(sub2), t = time), lwd = 4)
+```
+
+
+```{r}
+boot <- bdotsBoot(formula = y ~ group(A, B),
+                   bdObj = res,
+                   Niter = 1000,
+                   alpha = 0.05,
+                   padj = "oleson",
+                   cores = 7)
+
+#plot(boot, plotDiffs = FALSE)
+```
+
+Really, it doesn't seem like we did all that much better. I could try again with higher density points over smaller time window, I guess
+
+```{r}
+par(mfrow = c(1, 2))
+matplot(t(boot$curveList$A$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+matplot(t(boot$curveList$B$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group B")
+lines(eyetrackSim:::logistic_f(coef(sub2), t = time), lwd = 4)
+```
+
+Zoomed in 
+
+```{r, fig.height=15, fig.width=15}
+matplot(t(boot$curveList$A$curveMat), type = 'l', ylab = "proportion", main = "Bootstrapped Curves, Group A")
+lines(eyetrackSim:::logistic_f(coef(sub1), t = time), lwd = 4)
+```
+
+# Part 4  (quantiles)
+
+Here, we are considering the CI group, looking at plot generated with critical value and SD, the other considering quantiles
+
+```{r}
+boot <- bdotsBoot(formula = y ~ group(A, B),
+                    bdObj = res,
+                    Niter = 1000,
+                    alpha = 0.05,
+                    padj = "oleson",
+                    cores = 4)
+
+cm <- boot$curveList$A$curveMat
+
+sdm <- apply(cm, 2, sd)
+qm <- apply(cm, 2, function(x) quantile(x, probs = c(0.025, 0.975)))
+mmat <- apply(cm, 2, mean)
+tv <- qt(0.975, 28)
+
+mm1 <- cbind(mmat - tv*sdm, mmat, mmat + tv*sdm)
+mm2 <- cbind(qm[1, ], mmat, qm[2, ])
+
+
+par(mfrow = c(1, 2))
+matplot(mm1, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"), 
+        main = "sd")
+matplot(mm2, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"), 
+        main = "quantile")
+```
+
+We can also consider the difference and ratio between the two (sd - quantile, sd / quantile)
+
+```{r}
+par(mfrow = c(1, 2))
+matplot(mm1 - mm2, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"), 
+        main = "difference", ylab = "difference")
+matplot(mm1 / mm2, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"), 
+        main = "ratio", ylab = "ratio")
+```
+
+
+# Part 5 (Iterations)
+
+Does the number of iterations matter? Here we run bootstrap with $N = 10, 1000$ iterations and look again at difference and ratio of standard deviations
+
+```{r}
+boot <- bdotsBoot(formula = y ~ group(A, B),
+                    bdObj = res,
+                    Niter = 1000,
+                    alpha = 0.05,
+                    padj = "oleson",
+                    cores = 4)
+
+boot2 <- bdotsBoot(formula = y ~ group(A, B),
+                    bdObj = res,
+                    Niter = 10,
+                    alpha = 0.05,
+                    padj = "oleson",
+                    cores = 4)
+
+tt <- boot$curveList$A$sd
+tt2 <- boot2$curveList$A$sd
+
+plot(tt, type = 'l', col = "blue", ylim = c(min(min(tt, tt2)), max(max(tt, tt2))), 
+     ylab = "sd", main = "plot of sd over time")
+lines(tt2, type = 'l', col = "orange")
+
+par(mfrow = c(1, 2))
+plot(tt2 - tt, type = 'l',  ylab = "difference", main = "(N = 10) - (N = 1000)")
+plot(tt2 / tt, type = 'l',  ylab = "ratio", main = "(N = 10) / (N = 1000)")
+```

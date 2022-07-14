@@ -1,0 +1,72 @@
+---
+title: "Bootstrapped Difference in Timeseries"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+`r Sys.Date()`
+
+# start
+
+We now going into detail describing the reimplementation of bdots; that is, we will reintroduce how bdots works, along with significant changes made since the original package was created. 
+
+Probably a lot of stuff that you will want to do with bdots. Broadly, the bdots workflow can be described in two steps: fitting a parametric function to the data and finding bootstrapped differences between two groups. The current implementation has expanded on this in a number of ways, including the addition of generic functions for bdots objects, an interactive refitting step,  as well as more general extensions to accomodate a range of non-vwp data. 
+
+# step 1
+
+As before, the bdots workflow begins with identifying a parametric function to fit to the observed data. Two especially important functions in the context of the VWP are the four-parameter logistic and the six-parameter double Gaussian, both of which were included in the original implementation. The first of these is a sigmoid shaped curve, the other looks like a hump.
+
+In contrast to the original implmentation, which provided a unique fitting function for each of the specified curves, bdots has now consolidated this process into a single function, `bdotsFit`, taking as one of its arguments the required parameteric curve. 
+
+```{r, eval=FALSE}
+library(bdots)
+bdotsFit(..., curveType = logistic())
+```
+
+Importantly, this allows the logic of the fitting function to be independent of the parametric function, allowing for the use of user-defined functions to take this role. Here, we describe the implementation these functions in the package, as well as the requirements for functions to be written by the user
+
+[[...]]
+  
+  
+
+
+For study designs in which individual subjects may be examined across a number of conditions, `bdotsFit` allows for an arbitrary number of groups to be fit at once, assuming that only a single curve is used. For example, we may be interested in comparing fixations to a specified target under a variety of conditions, each of which fit with the logistic curve. This becomes especially beneficial in the bootstrapping step, in which the difference, or difference of difference, between any groups of curves may be of interest. Finally, the decision to consider either the difference or difference of difference between curves need not be decided here; as implemented, this can be specified with a particular formula syntax in the bootstrapping step
+
+## Generics
+
+The fitting function `bdotsFit` returns an object of class `bdotsObj`, inheriting from classes `data.table`. As such, this object can be manipulated and explored with standard `data.table` syntax. In addition to the subject and grouping columns, there is also a `fit` column, containing the fitted object from the `gnls` package, a column, `R2` with the R-squared value, a boolean column indicating `AR1` status, and finally a column for `fitCode`. The fit code is a numeric quantity representing the quality of the fit as such:
+
+|fitCode |	AR1 |	R2 |
+|:------:|:----:|:----:|
+0 |	TRUE |	R2 > 0.95 |
+1 |	TRUE |	0.8 < R2 < 0.95 |
+2 |	TRUE |	R2 < 0.8 |
+3 |	FALSE |	R2 > 0.95 |
+4 |	FALSE |	0.8 < R2 < 0.95 |
+5 |	FALSE |	R2 < 0.8 |
+6 |	NA |	NA |
+
+A fit code of 6 indicates that a fit was unable to be made.
+
+In addition to `plot` and `summary` functions, there is also a method to return a matrix of coefficients from the model fits. With the `data.table` syntax, we can examine subsets of this objects as well
+
+```{r, eval=FALSE}
+head(coef(fit))
+
+head(coef(fit[DB_cond == 50, ))
+```
+
+The plotting function comes with the argument `plotfun` with values `"fits"` or `"pars"`, indicating whether we wish to plot the fitted object against the observed data, or histograms of the model parameters. By default, lines are not drawn for observed points.
+
+[[plot stuff]]
+
+Plotting is often critical to verify the goodness of fits for each of the observations.
+
+---
+
+Once fits have been made, we are able to construct bootstrapped estimates of group level curves with `bdotsFit`. This is done by 
+
+The bootstrapping process if performed with `bdotsBoot`.

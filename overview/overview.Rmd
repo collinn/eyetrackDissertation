@@ -1,5 +1,7 @@
 ---
-output: html_document
+output: 
+  pdf_document:
+    number_sections: true
 ---
 
 ```{r setup, include=FALSE}
@@ -8,56 +10,90 @@ knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
 
 `r Sys.Date()`
 
-# Overview
+# Overview {-}
 
-Attempt to better characerize dissertation proposal
+Attempt to better characterize dissertation proposal
 
-# Intro
+# Introduction
 
-Everything covered within considered in the context of VWP in which there is often a desire to identify quantitative differences between study groups re. eyetracking behavior, "activation" of word, latent processes, etc., 
+Spoken words create audio signals that are processed by the brain in real time. That is, as the spoken word unfolds, a cohort of possible resolutions are activated until the target word is recognized. The degree to which a particular candidate word is recognized is known as activation.
 
-In contrast to current methods commonly utilized in VWP which rely on an aggregation of trials to produce a curve indicating the proportion of trials in which a participant is fixated on a particular point at a particular time, we instead use saccades as our observed data, treating them as observations sampled from a latent cognitive process. In particular, although we are limited to observable mechanics of eye movement, it is this latent process of "activation"
-in which we are interested in identifying. 
+An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of a word such as "elephant" as  "el-e-phant". At the onset of "el", a listener may activate a cohort of words such as "elephant", "electricity", or "elder", all of which may be considered competitors. With the subsequent "el-e", "elephant" and "electricity" remain active competitors, both being consistent with the received signal, while "elder" is eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
-Through this document, we will briefly consider the motivation for this curve, simulated scenarios for a variety of conditions, and the implications for its use in the VWP.
+Our interest is in measuring the degree of activation of a target relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eyetracking data, collected in the context of the Visual World Paradigm (VWP). To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements are recorded as this process unfolds, with the location of the participants eyes serving as proxy for which words/images are being considered. Complicating matters is the fact that any physiological movement is downstream the cognitive decision to do so, with some unknown interval of time separating the decision and subsequent action. As our interest ultimately lies with this cognitive process, rather than eye movements proper, we must take into account this delay.
+
+This document serves to briefly illustrate current methods of using eyetracking data to gain insight on the underlying activation of spoken words, along with a presentation of a proposed method. We argue that the proposed method is both closer to the mental process we wish to recover in addition to being a more mathematically defensible model of the data collected.
 
 
+\newpage
 
-# Main Idea
+# Eyetracking data
 
-As the latent "activation" of a target is not measured, we instead rely on what can be observed directly from eyetracking data. There are a number of readily enumerated characteristics that can be considered such as
+To define our terms, a *saccade* represents the physical movement of the eye, typically lasting between 20-200ms. To remove ambiguity, a saccade is marked at the particular instance that the movement begins, rather than the duration of time it is in motion. A *fixation* is characterized by a lack of movement in which the eye is fixated on a particular location. Fixations also tend to be more variable in terms of duration. Together, a saccade, followed by a subsequent fixation, is known as a *look*.
 
--   frequency of saccade
--   duration of fixation
--   repeated fixations to target
--   response time in trial
--   searching patterns
+```{r, fig.align='center', out.height="25%", out.width="175%", fig.cap="Types of eyetracking data"}
+#knitr::include_graphics(path = "img/saccade_def2.jpg")
+knitr::include_graphics(path = "img/def_figure.png")
+```
 
-What we will focus on here is a curve representing the probability, over time, of a subject initiating a saccade and fixating on a particular object. While this (usually parametric) curve, $f_{\theta}(t)$ is functionally the data-generating mechanism for saccade fixation, we more closely identify it as a proxy measure of the underlying cognitive state without placing undue emphasis on the ocular mechanics themselves. In other words, letting $y_t$ represent the outcome of a saccade fixating on a particular target at time $t$, we have
+The length of a single vwp trial is commonly around 2000ms, during which time the trajectory of the eye is captured. Absent the few milliseconds each trial that the eye is in motion, each time point captures either a saccade or a fixation at a specific location. A typical trial contains around three to eight looks, recorded at discrete intervals (often 4ms) and coded with a zero or one, depending on the object of fixation.
 
+```{r, fig.align='center', out.height="25%", out.width="75%", fig.cap="Oculomotor delay"}
+knitr::include_graphics(path = "img/om_delay_figure1.png")
+```
+
+We must also consider the phenomenon of oculomotor (OM) delay; whereas a particular phsyiological response (such as eye movement) may be recorded at some time, $t$, the latent cognitive mechanism guiding this decision occurs as some unknown point prior. Accounting for this delay will be critical in creating an unbiased recovering of the underlying functional mechanism.
+
+Ultimately, the goal of eyetracking data is to provide a proxy measure for activation; by associating saccades or fixations to the target object with activation, we are able to use empirically collected data to emulate an activation curve as a function of time. We assume here that this curve is parameteric, notated $f_{\theta}(t)$. Both of the following methods are attempting to recover this same parametric curve, differing only in the data collected and how it is used. Further, both methods are burdened with the same problem of oculomotor delay. Finally, both methods result in data structures that are compatible with `bdots`, allowing subsequent analyses to be the same.
+
+
+## Proportion/Averaging method
+
+One method employed to use this data involves measuring intervals of fixation to a target over a series of trials. For each trial $i$ and time point $t$ (typically sampled at intervals of 4ms, i.e., $t = 0, 4, \dots, 2000$), we collect a sample of $z_{it}$, an indicator of whether a participant is fixated on the target object at that point in time. Averaging over the collection of trials, we construct an estimate of $f_{\theta}(t)$, 
 
 $$
-y_t \sim Bern(f_{\theta}(t)).
+y_t = \frac{1}{N} \sum_{i} z_{it}.
 $$
-where $y_t = 1$ indicates a saccade at time $t$ fixated on a target object
+In other words, it is implicitly assumed that the trajectory of the eye follows the trajectory of activation, where the average proportion of fixations at a particular time is a direct estimate of activation. As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by `bdots`, are then used to construct estimates of function parameters fitted to this curve.
+
+One of the primary benefits of this method is that it captures the duration of fixations, with longer times being associated with stronger activations. This becomes important when differentiating fixations associated with searching patterns (i.e., what images exist on screen?) against those associated with consideration (is this the image I've just heard?). A shortcoming, however, is that it conflates two distinct types of data, generated via different mechanisms, the fixation and saccade. 
+
+## Saccade method
+
+If we are to consider eyetracking data samples from some probabalistic curve, it becomes necessary to differentiate between the two types. A saccade launched at some time, $t$, can be considered a sample from a data-generating mechanism at $t$. The duration of time between a given saccade and the one following follows a different mechansim altogether. By clearly delineating the mechanism from which we are sampling, we are able to reduce observed bias in the reconstruction of the activation curve.
+
+In light of this, and in contrast to the proportion method, we propose estimating the activation curve with the saccade data alone. The primary benefit of this is two-fold. First, as suggested above, by decoupling two different types of data we are better able to reconstruct the generating mechanism for the object of interest. Second, by proximity to the underlying cognitive mechanism, the saccade gives a better indication of activation at a specific moment in time.
+
+An important difference between these two methods is in the structure of the data itself. Whereas the former collects an array of data, with an observation for each time point in each trial, the saccade method is sparse, with the observed data indicating the outcome of the saccade, as well as the time observed. It is best represented as a set of ordered pairs, $\mathcal{S} = \{(s_{j}, t_j)\}$, with $j$ indexing each of the observed saccades, and with
+
+$$
+s_{j} \sim Bern(f_{\theta}(t_j)).
+$$
+A value of $s_j = 1$ indicates a saccade resulting in a fixation on the target. 
+
+As with the proportion method, the observed data can be used as input for `bdots` to construct estimates of generating parameters. 
+\newpage
 
 ---
 
-### A note on nomenclature
+### A note on nomenclature ("notemenclature")
 
-With regards to naming this curve, we are in a bit of a gray area: calling it an "activation" curve obscures the fact that this is not a direct measure of this otherwise latent process; calling it a "saccade" curve appears to place more emphasis on the ocular mechanics. For now, we will refer to it as a saccade curve, as it is understood literally to be the curve generating saccade data, though we actively remain open to other suggestions.
+With regards to naming this proposed curve, we are in a bit of a gray area: calling it an "activation" curve obscures the fact that this is not a direct measure of this otherwise latent process; calling it a "saccade" curve appears to place more emphasis on the ocular mechanics. For now, we will refer to it as a saccade curve, as it is understood literally to be the curve generating saccade data, though we actively remain open to other suggestions.
 
 ---
 
-<!-- What we will focus on here is a fixation curve/saccade curve (NAME), $f_{\theta}(t)$, the underlying data generating mechanism for saccade fixation (where a saccade will land, i.e., the saccade's fixation). Specifically, this (assumed) parametric indicates the probability that a subject, upon completion of an initiated saccade movement, then fixates on a target object. -->
 
-The four parameter logistic curve, identified as
+# Oculomotor delay
+
+We begin with an assumption that the curve of interest can be represented parametrically. For example, the four parameter logistic, defined as
 
 $$
-f(t|\theta) = \frac{h-b}{1 + \exp\left(4 \cdot \frac{s}{h-b}(xo - t) \right)} +b,
-$$ if often used to describe the trajectory of probability of a subject launching a saccade and fixating on the target location. As the plot below illustrates in an example case, a subject with the depicted fixation curve may initiate a saccade ending at time $t = 970$, with a probability of $p = 0.5$ of the subsequent fixation resting on target:
+f(t|\theta) = \frac{h-b}{1 + \exp\left(4 \cdot \frac{s}{h-b}(x - t) \right)} +b,
+$$ 
 
-```{r, echo=FALSE}
+is often used to describe the trajectory of probability of a subject launching a saccade and fixating on the target location while simultaneously used as a proxy for word activation. To illustrate, a subject with the depicted fixation curve may initiate a saccade beginning at time $t = 970$, with a probability of $p = 0.5$ of subsequently resting on the target:
+
+```{r, echo=FALSE, fig.width=5, fig.height=3}
 library(ggplot2)
 library(data.table)
 t <- 0:2000
@@ -66,129 +102,141 @@ y <- eyetrackSim:::logistic_f(p, t)
 dat <- data.table(time = t, fixation = y)
 dat1 <- data.table(time = 0:970, fixation = y[970])
 dat2 <- data.table(time = 970, fixation = c(0, y[970]))
-ggplot(dat, aes(x = time, y = fixation)) + geom_line() +
+ggplot(dat, aes(x = time, y = fixation)) + geom_line() + theme_bw() +
   geom_line(data = dat1, aes(x = time, y = fixation, color = 'red')) +
   geom_line(data = dat2, aes(x = time, y = fixation, color = 'red')) + 
   theme(legend.position = "none") + 
-  ggtitle("Logistic Fixation Curve")
+  ylab("Probability") + xlab("Time") + 
+  ggtitle("Logistic Fixation Curve") 
 ```
 
-As saccade data is easily gathered from available eyetracking data, we are, in principle, able to collect samples directly from this curve. This goal is, however, complicated by "oculomotor delay", the phenomenon in which the cognitive decision to launch a saccade and choose its subsequent target occurs some period of time before the movement itself.
+Mentioned previously, this same parametric curve is used in both the proportion and saccade methods.
 
-In other words, an observed saccade at $t_j$ is likely a sample from the fixation curve $f_{\theta}(t)$ at some point prior to $t_j$. The degree to which this delay occurs, as well as the between and within subject variability is a matter of active investigation. Most generally, we may consider an observation $y_j$ at time $t_j$ to be
-
+As saccades are easily gathered from available eyetracking data, we are, in principle, able to collect samples directly from this curve. This goal is complicated, however, by oculomotor delay. That is, an observed saccade at $t_j$ is likely a sample from the fixation curve $f_{\theta}(t)$ at some point prior to $t_j$. The degree to which this delay occurs, as well as the between and within subject variability of this delay, is a matter of active investigation. Most generally, we may consider an observation $s_j$ at time $t_j$ to be distributed
 $$
-y_j \sim  Bern \large[f_{\theta}(t_j - \rho(t_j)) \large]
+s_j \sim  Bern \large[f_{\theta}(t_j - \rho(t_j)) \large],
 $$ 
-where $\rho(t)$ represents oculomotor delay. As written, we may consider circumstances in which
+where $\rho(t)$ represents oculomotor delay. As written, we may consider circumstances in which:
 
 1.  $\rho(t)$ is a constant function (including 0)
 2.  $\rho(t)$ is a random variable, independent of the value of $t_j$
 3.  $\rho(t)$ is a random variable, dependent on $t_j$ and possibly other aspects of the trial
 
-We will consider a variety of scenarios for oculomotor delay and the subsequent impacts on the recovery of the underlying fixation curve from the observed data
+To differentiate between the underlying data-generating mechanism and what is observed, we let
+$$
+g_{\theta}(t) = f_{\theta}(t - \rho(t)), 
+$$
+where $g_{\theta}(t)$ is what is *observed* at time $t$. A saccade planned at $t = 300ms$ with an oculomotor delay of $\rho = 200ms$ will be observed at $t = 500ms$. That is, $g_{\theta}(500) = f_{\theta}(500 - 200) = f_{\theta}(300)$.
 
-## Simulation
+At present, it is common under the proportion method to account for this delay via a 200ms shift of the entire constructed proportion curve. We will propose instead a method whereby each saccade may be shifted individually and less homogenously. Reasons and implications for this will be presented in the next section.
+
+We now consider a variety of scenarios for oculomotor delay and the subsequent impacts on the recovery of the underlying fixation curve from the observed data.
+
+# Simulation
 
 We begin with the implicit assumption that there is an underlying activation curve that may be described parametrically. The following simulations will generate data according to three scenarios:
 
-1. A situation in which the occulomotor delay is known
-2. A situation in which the occulomotor delay is unknown, but of a fixed quantity
-3. A situation in which the occulomotor delay is an unknown random variable, independent of time
+1. A situation in which the oculomotor delay is known
+2. A situation in which the oculomotor delay is unknown, but of a fixed quantity (here, 200ms)
+3. A situation in which the oculomotor delay is an unknown random variable, independent of time
 
-Each simulation will be conducted with $N = 300$ trials, sampled from the same data generating function for each, with the attempted recovery of the generating curve done using the `bdots` pacakge. 
+Each simulation will be conducted with $N = 300$ trials, sampled from the same data generating function for each, with the attempted recovery of the generating curve done using the `bdots` package. 
 
+Note that these are short toy simulations to illustrate the saccade method and are not intended to be comprehensive. 
 
-### Known delay
-
-In the case in which the occulomotor delay is known, an unbiased recovery of the data generating curve is not an issue -- we simply horizontally shift each observed saccade by it's known occulmotor delay.
-
-```{r}
+```{r, fig.width=12}
 library(ggplot2)
 ll <- readRDS("data/data.rds")
 dt <- ll$fits
 dt2 <- ll$original
-dt2[, `:=`(col = NULL, Condition = "Underlying")]
-dt2 <- dt2[, .(Condition, time, fit)]
 
-dtlist <- split(dt, by = "Condition")
-
-newdt <- rbind(dt2, dtlist[[1]])
-
-ggplot(newdt, aes(x = time, y = fit, color = Condition)) + 
-  geom_line(size = 2) + 
-  labs(x = "Time", y = "f(t)", color = "Condition") +
-  scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D"),
-                     labels = c("Underlying", "Known Delay" )) +
-  theme_bw() + theme(legend.position = "bottom") + ggtitle("Known Delay")
-
-```
-
-### Unknown fixed delay
-
-The simulation was conducted using a fixed occulomotor delay of $\rho = 200ms$. Although the resulting recovered curve is biased, this bias simply results in a horizontal shift, $g(t) = f(t - \rho)$. This is especially relevant in a situation in which we are interested in comparing the data generating curve between two groups. 
-
-For example, one method of analyzing VWP data (which inspired the `bdots` package) was to determine on which intervals $I = \cup_{k} I_k$ two data generating curves were statistically different. Suppose, for simplicity, that there is an interval $I = [t_1, t_2]$ on which the difference between two curves, $f(t | \theta_1) - f(t|\theta_2)$, is statistically significant. Given that we observe $g_i(t) = f(t - \rho | \theta_i)$, we would simply find that a significant difference occurs at $I + \{\rho\} = [t_1 + \rho, t_2 + \rho]$, a horizontal shift resulting from the occulomotor delay.
-
-In other words, the size of the interval would remain the same, and the relative differences between curves would be preserved under a horizontal shift. 
-
-```{r}
-newdt <- rbind(dt2, dtlist[[2]])
-ggplot(newdt, aes(x = time, y = fit, color = Condition)) + 
-  geom_line(size = 2) + 
-  labs(x = "Time", y = "f(t)", color = "Condition") +
-  scale_color_manual(values = c("Underlying" = "black", "200ms Delay" = "#00BA38"),
-                     labels = c("Underlying", "Unknown Fixed Delay" )) +
-  theme_bw() + theme(legend.position = "bottom") + ggtitle("Unknown Fixed Delay")
-```
-
-### Unknown random delay
-
-The final scenario for consideration involves a situation is which the occulomotor delay is unknown and random. Here, the bias will not involve a simple horizontal shift, and the shape of the curve itself may be different between the one generating the data and the one observed. 
-
-We will interogate a number of potential methods for dealing with this issue, though we do feel confident that, even with this known bias, our proposed method will still be preferable to existing ones. 
-
-```{r}
-newdt <- rbind(dt2, dtlist[[3]])
-ggplot(newdt, aes(x = time, y = fit, color = Condition)) + 
-  geom_line(size = 2) + 
-  labs(x = "Time", y = "f(t)", color = "Condition") +
-  scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"),
-                     labels = c("Underlying", "Unknown Random Delay" )) +
-  theme_bw() + theme(legend.position = "bottom") + ggtitle("Unknown Random Delay")
-```
-
-### Together
-
-```{r, fig.width=12}
-
-ll <- readRDS("data/data.rds")
-dt <- ll$fits
-dt2 <- ll$original
-
-
+labs <- c("Known Delay", "Unknown Fixed Delay", "Unknown Random Delay")
+names(labs) <- unique(dt$Condition)
 ggplot(data = dt2, aes(x = time, y = fit), color = col) +
   geom_line(size = 1, aes(color = "Underlying")) +
   geom_line(data = dt, aes(x = time, y = fit, color = Condition), size = 1) +
 #  xlab("Time") + ylab("f(t)") +
   labs(x = "Time", y = "f(t)", color = "Condition") +
-  facet_wrap(~Condition) +
+  facet_wrap(~Condition, labeller = labeller(Condition = labs)) +
   scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D", "200ms Delay" = "#00BA38", "Random Delay" = "#619CFF"),
                      labels = c("Underlying", "Known Delay", "Unknown Fixed Delay", "Unknown Random Delay")) +
   theme_bw() +
   theme(legend.position = "bottom")
 ```
 
+## Known delay
 
-## Concluding Remarks
+In the case in which the oculomotor delay is known, an unbiased recovery of the data generating curve is not an issue -- we simply horizontally shift each observed saccade by its known oculmotor delay.
+
+<!-- ```{r} -->
+<!-- library(ggplot2) -->
+<!-- ll <- readRDS("data/data.rds") -->
+<!-- dt <- ll$fits -->
+<!-- dt2 <- ll$original -->
+<!-- dt2[, `:=`(col = NULL, Condition = "Underlying")] -->
+<!-- dt2 <- dt2[, .(Condition, time, fit)] -->
+
+<!-- dtlist <- split(dt, by = "Condition") -->
+
+<!-- newdt <- rbind(dt2, dtlist[[1]]) -->
+
+<!-- ggplot(newdt, aes(x = time, y = fit, color = Condition)) +  -->
+<!--   geom_line(size = 2) +  -->
+<!--   labs(x = "Time", y = "f(t)", color = "Condition") + -->
+<!--   scale_color_manual(values = c("Underlying" = "black", "No Delay" = "#F8766D"), -->
+<!--                      labels = c("Underlying", "Known Delay" )) + -->
+<!--   theme_bw() + theme(legend.position = "bottom") + ggtitle("Known Delay") -->
+
+<!-- ``` -->
+
+
+## Unknown fixed delay
+
+The simulation was conducted using a fixed oculomotor delay of $\rho = 200ms$. Although the resulting recovered curve is biased, this bias simply results in a horizontal shift, $g(t) = f(t - \rho)$. This is especially relevant in a situation in which we are interested in comparing the data generating curve between two groups. 
+
+For example, one method of analyzing VWP data (which inspired the `bdots` package) was to determine on which intervals $I = \cup_{k} I_k$ two data generating curves were statistically different. Suppose, for simplicity, that there is an interval $I = [t_1, t_2]$ on which the difference between two curves, $f(t | \theta_1) - f(t|\theta_2)$, is statistically significant. Given that we observe $g_i(t) = f(t - \rho | \theta_i)$, we would simply find that a significant difference occurs at $I + \{\rho\} = [t_1 + \rho, t_2 + \rho]$, a horizontal shift resulting from the oculomotor delay.
+
+In other words, the size of the interval would remain the same, and the relative differences between curves would be preserved under a horizontal shift. 
+
+
+<!-- ```{r} -->
+<!-- newdt <- rbind(dt2, dtlist[[2]]) -->
+<!-- ggplot(newdt, aes(x = time, y = fit, color = Condition)) + -->
+<!--  geom_line(size = 2) + -->
+<!--  labs(x = "Time", y = "f(t)", color = "Condition") + -->
+<!--  scale_color_manual(values = c("Underlying" = "black", "200ms Delay" = "#00BA38"), -->
+<!--                     labels = c("Underlying", "Unknown Fixed Delay" )) + -->
+<!--  theme_bw() + theme(legend.position = "bottom") + ggtitle("Unknown Fixed Delay") -->
+<!-- ``` -->
+
+
+## Unknown random delay
+
+The final scenario for consideration involves a situation is which the OM delay is unknown and random. Here, the bias will not be resolved with a simple horizontal shift, and the shape of the curve itself may be different between the one generating the data and the one observed. This has largest implications when comparing estimated curves between two groups.
+
+We will interogate a number of potential methods for dealing with this issue, though we do feel confident that, even with this known bias, our proposed method will still be preferable to existing ones. 
+
+<!-- ```{r} -->
+<!-- newdt <- rbind(dt2, dtlist[[3]]) -->
+<!-- ggplot(newdt, aes(x = time, y = fit, color = Condition)) +  -->
+<!--   geom_line(size = 2) +  -->
+<!--   labs(x = "Time", y = "f(t)", color = "Condition") + -->
+<!--   scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"), -->
+<!--                      labels = c("Underlying", "Unknown Random Delay" )) + -->
+<!--   theme_bw() + theme(legend.position = "bottom") + ggtitle("Unknown Random Delay") -->
+<!-- ``` -->
+
+
+
+# Future Directions
 
 With regards to the curve described, there are a number of avenues seemingly worthy of investigation. The most pressing of these appears to be methods to minimize the amount of bias present in scenario three, which presents the largest obstacle in the functional recovery of the data generating mechanism. Of special note here is the fact that the particular intervals in which this bias occurs can have a large effect on the overall bias, over and above that introduced by the occulomotor delay. 
 
-For example, consider the plot above in the situation in which there is a known delay of $\rho = 200ms$ (green curve). We may observe at 500ms the value of the data generating mechanism at 300ms (that is, $g_{\theta}(500) = f_{\theta}(500 - 200)$), while $g_{\theta}(500) \approx f_{\theta}(500)$. In other words, the bias over this interval is small if we make no correction. 
+For example, consider the plot above in the situation in which there is an unknown random delay (blue curve). We may observe at 500ms the value of the data generating mechanism at 300ms (that is, we observed $g_{\theta}(500) = f_{\theta}(300)$), while $g_{\theta}(500) \approx f_{\theta}(500)$. In other words, the bias over this area is small if we make no correction.
 
-In contrast, an observation at $t = 1000$ results in a highly biased estimate, as $g_{\theta}(1000) \ll f_{\theta}(1000)$. Accordingly, we note that the amount of bias at an observed point is a function of the derivative of the data generating function in a neighborhood of that point. Whether or not this observation proves profitable remains to be seen. 
+In contrast, an observation at $t = 1000$ results in a highly biased estimate, as $g_{\theta}(1000) \ll f_{\theta}(1000)$. Accordingly, we note that the amount of bias at an observed point is a function of the derivative of the data generating function in a neighborhood of that point. Whether or not this observation proves profitable remains to be seen.
 
-
+There also seems to be value in finding a way to incorporate the length of fixations into the modeling process. For example, we might consider the impact of weighting each saccade by the duration of its subsequent fixation, as it seems intuitive that saccades resulting in longer fixation periods are more likely initiated by activation rather than a searching pattern.
 
 
 <!-- # Current Method -->

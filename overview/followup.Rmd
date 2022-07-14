@@ -1,0 +1,43 @@
+---
+output: 
+  pdf_document:
+    number_sections: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = 'center')
+```
+
+`r Sys.Date()`
+
+# Looks 
+
+```{r, fig.align='center', out.height="75%", out.width="100%", fig.cap="A 'look'"}
+#knitr::include_graphics(path = "img/saccade_def2.jpg")
+knitr::include_graphics(path = "diagram/labeled_full_diagram.png")
+```
+
+The figure above represents a more detailed composition of what we are calling a *look*, made up of the saccade and subsequent fixation. We see that we begin with some latent cognitive activation informing the decision to direct the eyes to a particular location. The probability that this direction is towards the target at a particular point in time is what we are referring to as our activation, $f_{\theta}(t)$.
+
+Once this decision has been made, there is oculomotor delay. We don't know what it is, but the previous document illustrated scenarios in which it was known, fixed, and unknown/random. As the cognitive action is the particular instance that we are interested in modeling, the observed bias will be the time between this mechanism and the subsequent launch of the saccade. This period of time is $\rho(t)$.
+
+As Bob pointed out, the saccade is ballastic and averages periods around 30-70ms. Given the ballastic nature of the saccade, it's intended destination is determined at onset and remains the same for the duration of the saccade. As such, the information received at the offset of the saccade (where it lands) is the same as it was at onset; it can't be changed. We will be more consistent in our measurement if we take the onset to represent our discrete instance of the saccade. 
+
+To see this notationally, let $t_j$ be the time the time of cognitive action for look $j$. If $\rho_j$ represents the oculomotor delay for this look, the onset of the saccade will be observed at $t_j + \rho_j$. If $r_j$ represents the refractory period for the  $j$th saccade, the saccade will end at $t_j + \rho_j + r_j$. Here, both $\rho_j$ and $r_j$ are random variables. As our indicator for fixation on target is the same at $t_j + \rho_j$ as it is at $t_j + \rho_j + r_j$, by taking our measurement at $t_j + \rho_j$, we remove the additional variability introduced by $r_j$. 
+
+\newpage
+
+# Looks in action
+
+```{r, fig.align='center', out.height="75%", out.width="100%", fig.cap="Looks on a curve"}
+#knitr::include_graphics(path = "img/saccade_def2.jpg")
+knitr::include_graphics(path = "diagram/diagram_saccade_delay2 - 1.png")
+```
+
+We can see how these looks play out on the observed plot for the unknown/random delay scenario. The underlying curve, $f_{\theta}(t)$ determines probabilistically if a saccade launched at $t$ will fixate on the target. Between this cognitive action and the physiological movement, there is a delay, represented by the horizontal shift at each time point between $g_{\theta}(t)$ and $f_{\theta}(t)$. As we can see above, this horizontal shift is not equal across all points, with some areas showing larger degrees of oculomotor delay.
+
+The duration of the saccade itself, marked in pink, occurs after the saccade has been launched. As laid out here, I don't think that the duration of this movement is of much significance. That is, I suspect that the factors dictating the duration of the saccade are more influenced by external factors (length of distance from previous location to next, individual variation) rather than by any measure of underlying activation.
+
+Based on this, I believe that choosing as our observed data the moment of onset as a discrete measure of the saccade is appropriate, as it conveys the same relevant information as the full movement, with the additional benefit of being more consistent across observations.
+
+As a follow up to Bob's other comment, it does seem to make some sense to refer to $f_{\theta}(t)$ the latent activation curve (as that's what it is), while saving "saccade curve" for $g_{\theta}(t)$ (which is whath that is). The relationship between the two can then be described as $g_{\theta}(t) = f_{\theta}(t-\rho(t))$.

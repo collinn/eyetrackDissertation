@@ -5,17 +5,25 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(bdots)
 ```
 
 `r Sys.Date()`
 
-# start
+# Introduction
+
+- 2nd iteration of bdots
+- will will discuss methodology, use, extensions
+
+# Methodology
+
+# Use
 
 We now going into detail describing the reimplementation of bdots; that is, we will reintroduce how bdots works, along with significant changes made since the original package was created. 
 
-Probably a lot of stuff that you will want to do with bdots. Broadly, the bdots workflow can be described in two steps: fitting a parametric function to the data and finding bootstrapped differences between two groups. The current implementation has expanded on this in a number of ways, including the addition of generic functions for bdots objects, an interactive refitting step,  as well as more general extensions to accomodate a range of non-vwp data. 
+Probably a lot of stuff that you will want to do with bdots. Broadly, the bdots workflow can be described in two steps: fitting a parametric function to the data and finding bootstrapped differences between two groups. The current implementation has expanded on this in a number of ways, including the addition of generic functions for bdots objects, an interactive refitting step, as well as more general extensions to accomodate a range of non-vwp data. 
 
-# step 1
+## Fitting step
 
 As before, the bdots workflow begins with identifying a parametric function to fit to the observed data. Two especially important functions in the context of the VWP are the four-parameter logistic and the six-parameter double Gaussian, both of which were included in the original implementation. The first of these is a sigmoid shaped curve, the other looks like a hump.
 
@@ -26,18 +34,38 @@ library(bdots)
 bdotsFit(..., curveType = logistic())
 ```
 
-Importantly, this allows the logic of the fitting function to be independent of the parametric function, allowing for the use of user-defined functions to take this role. Here, we describe the implementation these functions in the package, as well as the requirements for functions to be written by the user
-
-[[...]]
-  
-  
+Importantly, this allows the logic of the fitting function to be independent of the parametric function, allowing for the use of user-defined functions to take this role. This will be described in more detail in the 'Extensions' section.
 
 
-For study designs in which individual subjects may be examined across a number of conditions, `bdotsFit` allows for an arbitrary number of groups to be fit at once, assuming that only a single curve is used. For example, we may be interested in comparing fixations to a specified target under a variety of conditions, each of which fit with the logistic curve. This becomes especially beneficial in the bootstrapping step, in which the difference, or difference of difference, between any groups of curves may be of interest. Finally, the decision to consider either the difference or difference of difference between curves need not be decided here; as implemented, this can be specified with a particular formula syntax in the bootstrapping step
+For study designs in which individual subjects may be examined across a number of conditions, `bdotsFit` allows for an arbitrary number of groups to be fit at once, assuming that only a single curve is used. For example, we may be interested in comparing fixations to a specified target under a variety of conditions, each of which fit with the logistic curve. 
 
-## Generics
+[[Will maybe delete this section]]
+[[This becomes especially beneficial in the bootstrapping step, in which the difference, or difference of difference, between any groups of curves may be of interest. Finally, the decision to consider either the difference or difference of difference between curves need not be decided here; as implemented, this can be specified with a particular formula syntax in the bootstrapping step. What difference of difference is will be illustrated later.
+]]
 
-The fitting function `bdotsFit` returns an object of class `bdotsObj`, inheriting from classes `data.table`. As such, this object can be manipulated and explored with standard `data.table` syntax. In addition to the subject and grouping columns, there is also a `fit` column, containing the fitted object from the `gnls` package, a column, `R2` with the R-squared value, a boolean column indicating `AR1` status, and finally a column for `fitCode`. The fit code is a numeric quantity representing the quality of the fit as such:
+We will illustrate use of this package now with the `ci` dataset from ((something)), with our analysis focused on fixations to the Target object, using the four-parameter logistic
+
+```{r}
+## Clean this up, obviously
+load("~/packages/bdots/data/ci.rda")
+ci <- as.data.table(ci)
+ci <- ci[LookType == "Target", ]
+fit <- bdotsFit(data = ci,
+                subject = "Subject",
+                time = "Time",
+                y = "Fixations",
+                group = "protocol",
+                curveType = logistic())
+```
+
+
+The fitting function `bdotsFit` returns an object of class `bdotsObj`, inheriting from classes `data.table`. As such, this object can be manipulated and explored with standard `data.table` syntax. In addition to the subject and grouping columns, there is also a `fit` column, containing the fitted object from the `gnls` package, a column, `R2` with the R-squared value, a boolean column indicating `AR1` status, and finally a column for `fitCode`. We can see that here:
+
+```{r}
+head(fit)
+```
+
+The fit code is a numeric quantity representing the quality of the fit as such:
 
 |fitCode |	AR1 |	R2 |
 |:------:|:----:|:----:|
@@ -51,22 +79,169 @@ The fitting function `bdotsFit` returns an object of class `bdotsObj`, inheritin
 
 A fit code of 6 indicates that a fit was unable to be made.
 
-In addition to `plot` and `summary` functions, there is also a method to return a matrix of coefficients from the model fits. With the `data.table` syntax, we can examine subsets of this objects as well
+A `summary` function shows us the curve function used, and a breakdown, by group, of mean parameter values and quality of fitcode fits
 
-```{r, eval=FALSE}
-head(coef(fit))
-
-head(coef(fit[DB_cond == 50, ))
+```{r}
+summary(fit)
 ```
 
-The plotting function comes with the argument `plotfun` with values `"fits"` or `"pars"`, indicating whether we wish to plot the fitted object against the observed data, or histograms of the model parameters. By default, lines are not drawn for observed points.
 
-[[plot stuff]]
+Because `bdotsObj` inherits from `data.table`, we are able to use `data.table` syntax for subsetting
 
-Plotting is often critical to verify the goodness of fits for each of the observations.
+```{r}
+## Maybe find different things for this
+head(coef(fit))
+head(coef(fit[protocol == "NH", ]))
+```
 
----
+In addition to `coef` and `summary`, the `plot` function will also demonstrate the fitted curves
 
-Once fits have been made, we are able to construct bootstrapped estimates of group level curves with `bdotsFit`. This is done by 
+```{r}
+plot(fit[1:4, ])
 
-The bootstrapping process if performed with `bdotsBoot`.
+## I feel like I should delete this from plot
+# plot(fit, plotfun = "pars")
+# 
+## Because I can do the same thing here
+# par(mfrow = c(2,2))
+# apply(coef(fit), 2, function(x) print(hist(x)))
+```
+
+## Bootstrapping
+
+Once fits have been made, we are able to construct bootstrapped estimates of group level curves with `bdotsBoot`. Typically, we are interested in bootstrapping estimates of group level curves and determining the bootstrapped difference. In studies with nested conditions, however, we frequently find ourselves with the need to determine the difference between two difference curves (I think this is articulated somewhere else). For example, we may have two groups, $A$ and $B$, with two experimental conditions, $1$ and $2$. In determining the difference of difference curves, we may be interested in comparing the difference between groups $A$ and $B$ under condition $1$ with the difference between groups $A$ and $B$ in condition $2$. Or vice versa. 
+
+[[description and syntax of diff of diff]]
+
+Note that matching subject identifiers between groups will indicate that a paired t-test is to be used. There is also `padj` that can be used to adjust ps. There are other, sensible parameters used
+
+Finally, then, the bootstrapping function itself
+
+```{r}
+boot <- bdotsBoot(Fixations ~ protocol(CI, NH), fit, padj = "oleson")
+summary(boot)
+```
+
+From this, we see that the summary returns a collection of relevant information, including the curve type, paired t-test status, autocorrelation estimate, the adjusted alpha. Relevant bits can be harvested from the `bdBootObj` itself, 
+
+```{r}
+names(boot)
+```
+
+The appendex includes a more complete description of  `curveList` that some users may find useful (it contains stuff in it)
+
+# Extensions
+
+There are several additions that have been made to the bdots package, which will briefly be described here. 
+
+## Custom curve functions
+
+## Refitting step (maybe)
+
+Depending on the curve type and the nature of our data, we might find that a collection of our fits aren't very good, potentially impacting the quality of the bootstrapping step. Using the `bdotsRefit` function, users have the option to either quickly attempt to automatically refit poorly fitting curves or to manually review each one and offer alternative starting parameters. In determining which curves to refit, the `fitCode` argument provides a lower bound for the quality of candidate curves. The object returned by is the same as that returned by `bdotsFit`
+
+```{r, eval=FALSE}
+## Quickly auto-refit (not run)
+refit <- bdotsRefit(fit, fitCode = 1L, quickRefit = TRUE)
+
+## Manual refit (not run)
+refit <- bdotsRefit(fit, fitCode = 1L)
+```
+
+For whatever reason, some data will not submit nicely to a curve of a specified type. One can quickly remove all observations with a fit code equal to or greater than the one provided in auxilary function, `bdRemove`. 
+
+```{r}
+table(fit$fitCode)
+#> 
+#>  0  1  2  3  4  5 
+#> 50 41  2  1  3  3
+
+## Remove all failed curve fits
+refit <- bdRemove(fit, fitCode = 6L, removePairs = TRUE)
+
+table(refit$fitCode)
+#> 
+#>  0  1  2  3  4  5 
+#> 50 41  2  1  3  3
+```
+
+There is the additional argument, `removePairs`, which is set to `TRUE` by default. This indicates that if an observation is removed, then all observations from the same subject, perhaps in different conditions, should also be removed, regardless of fit quality. This ensures that study designs with paired subjects retain their corresponding pairs in the bootstrapping function for the use of the paired t-test. 
+
+## Correlation with fixed value
+
+The `bdots` package now also includes the `bdotsCorr` function, which finds the correlation between a fixed value in our dataset and the collection of fitted curves at each time point for each of the groups fit in `bdotsFit`.  
+
+[[Here, I am making up a value, but maybe bob has a real one]]
+
+```{r}
+library(bdots)
+library(data.table)
+
+## Let's work with cohort_unrelated dataset, as it has multiple groups
+dat <- as.data.table(cohort_unrelated)
+
+## And add a fixed value for which we want to find a correlation
+dat[, val := rnorm(1), by = Subject]
+
+head(dat)
+```
+
+We would then go about creating our fitted object as usual
+
+```{r}
+## Create regular fit in bdots
+fit <- bdotsFit(data = dat,
+                subject = "Subject",
+                time = "Time",
+                group = c("LookType", "Group"),
+                y = "Fixations", curveType = doubleGauss())
+```
+
+Using this fit object, we now introduce `bdotsCorr`, taking four arguments:
+
+1. `bdObj`, any object of class `bdotsObj`, returned by `bdotsFit` or `bdotsRefit`
+2. `val`, a length one character ve ctor of the value with which we want to correlate. `val` should be a column in the original dataset, and it should be numeric or able to be coerced to numeric
+3. `ciBands`, a boolean indicating whether or not to return 95\% confidence intervals. The defaul is `FALSE`
+4. `method`, paralleling the `method` argument in `cor` and `cor.test`. The default is `"pearson"`
+
+`bdotsCorr` returns an object of class `bdotsCorrObj` which also inherits from `data.table`. 
+
+```{r}
+## Returns a data.table of class bdotsCorrObj
+corr_ci <- bdotsCorr(fit, val = "val", ciBands = TRUE)
+head(corr_ci)
+```
+
+```{r}
+## Same, without confidence intervals
+corr_noci <- bdotsCorr(fit, val = "val")
+head(corr_noci)
+```
+
+Along with `data.table` subsetting syntax, the `plot` method offers a few options for creating plots
+
+```{r}
+## Default is no bands
+plot(corr_ci, ciBands = TRUE)
+
+## Narrow in on a particular window
+plot(corr_ci, window = c(750, 1500))
+
+## Utilizing data.table syntax
+plot(corr_ci[Group2 == "50", ])
+```
+
+## Extension to non-vwp data
+
+Whereas the original implementation of `bdots` was designed to deal with time series of equidistant samples of proportional fixation data, we are now able to address generalized time-series data along with trial-level data from the VWP. To illustrate this first case, here is some rat data I got from patrick, depicting data for the 451LuBR cell line (metastatic melanoma) growth in mice with five treatment groups.
+
+```{r}
+dat <- fread("~/projects/tumr/Analytic-DeIdentified_GJZ16-091_.csv")
+dat <- dat[Volume != 0, ] # should incorporate this into expCurve
+fit <- bdotsFit(data = dat, 
+                subject = "ID", 
+                time = "Day", 
+                y = "Volume", 
+                group = "Treatment", 
+                curveType = expCurve())
+```

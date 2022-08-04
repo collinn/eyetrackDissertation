@@ -61,8 +61,9 @@ res <- bdotsFit(data = dt,
 # 3. Redraw new parameters
 # 4. combine and fit curve
 #' @param x A bdotsObj
+
 bsFunction <- function(x) {
- xs <- split(x, by = "group")
+ xs <- split(x, by = "protocol")
  newpars <- lapply(xs, function(y) {
    idx <- sample(seq_len(nrow(y)), replace = TRUE)
    yn <- y[idx, ]
@@ -74,9 +75,21 @@ bsFunction <- function(x) {
    colMeans(ypar)
  })
 }
-
+bsFunction2 <- function(x) {
+ xs <- split(x, by = "protocol")
+ newpars <- lapply(xs, function(y) {
+   idx <- sample(seq_len(nrow(y)), replace = TRUE)
+   yn <- y[idx, ]
+   yn$splitvar <- seq_len(nrow(y))
+   yns <- split(yn, by = "splitvar")
+   ypar <- vapply(yns, function(z) {
+     rmvnorm(1, coef(z), 0*vcov(z$fit[[1]]))
+   }, numeric(4)) |> t()
+   colMeans(ypar)
+ })
+}
 bootstrapCurves <- function(x, n = 100) {
-  tt <- replicate(n, bsFunction(x), simplify = FALSE)
+  tt <- replicate(n, bsFunction2(x), simplify = FALSE)
   A <- sapply(tt, `[[`, 1) |> t()
   B <- sapply(tt, `[[`, 2) |> t()
   time <- attr(x, "time")
@@ -91,17 +104,63 @@ bootstrapCurves <- function(x, n = 100) {
   list(pars = parMat, curves = curves)
 }
 
-tt <- bootstrapCurves(res, 1000)
+tt <- bootstrapCurves(res.l, 1000)
 
-ac <- tt$curves$B
-matplot(ac, type = 'l')
-lines(eyetrackSim:::logistic_f(coef(sub1), time))
+ac <- tt$curves$A
+# matplot(ac, type = 'l')
+# lines(eyetrackSim:::logistic_f(coef(sub1), time))
 
 mainA <- eyetrackSim:::logistic_f(coef(sub2), time)
 
 qm <- apply(ac, 1, function(x) quantile(x, probs = c(0.025, 0.975)))
 mmat <- apply(ac, 1, mean)
 mm2 <- cbind(qm[1, ], mmat, qm[2, ])
+sdm <- apply(ac, 1, sd)
+tv <- qt(0.975, 28)
+
+mm1 <- cbind(mmat - tv*sdm, mmat, mmat + tv*sdm)
+par(mfrow = c(1, 2))
+matplot(mm1, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"),
+        main = "sd")
+matlines(mm1, lty = c(2,1,2), col = c("blue", "green", "blue"))
 matplot(mm2, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"),
         main = "quantile")
 lines(mainA, col = 'blue')
+
+## Try it with original data, unknown true mean, just to see intervals
+tt <- bootstrapCurves(res.l, 1000)
+
+boot <- bdotsBoot(y ~ protocol(CI, NH), bdObj = res.l)
+plot(boot, plotDiffs = FALSE)
+
+###### Looking at all this with real data
+tt <- res.l[1, ]$fit[[1]]
+
+cc <- rmvnorm(1000, coef(tt), vcov(tt))
+
+ll <- apply(cc, 1,
+            function(x) {
+              time <- seq(0, 2000, by = 4)
+              eyetrackSim:::logistic_f(x, time)
+            })
+
+main <- eyetrackSim:::logistic_f(coef(tt), time)
+
+matplot(ll, type = 'l')
+lines(main, lwd = 2, col = 'red')
+
+ac <- ll
+qm <- apply(ac, 1, function(x) quantile(x, probs = c(0.025, 0.975)))
+mmat <- apply(ac, 1, mean)
+mm2 <- cbind(qm[1, ], mmat, qm[2, ])
+sdm <- apply(ac, 1, sd)
+tv <- qt(0.975, 28)
+
+mm1 <- cbind(mmat - tv*sdm, mmat, mmat + tv*sdm)
+matplot(mm1, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"),
+        main = "sd")
+
+
+## See how sd shapes up with whole collection
+matplot(ll, type = 'l')
+matlines(mm1, lty = c(2,1,2), lwd = 4, col = 'red')

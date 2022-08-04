@@ -1,0 +1,296 @@
+---
+title: "Bootstrap CI"
+output: html_document
+---
+
+`r Sys.Date()`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.width = 10, fig.height = 8)
+library(bdots)
+```
+
+# Recap
+
+Here, we decided the new order of things to be:
+
+1. Fit all subjects
+2. For $b$ in $1, \dots, B$, select $n$ subjects with replacement
+3. For each subject, draw new parameters from $N(\hat{\theta}_i, V_i)$
+4. Average these across subjects and fit a curve
+5. Use resulting curves to establish mean and CI
+
+# Quick compare
+
+First, using real data, compare CI from current bdots to the method above
+
+```{r}
+library(bdots)
+library(eyetrackSim)
+library(mvtnorm)
+library(MASS)
+
+## First, fit actual data that we have
+load("~/packages/bdots/data/ci.rda")
+ci <- as.data.table(ci)
+ci <- ci[LookType == "Target", ]
+res <- bdotsFit(data = ci,
+                  subject = "Subject",
+                  time = "Time",
+                  y = "Fixations",
+                  group = "protocol",
+                  curveType = logistic(),
+                  cor = TRUE,
+                  numRefits = 2)
+
+boot <- bdotsBoot(y ~ protocol(CI, NH), bdObj = res)
+
+## Now do other way
+bsFunction2 <- function(x) {
+ xs <- split(x, by = "protocol")
+ newpars <- lapply(xs, function(y) {
+   idx <- sample(seq_len(nrow(y)), replace = TRUE)
+   yn <- y[idx, ]
+   yn$splitvar <- seq_len(nrow(y))
+   yns <- split(yn, by = "splitvar")
+   ypar <- vapply(yns, function(z) {
+     rmvnorm(1, coef(z), 0*vcov(z$fit[[1]]))
+   }, numeric(4)) |> t()
+   colMeans(ypar)
+ })
+}
+bootstrapCurves <- function(x, n = 100) {
+  tt <- replicate(n, bsFunction2(x), simplify = FALSE)
+  A <- sapply(tt, `[[`, 1) |> t()
+  B <- sapply(tt, `[[`, 2) |> t()
+  time <- attr(x, "time")
+  ac <- apply(A, 1, function (x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  bc <- apply(B, 1, function (x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  parMat <- list("A" = A, "B" = B)
+  curves <- list("A" = ac, "B" = bc)
+  list(pars = parMat, curves = curves)
+}
+
+tt <- bootstrapCurves(res, 1000)
+
+
+## Start by plotting bdotsboot
+plot(boot, plotDiffs = FALSE)
+
+makemat <- function(x) {
+  mmat <- apply(x, 1, mean)
+  sdm <- apply(x, 1, sd)
+  tv <- qt(0.975, 28)
+  mm1 <- cbind(mmat - tv*sdm, mmat, mmat + tv*sdm)
+}
+
+m1 <- makemat(tt$curves$A)
+m2 <- makemat(tt$curves$B)
+
+matplot(m2, type = 'l', lty = c(2,1,2), col = "steelblue", lwd = 2, 
+        main = "new bootstrap")
+matlines(m1, type = 'l', lty = c(2,1,2), col = "tomato", lwd = 2)
+```
+
+
+# Try this again with fake data
+
+```{r}
+sub1 <- res[Subject == 2, ]$fit[[1]]
+sub2 <- res[Subject == 38, ]$fit[[1]]
+
+## Create new subjects based on this
+createSets <- function(x, n = 20, time = seq(0, 2000, by = 4), group = "A") {
+  set.seed(69)
+  pars <- coef(x)
+  vv <- vcov(x)
+  vv <- 15*diag(nrow(vv)) %*% vv
+  #vv <- 15*vv
+  mm <- mvrnorm(n, mu = pars, Sigma = vv)
+  mmF <- apply(mm, 1, function(x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  #matplot(mmF, type = 'l')
+  dt <- data.table(sub = rep(1:n, each = length(time)),
+                   time = time,
+                   group = group,
+                   fixation = as.numeric(mmF))
+  return(list(pars = mm, fits = mmF, dt = dt))
+}
+
+dt1 <- createSets(sub1)
+dt2 <- createSets(sub2, group = "B")
+dt2$dt[, sub := sub + 20]
+dt <- rbindlist(list(dt1$dt, dt2$dt))
+
+## Fit new subjects
+res <- bdotsFit(data = dt,
+                y = "fixation",
+                group = "group",
+                subject = "sub",
+                time = "time",
+                curveType = logistic(),
+                cores = 7)
+boot <- bdotsBoot(y ~ group(A, B), bdObj = res)
+
+bsFunction2 <- function(x) {
+ xs <- split(x, by = "group")
+ newpars <- lapply(xs, function(y) {
+   idx <- sample(seq_len(nrow(y)), replace = TRUE)
+   yn <- y[idx, ]
+   yn$splitvar <- seq_len(nrow(y))
+   yns <- split(yn, by = "splitvar")
+   ypar <- vapply(yns, function(z) {
+     rmvnorm(1, coef(z), 0*vcov(z$fit[[1]]))
+   }, numeric(4)) |> t()
+   colMeans(ypar)
+ })
+}
+bootstrapCurves <- function(x, n = 100) {
+  tt <- replicate(n, bsFunction2(x), simplify = FALSE)
+  A <- sapply(tt, `[[`, 1) |> t()
+  B <- sapply(tt, `[[`, 2) |> t()
+  time <- attr(x, "time")
+  ac <- apply(A, 1, function (x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  bc <- apply(B, 1, function (x) {
+    eyetrackSim:::logistic_f(x, time)
+  })
+  parMat <- list("A" = A, "B" = B)
+  curves <- list("A" = ac, "B" = bc)
+  list(pars = parMat, curves = curves)
+}
+
+tt <- bootstrapCurves(res, 1000)
+
+## Plots
+plot(boot, plotDiffs = FALSE)
+
+
+makemat <- function(x) {
+  mmat <- apply(x, 1, mean)
+  sdm <- apply(x, 1, sd)
+  tv <- qt(0.975, 28)
+  mm1 <- cbind(mmat - tv*sdm, mmat, mmat + tv*sdm)
+}
+
+m1 <- makemat(tt$curves$A)
+m2 <- makemat(tt$curves$B)
+
+matplot(m2, type = 'l', lty = c(2,1,2), col = "steelblue", lwd = 2, 
+        main = "new bootstrap")
+matlines(m1, type = 'l', lty = c(2,1,2), col = "tomato", lwd = 2)
+```
+
+## But now we can also look at the parameters
+
+Checking the distribution of parameters under this method
+
+```{r}
+pars <- tt$pars
+pa <- pars$A
+pb <- pars$B
+
+i <- 1
+pp <- pa
+cc <- coef(sub1)
+par(mfrow = c(2,2))
+hist(pp[, i], xlab = "mini", main = "mini A")
+abline(v = cc[i], lwd = 2, col = 'red')
+i <- 2
+hist(pp[, i], xlab = "max", main = "max A")
+abline(v = cc[i], lwd = 2, col = 'red')
+i <- 3
+hist(pp[, i], xlab = "slope", main = "slope A")
+abline(v = cc[i], lwd = 2, col = 'red')
+i <- 4
+hist(pp[, i], xlab = "crossover", main = "crossover A")
+abline(v = cc[i], lwd = 2, col = 'red')
+
+```
+
+And group B
+
+```{r}
+i <- 1
+pp <- pb
+cc <- coef(sub2)
+par(mfrow = c(2,2))
+hist(pp[, i], xlab = "mini", main = "mini B")
+abline(v = cc[i], lwd = 2, col = 'red')
+i <- 2
+hist(pp[, i], xlab = "max", main = "max B")
+abline(v = cc[i], lwd = 2, col = 'red')
+i <- 3
+hist(pp[, i], xlab = "slope", main = "slope B")
+abline(v = cc[i], lwd = 2, col = 'red')
+i <- 4
+hist(pp[, i], xlab = "crossover", main = "crossover B")
+abline(v = cc[i], lwd = 2, col = 'red')
+```
+
+
+
+## Is SD the way to go?
+
+```{r, fig.height=15}
+A <- tt$curves$A
+  B <- tt$curves$B
+
+swA <- apply(A, 1, function(x) {
+  x <- sample(x, 50, replace = TRUE)
+  shapiro.test(x)$p.value
+})
+
+par(mfrow = c(2, 1))
+matplot(A, type = 'l', main = "Group A bootstrap plots")
+lines(rowMeans(A), lwd = 3, col = 'red')
+plot(swA, xlab = "index", ylab = "pvalue", main = "Shapiro-Wilk p-value, n = 50")
+
+```
+
+Group B
+
+```{r}
+
+swB <- apply(B, 1, function(x) {
+  x <- sample(x, 50, replace = TRUE)
+  shapiro.test(x)$p.value
+})
+
+par(mfrow = c(2, 1))
+matplot(B, type = 'l', main = "Group B bootstrap plots")
+lines(rowMeans(B), lwd = 3, col = 'red')
+plot(swB, xlab = "index", ylab = "pvalue", main = "Shapiro-Wilk p-value, n = 50")
+
+```
+
+# Afterward
+
+Say each subject has parameters $\theta_i + s_i$ where 
+
+$$
+\theta_i \sim N(\theta, \Sigma) \\
+s_i \sim N(0, V_i)
+$$
+
+So that $E(\theta_i + s_i) = \theta$ and $var(\theta_i + s_i) = \Sigma + V_i$
+
+Idk, maybe for short (for now) call this $\gamma_i = \theta_i + s_i$. This gives that each instance of the bootstrap is
+
+$$
+\gamma_b = \frac1n \sum \gamma_i \\
+E(\gamma_b) = \theta \\
+Var(\gamma_b) = \frac1n \Sigma + \frac{1}{n^2} \sum V_i
+$$
+
+Giving us our combined estimate of between and within subject variability, whereas previously, we were only capturing variance equal to $\frac{1}{n^2} \sum V_i$ at each bootstrap
+
+---
+
+Maybe consider other confidence intervals?

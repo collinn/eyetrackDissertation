@@ -42,4 +42,12 @@ knitr::opts_chunk$set(
 
 ## Evaluating CI
 
+This looks at the actual fits from bdotsBoot, along with histograms of booted parameters relative to seed pars
+
 [July 14, 2022](subdir/compare_fit_boot_dist.html)
+
+[July 21, 2022](subdir/bootstrap_alt_compare.html)
+
+Re-explores bootstrap alternative, CI, histogram of parameters, thoughts on going forward
+
+[August 4, 2022](subdir/bootstrap_confidence_intervals.html)

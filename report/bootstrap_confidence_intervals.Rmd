@@ -6,7 +6,8 @@ output: html_document
 `r Sys.Date()`
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.width = 10, fig.height = 8)
+knitr::opts_chunk$set(echo = FALSE, fig.align = "center", fig.width = 10, fig.height = 8, 
+                      message = FALSE, warning = FALSE)
 library(bdots)
 ```
 
@@ -238,7 +239,7 @@ abline(v = cc[i], lwd = 2, col = 'red')
 
 ## Is SD the way to go?
 
-```{r, fig.height=15}
+```{r, fig.height=12}
 A <- tt$curves$A
   B <- tt$curves$B
 
@@ -256,7 +257,7 @@ plot(swA, xlab = "index", ylab = "pvalue", main = "Shapiro-Wilk p-value, n = 50"
 
 Group B
 
-```{r}
+```{r, fig.height=12}
 
 swB <- apply(B, 1, function(x) {
   x <- sample(x, 50, replace = TRUE)

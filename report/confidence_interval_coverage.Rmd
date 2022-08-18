@@ -1,0 +1,102 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = 'center', message = FALSE, 
+                      warning = FALSE, fig.width = 8, fig.height = 8)
+```
+
+`r Sys.Date()`
+
+# Coverage Simulation
+
+Ran 
+
+- 100 simulations with 
+- 25 subjects, each going through
+- 10, 25, 50, 75, and 100 trials with
+- 1000 bootstraps each
+
+Coverage is proportion of simulations in which the true curve was between the 5th and 95th quantiles of the bootstrapped distribution
+
+# Parameters
+
+```{r}
+
+library(data.table)
+library(bdots)
+library(eyetrackSim)
+library(mvtnorm)
+
+results <- readRDS("../data/coverage_results.rds")
+
+pp <- lapply(results, `[[`, 1)
+cc <- lapply(results, `[[`, 2)
+
+## Parameters first, let's say 90 percent coverage
+pp <- lapply(pp, function(x) {
+  parCoverage <- apply(x, 2, function(y) sum(y > 0.05 & y < 0.95) / length(y))
+})
+
+mini <- lapply(pp, `[[`, 1) |> unlist()
+peak <- lapply(pp, `[[`, 2) |> unlist()
+slope <- lapply(pp, `[[`, 3) |> unlist()
+cross <- lapply(pp, `[[`, 4) |> unlist()
+
+par(mfrow = c(2,2))
+plot(mini, ylim = c(0, 1.1), main = "mini", type = 'b', xaxt = 'n', xlab = "# Trials")
+abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+
+plot(peak, ylim = c(0, 1.1), main = "peak", type = 'b', xaxt = 'n', xlab = "# Trials")
+abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+
+plot(slope, ylim = c(0, 1.1), main = "slope", type = 'b', xaxt = 'n', xlab = "# Trials")
+abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+
+plot(cross, ylim = c(0, 1.1), main = "cross", type = 'b', xaxt = 'n', xlab = "# Trials")
+abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+```
+
+# Average pointwise coverage by trial
+
+```{r, fig.width=6, fig.height=6}
+## This takes average across time points, then average across trials, then average total
+cc_cover <- lapply(cc, function(x) {
+  ## Here we just do full band for now
+  mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
+  mean(mm)
+}) |> unlist()
+#cc_cover <- Reduce(`+`, cc_cover) / length(cc_cover)
+par(mfrow = c(1,1))
+plot(cc_cover, ylim = c(0.5, 1.1), main = "Average pointwise coverage", type = 'b',
+     xaxt = 'n', xlab = "# Trials", ylab = "Coverage")
+abline(h = 0.9, col = 'red', lty = 2)
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+```
+
+# Average pointwise coverage by time
+
+```{r, fig.width=12}
+
+## Practice with the first
+cc_time <- lapply(cc, function(x) {
+  ## Here we just do full band for now
+  mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
+  #mean(mm)
+}) #|> unlist()
+
+par(mfrow = c(2, 3))
+mtrials <- c(10, 25, 50, 75, 100)
+for (i in seq_along(cc_time)) {
+  x <- cc_time[[i]]
+  plot(x, ylim = c(0.5, 1.05), xlab = "Time", xaxt = 'n', type = 'l',
+       ylab = 'coverage', main = paste(mtrials[i], "Trials"))
+  abline(h = 0.9, col = 'red', lty = 2)
+  axis(1, at = seq(0, 2000, by = 50), labels = seq(0, 2000, by = 50))
+}
+```

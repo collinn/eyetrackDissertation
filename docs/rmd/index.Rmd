@@ -51,3 +51,9 @@ This looks at the actual fits from bdotsBoot, along with histograms of booted pa
 Re-explores bootstrap alternative, CI, histogram of parameters, thoughts on going forward
 
 [August 4, 2022](subdir/bootstrap_confidence_intervals.html)
+
+## Simulation (Coverage)
+
+Let's look at what actual bootstrap looks like in terms of parameter and pointwise curve coverage
+
+[August 18, 2022](subdir/confidence_interval_coverage.html)

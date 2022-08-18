@@ -164,3 +164,20 @@ matplot(mm1, type = 'l', lty = c(2,1,2), col = c("red", "black", "red"),
 ## See how sd shapes up with whole collection
 matplot(ll, type = 'l')
 matlines(mm1, lty = c(2,1,2), lwd = 4, col = 'red')
+
+
+### From the actual data set with protocl and res.l
+boot <- bdotsBoot(y ~ protocol(CI, NH), bdObj = res.l)
+
+cl <- boot$curveList
+A <- cl$NH$curveMat
+matplot(t(A), type = 'l')
+
+hist(t(A[, 100]))
+
+tt <- apply(A, 1, function(x) shapiro.test(x))
+
+qq <- vapply(tt, function(x) x$p.value, numeric(1))
+
+
+tt <- apply(A, 2, shapiro.test)

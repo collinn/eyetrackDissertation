@@ -30,36 +30,57 @@ library(eyetrackSim)
 library(mvtnorm)
 
 results <- readRDS("../data/coverage_results.rds")
+res_bdots <- readRDS("../data/bdots_coverage_results.rds")
 
 pp <- lapply(results, `[[`, 1)
+ppb <- lapply(res_bdots, `[[`, 1)
 cc <- lapply(results, `[[`, 2)
+ccb <- lapply(res_bdots, `[[`, 2)
 
 ## Parameters first, let's say 90 percent coverage
-pp <- lapply(pp, function(x) {
-  parCoverage <- apply(x, 2, function(y) sum(y > 0.05 & y < 0.95) / length(y))
-})
+getParCoverage <- function(pp) {
+  pp <- lapply(pp, function(x) {
+    parCoverage <- apply(x, 2, function(y) sum(y > 0.05 & y < 0.95) / length(y))
+  })
+  
+  mini <- lapply(pp, `[[`, 1) |> unlist()
+  peak <- lapply(pp, `[[`, 2) |> unlist()
+  slope <- lapply(pp, `[[`, 3) |> unlist()
+  cross <- lapply(pp, `[[`, 4) |> unlist()
+  
+  return(list(mini = mini, peak = peak, slope = slope, cross = cross))
+}
 
-mini <- lapply(pp, `[[`, 1) |> unlist()
-peak <- lapply(pp, `[[`, 2) |> unlist()
-slope <- lapply(pp, `[[`, 3) |> unlist()
-cross <- lapply(pp, `[[`, 4) |> unlist()
+pp <- getParCoverage(pp)
+ppb <- getParCoverage(ppb)
 
 par(mfrow = c(2,2))
-plot(mini, ylim = c(0, 1.1), main = "mini", type = 'b', xaxt = 'n', xlab = "# Trials")
-abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
+plot(pp$mini, ylim = c(0, 1.1), main = "mini", type = 'b', xaxt = 'n', 
+     xlab = "# Trials", ylab = "Coverage", pch = 1)
+abline(h = 0.9, col = 'red', lty = 2)
 axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+lines(ppb$mini, type = 'b', pch = 2, col = 'blue')
+legend(1, 0.2, legend = c("Bootstrap", "bdots"), pch = c(1, 2),
+       col = c("black", "blue"))
 
-plot(peak, ylim = c(0, 1.1), main = "peak", type = 'b', xaxt = 'n', xlab = "# Trials")
+plot(pp$peak, ylim = c(0, 1.1), main = "peak", type = 'b', xaxt = 'n', 
+     xlab = "# Trials", ylab = "Coverage")
 abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
 axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+lines(ppb$peak, type = 'b', pch = 2, col = 'blue')
 
-plot(slope, ylim = c(0, 1.1), main = "slope", type = 'b', xaxt = 'n', xlab = "# Trials")
-abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
-axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
 
-plot(cross, ylim = c(0, 1.1), main = "cross", type = 'b', xaxt = 'n', xlab = "# Trials")
+plot(pp$slope, ylim = c(0, 1.1), main = "slope", type = 'b', xaxt = 'n', 
+     xlab = "# Trials", ylab = "Coverage")
 abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
 axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+lines(ppb$slope, type = 'b', pch = 2, col = 'blue')
+
+plot(pp$cross, ylim = c(0, 1.1), main = "cross", type = 'b', xaxt = 'n', 
+     xlab = "# Trials", ylab = "Coverage")
+abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+lines(ppb$cross, type = 'b', pch = 2, col = 'blue')
 ```
 
 # Average pointwise coverage by trial
@@ -71,32 +92,70 @@ cc_cover <- lapply(cc, function(x) {
   mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
   mean(mm)
 }) |> unlist()
+
+## Do this also for bdots, which only has binary indicators of coverage rather than quantile
+cc_coverb <- lapply(ccb, function(x) {
+  ## Here we just do full band for now
+  mm <- apply(x, 1, function(y) mean(y))
+  mean(mm)
+}) |> unlist()
+
+
 #cc_cover <- Reduce(`+`, cc_cover) / length(cc_cover)
 par(mfrow = c(1,1))
-plot(cc_cover, ylim = c(0.5, 1.1), main = "Average pointwise coverage", type = 'b',
+plot(cc_cover, ylim = c(0.0, 1.1), main = "Average pointwise coverage of curve", type = 'b',
      xaxt = 'n', xlab = "# Trials", ylab = "Coverage")
 abline(h = 0.9, col = 'red', lty = 2)
 axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+lines(cc_coverb, type = 'b', pch = 2, col = 'blue')
+legend("bottomleft", legend = c("bootstrap", "bdots"), pch = c(1, 2), col = c("black", "blue"))
 ```
 
 # Average pointwise coverage by time
 
 ```{r, fig.width=12}
 
-## Practice with the first
+## Here we just do full band for now
 cc_time <- lapply(cc, function(x) {
-  ## Here we just do full band for now
   mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
-  #mean(mm)
-}) #|> unlist()
+}) 
+cc_timeb <- lapply(ccb, function(x) {
+  mm <- apply(x, 1, function(y) mean(y))
+}) 
 
 par(mfrow = c(2, 3))
 mtrials <- c(10, 25, 50, 75, 100)
 for (i in seq_along(cc_time)) {
   x <- cc_time[[i]]
-  plot(x, ylim = c(0.5, 1.05), xlab = "Time", xaxt = 'n', type = 'l',
-       ylab = 'coverage', main = paste(mtrials[i], "Trials"))
+  y <- cc_timeb[[i]]
+  plot(x, ylim = c(0.0, 1.05), xlab = "Time", xaxt = 'n', type = 'l',
+       ylab = 'coverage', main = paste(mtrials[i], "Trials"), lwd = 1.2)
   abline(h = 0.9, col = 'red', lty = 2)
-  axis(1, at = seq(0, 2000, by = 50), labels = seq(0, 2000, by = 50))
+  axis(1, at = seq(0, 501, by = 12)[-2], labels = seq(0, 2000, by = 50))
+  lines(y, lwd = 1.2, col = 'blue')
+  legend("bottomleft", legend = c("bootstrap", "bdots"), col = c("black", "blue"), lty = 1)
 }
+
+```
+
+
+# Quantile needed for 90% band coverage
+
+We don't have this for bdots as bdots does not naturally produce quantiles. Instead, here we set $\alpha = 0.1$ and considered pointwise coverage to be whether or not the generating curve fell within the $\mu_t \pm t_{\alpha^*}\hat{\sigma}_t$ band. Since the bootstraps do appear to generally be normally distributed at each point, this range is actually more generous than simply having determined the collection of bootstrapped curves, measuring the quantiles from there. 
+
+```{r}
+
+cc_band <- lapply(cc, function(x) {
+  ## Go through each trial and determine what quantile
+  # needed to cover entire band
+  mm <- apply(x, 2, function(y) max(max(y), 1 - min(y)))
+  quantile(mm, 0.9)
+})
+
+par(mfrow = c(1,1))
+plot(unlist(cc_band), ylim = c(0.8, 1.0), main = "Required quantile for 90% coverage of entire band", type = 'b',
+     xaxt = 'n', xlab = "# Trials", ylab = "Coverage")
+abline(h = 0.9, col = 'red', lty = 2)
+axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
+text(1:5, unlist(cc_band) + 0.005, unlist(cc_band), cex = 0.8)
 ```

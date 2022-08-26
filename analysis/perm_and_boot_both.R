@@ -1,4 +1,3 @@
-
 library(data.table)
 library(bdots)
 library(eyetrackSim)
@@ -67,23 +66,11 @@ fit <- bdotsFit(data = dt,
                 subject = "id",
                 curveType = logistic())
 
-### Everything above this is just setup (same as for coverage simulator)
-### Everything below this is related to permutation tests for differences
 
-## assuming we have a fitted object to begin
-P <- 500 # number of permutations
-n <- nrow(fit)
+###### Ok, everything above is setup
 
-# each column a permutation
-permmat <- replicate(P, sample(seq_len(n), n))
+## Functions for perm test
 
-curperm <- permmat[, 2]
-
-
-## Actually, start here with T(t) function
-
-idx <- permmat[, 2]
-x <- fit
 getT <- function(x, idx, whole = FALSE) {
   x$group <- x$group[idx]
   fit_s <- split(x, by = "group")
@@ -116,27 +103,21 @@ getTDist <- function(x, P = 1000) {
 }
 
 
-## Insignificant difference between distribution of 500 and 1000
+# x is fitted object, b is bootstrap
+bsPars <- function(x, b = 1000) {
+  bsPars2 <- function(x) {
+    idx <- sample(seq_len(nrow(x)), replace = TRUE)
+    xn <- x[idx, ]
+    xn$splitvar <- seq_len(nrow(x))
+    xns <- split(xn, by = "splitvar")
+    xpar <- vapply(xns, function(z) {
+      rmvnorm(1, coef(z), vcov(z$fit[[1]]))
+    }, numeric(4))
+    rowMeans(xpar)
+  }
+  tt <- replicate(b, bsPars2(x), simplify = TRUE) |> t()
+}
 
-t500 <- getTDist(fit, 500)
-t1000 <- getTDist(fit, 1000)
-hist(t1000)
-hist(t500, col = 'blue', add = TRUE)
-abline(v = quantile(t500, probs = 0.975), col = 'blue', lwd = 2)
-abline(v = quantile(t1000, probs = 0.975), col = 'red', lwd = 2)
-
-quantile(t500, probs = 0.975)
-quantile(t1000, probs = 0.975)
-
-
-
-## I do this often enough, I should have a way to plot bdotsBoot with
-# base r graphics from the boot object
-# should be more generic but most of my code uses A/B so it is this for now
-boot <- bdotsBoot(y ~ group(A, B), fit)
-plot(boot, plotDiffs = FALSE)
-
-x <- boot
 plotBoot <- function(x) {
   A <- x$curveList$A$curveMat
   B <- x$curveList$B$curveMat
@@ -162,26 +143,47 @@ plotBoot <- function(x) {
 }
 
 
+### Do the work
+fit <- bdotsFit(data = dt,
+                group = "group",
+                y = "fixations",
+                time = "time",
+                subject = "id",
+                curveType = logistic())
+## From bootstrap
+bsa <- bsPars(fit[group == "A", ], 1000)
+bsb <- bsPars(fit[group == "B", ], 1000)
+time <- seq(0, 2000, by = 4)
+cla <- apply(bsa, 1, function(p) eyetrackSim:::logistic_f(p, time))
+clb <- apply(bsb, 1, function(p) eyetrackSim:::logistic_f(p, time))
 
+qa <- apply(cla, 1, function(q) quantile(q, probs = c(0.025, 0.975)))
+qa <- cbind(t(qa), rowMeans(cla))
 
+qb <- apply(clb, 1, function(q) quantile(q, probs = c(0.025, 0.975)))
+qb <- cbind(t(qb), rowMeans(clb))
 
+actual_t <- getT(fit, seq_len(nrow(fit)), whole = TRUE)
+t500 <- getTDist(fit, 1000)
+tq <- quantile(t500, probs = 0.975)
 
+plot(actual_t, type = 'l')
+abline(h = tq, lty = 2, col='red')
 
+## Indices where significant diff based on null
+# (here, i know its a sequence but i need to tighten this for general use)
+idx <- which(actual_t > tq)
+sig_time <- time[idx]
 
+boot <- bdotsBoot(y ~ group(A, B), fit)
+plot(boot, plotDiffs = FALSE)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+par(mfrow = c(1, 2))
+matplot(qa, ylim = c(0, 1), type = 'l', lty = c(2, 2, 1), lwd = 2, col = 'navy', 
+        main = "bs intervals and perm diff")
+matlines(qb, lty = c(2, 2, 1), lwd = 2, col = "brown")
+abline(v = min(idx), col = 'red', lty = 2) # use idx bc curves on idx scale not time
+abline(v = max(idx), col = 'red', lty = 2)
+plotBoot(boot)
 
 

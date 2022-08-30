@@ -1,0 +1,29 @@
+---
+output: html_document
+---
+
+`r Sys.Date()`
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center')
+```
+
+# Abstract
+
+The visual world paradigm uses eye movement data as a real time measure of spoken word recognition. Subjects are typically placed in an environment (such as in front of a computer screen) in which several candidates for a spoken word are presented. As words are spoken in real time, eyes are tracked and the location of the eye is measured in real time. Remember, writing doesn't have to be perfect or even good now. We just need something down to edit and re-edit. Typically, the items presented consist of a target object (spoken word referrent), and others. 
+
+# Introduction
+
+In Allopenna (1998), they say "... A time course analysis of the proportion of fixations on the target object (currect referent), cohort competitor, and unrelated objects suggested that this measure would be extremely sensistive to the uptake of information during the lexical process. *Futhermore, the shapes of the functions suggested that they could be closely mapped onto activation levels*...*We also put forth an explicit account of the mapping between activation levels simulated by the TRACE model and fixation probabilities.*"
+
+That is, it seems like the connection between fixations and activation was first posited due to the similarities in shape of the functions with TRACE models. ("linking hypothesis" -- also, see magnuson)
+
+Actually, this entire paper gives an explicit transformation from what was predicted in TRACE to what should be predicted as proportion/probability of fixation
+
+So is this the benchmark? should i be making comparisons to trace with simulted eyetracking data (which I don't really have) and saccades? Or should the argument be more practical/theoretical? At very least, it seems like maybe some mention of trace necessary, maybe taking experimental data, turning that into standard/saccade, and then comparing that against trace? As trace seems to be the theoretical gold standard of activation, it would at least give some real world referent against which to make the argument that as a function of measuring activation by probability of fixating at some period, this is what makes the most sense.
+
+both of these things make me think that finishing up bdots methodology and use should be first on my list, with the saccade/theoretical bits coming last. but then, what happens if the saccade method doesn't pan out? What if it doesn't more accurately match the trace model using RMSE? will plan on discussing this with patrick.
+
+# Eyetracking Data
+
+# Current Method

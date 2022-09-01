@@ -60,4 +60,6 @@ Let's look at what actual bootstrap looks like in terms of parameter and pointwi
 
 ## Permutations
 
+Dude this is SICK!
+
 [Sept 01, 2022](subdir/permutation_and_perm_step.html)

@@ -92,6 +92,11 @@ The original collection of statistics, $T(t)$ are compared? at each point agains
 
 Again, go see the other paper I have to write that has even more detail (this one has too much I think) for a fuller description along with collection of diagnostics validating the changes made here.
 
+
+---
+
+In addition to whatever general uncertainy exists in the section above, we again now need to consider if we want each iteration of our bootstrap to be $f ( \frac1n \sum \theta_{bi})$ or $ \frac1n \sum f_i (\theta_{bi})$
+
 \section{Fitting Curves}
 
 The curve fitting process is performed with the \texttt{bdotsFit} function, taking the following arguments: (removing `cor` and numRefits)
@@ -139,7 +144,7 @@ I'm not really sure what to include in the discussion. We don't need to compare 
 
 \section{Conclusion}
 
-Improvements made to the \texttt{bdots} package have drastically improved the ease of use of the package. The consolidation of major components into two functions has also streamlined use. Quality of life improvements include multiple group fitting, formula syntax for bootstraps, tractable return objects, and others. Generics have also been good. The package is also now statistically correct. It has extended the types of data that can be accomodated, including heterogenous observations across time, and the ability to construct user-specified curves. it really is a pretty neat package.
+Improvements made to the \texttt{bdots} package have drastically improved the ease of use of the package. The consolidation of major components into two functions has also streamlined use. Quality of life improvements include multiple group fitting, formula syntax for bootstraps, tractable return objects, and others. Generics have also been good. The package is also now statistically correct. It has extended the types of data that can be accomodated, including heterogenous observations across time and the ability to construct user-specified curves. it really is a pretty neat package.
 
 \end{document}
 

@@ -15,7 +15,33 @@ library(bdots)
 - 2nd iteration of bdots
 - will will discuss methodology, use, extensions
 
+Although originally introduced in the context of vwp, as the original authors noted, this problem is one of inherent interest in a variety of domains, including this that and something else. In remaining agnostic to the research context, we specify the analytic goal of this package:
+
+1. Given two or more sets of curves, typically measured in time, in which a window of time where a statistically significant window is present but not known a priori. for an exposition of the problems unique to vwp, see (original)
+
+Further, given the number of fundamental changes to both the internal structure of the pacakge, as well as its use, I will refrain from a compare/contrast style presentation. Instead, we will note here the major changes and then proceed with a description of how it's used. 
+
+Major changes:
+
+1. There is now a single function for both fitting and bootstrapping, respectively, as opposed to one for each curve type. Additionally, user-defined curves can be used with package
+
+2. piggybacking on (1), no longer required to use parameteric functions with introduction of polynomial and splines
+
+3. Bootstrapping algorithm modified to better capture the group distribution (see methodology)
+
+4. Removal of autoregressive assumptions (see methodology), replaced with permutation testing
+
+5. All conditions with a particular curve type can be fit at once, with differences or difference of differences specified in the bootstrapping function
+
+6. Detection of paired/unpaired t-tests performed automatically based on intersection of subject identifier between groups
+
+7. its now stylized 'bdots'
+
 # Methodology
+
+As suggested previously, there are have been two major changes in the underlying bdots methodology. Briefly, these involve a change in the bootstrapping algorithm to better capture the underlying distribution of the group and create confidence intervals with better coverage. Second, the autocorrective adjustment to the Type I error rate has been replaced with permutation testing.
+
+The general interpretation of the output remains unchanged, with bdots identifying time windows with statistically significant difference without a priori specification. For a full treatment of this updated methodology, see (my new shit)
 
 # Use
 

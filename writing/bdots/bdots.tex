@@ -31,7 +31,7 @@ This paper is not intended to serve as a complete use guide to updates in the bd
 Updates to the bdots package have been such that there is little resemblance to the original. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use. 
 
 \begin{enumerate}
-\item Parameter and nonparametric functions
+\item Parameter and nonparametric functions (not going to be true)
 \item User defined curves
 \item Permit fitting for arbitrary number of groups
 \item Updates to bootstrapping algorithm and introduction of permutation test
@@ -43,7 +43,17 @@ Updates to the bdots package have been such that there is little resemblance to 
 \item bdots is now stylized ``bdots"
 \end{enumerate}
 
-\paragraph{Outline}
+\paragraph{Bootstrapped differences in time series}
+
+The high level motivation, abstracted from the particulars, is more or less as follows: we are often interested in comparing time series between two or more groups. A full(er) review of previous methods can be found in Seedorff,  though we can limit the scope of interest to specifying that we are interested in ``developing a statistical tool to (1) detect differences in two time series (as the VWP) and (2) to offer a precise characterization of the time window in which a difference occurs \cite{seedorff2018bdots}. 
+
+A typical instantiation of this problem occurs when we have two groups (or experimental conditions, etc.,) in which subjects in each group have an associated time series. It's assumed that each group has some distribution of associated functions in time, and we are interested in identifying windows in time in which these distributions are significantly different.
+
+There are also situations in which we are interested in the difference of differences. I don't remember where or why this is done, some justification for doing this instead of some complicated F test, but I can find that later. Instead, let me offer an example. I'm already not going to like this example, so let me just put it anyways knowing that it will be deleted. Suppose we are interested in understanding how the color of a vehicle differentially impacts performance based on the vehicle type. We know that there is some difference between cars and trucks. Suppose then that we look at the difference between red cars and red trucks and then the difference between blue cars and blue trucks. If color does not mediate this difference, the difference between red cars and trucks should be the same as the difference between blue cars and trucks. This information can be determined if we look then at the difference between the differences. 
+
+The original bdots package was predicated on comparing differences between dense, highly correlated time series by first specifying functional forms and then performing statistical tests on each of the observed time points. With verison 2.0, this is no longer the case, and bdots is able to fit parameteric functions to any type of data observed in time. Along with methodological improvements, this expanded whatever has also replaced the original method of determining statistical significance in differences (autocorrelated adjustment to $\alpha$) with a more robust permutation testing framework. In addition to methodology, a number of quality-of-life improvements have also been made, greatly simplifying syntax, creating more robust functions, and the addition of a number of useful methods for handling returned objects.
+
+talk about how we are no longer just doing time series, as indicated with saccade method. we have now branched to the more general problem of comparing functional forms of observed data.
 
 \section{Methodology and Overview} 
 
@@ -52,12 +62,14 @@ There are major changes in the underlying methodology used in the bdots package,
 Broadly, there are two steps to performing an analysis with the bdots pacakge: fitting the curves to observed data and bootstrapping differences between groups. The first step involves specifying an underlying curve, $f$, which may or may not be parametric. Along with the observed data $y$ for each $i$th subject, bdots, via fitting with gnls, returns a set of parameters along with an estimate of their covariance.
 
 \begin{equation}
-F: f \times y_i \rightarrow N(\hat{\theta_i}, V_{i})
+F: f \times y_i \rightarrow N(\hat{\theta_i}, V_{i}),
 \end{equation}
 
-(Note: for non-parametric functions, the $\theta$ values are associated with splines). \\
+%(Note: for non-parametric functions, the $\theta$ values are associated with splines). \\
+where $\theta$ is a length-$p$ vector representing the parameters of the function.
 
-Once fits have been made, we are ready for testing the bootstrapped difference between curves. Once the groups of interest have been specified, two algorithms are implemented to determine the distribution of each group of curves and to specify regions of statistically significant differences, respectively. The algorithm for the bootstrapping steps for each group is as follows:
+
+Once fits have been made, we are ready for testing the bootstrapped difference between curves. Once the groups of interest have been specified, two algorithms are implemented: a bootstrapping algorithm is used to determine the distribution of each group of curves, while permutation testing is used to specify regions of statistically significant differences. The algorithm for  bootstrapping for each group is as follows:
 
 \begin{enumerate}
 \item For a group of size $n$, select $n$ subjects from the group, \textit{with replacement}
@@ -66,31 +78,37 @@ Once fits have been made, we are ready for testing the bootstrapped difference b
 \item Perform this sequence $B$ times
 \end{enumerate}
 
-The end result is a $B \times p$ matrix (where $p$ is the number of parameters) $\Leftarrow$ this might not be true, I'll leave it for now, but we technically don't need to prespecify that each subject has same number of parameters (ok, but actually we kind of do if $\theta_b$ is going to be the mean of each sample. This is fine.
 
-The end results is a $B \times p$ matrix (where $p$ is the number of parameters) containing a bootstrapped sample of the group distribution for $\theta$. Each of these is used to construct a $B \times T$ matrix ($T$ the number of time points), a collection of bootstrapped curves. Each column of this matrix represents a time point, $t$, from which we can compute the mean and standard deviation of the group curve at that time (wordy). $\Leftarrow$ this also might contain too specific of detail. they don't care that its a matrix. they care for each time point we can construct an estimate of the mean and sd. And really, even this is only from CI and group distribution. There could possibly be an option to skip computing this at all and just do the permutation test.
+The end results is a $B \times p$ matrix containing a bootstrapped sample of the group distribution for $\theta$. Each row of this matrix is used to create a $1 \times T$ vector representing $f_{\theta}$ evaluted at $T$ time points. This results in a $B \times T$ matrix representing a collection of bootstrapped curves evaluated at each time point, in total representing a bootstrapped distribution of the curves.
 
-Next we attend to idenfiying regions in which a statistically significant difference between curves is present. To this end, \ldots (stuff) \ldots we construct a $t$-statistic at each time point between the two groups
 
-\begin{equation}
-T(t) = \frac{|\overline{f}_1(t) - \overline{f}_2(t)|}{\sqrt{\frac{1}{n_2} \text{Var}(f_1(t)) + \frac{1}{n_2} \text{Var}(f_2(t))}}
-\end{equation}
-This notation was clearly stolen from the FDA book. However, what we intend to articulate by $\overline{f}_1(t)$ is $\overline{f}_j(t) = \frac{1}{n_j} \sum_{i=1}^{n_j} f(\theta_i)$. In the case of a paired t-test, the test statistic is simply
+%Each of these is used to construct a $B \times T$ matrix ($T$ the number of time points), a collection of bootstrapped curves. Each column of this matrix represents a time point, $t$, from which we can compute the mean and standard deviation of the group curve at that time (wordy). $\Leftarrow$ this also might contain too specific of detail. they don't care that its a matrix. they care for each time point we can construct an estimate of the mean and sd. And really, even this is only from CI and group distribution. There could possibly be an option to skip computing this at all and just do the permutation test.
+
+Next we attend to idenfiying regions in which a statistically significant difference between curves is present. We begin by computing a $t$-statistic of the difference at each time point, 
 
 \begin{equation}
-T(t) = \frac{\overline{f}_D(t)}{\sqrt{\frac1n \text{Var}(f_D(t))}}
+T(t) = \frac{|\overline{f}_1(t) - \overline{f}_2(t)|}{\sqrt{\frac{1}{n_2} \text{Var}(f_1(t)) + \frac{1}{n_2} \text{Var}(f_2(t))}},
 \end{equation}
 
-In either case, once the collection of test statistics has been collected at each time point, we go about determining the null distribution. For each of $P$ iterations, we perform the following:
+or, in the case of paired groups, 
+
+\begin{equation}
+T(t) = \frac{\overline{f}_D(t)}{\sqrt{\frac1n \text{Var}(f_D(t))}}.
+\end{equation}
+
+Next, we go about creating a null distribution against which to test our hypothesis that there is no difference between each group at each time point. We do this with permutation testing, and the algorithm is as follows: for two groups, with $n_1$ and $n_2$ subjects in each
 
 \begin{enumerate}
-\item Shuffle the labels assigning group membership for each subject
-\item Recompute the test statistic $T(t)$, retaining the max of each iteration
+	\item Assign to each subject a label indicating group membership
+	\item Randomly shuffle the lables indicating membership, creating two new groups with $n_1$ and $n_2$ subjects in each
+	\item Recalculate the $t$-statistic, $T(t)$ and log the maximum
 \end{enumerate}
 
-The original collection of statistics, $T(t)$ are compared? at each point against the distribution of values collected during the permutation. Those exceeding a specified threshold are determined significant. Probably also something on paired permutation test
+The collection of maximum values for $T(t)$ will serve as the null distribution against which to compare our observed $T(t)$.
 
-Again, go see the other paper I have to write that has even more detail (this one has too much I think) for a fuller description along with collection of diagnostics validating the changes made here.
+This notation was clearly stolen from the FDA book. 
+
+Previous implementations of \texttt{bdots} performed this test by adjusting the nominal $\alpha$ to account for correlation between subsequent tests in time, based on previous work in Oleson. Simluations presented in [cite] suggest that this was not optimial. \texttt{bdots} does still maintain this functionality, and an estimate of the adjusted $\alpha$, along with adjusted $p$-values, can still be determined with the function, \texttt{somefun}.
 
 
 ---
@@ -107,7 +125,9 @@ bdotsFit(data, subject, time, y, group, curveType, cores, ...)
 \end{verbatim}
 \end{center}
 
-\paragraph{Curve functions} Each of \texttt{subject}, \texttt{time}, \texttt{y}, and \texttt{group} are length one character vectors representing columns of the dataset used in \texttt{data}. New here is \texttt{curveType}, taking as an argument an R call to a particular curve, for example the four parameter logistic, \texttt{logistic()}. This is done to self-contain any additional arguments associated with the fitting curve, for example the concavity of the double Gaussian (\texttt{curveType = doubleGauss(concave = TRUE)}) or the number of knots in a piecewise spline (\texttt{curveType = splines(knots = 5)}). A number of curves are included with the \texttt{bdots} package, including those for the four-parameter logistic, the double Gauss, an exponential curve, polynomials of arbitrary degree, and (soon) splines. A detailed vignette on writing your own curves can be found with \texttt{vignette("bdots")} ($\Leftarrow$ actually it would be vignette(``customCurves", "bdots") or browseVignette(``bdots") to see, but I haven't decided which I want because I don't really like the name customCurves)
+\paragraph{Curve functions} Each of \texttt{subject}, \texttt{time}, \texttt{y}, and \texttt{group} are length one character vectors representing columns of the dataset used in \texttt{data}. New here is \texttt{curveType}, taking as an argument an R call to a particular curve, for example the four parameter logistic, \texttt{logistic()}. This is done to self-contain any additional arguments associated with the fitting curve, for example the concavity of the double Gaussian (\texttt{curveType = doubleGauss(concave = TRUE)}) or the number of knots in a piecewise spline (\texttt{curveType = splines(knots = 5)}). A number of curves are included with the \texttt{bdots} package, including those for the four-parameter logistic, the double Gaussian, an exponential curve, and polynomials of arbitrary degree. A detailed vignette on writing your own curves can be found with \texttt{vignette("bdots")} ($\Leftarrow$ actually it would be vignette(``customCurves", "bdots") or browseVignette(``bdots") to see, but I haven't decided which I want because I don't really like the name customCurves).
+
+Notably, \texttt{bdots} can now fit curves to an arbitrary number of groups, so long as all have the same parametric specification.
 
 
 \paragraph{Return object and generics}
@@ -121,9 +141,11 @@ Several methods exist for this object, including \texttt{plot}, \texttt{summary}
 
 Like the fitting function, the bootstrapping process has been consolidated to a single function,\texttt{bdotsBoot}.
 
-This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). As curves for an arbitrary number of groups may be fit at once with the \texttt{bdotsFit} function, a formula syntax has been introduced to specify the differences sought. (possibly a better way to introduce/write this section) 
+This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
 
-I'm  actually going to write this section later because it's a massive pain in the ass
+As curves for an arbitrary number of groups may be fit at once with the \texttt{bdotsFit} function, a formula syntax has been introduced to specify the differences sought. (possibly a better way to introduce/write this section) 
+
+
 
 
 \section{Extensions? Plots? I don't know!}
@@ -136,15 +158,20 @@ Maybe do tumr, using expCurve and unequal time points. does not allow demonstrat
 \item plots of fits
 \item plots of bootstrap with ci
 \item difference curve, also with sig sections highlighted
+\item Correlation with fixed variables across time (\texttt{bdotsCorr})
 \end{enumerate}
 
 \section{Discussion}
 I'm not really sure what to include in the discussion. We don't need to compare it to other approaches for analyzing this data, as that's aleady been done. I can point to full methodology paper to see improvements in CI coverage and difference detection/power. Reporting should be fairly simple, an $\alpha$ is given which is used to set the treshold for permutation tests -- nothing else needs to be done. The previous bdots package suggested reporting quality of individual fits that made up the bootstrapped curves, though that was based on $R^2$ and AR(1) status. The former of these is problem specific, the latter now irrelevant.
 
+raff raff raff raff raff
+
+
+
 
 \section{Conclusion}
 
-Improvements made to the \texttt{bdots} package have drastically improved the ease of use of the package. The consolidation of major components into two functions has also streamlined use. Quality of life improvements include multiple group fitting, formula syntax for bootstraps, tractable return objects, and others. Generics have also been good. The package is also now statistically correct. It has extended the types of data that can be accomodated, including heterogenous observations across time and the ability to construct user-specified curves. it really is a pretty neat package.
+Improvements made to the \texttt{bdots} package have drastically improved the ease of use of the package and the scope of the types of  problems it is able to address. The consolidation of major components into two functions has also streamlined use. Quality of life improvements include multiple group fitting, formula syntax for bootstraps, tractable return objects, and others. Generics have also been good. The package is also now statistically correct. It has extended the types of data that can be accomodated, including heterogenous observations across time and the ability to construct user-specified curves. it really is a pretty neat package.
 
 \end{document}
 

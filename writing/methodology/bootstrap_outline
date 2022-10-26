@@ -1,0 +1,92 @@
+bdots simulation for coverage
+
+Each of these was done 100 times with varying numbers of trials. Looking at 90% coverage
+
+## setup
+
+1. Took real data (ci, looktype = target using four parameter logistic) and fit to bdotsFit. This gave each participant an estiamte for theta.
+
+2. From this set of observed thetas, we computed a group mean and observed covariance matrix, \theta and V. These made up the normal parameters for our "true generating curve"
+
+## data generation
+
+3. For each subject (25 total), we
+	i. drew a set of parameters from this curve, constraining them so that the baseline value was >= 0 and the peak value was <= 1 (for probability)
+	ii. We used these parameters in f(\theta) to create a subject specific generating curve
+	iii. At each timepoint, $t$, from 0 to 2000 at intervals of 4ms (501 timepoints total) we drew $n$ binomials with probability f(t|\theta). This mimics the set of observered proportions drawn from each time point
+	iv. the observed proportion was the average of these binomials
+
+## bdotsFitting
+
+4. With the simulated data, were fit curves using bdotsFit. Here is where the two methods diverge:
+
+######################
+### Original bdots ###
+######################
+
+5. Fit data was put into bdotsBoot with B = 1000 bootstraps and alpha = 0.1
+
+6. bdotsBoot returns matrix of each of the bootstrapped parameters (1000 x 4), as well as matrix of fitted values and standard deviations
+
+7. Using this, at each time point we computed the 90% quantile interval. We then counted what proportion of the timepoints (501 total) this interval contained the true generating function (average pointwise coverage). We did the same for the parameter values.
+
+#####################
+### Updated bdots ###
+#####################
+
+8. For the updated version, subjects were fit using bdotsFit
+
+9. For each of B=1000 bootstraps, the following occurred:
+	i. 25 subjects were drawn *with* replacement
+	ii. parameters were drawn from each subject from their respective \theta, V_{\theta} distribution, just as in bdots
+	iii. parameters were averaged together to create a single bootstrapped group mean set of parameters
+	iv. These were used to create a curve evaluated at the same 501 timepoints
+
+10. Using the matrix of paramters (1000 x 4) and fitted values (1000 x 501), we computed the 90% quantile at each timepoint. We then counted what proportion of the timepoints (501 total) contained the true generating function in its quantile interval (average pointwise convergence). We did the same for parameter values
+
+11. This was performed 100 times for each of N = 10, 25, 50, 75, and 100 trials, with 25 subjects each
+
+12. Plots for this include:
+	i. Proportion of the 100 simulations in which the 90% quantiles for parameters contained the true generating parameters (x4 plots)
+	ii. The average pointwise coverage across 100 simulations
+	iii. Average pointwise coverage across 100 simulations at each time point (x5 plots, one for each N)
+	iv. Maybe required quantile for 90% coverage of entire band for updated method, but maybe not. Idk. Did not/could not do this for original since it would effectively be 1 - 10^{-50}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

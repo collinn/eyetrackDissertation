@@ -6,8 +6,8 @@ library(mvtnorm)
 library(ggplot2)
 
 ## These are probably wrong
-results <- readRDS("../data/coverage_results.rds")
-res_bdots <- readRDS("../data/bdots_coverage_results.rds")
+results <- readRDS("../../data/coverage_results.rds")
+res_bdots <- readRDS("../../data/bdots_coverage_results.rds")
 
 pp <- lapply(results, `[[`, 1)
 ppb <- lapply(res_bdots, `[[`, 1)
@@ -50,11 +50,51 @@ dt1 <- createDtfromPar(pp, "bootstrap")
 dt2 <- createDtfromPar(ppb, "bdots")
 dt <- rbindlist(list(dt1, dt2))
 
+png("img/par_coverage.png")
 ggplot(data = dt, aes(x = trial, y = val, color = sim)) +
   geom_hline(yintercept = 0.9, linetype = "dashed", color = "red") +
   geom_line(linetype = "solid") + geom_point() +
-  facet_wrap(~par) + xlab("Trial") + ylab("Coverage") +
+  facet_wrap(~par) + xlab("# Trials") + ylab("Coverage") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
   scale_x_continuous(breaks = c(10, 25, 50, 75, 100)) +
   ggtitle("Parameter Coverage") + theme_bw() + theme(legend.position = "bottom")
+dev.off()
+
+#### Average pointwise by trials
+## This takes average across time points, then average across trials, then average total
+cc_cover <- lapply(cc, function(x) {
+  ## Here we just do full band for now
+  mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
+  mean(mm)
+}) |> unlist()
+
+## Do this also for bdots, which only has binary indicators of coverage rather than quantile
+cc_coverb <- lapply(ccb, function(x) {
+  ## Here we just do full band for now
+  mm <- apply(x, 1, function(y) mean(y))
+  mean(mm)
+}) |> unlist()
+
+dt1 <- data.table(val = cc_cover,
+                  trial = c(10, 25, 50, 75, 100), 
+                  Simulation = "bootstrap")
+
+dt2 <- data.table(val = cc_coverb,
+                  trial = c(10, 25, 50, 75, 100), 
+                  Simulation = "bdots")
+dt <- rbindlist(list(dt1, dt2))
+
+png("img/pointwise_cover.png")
+ggplot(data = dt, aes(x = trial, y = val, color = Simulation)) +
+  geom_hline(yintercept = 0.9, linetype = "dashed", color = "red") +
+  geom_line(linetype = "solid") + geom_point(size = 2) +
+  xlab("# Trials") + ylab("Coverage") +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
+  scale_x_continuous(breaks = c(10, 25, 50, 75, 100)) +
+  ggtitle("Pointwise Coverage") + theme_bw() + theme(legend.position = "bottom",
+                                                     legend.text = element_text(size = 20),
+                                                     legend.title = element_text(size = 20),
+                                                     legend.key.width= unit(2, 'cm'))
+dev.off()
+
 

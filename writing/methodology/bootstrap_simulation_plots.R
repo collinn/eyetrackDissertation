@@ -28,8 +28,13 @@ getParCoverage <- function(pp) {
   return(list(mini = mini, peak = peak, slope = slope, cross = cross))
 }
 
+
+
 pp <- getParCoverage(pp)
 ppb <- getParCoverage(ppb)
+
+names(pp) <- c("Mini", "Peak", "Slope", "Crossover")
+names(ppb) <- c("Mini", "Peak", "Slope", "Crossover")
 
 ## Make these bitches into dts
 createDtfromPar <- function(p, simtype) {
@@ -53,11 +58,17 @@ dt <- rbindlist(list(dt1, dt2))
 png("img/par_coverage.png")
 ggplot(data = dt, aes(x = trial, y = val, color = sim)) +
   geom_hline(yintercept = 0.9, linetype = "dashed", color = "red") +
-  geom_line(linetype = "solid") + geom_point() +
+  geom_line(size = 1.5, linetype = "solid") + geom_point(size=3) +
   facet_wrap(~par) + xlab("# Trials") + ylab("Coverage") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
   scale_x_continuous(breaks = c(10, 25, 50, 75, 100)) +
-  ggtitle("Parameter Coverage") + theme_bw() + theme(legend.position = "bottom")
+  ggtitle("Parameter Coverage") + theme_bw() + theme(legend.position = "bottom",
+                                                     legend.text = element_text(size = 20),
+                                                     legend.title = element_text(size = 20),
+                                                     legend.key.width= unit(2, 'cm'), 
+                                                     axis.text=element_text(size = 15),
+                                                     axis.title=element_text(size=15),
+                                                     plot.title=element_text(size=25))
 dev.off()
 
 #### Average pointwise by trials
@@ -87,14 +98,18 @@ dt <- rbindlist(list(dt1, dt2))
 png("img/pointwise_cover.png")
 ggplot(data = dt, aes(x = trial, y = val, color = Simulation)) +
   geom_hline(yintercept = 0.9, linetype = "dashed", color = "red") +
-  geom_line(linetype = "solid") + geom_point(size = 2) +
+  geom_line(linetype = "solid", size=1.5) + geom_point(size = 3) +
   xlab("# Trials") + ylab("Coverage") +
   scale_y_continuous(breaks = seq(0, 1, by = 0.1)) +
   scale_x_continuous(breaks = c(10, 25, 50, 75, 100)) +
   ggtitle("Pointwise Coverage") + theme_bw() + theme(legend.position = "bottom",
                                                      legend.text = element_text(size = 20),
                                                      legend.title = element_text(size = 20),
-                                                     legend.key.width= unit(2, 'cm'))
+                                                     legend.key.width= unit(2, 'cm'), 
+                                                     axis.text=element_text(size = 20),
+                                                     axis.title=element_text(size=20),
+                                                     plot.title=element_text(size=25))
 dev.off()
+
 
 

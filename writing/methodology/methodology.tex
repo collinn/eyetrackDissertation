@@ -132,13 +132,36 @@ Next, we argue that leveraging the assumption of a functional form to use permut
 
 \section{Simulations}
 
-This is going to be so much simpler than the original
+Simulations we ran to generally test two comparisons. First, we examined the differences between the original bdots algorithm with a modified form. In each case, we build a bootstrapped distribution and examine 90\% quantiles to determine coverage of the true generating curve. Next, we compare bdots (with updated algorithm, since its better) with a permutation style test. Here, we are examining the power in detecting differences between the modified alpha method for controlling fwer and permtutations. I haven't done that simulation yet.
+
+Each of these simulations was performed with 25 simulated participants in the visual world paradigm, each with a total of 10, 25, 50, 75, and 100 trials. Simulations were performed 100 times. 
+
+\subsection{Setup and Data Generation}
+
+The creation of the simulated data was the same for each simulation, so it will be described in detail here. As we are simulating data for the visual world paradigm, we started with data collected empircally from (source dataset, the one in bdots). Twenty-eight experiment normal hearing participants were fit using the \texttt{bdotsFit} function to the four-parameter logistic curve (using looks to the Target). Fitted parameters for these subjects were extracted and use to construct an empirical group mean and empirical covariance matrix. These values were used as the normal parameters for our generating curve. That is, the empirical mean of these parameters, as well as the four parameter logistic function fit from this mean, represent our oracle curve. (I can report these values, I guess, if I rerun the simulation, but I don't have seeds in bdotsFit so this won't be practical).
+
+For each of the 25 simulated subjects, we did the following:
+
+\begin{enumerate}
+	\item First draw a set of parameters from $\theta_i \sim N(\theta, V_{\theta})$, constrained for the baseline parameter, $b \geq 0$ and for the peak parameter, $h \leq 1$
+	\item The drawn parameters were then used to create a subject specific generating curve $f_i$ ($f_{\theta_i}$)
+	\item This is originally where I did the binomials to simulate looks based on probability at each time point. Patrick suggested normal distribution because he's unimaginative. That's fine, and I can redo it. I can also redo it with more than 100 simulations. At any rate, this is the step where we add noise
+\end{enumerate}
+
+
+The final result was a data.frame with 25 subjects, each subject having 501 observed time points (12525x3 data.frame). 
 
 \subsection{Simulations for Bootstrap}
 
-Idk, maybe i describe it more again here. Maybe i describe it above less. Or go into details
+Our primary question here is if the resulting bootstrapped distribution appropriately covers the true generating curve, specified in the prior section. We compare the methodology used in the original bdots package, which we call bdots, with an updated methodology descriped in the first section, which we are calling bootstrap (granted, they are both bootstrapping algorithms). Simulations for each method are described in the following sections
 
-\begin{figure}
+\subsubsection{bdots method}
+
+\subsubsection{bootstrap method}
+
+\subsubsection{Results}
+
+\begin{figure}[h!]
 \centering
 \includegraphics[scale=0.65]{img/par_coverage.png}
 \caption{Coverage of generating parameter values}

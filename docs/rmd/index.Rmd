@@ -63,3 +63,11 @@ Let's look at what actual bootstrap looks like in terms of parameter and pointwi
 Dude this is SICK!
 
 [Sept 01, 2022](subdir/permutation_and_perm_step.html)
+
+Ok, so here is a look at permuations with new bdots bootstrapping
+
+[Nov 03, 2022](subdir/permutation_and_perm_step_UPDATED_BDOTS.html)
+
+And here is another of the previous except different
+
+[Nov 03, 2022 (alt perm)](subdir/permutation_pline_first.html)

@@ -145,17 +145,24 @@ For each of the 25 simulated subjects, we did the following:
 \begin{enumerate}
 	\item First draw a set of parameters from $\theta_i \sim N(\theta, V_{\theta})$, constrained for the baseline parameter, $b \geq 0$ and for the peak parameter, $h \leq 1$
 	\item The drawn parameters were then used to create a subject specific generating curve $f_i$ ($f_{\theta_i}$)
-	\item This is originally where I did the binomials to simulate looks based on probability at each time point. Patrick suggested normal distribution because he's unimaginative. That's fine, and I can redo it. I can also redo it with more than 100 simulations. At any rate, this is the step where we add noise
+	\item This is originally where I did the binomials to simulate looks based on probability at each time point. Patrick suggested normal distribution because he's unimaginative. That's fine, and I can redo it. I can also redo it with more than 100 simulations. At any rate, this is the step where we add noise. 
+	\item THAT IS, for $m$ trials, at each time point for each subject we drew $y_{it} \sim Bin(f_i(t), m)$ or rather the expectation of this
 \end{enumerate}
 
 
-The final result was a data.frame with 25 subjects, each subject having 501 observed time points (12525x3 data.frame). 
+The final result was a data.frame with 25 subjects, each subject having 501 observed time points (12525x3 data.frame). This data.frame was used again in \texttt{bdotsFit} with the four-parameter logistic to parameter estimates for each of the subjects.
 
 \subsection{Simulations for Bootstrap}
 
 Our primary question here is if the resulting bootstrapped distribution appropriately covers the true generating curve, specified in the prior section. We compare the methodology used in the original bdots package, which we call bdots, with an updated methodology descriped in the first section, which we are calling bootstrap (granted, they are both bootstrapping algorithms). Simulations for each method are described in the following sections
 
 \subsubsection{bdots method}
+
+am i going into too much detail here? is this all necessary? do i need separate sections to detail this? because its pretty small
+
+For the original bdots method, we simply took the object returned from \texttt{bdotsFit} and used it in the bootstrapping function, \texttt{bdotsBoot} with $B = 1000$ bootstraps. This function returns several things. First, we return a matrix of each of the bootstrapped mean parameters, in this case a matrix of size $1000 \times 4$. The function additionally returns a logistic function for each bootstrapped set of parameters evaluated at each time point, here a $1000 \times 501$ matrix, which is used
+
+
 
 \subsubsection{bootstrap method}
 
@@ -167,7 +174,7 @@ Our primary question here is if the resulting bootstrapped distribution appropri
 \caption{Coverage of generating parameter values}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[h!]
 \centering
 \includegraphics[scale=0.5]{img/pointwise_cover.png}
 \caption{Coverage of generating parameter values}
@@ -175,6 +182,8 @@ Our primary question here is if the resulting bootstrapped distribution appropri
 
 
 \subsection{Simulations for Region Testing}
+
+Well, realizing now the writeup for this will be different since we are using different curve. We are going to write simulation so that we can explore a variety of conditions. It's going to be a piecewise linear function with a crossover point, and they will differ in the slope of the second part
 
 piecewise function makes the most sense here. maybe also the double humped rectangles?
 

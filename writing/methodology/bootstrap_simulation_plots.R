@@ -6,7 +6,10 @@ library(mvtnorm)
 library(ggplot2)
 
 ## These are probably wrong
-results <- readRDS("../../data/coverage_results.rds")
+#results <- readRDS("../../data/old_bdots_boot_coverage/coverage_results.rds")
+#res_bdots <- readRDS("../../data/old_bdots_boot_coverage/bdots_coverage_results.rds")
+
+results <- readRDS("../../data/results.rds")
 res_bdots <- readRDS("../../data/bdots_coverage_results.rds")
 
 pp <- lapply(results, `[[`, 1)
@@ -85,6 +88,7 @@ cc_coverb <- lapply(ccb, function(x) {
   mm <- apply(x, 1, function(y) mean(y))
   mean(mm)
 }) |> unlist()
+
 
 dt1 <- data.table(val = cc_cover,
                   trial = c(10, 25, 50, 75, 100), 

@@ -31,14 +31,14 @@ This paper is not intended to serve as a complete use guide to updates in the bd
 Updates to the bdots package have been such that there is little resemblance to the original. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use. 
 
 \begin{enumerate}
-\item Parameter and nonparametric functions (not going to be true)
+%\item Parameter and nonparametric functions (not going to be true)
 \item User defined curves
 \item Permit fitting for arbitrary number of groups
 \item Updates to bootstrapping algorithm and introduction of permutation test
 \item Automatic detection of paired tests based on subject identifier
 \item Allows for non-homogenous sampling of data across subjects and groups
-\item Introduce formula for bootstrapping difference function
-\item Removal of auto-correlation assumption
+\item Introduce formula syntax for bootstrapping difference function
+%\item Removal of auto-correlation assumption
 \item bdots object inherits from data.table class
 \item bdots is now stylized ``bdots"
 \end{enumerate}
@@ -115,6 +115,10 @@ Previous implementations of \texttt{bdots} performed this test by adjusting the 
 
 In addition to whatever general uncertainy exists in the section above, we again now need to consider if we want each iteration of our bootstrap to be $f ( \frac1n \sum \theta_{bi})$ or $ \frac1n \sum f_i (\theta_{bi})$
 
+\section{Example Data}
+
+Maybe here choose a dataset and explain what it is, specifying the components of it so that we can use it in an ongoing example. That way (especially in bootstrap formula step) I can just say something like oh yeah Group1 values A and B and Group2 values with C and D. Or whatever. 
+
 \section{Fitting Curves}
 
 The curve fitting process is performed with the \texttt{bdotsFit} function, taking the following arguments: (removing `cor` and numRefits)
@@ -137,9 +141,18 @@ The function \texttt{bdotsFit} returns an object of class \texttt{bdotsObj}, inh
 
 Several methods exist for this object, including \texttt{plot}, \texttt{summary}, and \texttt{coef}, returning a matrix of fitted coefficients returned from \texttt{gnls}. One consequence of inheriting from \texttt{data.table}, we are able to utilize data.table syntax. Note, for example, the differences between \texttt{coef(fit)}, \texttt{coef(fit[group == "A",])}, and \texttt{coef(fit[group == "B",])}. That's pretty much it on the neat stuff you can do with this. Time to go to bootstrapping step.
 
+Actually, there is one additional thing here that I might include as an aside for now -- for part 2 of disseration, we are fitting curve to saccades instead of an ``observed" function. In this case, $R^2$ ends up being kind of a dumb/silly metric. Same can be said for auto-correlation (in terms of it being relevant). Both of these things are included in the derivation of the \texttt{fitCode}. Have not yet decided how that will be handled. 
+
 \section{Bootstrapping}
 
-Like the fitting function, the bootstrapping process has been consolidated to a single function,\texttt{bdotsBoot}.
+Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bdotsBoot}. In addition to taking as an argument an object returned from \texttt{bdotsFit}, \texttt{bdotsBoot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.. When comparing the bootstrapped differences of curves, there are two distinct types of analyses we may be interested in performing. First is a simple difference between the time series of two separate groups.
+
+\begin{center}
+%\begin{verbatim}
+\texttt{y} $\sim$ \texttt{group(A, B)}
+%\end{verbatim}
+\end{center}
+
 
 This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
 

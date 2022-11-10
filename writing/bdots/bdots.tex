@@ -145,18 +145,40 @@ Actually, there is one additional thing here that I might include as an aside fo
 
 \section{Bootstrapping}
 
-Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bdotsBoot}. In addition to taking as an argument an object returned from \texttt{bdotsFit}, \texttt{bdotsBoot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.. When comparing the bootstrapped differences of curves, there are two distinct types of analyses we may be interested in performing. First is a simple difference between the time series of two separate groups.
+\subsection{Formula}
+
+Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bdotsBoot}. In addition to taking as an argument an object returned from \texttt{bdotsFit}, \texttt{bdotsBoot} also takes a formula argument, with syntax unique to the \texttt{bdots} package. When comparing the bootstrapped differences of curves, there are two distinct types of analyses we may be interested in performing. First is a simple difference between the time series of two separate groups.
 
 \begin{center}
 %\begin{verbatim}
-\texttt{y} $\sim$ \texttt{group(A, B)}
+\texttt{y} $\sim$ \texttt{group1(A, B)}
 %\end{verbatim}
 \end{center}
 
+Now, it may be the case that within each group, there is a different experimental condition. For example, participants in Group1 A and B each may have been subjected to Conditions 1 and 2. In this case, we need to specify which nested Condition we are wanting to compare. To do this for the first condition, for example, we simply extend the above formula
 
-This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
+\begin{center}
+\texttt{y} $\sim$ \texttt{group1(A, B) + condition(1)}
+\end{center}
 
-As curves for an arbitrary number of groups may be fit at once with the \texttt{bdotsFit} function, a formula syntax has been introduced to specify the differences sought. (possibly a better way to introduce/write this section) 
+This will allow us to compare the difference of curves A and B within Condition 1.
+
+The second type of analysis we may be interested in involves a \textit{difference of differences}. For example, we may be interested (word again i know) in how the difference between Condition 1 and 2 within group A differs from the difference between Conditions 1 and 2 in group B. Here, we are still interested in comparing between groups A and B, which will remain on the right hand side of the formula. However our outcome of interest, the difference between conditions, will move to the left hand side. Maintaining that the curve is still specified by \texttt{y}, we use to \texttt{diffs} function to indicate this relationship
+
+\begin{center}
+\texttt{diffs(Condition(1, 2), y)} $\sim$ \texttt{group1(A, B)}
+\end{center}
+
+Hypothetically, if we had a third grouping variable, say Cohort with values X and Y, we could further specify which nesting we are interested in just as we did before
+
+\begin{center}
+\texttt{diffs(Condition(1, 2), y)} $\sim$ \texttt{group1(A, B) + Cohort(X)} 
+\end{center}
+
+
+%This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
+
+%As curves for an arbitrary number of groups may be fit at once with the \texttt{bdotsFit} function, a formula syntax has been introduced to specify the differences sought. (possibly a better way to introduce/write this section) 
 
 
 

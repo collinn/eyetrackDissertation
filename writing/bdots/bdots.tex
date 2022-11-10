@@ -7,6 +7,9 @@
 
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage[table]{xcolor}
 
 \usepackage{listings}
 
@@ -51,9 +54,11 @@ A typical instantiation of this problem occurs when we have two groups (or exper
 
 There are also situations in which we are interested in the difference of differences. I don't remember where or why this is done, some justification for doing this instead of some complicated F test, but I can find that later. Instead, let me offer an example. I'm already not going to like this example, so let me just put it anyways knowing that it will be deleted. Suppose we are interested in understanding how the color of a vehicle differentially impacts performance based on the vehicle type. We know that there is some difference between cars and trucks. Suppose then that we look at the difference between red cars and red trucks and then the difference between blue cars and blue trucks. If color does not mediate this difference, the difference between red cars and trucks should be the same as the difference between blue cars and trucks. This information can be determined if we look then at the difference between the differences. 
 
-The original bdots package was predicated on comparing differences between dense, highly correlated time series by first specifying functional forms and then performing statistical tests on each of the observed time points. With verison 2.0, this is no longer the case, and bdots is able to fit parameteric functions to any type of data observed in time. Along with methodological improvements, this expanded whatever has also replaced the original method of determining statistical significance in differences (autocorrelated adjustment to $\alpha$) with a more robust permutation testing framework. In addition to methodology, a number of quality-of-life improvements have also been made, greatly simplifying syntax, creating more robust functions, and the addition of a number of useful methods for handling returned objects.
+The original bdots package was predicated on comparing differences between dense, highly correlated time series by first specifying functional forms and then performing statistical tests on each of the observed time points. With verison 2.0, this is no longer the case, and bdots is able to fit parameteric functions to any type of data observed in time. Along with methodological improvements, we have included more options in determining statistical significance in the differences of curves, utilizing a robust permutation testing framework when the assumptions of autocorrelation do not hold. In addition to methodology, a number of quality-of-life improvements have also been made, greatly simplifying syntax, creating more robust functions, and the addition of a number of useful methods for handling returned objects.
 
-talk about how we are no longer just doing time series, as indicated with saccade method. we have now branched to the more general problem of comparing functional forms of observed data.
+In summary, \texttt{bdots} has transitioned from a package focused exclusively on densly sampled timeseries assuming a limited number of functional forms to a robust framework for identifying time windows of significant difference across a wide breadth of timeseries-adjacent data. 
+
+%talk about how we are no longer just doing time series, as indicated with saccade method. we have now branched to the more general problem of comparing functional forms of observed data.
 
 \section{Methodology and Overview} 
 
@@ -145,9 +150,51 @@ Actually, there is one additional thing here that I might include as an aside fo
 
 \section{Bootstrapping}
 
+Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bdotsBoot}. The bootstrapping function 
+
+
+In addition to taking as an argument an object returned from \texttt{bdotsFit}, \texttt{bdotsBoot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.
+
 \subsection{Formula}
 
-Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bdotsBoot}. In addition to taking as an argument an object returned from \texttt{bdotsFit}, \texttt{bdotsBoot} also takes a formula argument, with syntax unique to the \texttt{bdots} package. When comparing the bootstrapped differences of curves, there are two distinct types of analyses we may be interested in performing. First is a simple difference between the time series of two separate groups.
+%\begin{center}
+%\begin{tabular}{|p{0.6in}|p{0.3in}|p{0.9in}|p{0.9in}|p{0.8in}|} \hline 
+%\multicolumn{2}{|c|}{\multirow{2}{*}{$P_\mathrm{batt}$}} &                                                   
+%  \multicolumn{3}{|c|}{$P_\mathrm{mot}$ }  \\ \cline{3-5} 
+%\multicolumn{2}{|c|}{}   & S & M & H \\ \cline{1-5} 
+%\multirow{3}{*}{SOC} & S & S & Z & VS \\ \cline{2-5} 
+% & M & M & Z & H \\ \cline{2-5} 
+% & H & M & Z & H \\ \hline 
+%\end{tabular}
+%\end{center}
+
+\begin{center}
+\begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color}\\
+\hline
+\multirow{4}{*}{Foreign} & \multirow{2}{*}{Car} & Red \\
+\hhline{~~-}
+& & Blue \\
+\hhline{~--}
+& \multirow{2}{*}{Truck} & Red \\
+\hhline{~~-}
+& & Blue \\
+\hline
+\multirow{4}{*}{Domestic} & \multirow{2}{*}{Car} & Red \\
+\hhline{~~-}
+& & Blue \\
+\hhline{~--}
+& \multirow{2}{*}{Truck} & Red \\
+\hhline{~~-}
+& & Blue \\
+\hline
+\end{tabular}
+\end{center}
+
+
+
+
+When comparing the bootstrapped differences of curves, there are two distinct types of analyses we may be interested in performing. First is a simple difference between the time series of two separate groups.
 
 \begin{center}
 %\begin{verbatim}
@@ -175,6 +222,9 @@ Hypothetically, if we had a third grouping variable, say Cohort with values X an
 \texttt{diffs(Condition(1, 2), y)} $\sim$ \texttt{group1(A, B) + Cohort(X)} 
 \end{center}
 
+I think maybe an actually good example here would be 
+
+foreign/domestic $\rightarrow$ car/truck $\rightarrow$ red/bluesett
 
 %This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
 
@@ -185,9 +235,29 @@ Hypothetically, if we had a third grouping variable, say Cohort with values X an
 
 \section{Extensions? Plots? I don't know!}
 
-Should I include an example case where I am also able to demonstrate difference of difference syntax? It's already included in the vignette
+Let's do a brief tour of some of the other additions to bdots that probably doesn't warrant its own section for use
 
-Maybe do tumr, using expCurve and unequal time points. does not allow demonstration of difference of difference, though. Good plots to show include
+\subsection{Non-homogenous sampling}
+
+For example, here can show that we can have data with repeated time measures across a number of trials (saccade data). Since fitting with gnls, it's kosher. 
+
+Can also show tumr data
+
+\subsection{Refitting}
+
+Here, just include a brief writeup of the refitting process
+
+\subsection{User created curves}
+
+I know I mentioned this elsewhere, but I might erase it there and move a fuller discussion of it here
+
+\subsection{Correlations}
+
+Idk, I actually think that this is pretty stupid, but I'll include a section of here it just to help fill space
+
+\subsection{Other}
+
+Misc whatever. Good plots to show include (in general)
 
 \begin{enumerate}
 \item plots of fits

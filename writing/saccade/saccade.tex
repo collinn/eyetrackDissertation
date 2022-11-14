@@ -46,6 +46,8 @@ It was against simulated TRACE data that Allopenna (1998) found a tractable way 
 
 \textbf{Research goals: } Some more context is helpful hear to try an understand what exactly it is that researchers are trying to learn from this data. As mentioned previously, we are largely concerned with ``activation". In particular, though, we are often interested in how the activation of competing words compare. Specifically, we might ask, ``at what point in the audio signal does the subject begin to identify the target word, relevant to competitors." This is of special interest in studying language development in typically developed children and those with cochlear implants, where atypical children may require more of a signal before they are able to disambiguate what they are hearing. As such, it is often of interest to ask when and how activation differs both between target words and competitors, as well as between different subjects. It is largely these last two areas that have dominated much of the VWP research.
 
+Our specific goal here is to determine if a method of estimating activation, measured as being more consistent with the predictions of TRACE, can be improved by relying solely on saccade data rather than the traditional method using fixation based approaches
+
 
 \textbf{A (mostly) irrelevant history: } Decades of papers chart the pursuit of relevant metrics that can be meaningfully asked of the data. These have included metrics such as AUC (area under the curve), mixed and hierarchical models, Metropolis-Hastings simulations and more. Typical of these attempts is either a lack of specificity (AUC can tell us \textit{that} curves are different, but not when) or over specificity (contributing to large researcher degrees-of-freedom). One notable attempt was made by McMurray, where parameterized functional forms of the data were posited \cite{mcmurray2010individual}. This allowed non-linear curve fitting algorithms to generate meaningful parameter estimates of the data, such as the four-parameter logistic model which included parameters such as ``crossover point"
  and the slope at the point of inflection. While this served to give functional form to the observed data, it was still subject to the same shortcomings of previous research in terms of specificity. 
@@ -204,6 +206,10 @@ The final scenario for consideration involves a situation is which the OM delay 
 
 We will interogate a number of potential methods for dealing with this issue, though we do feel confident that, even with this known bias, our proposed method will still be preferable to existing ones. 
 
+\section{Compare with TRACE}
+
+I need to download this data from Bob and just do it. Part of my hestitation, I believe, is the fact that it might not work. That would be shitty
+
 \section{Discussion}
 
 
@@ -216,7 +222,6 @@ In contrast, an observation at $t = 1000$ results in a highly biased estimate, a
 There also seems to be value in finding a way to incorporate the length of fixations into the modeling process. For example, we might consider the impact of weighting each saccade by the duration of its subsequent fixation, as it seems intuitive that saccades resulting in longer fixation periods are more likely initiated by activation rather than a searching pattern.
 
 
-\section{Conclusion}
 
 \bibliographystyle{plain} % We choose the "plain" reference style
 \bibliography{../bib/dissertation} % Entries are in the refs.bib file

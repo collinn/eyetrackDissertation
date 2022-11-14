@@ -122,26 +122,43 @@ In addition to whatever general uncertainy exists in the section above, we again
 
 \section{Example Data}
 
+For the example data, I'm going to use the origin/vehicle/class for cars with some made up time series data. The outcome will be fake. I should then be able to tweak parameters and whatnot so that there are some differences when I want there to be. 
+
+Committing to this now. Also committing to having to update bdotsBoot (bboot)
+
 Maybe here choose a dataset and explain what it is, specifying the components of it so that we can use it in an ongoing example. That way (especially in bootstrap formula step) I can just say something like oh yeah Group1 values A and B and Group2 values with C and D. Or whatever. 
 
 \section{Fitting Curves}
 
-The curve fitting process is performed with the \texttt{bdotsFit} function, taking the following arguments: (removing `cor` and numRefits)
+The curve fitting process is performed with the \texttt{bfit} function (previously \texttt{bdotsFit}), taking the following arguments: (removing `cor` and numRefits)
 
 \begin{center}
 \begin{verbatim}
-bdotsFit(data, subject, time, y, group, curveType, cores, ...)
+bfit(data, subject, time, y, group, curveType, cores, ...)
 \end{verbatim}
 \end{center}
 
 \paragraph{Curve functions} Each of \texttt{subject}, \texttt{time}, \texttt{y}, and \texttt{group} are length one character vectors representing columns of the dataset used in \texttt{data}. New here is \texttt{curveType}, taking as an argument an R call to a particular curve, for example the four parameter logistic, \texttt{logistic()}. This is done to self-contain any additional arguments associated with the fitting curve, for example the concavity of the double Gaussian (\texttt{curveType = doubleGauss(concave = TRUE)}) or the number of knots in a piecewise spline (\texttt{curveType = splines(knots = 5)}). A number of curves are included with the \texttt{bdots} package, including those for the four-parameter logistic, the double Gaussian, an exponential curve, and polynomials of arbitrary degree. A detailed vignette on writing your own curves can be found with \texttt{vignette("bdots")} ($\Leftarrow$ actually it would be vignette(``customCurves", "bdots") or browseVignette(``bdots") to see, but I haven't decided which I want because I don't really like the name customCurves).
 
-Notably, \texttt{bdots} can now fit curves to an arbitrary number of groups, so long as all have the same parametric specification.
+Notably, \texttt{bdots} can now fit curves to an arbitrary number of groups, so long as all have the same parametric specification. Fitting a collection of curves to our vehicle data with all of the groups at once with logistic function would look like
 
+
+\begin{center}
+\begin{verbatim}
+# Need to change these once I get real data
+fit <- bfit(data = Vehicle, subject = "vehicle", 
+	 	time = "Time", y = "out", group = c("origin", "vehicle", "color"),
+	 			curveType = logistic(), cores, ...)
+\end{verbatim}
+\end{center}
+
+\paragraph{Fit Codes}
 
 \paragraph{Return object and generics}
 
-The function \texttt{bdotsFit} returns an object of class \texttt{bdotsObj}, inheriting from class \texttt{data.table}. As such, each row of this object (object object object i need a new word) uniquely identifies one permutation of subject group (meaning if a subject in two groups, they get two rows). Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested gnls object. Not sure if this is worth including, most people won't use it and i can put it in the vignette.
+
+
+The function \texttt{bfit} returns an object of class \texttt{bdotsObj}, inheriting from class \texttt{data.table}. As such, each row of this object (object object object i need a new word) uniquely identifies one permutation of subject group (meaning if a subject in two groups, they get two rows). Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested gnls object. Not sure if this is worth including, most people won't use it and i can put it in the vignette.
 
 
 Several methods exist for this object, including \texttt{plot}, \texttt{summary}, and \texttt{coef}, returning a matrix of fitted coefficients returned from \texttt{gnls}. One consequence of inheriting from \texttt{data.table}, we are able to utilize data.table syntax. Note, for example, the differences between \texttt{coef(fit)}, \texttt{coef(fit[group == "A",])}, and \texttt{coef(fit[group == "B",])}. That's pretty much it on the neat stuff you can do with this. Time to go to bootstrapping step.
@@ -150,10 +167,10 @@ Actually, there is one additional thing here that I might include as an aside fo
 
 \section{Bootstrapping}
 
-Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bdotsBoot}. The bootstrapping function 
+Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bboot} (previously \texttt{bdotsBoot}). The bootstrapping function does new stuff
 
 
-In addition to taking as an argument an object returned from \texttt{bdotsFit}, \texttt{bdotsBoot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.
+In addition to taking as an argument an object returned from \texttt{bfit}, \texttt{bboot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.
 
 \subsection{Formula}
 
@@ -170,7 +187,7 @@ In addition to taking as an argument an object returned from \texttt{bdotsFit}, 
 
 \begin{center}
 \begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
-\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color}\\
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Vehicle} & \multicolumn{1}{c|}{Color}\\
 \hline
 \multirow{4}{*}{Foreign} & \multirow{2}{*}{Car} & Red \\
 \hhline{~~-}
@@ -224,7 +241,7 @@ Hypothetically, if we had a third grouping variable, say Cohort with values X an
 
 I think maybe an actually good example here would be 
 
-foreign/domestic $\rightarrow$ car/truck $\rightarrow$ red/bluesett
+foreign/domestic $\rightarrow$ car/truck $\rightarrow$ red/blue
 
 %This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
 
@@ -239,13 +256,58 @@ Let's do a brief tour of some of the other additions to bdots that probably does
 
 \subsection{Non-homogenous sampling}
 
-For example, here can show that we can have data with repeated time measures across a number of trials (saccade data). Since fitting with gnls, it's kosher. 
+The \texttt{bdots} package now has support for data with non-homogenous time sampling across subjects or trials. For example, here is data collected comparing tumor growth in rates for xyz
 
-Can also show tumr data
+\begin{center}
+\texttt{with(tumrdata[subjects 1-4, ], plot(observations as points))}
+\end{center}
+
+It is not a problem to fit these groups and perform our bootstrapping analysis either on the union of observed time, or some custom range in between
+
+\begin{center}
+\texttt{<bfit, bboot, summary, plot> but for rats}
+\end{center}
+
+\texttt{bdots} also allows for repeated observations, as is the case with saccade data from the VWP. Here, an individual subject has 30 trials with saccades taken at the trial level. That is, rather than taking a sequence of observations for each subject, \texttt{bfit} allows for an unordered set with observations and associated time, $\mathcal{S}_i = \{(y_j, t_j)\}$ across $j$ observations. As this relates to the VWP, you can read more about his development in my dope ass other paper called chapter 2.
+
 
 \subsection{Refitting}
 
-Here, just include a brief writeup of the refitting process
+There are sometimes situations in which the fitted function returned by \texttt{bfit} is a poor fit for some of the subjects. This can be evidenced by the \texttt{fitCode} or via a visual inspection of the fitted functions against the observations for each subject.  When this occurs, there are several options available to the user, all of which are provided through the function \texttt{brefit} (previously \texttt{bdotsRefit}). \texttt{brefit} takes the following arguments:
+
+\begin{center}
+\texttt{brefit(bdObj, fitCode = 1L, quickRefit = FALSE, numRefits = 2L, paramDT = NULL, ...)}
+\end{center}
+
+The first of these arguments, outside of the object itself, is \texttt{fitCode}, indicating  the minimum fit code to be included in the refitting process. This is a convenient way to limit the refitting process to those of a particular quality. The \texttt{quickRefit} option allows the fitter to run automatically, jittering the previous set of parameters for each refitted subject and comparing the new fit to the previous, keeping the better of the two. \texttt{numRefits} indicates how many attempts the fitter should make in doing this. Finally, \texttt{paramDT} allows for a \texttt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \texttt{data.table} requires the same format as that returned by \texttt{bdots::coefWriteout}.
+
+When \texttt{quickRefit = FALSE}, the user is put through a series of prompts whereby for each subject to be refit, in addition to being given a series of diagnostics, they have the option to:
+
+\begin{enumerate}
+\item Keep the original fit
+\item Jitter starting parameters
+\item Adjust starting parameters manually
+\item Remove AR1 assumptions (come back to this)
+\item See original fit metrics again
+\item Delete subject
+\item Save and exit the refitter
+\end{enumerate}
+
+\begin{center}
+\texttt{idk show comparison of plots for refitting i guess}
+\end{center}
+
+As the menu item suggests, users have the ability to end the manually refitting process early and save where they had left off. This looks like this
+
+\begin{center}
+\texttt{refit <- brefit(fit, ...)} \\
+\texttt{refit <- brefit(refit, ...) \# pass that shit back in}
+\end{center}
+
+A final note should be said regarding the option to delete a subject. As \texttt{bdots} now automatically determines if subjects are paired based on subject identifiers (necessary for  calculations in the bootstrapping step), it is critical that if a subject has a poor fit in on group and must be removed that he or she is also removed from all subsequent groups in order to keep paired status. This can be overwritten with a final prompt in the \texttt{brefit} function before they are removed.
+
+Additionally, this can be done without the refitter with the function \texttt{bdRemove}
+
 
 \subsection{User created curves}
 
@@ -253,7 +315,23 @@ I know I mentioned this elsewhere, but I might erase it there and move a fuller 
 
 \subsection{Correlations}
 
-Idk, I actually think that this is pretty stupid, but I'll include a section of here it just to help fill space
+There are sometimes cases in which we are interested in determining the correlation of a fixed attribute with group outcome responses across time (what such a case may be, I have no idea). This can be done with the \texttt{bcorr} function (previously \texttt{bdotsCorr}), which takes as an argument an object of class \texttt{bdotsObj} as well as a character vector representing a column from the original dataset used in \texttt{bfit}
+
+\begin{center}
+\texttt{bcorr(fit, "value", ciBands, method = "pearson")} 
+\end{center}
+
+This returns a thing that can be plotted. Idk, it really doesn't seem that important
+
+\subsection{$\alpha$ Adjustment}
+
+This probably last section that needs anything special, and that is an update to the \texttt{p.adjust} function, \texttt{p\_adjust}, identical to \texttt{p.adjust} except that it accepts method \texttt{"oleson"} and takes additional arguments \texttt{rho}, \texttt{df}, and \texttt{cores}. \texttt{rho} determines the autocorrelation estimate for the oleson adjustment while \texttt{df} returns the degrees of freedom used to compute the original vector of t-statistics. If an estimate of \texttt{rho} isn't available, one can be computed on a vector of t-statistics using the \texttt{ar1Solver} function:
+
+\begin{center}
+\texttt{t <- diffinv(rnorm(999))} \\
+\texttt{rho <- ar1Solver(t)}
+\end{center}
+
 
 \subsection{Other}
 
@@ -271,10 +349,6 @@ I'm not really sure what to include in the discussion. We don't need to compare 
 
 raff raff raff raff raff
 
-
-
-
-\section{Conclusion}
 
 Improvements made to the \texttt{bdots} package have drastically improved the ease of use of the package and the scope of the types of  problems it is able to address. The consolidation of major components into two functions has also streamlined use. Quality of life improvements include multiple group fitting, formula syntax for bootstraps, tractable return objects, and others. Generics have also been good. The package is also now statistically correct. It has extended the types of data that can be accomodated, including heterogenous observations across time and the ability to construct user-specified curves. it really is a pretty neat package.
 

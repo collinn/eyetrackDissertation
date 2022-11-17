@@ -94,3 +94,7 @@ fit <- bdotsFit(data = dts,
                 time = "time",
                 group = c("Origin", "Class", "Color"), 
                 curveType = logistic())
+
+refit <- bdotsRefit(fit, fitCode = 4)
+
+saveRDS(fit, "~/packages/bdots/btest/eightgrpfit.rds")

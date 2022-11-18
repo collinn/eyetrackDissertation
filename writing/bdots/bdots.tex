@@ -269,6 +269,8 @@ Let's begin first by running \xt{bboot} using bootstrapping to compare the outco
 \tt boot <- bboot(y ~ Vehicle(car, truck) + Origin(domestic), fit)
 \end{center}
 
+This returns an object of class 
+
 %This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
 
 %As curves for an arbitrary number of groups may be fit at once with the \texttt{bdotsFit} function, a formula syntax has been introduced to specify the differences sought. (possibly a better way to introduce/write this section) 

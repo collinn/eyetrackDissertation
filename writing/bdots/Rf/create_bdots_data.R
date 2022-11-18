@@ -74,17 +74,26 @@ dts <- Map(function(x, y) {
 
 ## Classes
 cc <- expand.grid(Origin = c("foreign", "domestic"), 
-            Class = c("car", "truck"), 
+            Vehicle = c("car", "truck"), 
             Color = c("red", "blue"))
 cc[] <- lapply(cc, as.character)
 cc <- split(cc, row(cc))
 
-dts <- Map(function(x, y) {
+## ids for pairs
+id <- list(1:25, 1:25 ,
+           26:50, 26:50, 
+           51:75, 51:75, 
+           76:100, 76:100)
+
+dts <- Map(function(x, y, i) {
   x$Origin <- y[1]
-  x$Class <- y[2]
+  x$Vehicle <- y[2]
   x$Color <- y[3]
+  id <- rep(i, each = nrow(x[id == 1, ]))
+  x$id <- id
   x
-}, x = dts, y = cc)
+}, x = dts, y = cc, i = id)
+
 dts <- rbindlist(dts)
 
 
@@ -92,9 +101,9 @@ fit <- bdotsFit(data = dts,
                 y = "fixations",
                 subject = "id",
                 time = "time",
-                group = c("Origin", "Class", "Color"), 
+                group = c("Origin", "Vehicle", "Color"), 
                 curveType = logistic())
 
-refit <- bdotsRefit(fit, fitCode = 4)
+refit <- bdotsRefit(fit, fitCode = 2)
 
 saveRDS(fit, "~/packages/bdots/btest/eightgrpfit.rds")

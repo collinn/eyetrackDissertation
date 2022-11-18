@@ -11,6 +11,8 @@
 \usepackage{hhline}
 \usepackage[table]{xcolor}
 
+\newcommand{\xt}{\texttt}% \xt will be replaced with \textit
+
 \usepackage{listings}
 
 \begin{document}
@@ -167,12 +169,22 @@ Actually, there is one additional thing here that I might include as an aside fo
 
 \section{Bootstrapping}
 
-Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bboot} (previously \texttt{bdotsBoot}). The bootstrapping function does new stuff
+Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bboot} (previously \texttt{bdotsBoot}). As we will detail, the number of options included in the \xt{bboot} function have expanded considerably. A call to \xt{bboot} takes the following form
 
+\begin{center}
+\tt bboot(formula, bdObj, Niter, alpha,   padj = "oleson", \\ cores = 0, permutation = FALSE, ...)
+\end{center}
+
+content
+
+
+\subsection{Formula}
 
 In addition to taking as an argument an object returned from \texttt{bfit}, \texttt{bboot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.
 
-\subsection{Formula}
+The formula argument serves two functions in \xt{bfit}: first, it specifies the collection of curves we wish to investigate the difference between, and second, it determines if we are interested in directly comparing the differences or the difference of differences between curves. 
+
+To begin, let's reintroduce the structure of the groups we have in our dataset. We have foreign and domestic cars and trucks, and each of these vehicles comes in red and blue. Recall too that the different colors of each vehicle are paired observations.
 
 %\begin{center}
 %\begin{tabular}{|p{0.6in}|p{0.3in}|p{0.9in}|p{0.9in}|p{0.8in}|} \hline 
@@ -186,62 +198,76 @@ In addition to taking as an argument an object returned from \texttt{bfit}, \tex
 %\end{center}
 
 \begin{center}
+
 \begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
 \rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Vehicle} & \multicolumn{1}{c|}{Color}\\
 \hline
-\multirow{4}{*}{Foreign} & \multirow{2}{*}{Car} & Red \\
+\multirow{4}{*}{foreign} & \multirow{2}{*}{car} & red \\
 \hhline{~~-}
-& & Blue \\
+& & blue \\
 \hhline{~--}
-& \multirow{2}{*}{Truck} & Red \\
+& \multirow{2}{*}{truck} & red \\
 \hhline{~~-}
-& & Blue \\
+& & blue \\
 \hline
-\multirow{4}{*}{Domestic} & \multirow{2}{*}{Car} & Red \\
+\multirow{4}{*}{domestic} & \multirow{2}{*}{car} & red \\
 \hhline{~~-}
-& & Blue \\
+& & blue \\
 \hhline{~--}
-& \multirow{2}{*}{Truck} & Red \\
+& \multirow{2}{*}{truck} & red \\
 \hhline{~~-}
-& & Blue \\
+& & blue \\
 \hline
 \end{tabular}
 \end{center}
 
-
-
-
-When comparing the bootstrapped differences of curves, there are two distinct types of analyses we may be interested in performing. First is a simple difference between the time series of two separate groups.
+Let's begin with a simple case: supposing we want to investigate the difference in outcome between foreign and domestic cars. Notionally, we would write
 
 \begin{center}
-%\begin{verbatim}
-\texttt{y} $\sim$ \texttt{group1(A, B)}
-%\end{verbatim}
+\tt y $\sim$ Origin(foreign, domestic).
 \end{center}
 
-Now, it may be the case that within each group, there is a different experimental condition. For example, participants in Group1 A and B each may have been subjected to Conditions 1 and 2. In this case, we need to specify which nested Condition we are wanting to compare. To do this for the first condition, for example, we simply extend the above formula
+Note that this involves the grouping variable, \xt{Origin}, with the two values we are interested in comparing, \xt{domestic} and \xt{foreign}. If we wanted to limit our investigation to only foreign and domestic cars, we would do this by including an extra term specifying the group and the desired value. In this case, 
 
 \begin{center}
-\texttt{y} $\sim$ \texttt{group1(A, B) + condition(1)}
+\tt y $\sim$ Origin(foreign, domestic) + Vehicle(car).
 \end{center}
-
-This will allow us to compare the difference of curves A and B within Condition 1.
-
-The second type of analysis we may be interested in involves a \textit{difference of differences}. For example, we may be interested (word again i know) in how the difference between Condition 1 and 2 within group A differs from the difference between Conditions 1 and 2 in group B. Here, we are still interested in comparing between groups A and B, which will remain on the right hand side of the formula. However our outcome of interest, the difference between conditions, will move to the left hand side. Maintaining that the curve is still specified by \texttt{y}, we use to \texttt{diffs} function to indicate this relationship
+To compare only foreign and domestic \textit{red} cars, we would add an additional term for color:
 
 \begin{center}
-\texttt{diffs(Condition(1, 2), y)} $\sim$ \texttt{group1(A, B)}
+\tt y $\sim$ Origin(foreign, domestic) + Vehicle(car) + Color(red).
 \end{center}
 
-Hypothetically, if we had a third grouping variable, say Cohort with values X and Y, we could further specify which nesting we are interested in just as we did before
+NOTE THAT THERE DOES NOT (IS NOT) A SIMPLE WAY TO INDICATE WE WISH TO COMPARE FOREIGN RED CARS TO DOMESTIC BLUE TRUCKS.
+
+In each of these cases, we have specifed particular groups or nesting of groups who's outcomes we wish to compare. Alternatively, we may be interested in comparing the \textit{difference of differences}. For example, suppose we suspect that there may be some difference between red and blue vehicles, and that this difference may be different for cars compared to trucks. Whereas previously we were interested in comparing the differences in \xt{y} between groups, we are now interested in comparing the differences of \xt{y} between colors. Consequently, we will include this difference on the left hand side of the formula. This is done using \xt{diffs} syntax as such:
 
 \begin{center}
-\texttt{diffs(Condition(1, 2), y)} $\sim$ \texttt{group1(A, B) + Cohort(X)} 
+\tt diffs(y, Color(red, blue)) $\sim$ Vehicle(car, truck)
 \end{center}
 
-I think maybe an actually good example here would be 
+Similar as to the case before, if we wanted to limit this difference of differences investigation to only include domestic vehicles, we can do so by including an additional term:
 
-foreign/domestic $\rightarrow$ car/truck $\rightarrow$ red/blue
+\begin{center}
+\tt diffs(y, Color(red, blue)) $\sim$ Vehicle(car, truck) + Origin(domestic)
+\end{center}
+
+\subsection{Bootstrapping and Permutation}
+
+Once we have determined the groups we are interested in comparing, we are ready to call the \xt{bboot} function. Despite it's name, \xt{bboot} is now able to perform permutation testing on curve differences in addition to bootstrapping. We will discuss each of these briefly in more detail.
+
+\paragraph{Bootstrapping} As in the original iteration of the package, \xt{bdots} seeks to identify differences in curves without a priori specification of a time window. This is done as in (other paper), where curves are bootstrapped to create a sampling distribution, and a collection of $t$-tests is performed at  each observed timepoint. The FWER is controlled against this series of tests by making an adjustment to the nominal $\alpha$ -- the novel contribution of the original \xt{bdots} package was implementing a correction based on an estimate of the autocorrelation of tests (oleson paper). In addition to this adjustment, \xt{bdots} also allows corrections to be made using a number of other methods, including fdr, bonferonni, and I think maybe another. The type of correction made is specified with the \xt{padj} argument in \xt{bfit}.
+
+\paragraph{Permutation} In addition to the bootstrapping algorithm just described, 
+\xt{bdots} now also includes the option for running a permutation test to establish a null distribution on the differences between curves. This is done by setting the argument in \xt{bboot(..., permutation = TRUE)}.  \xt{Niter} now refers to the number of permutations performed rather than the number of bootstraps. Additionally, when \xt{permutation = TRUE} is set, the argument to \xt{padj} is ignored. Permutation testing may have less power in some cases (explored in other paper), but is maximally robust and ideal for situations in which the number of assumptions made is limited.
+
+\subsection{Summary and Analysis}
+
+Let's begin first by running \xt{bboot} using bootstrapping to compare the outcome between  domestic cars and trucks
+
+\begin{center}
+\tt boot <- bboot(y ~ Vehicle(car, truck) + Origin(domestic), fit)
+\end{center}
 
 %This next part is kind of a weird aside, and I'm not sure yet where I want to put it. At least in the context of the visual world paradigm, and likely others, we find ourselves in situations in which two distinct types of difference curves are of interest: the difference between two group curves (say, A and B), and the difference of the difference between four group curves (say, the difference between the difference between condition 1 and 2 within group A and the difference between condition 1 and 2 in group B). 
 

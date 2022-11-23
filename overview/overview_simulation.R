@@ -1,6 +1,7 @@
 library(data.table)
 library(eyetrackSim)
 library(bdots)
+library(ggplot2)
 
 ## For logistic
 params <- c(0.05, .9, 0.0019, 969.3)
@@ -43,6 +44,13 @@ dt2 <- data.table(time = time, fit = eyetrackSim:::logistic_f(p = params, t = ti
 
 ll <- list(fits = dt, original = dt2)
 saveRDS(ll, "data/data.rds")
+
+if (file.exists("data/data.rds")) {
+  dat <- readRDS("data/data.rds")
+  dt2 <- dat$original
+  dt <- dat$fits
+}
+
 ggplot(data = dt2, aes(x = time, y = fit), color = col) +
   geom_line(size = 1, aes(color = "Underlying")) +
   geom_line(data = dt, aes(x = time, y = fit, color = Condition), size = 1) +
@@ -55,4 +63,34 @@ ggplot(data = dt2, aes(x = time, y = fit), color = col) +
   theme(legend.position = "bottom")
 
 
+## Really need to start FUCKING SAVING things that I make
+dt3 <- dt[Condition == "Random Delay", ]
 
+dt3 <- dt3[, .(time, fit, Condition)]
+dt2[, `:=`(col = NULL, Condition = "Underlying")]
+
+dt4 <- rbindlist(list(dt3, dt2))
+
+png("img/random_delay.png")
+ggplot(dt4, aes(time, fit, color = Condition)) +
+  geom_line(size = 1) + theme_bw(base_size = 22) + theme(legend.position = "bottom") +
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"),
+                     labels = c("Underlying", "Random Delay")) + ggtitle("Effect of random delay")
+dev.off()
+
+png("img/random_delay_wide.png", width = 576)
+ggplot(dt4, aes(time, fit, color = Condition)) +
+  geom_line(size = 1) + theme_bw(base_size = 22) + theme(legend.position = "bottom") +
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"),
+                     labels = c("Underlying", "Random Delay")) + ggtitle("Effect of random delay")
+dev.off()
+
+png("img/random_delay_wider.png", width = 576)
+ggplot(dt4, aes(time, fit, color = Condition)) +
+  geom_line(size = 1) + theme_bw(base_size = 22) + theme(legend.position = "bottom") +
+  labs(x = "Time", y = "f(t)", color = "Condition") +
+  scale_color_manual(values = c("Underlying" = "black", "Random Delay" = "#619CFF"),
+                     labels = c("Underlying", "Random Delay")) + ggtitle("Effect of random delay")
+dev.off()

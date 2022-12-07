@@ -9,6 +9,7 @@
 \usepackage{amsmath}
 \usepackage{multirow}
 \usepackage{hhline}
+\usepackage{graphicx}
 \usepackage[table]{xcolor}
 
 \newcommand{\xt}{\texttt}% \xt will be replaced with \textit
@@ -284,11 +285,14 @@ Let's do a brief tour of some of the other additions to bdots that probably does
 
 \subsection{Non-homogenous sampling}
 
-The \texttt{bdots} package now has support for data with non-homogenous time sampling across subjects or trials. For example, here is data collected comparing tumor growth in rates for xyz
+The \texttt{bdots} package now has support for data with non-homogenous time sampling across subjects or trials. For example, here is data collected comparing tumor growth for 451LuBr cell line in mice with repeated measures and five treatment groups
 
 \begin{center}
 \texttt{with(tumrdata[subjects 1-4, ], plot(observations as points))}
+\includegraphics[scale=0.5]{img/mouse.png}
 \end{center}
+
+
 
 It is not a problem to fit these groups and perform our bootstrapping analysis either on the union of observed time, or some custom range in between
 
@@ -296,7 +300,7 @@ It is not a problem to fit these groups and perform our bootstrapping analysis e
 \texttt{<bfit, bboot, summary, plot> but for rats}
 \end{center}
 
-\texttt{bdots} also allows for repeated observations, as is the case with saccade data from the VWP. Here, an individual subject has 30 trials with saccades taken at the trial level. That is, rather than taking a sequence of observations for each subject, \texttt{bfit} allows for an unordered set with observations and associated time, $\mathcal{S}_i = \{(y_j, t_j)\}$ across $j$ observations. As this relates to the VWP, you can read more about his development in my dope ass other paper called chapter 2.
+\texttt{bdots} also allows for repeated observations, as is the case with saccade data from the VWP. Here, an individual subject has 30 trials with saccades taken at the trial level. That is, rather than taking a sequence of observations for each subject, \texttt{bfit} allows for an unordered set with observations and associated time, $\mathcal{S}_i = \{(y_j, t_j)\}$ across $j$ observations. As this relates to the VWP, you can read more about his development in my dope ass other paper called chapter 3.
 
 
 \subsection{Refitting}
@@ -304,6 +308,7 @@ It is not a problem to fit these groups and perform our bootstrapping analysis e
 There are sometimes situations in which the fitted function returned by \texttt{bfit} is a poor fit for some of the subjects. This can be evidenced by the \texttt{fitCode} or via a visual inspection of the fitted functions against the observations for each subject.  When this occurs, there are several options available to the user, all of which are provided through the function \texttt{brefit} (previously \texttt{bdotsRefit}). \texttt{brefit} takes the following arguments:
 
 \begin{center}
+Do I need an image for the side by side plots? I assume no
 \texttt{brefit(bdObj, fitCode = 1L, quickRefit = FALSE, numRefits = 2L, paramDT = NULL, ...)}
 \end{center}
 

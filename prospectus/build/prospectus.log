@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.27)  22 NOV 2022 12:47
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.9.27)  27 NOV 2022 10:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1421,10 +1421,10 @@ Package rerunfilecheck Info: File `prospectus.out' has not changed.
 (rerunfilecheck)             Checksum: <no file>.
  ) 
 Here is how much of TeX's memory you used:
- 28230 strings out of 492982
- 560645 string characters out of 6134896
+ 28229 strings out of 492982
+ 560630 string characters out of 6134896
  811311 words of memory out of 5000000
- 31075 multiletter control sequences out of 15000+600000
+ 31074 multiletter control sequences out of 15000+600000
  16393 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  56i,15n,103p,796b,2040s stack positions out of 5000i,500n,10000p,200000b,80000s

@@ -30,13 +30,12 @@ The Bootstrapped Differences of Timeseries (bdots) was first introduced by Oleso
 
 \section{Introduction}
 
-Idk, introduction stuff
+In 2017, Oleson et al. introduced a method for detecting time-specific differences in densley sampled time series. This largely centered around bootstrapping and computing a series of highly correlated $t$-statistics and using estimates of the autocorrelation as an adjustment for the family-wise error rate. This paper was presented in the context of the Visual World Paradigm (VWP), an experimental paradigm combining eyetracking with an interactive environment to measure dynamics in language processing, and in 2018, R software was introdued on CRAN to perform a limited version of the analysis proposed in Oleson. In this paper, we introduce \texttt{bdots} v2, an update to the CRAN package that broadly expands the capabilities of the original. 
 
-This paper is not intended to serve as a complete use guide to updates in the bdots package. Rather, the purpose is to showcase major changes and improvements to the package, with those seeking a more comprehensive treatment directed to the package vignettes. 
-
-Updates to the bdots package have been such that there is little resemblance to the original. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use. 
+This paper is not intended to serve as a complete use guide to updates in the bdots package. Rather, the purpose is to showcase major changes and improvements to the package, with those seeking a more comprehensive treatment directed to the package vignettes. Updates to the bdots package have been such that there is little resemblance to the original. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use. 
 
 \begin{enumerate}
+\item Simplified user interface
 %\item Parameter and nonparametric functions (not going to be true)
 \item User defined curves
 \item Permit fitting for arbitrary number of groups
@@ -51,13 +50,14 @@ Updates to the bdots package have been such that there is little resemblance to 
 
 \paragraph{Bootstrapped differences in time series}
 
-The high level motivation, abstracted from the particulars, is more or less as follows: we are often interested in comparing time series between two or more groups. A full(er) review of previous methods can be found in Seedorff,  though we can limit the scope of interest to specifying that we are interested in ``developing a statistical tool to (1) detect differences in two time series (as the VWP) and (2) to offer a precise characterization of the time window in which a difference occurs \cite{seedorff2018bdots}. 
+The high level motivation, abstracted from the particulars, is more or less as follows: we are often interested in comparing time series between two or more groups. A full(er) review of previous methods can be found in Seedorff,  though we can limit the scope of interest to specifying that we are interested in ``developing a statistical tool to (1) detect differences in two time series (as the VWP) and (2) to offer a precise characterization of the time window in which a difference occurs \cite{seedorff2018bdots}."
 
 A typical instantiation of this problem occurs when we have two groups (or experimental conditions, etc.,) in which subjects in each group have an associated time series. It's assumed that each group has some distribution of associated functions in time, and we are interested in identifying windows in time in which these distributions are significantly different.
 
-There are also situations in which we are interested in the difference of differences. I don't remember where or why this is done, some justification for doing this instead of some complicated F test, but I can find that later. Instead, let me offer an example. I'm already not going to like this example, so let me just put it anyways knowing that it will be deleted. Suppose we are interested in understanding how the color of a vehicle differentially impacts performance based on the vehicle type. We know that there is some difference between cars and trucks. Suppose then that we look at the difference between red cars and red trucks and then the difference between blue cars and blue trucks. If color does not mediate this difference, the difference between red cars and trucks should be the same as the difference between blue cars and trucks. This information can be determined if we look then at the difference between the differences. 
 
-The original bdots package was predicated on comparing differences between dense, highly correlated time series by first specifying functional forms and then performing statistical tests on each of the observed time points. With verison 2.0, this is no longer the case, and bdots is able to fit parameteric functions to any type of data observed in time. Along with methodological improvements, we have included more options in determining statistical significance in the differences of curves, utilizing a robust permutation testing framework when the assumptions of autocorrelation do not hold. In addition to methodology, a number of quality-of-life improvements have also been made, greatly simplifying syntax, creating more robust functions, and the addition of a number of useful methods for handling returned objects.
+[Not sure if we include this here ]There are also situations in which we are interested in the difference of differences. I don't remember where or why this is done, some justification for doing this instead of some complicated F test, but I can find that later. Instead, let me offer an example. I'm already not going to like this example, so let me just put it anyways knowing that it will be deleted. Suppose we are interested in understanding how the color of a vehicle differentially impacts performance based on the vehicle type. We know that there is some difference between cars and trucks. Suppose then that we look at the difference between red cars and red trucks and then the difference between blue cars and blue trucks. If color does not mediate this difference, the difference between red cars and trucks should be the same as the difference between blue cars and trucks. This information can be determined if we look then at the difference between the differences. 
+
+The original bdots package was predicated on comparing differences between dense, highly correlated time series by first specifying functional forms and then performing statistical tests on each of the observed time points. With verison 2.0, capabilities have drastically improved, and bdots is able to fit parameteric functions to any type of data observed in time. Along with methodological improvements, we have included more options in determining statistical significance in the differences of curves, utilizing a robust permutation testing framework when the assumptions of autocorrelation do not hold. In addition to methodology, a number of quality-of-life improvements have also been made, greatly simplifying syntax, creating more robust functions, and including a collection of useful methods for handling returned objects.
 
 In summary, \texttt{bdots} has transitioned from a package focused exclusively on densly sampled timeseries assuming a limited number of functional forms to a robust framework for identifying time windows of significant difference across a wide breadth of timeseries-adjacent data. 
 
@@ -67,13 +67,12 @@ In summary, \texttt{bdots} has transitioned from a package focused exclusively o
 
 There are major changes in the underlying methodology used in the bdots package, and we will briefly review the current methodology here (without explicit comparisons to the original). For those interested, please see some other article that I have to write.
 
-Broadly, there are two steps to performing an analysis with the bdots pacakge: fitting the curves to observed data and bootstrapping differences between groups. The first step involves specifying an underlying curve, $f$, which may or may not be parametric. Along with the observed data $y$ for each $i$th subject, bdots, via fitting with gnls, returns a set of parameters along with an estimate of their covariance.
+Broadly, there are two steps to performing an analysis with the \xt{bdots} package: fitting the curves to observed data and bootstrapping differences between groups. The first step involves specifying an underlying curve $f$, which is assumed to be parametric\footnote{the option to include non-parametric functions is anticipated in the future work of this package. The process will be similar, however, with $\theta$ then representing the number and location of the knots for splines}. Along with the observed data $y$ for each $i$th subject, \xt{bdots}, via fitting with \xt{gnls}, returns a set of parameters along with an estimate of their covariance.
 
 \begin{equation}
 F: f \times y_i \rightarrow N(\hat{\theta_i}, V_{i}),
 \end{equation}
 
-%(Note: for non-parametric functions, the $\theta$ values are associated with splines). \\
 where $\theta$ is a length-$p$ vector representing the parameters of the function.
 
 
@@ -125,11 +124,39 @@ In addition to whatever general uncertainy exists in the section above, we again
 
 \section{Example Data}
 
-For the example data, I'm going to use the origin/vehicle/class for cars with some made up time series data. The outcome will be fake. I should then be able to tweak parameters and whatnot so that there are some differences when I want there to be. 
+We will illustrate use of the updated \xt{bdots} package with a worked example, using an artificial dataset to help detail some of the newer aspects of the package. The dataset will consist of outcomes for a collection of vehicles, consisting of eight distinct groups. These groups will be nested in order of vehicle origin (foreign or domesetic), vehicle class (car or truck), and vehicle color (red or blue). Further, vehicles of different color but within the same origin and class groups will be considered paired observations. A table detailing the relationship of the groups is shown here:
 
-Committing to this now. Also committing to having to update bdotsBoot (bboot)
+\begin{center}
 
-Maybe here choose a dataset and explain what it is, specifying the components of it so that we can use it in an ongoing example. That way (especially in bootstrap formula step) I can just say something like oh yeah Group1 values A and B and Group2 values with C and D. Or whatever. 
+\begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color}\\
+\hline
+\multirow{4}{*}{foreign} & \multirow{2}{*}{car} & red \\
+\hhline{~~-}
+& & blue \\
+\hhline{~--}
+& \multirow{2}{*}{truck} & red \\
+\hhline{~~-}
+& & blue \\
+\hline
+\multirow{4}{*}{domestic} & \multirow{2}{*}{car} & red \\
+\hhline{~~-}
+& & blue \\
+\hhline{~--}
+& \multirow{2}{*}{truck} & red \\
+\hhline{~~-}
+& & blue \\
+\hline
+\end{tabular}
+\end{center}
+
+The outcome here is simply \xt{y} due to a lack of creativity, but the functional form assumed (and used in data generation) follows the four parameter logistic, 
+
+\begin{equation}
+f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c-t \right)},
+\end{equation}
+where $b$, $p$, $s$, and $c$ represent the baseline, peak, slope, and crossover points, respectively
+
 
 \section{Fitting Curves}
 
@@ -150,7 +177,7 @@ Notably, \texttt{bdots} can now fit curves to an arbitrary number of groups, so 
 \begin{verbatim}
 # Need to change these once I get real data
 fit <- bfit(data = Vehicle, subject = "vehicle", 
-	 	time = "Time", y = "out", group = c("origin", "vehicle", "color"),
+	 	time = "Time", y = "out", group = c("origin", "class", "color"),
 	 			curveType = logistic(), cores, ...)
 \end{verbatim}
 \end{center}
@@ -181,11 +208,13 @@ content
 
 \subsection{Formula}
 
-In addition to taking as an argument an object returned from \texttt{bfit}, \texttt{bboot} also takes a formula argument, with syntax unique to the \texttt{bdots} package.
+\texttt{bboot} determines which groups specified in \texttt{bfit} are to be bootstrapped with a formula argument, using sytax unique to the \texttt{bdots} package.
+
+
 
 The formula argument serves two functions in \xt{bfit}: first, it specifies the collection of curves we wish to investigate the difference between, and second, it determines if we are interested in directly comparing the differences or the difference of differences between curves. 
 
-To begin, let's reintroduce the structure of the groups we have in our dataset. We have foreign and domestic cars and trucks, and each of these vehicles comes in red and blue. Recall too that the different colors of each vehicle are paired observations.
+To begin, let's reintroduce the structure of the groups we have in our dataset. Recall that we have foreign and domestic cars and trucks, and each of these vehicles comes in red and blue. Recall also that the different colors of each vehicle are considered paired observations.
 
 %\begin{center}
 %\begin{tabular}{|p{0.6in}|p{0.3in}|p{0.9in}|p{0.9in}|p{0.8in}|} \hline 
@@ -201,7 +230,7 @@ To begin, let's reintroduce the structure of the groups we have in our dataset. 
 \begin{center}
 
 \begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
-\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Vehicle} & \multicolumn{1}{c|}{Color}\\
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color}\\
 \hline
 \multirow{4}{*}{foreign} & \multirow{2}{*}{car} & red \\
 \hhline{~~-}
@@ -231,26 +260,26 @@ Let's begin with a simple case: supposing we want to investigate the difference 
 Note that this involves the grouping variable, \xt{Origin}, with the two values we are interested in comparing, \xt{domestic} and \xt{foreign}. If we wanted to limit our investigation to only foreign and domestic cars, we would do this by including an extra term specifying the group and the desired value. In this case, 
 
 \begin{center}
-\tt y $\sim$ Origin(foreign, domestic) + Vehicle(car).
+\tt y $\sim$ Origin(foreign, domestic) + Class(car).
 \end{center}
 To compare only foreign and domestic \textit{red} cars, we would add an additional term for color:
 
 \begin{center}
-\tt y $\sim$ Origin(foreign, domestic) + Vehicle(car) + Color(red).
+\tt y $\sim$ Origin(foreign, domestic) + Class(car) + Color(red).
 \end{center}
 
-NOTE THAT THERE DOES NOT (IS NOT) A SIMPLE WAY TO INDICATE WE WISH TO COMPARE FOREIGN RED CARS TO DOMESTIC BLUE TRUCKS.
+
 
 In each of these cases, we have specifed particular groups or nesting of groups who's outcomes we wish to compare. Alternatively, we may be interested in comparing the \textit{difference of differences}. For example, suppose we suspect that there may be some difference between red and blue vehicles, and that this difference may be different for cars compared to trucks. Whereas previously we were interested in comparing the differences in \xt{y} between groups, we are now interested in comparing the differences of \xt{y} between colors. Consequently, we will include this difference on the left hand side of the formula. This is done using \xt{diffs} syntax as such:
 
 \begin{center}
-\tt diffs(y, Color(red, blue)) $\sim$ Vehicle(car, truck)
+\tt diffs(y, Color(red, blue)) $\sim$ Class(car, truck)
 \end{center}
 
 Similar as to the case before, if we wanted to limit this difference of differences investigation to only include domestic vehicles, we can do so by including an additional term:
 
 \begin{center}
-\tt diffs(y, Color(red, blue)) $\sim$ Vehicle(car, truck) + Origin(domestic)
+\tt diffs(y, Color(red, blue)) $\sim$ Class(car, truck) + Origin(domestic)
 \end{center}
 
 \subsection{Bootstrapping and Permutation}
@@ -289,7 +318,7 @@ The \texttt{bdots} package now has support for data with non-homogenous time sam
 
 \begin{center}
 \texttt{with(tumrdata[subjects 1-4, ], plot(observations as points))}
-\includegraphics[scale=0.5]{img/mouse.png}
+\includegraphics[scale=0.75]{img/mouse.png}
 \end{center}
 
 

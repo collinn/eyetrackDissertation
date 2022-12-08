@@ -12,5 +12,8 @@
 *.cb2
 .*.lb
 *.synctex.gz
+*.rds
+
+data/trace_n_things/**
 
 # *.png

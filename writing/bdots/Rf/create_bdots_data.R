@@ -23,6 +23,16 @@ groupDist <- lapply(split(fit, by = "protocol"), function(x) {
   list(mean = cc, sigma = vv)
 })
 
+rollmean <- function(x, n) {
+  #out <- rep(NA, length(x))
+  out <- x
+  offset <- trunc(n/2)
+  for (i in (offset + 1):(length(x) - n + offset + 1)) {
+    out[i] <- mean(x[(i - offset):(i + offset - 1)])
+  }
+  out
+}
+
 ## For a single group?
 #' @param n number of subjects
 #' @param trials number of trials
@@ -34,6 +44,7 @@ createData <- function(n = 25, trials = 10, pars, gp = "A") {
   ## no negatives or greater than one please
   newpars[, 1] <- abs(newpars[, 1])
   newpars[, 2] <- pmin(newpars[, 2], 1)
+  newpars[, 2] <- pmax(newpars[, 2], 0.9)
   spars <- split(newpars, row(newpars))
   dts <- lapply(seq_len(n), function(x) {
     pp <- spars[[x]]
@@ -65,8 +76,19 @@ for (i in seq_along(fullDist)) {
 
 ## Creating 8 groups for disseration bdots paper
 dts <- Map(function(x, y) {
-  createData(n = 25, trials = 50, pars = x, gp = y)
+  createData(n = 25, trials = 75, pars = x, gp = y)
 }, x = fullDist, y = as.list(LETTERS[1:8]))
+
+
+## Smooth out the fixations first
+# dts <- lapply(dts, function(dd) {
+#   qq <- split(dd, by = "id")
+#   qq <- lapply(qq, function(x) {
+#     x[["fixations"]] <- rollmean(x[["fixations"]], 5)
+#     x
+#   })
+#   qq <- rbindlist(qq)
+# })
 
 #####################################
 ### Need to update IDs for things ###
@@ -104,6 +126,9 @@ fit <- bdotsFit(data = dts,
                 group = c("Origin", "Vehicle", "Color"), 
                 curveType = logistic())
 
-refit <- bdotsRefit(fit, fitCode = 2)
+fit$fitCode |> table()
+refit <- bdotsRefit(fit)
+
+saveRDS(fit, "eightgrpfit.rds")
 
 saveRDS(fit, "~/packages/bdots/btest/eightgrpfit.rds")

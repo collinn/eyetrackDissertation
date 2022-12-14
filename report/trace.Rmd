@@ -1,0 +1,207 @@
+---
+title: "trace"
+output: html_document
+date: "2022-12-14"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = 'center', fig.width = 8, fig.height = 6)
+library(data.table)
+library(ggplot2)
+library(gridExtra)
+```
+
+```{r, echo = FALSE}
+looks <- fread("../data/bob_trace_data/human_looks.csv")
+looks[, unrel := NULL]
+
+
+trace <- fread("../data/bob_trace_data/trace_curves.csv")
+```
+
+
+# Issue
+
+First and foremost, this is all with reference to the Individual differences in online spoken word recognition: implications for sli paper (2010). My goal is to recreate the estimated fixation probabilities from the TRACE simulation, and then ultimately compare that with the empirical data using  both looks and saccades. 
+
+The issue that I am having arises from Appendix C, where we are trying to go from TRACE activations to response probabilities. This involves:
+
+1. Luce choice rule
+2. Scaling with logistic
+3. Adjusting time
+
+I believe that the issue that I am having involves the scaling term. Specifically, I am wondering about the skew parameter being  $w = 0.0001$; after I adjust using the luce choice rule in (1), the scaling factor ends up being either 0 or 1 (though this also happens if I don't do luce choice rule). The issue to me it seems is that this scaling term moves very quicly from 0 to 1
+
+Here i just want to briefly show what i did leading up to this in case there is something to be corrected sooner.
+
+## Preprocessing
+
+The data here is the data that was put in my directory in the rdss drive. It includes
+
+1. Subject look data, restricted to the $N = 40$ TD subjects. Fixation probabilities were computed for each subject, though even in the TD group, some of the target/logistic curves look questionable. The subject look data looks like this:
+
+```{r, echo = FALSE}
+looks
+```
+
+
+2. TRACE data from same directory. I computed the average activation across trials (I'm assuming this is correct). The TRACE data, processed, looks like this (frame to time adjustment already made):
+
+```{r, echo = FALSE}
+trace
+```
+
+## Data without further manipulation
+
+Here, I just want to show what each of the curves do look like when plotted
+
+```{r, echo = FALSE}
+looksm <- melt(looks, id.vars = c("subject", "time"), variable.name = "object")
+tracem <- melt(trace, id.vars = c("time"), variable.name = "object")
+```
+
+
+TRACE looks like I expect that it would
+
+```{r, echo = FALSE, fig.width=6, fig.height=4}
+ggplot(tracem, aes(time, value, color = object)) + geom_line() + ggtitle("Trace Activation")
+```
+
+But here we have the target fixation probabilities for the TD children. Some of these have peak proportions much lower than I would have antiicpated. Is this correct?
+
+```{r, echo = FALSE, fig.width=6, fig.height=4}
+ggplot(looksm[object == "target", ], aes(time, value, color = as.factor(subject)), group = subject) + geom_line() + ggtitle("Subjects -- target")
+```
+
+## Luce choice rule
+
+This was implmented as a simple function in R
+
+```{r}
+## Using tau of 3, between baseline of 2.5 and max of 4
+lucer <- function(l, tau = 3) {
+  expl <- lapply(l, function(x) {
+    exp(tau * x)
+  })
+  ss <- Reduce(`+`, expl)
+  rr <- lapply(expl, function(x) as.data.table(x / ss))
+  rr
+}
+l <- as.list(trace[, -"time", with = FALSE])
+trace_luce <- Reduce(`cbind`, (lucer(l)))
+names(trace_luce) <- names(l)
+trace_luce <- cbind(trace[, .(time)], trace_luce)
+
+# Looks accurate
+trace_luce
+```
+
+
+## Scaling
+
+The adjustment from the paper has the following scaling function:
+
+$$
+\text{SCALING} = \frac{p-b}{1 + w \cdot \exp (-s \cdot (c - \text{act}_{\text{max}}))^{1/w}} + b
+$$
+
+This is where I feel less confident. Again, we use a simple function in R to find the maximum activation across each time point. According to the appendix, set values for this were 
+
+* p = 1
+* b = 0
+* w = 0.0001
+* s = 4
+* c = 0.25
+
+
+```{r, fig.width = 4, fig.height=3}
+scaler <- function(a) { #a is max activation
+  s <- 4
+  w <- 0.0001
+  cc <- 0.25
+  den <- 1 + w * exp(-s * (cc - a))^(1/w)
+  (ss <- 1/den)
+}
+
+## Find maximum activation at each time 
+trace_luce[, maxact := max(target, cohort, rhyme, ur), by = time]
+
+## Get scale term
+trace_luce[, scaler_term := scaler(maxact)]
+
+## These are basically all zero
+summary(trace_luce$scaler_term)
+hist(trace_luce$scaler_term)
+```
+
+This also seems backwards, as we are scaling the time at onset (where probability to each is 0.25) as nearly 1, where I would think this should be zero. At any rate, we can scale each of these and compare the plots
+
+```{r}
+trace_scale <- copy(trace_luce)
+trace_scale[, `:=`(target = target * scaler_term, 
+                   cohort = cohort * scaler_term, 
+                   rhyme = rhyme * scaler_term, 
+                   ur = ur  * scaler_term)]
+
+## These look wrong
+head(trace_scale)
+```
+
+```{r, echo = FALSE}
+trace_scale[, `:=`(scaler_term = NULL, maxact = NULL)]
+trace_scale <- melt(trace_scale, id.vars = "time", 
+                    variable.name = "object")
+
+trace_luce[, `:=`(maxact = NULL, scaler_term = NULL)]
+trace_luce <- melt(trace_luce, id.vars = "time", 
+                    variable.name = "object")
+```
+
+```{r, echo = FALSE, fig.width = 12, fig.height = 5}
+p1 <- ggplot(trace_luce, aes(time, value, color = object)) + geom_line() +
+  ggtitle("Luce choice only")
+
+p2 <- ggplot(trace_scale, aes(time, value, color = object)) + geom_line() +
+  ggtitle("Scaled activations")
+
+grid.arrange(p1, p2, ncol = 2)
+```
+
+Clearly the luce choice only isn't correct, as it has all of the proportions beginning at 0.25, but then after multiplying by the scaling term they appear to be total nonsense.
+
+As I mentioned, I suspect it has to do with  how quickly the scaling term goes from 0 (removing all activation) to 1 (which doesn't scale anything)
+
+```{r, fig.width=4, fig.height=4, echo = FALSE}
+act <- seq(0, 1, length.ou = 100)
+plot(act, scaler(act), type = 'l', main = "Activation scaling term", 
+     xlab = "max activation", ylab = "scale term")
+```
+
+Things seem better when I set the scaling term to $w=1$, but it looks like it still scales things monotonically in the wrong direction. That is, instead of having activations near zero at onset, it appears as if it pushes activations to zero when response probabability is near one
+
+```{r, fig.width=4, fig.height=4, echo = FALSE}
+scaler2 <- function(a) { #a is max activation
+  s <- 4
+  #w <- 0.0001
+  w <- 1
+  cc <- 0.25
+  den <- 1 + w * exp(-s * (cc - a))^(1/w)
+  (ss <- 1/den)
+}
+
+plot(act, scaler2(act), type = 'l', main = "Activation scaling term", 
+     xlab = "max activation", ylab = "scale term")
+
+```
+
+
+## Questions
+
+Based on the above, I have a few questions:
+
+1. Is it correct to find the average activation for TRACE across each of the included simulations? If so, should I scale the activations before or after computing this average
+
+2. There is clearly something wrong with my scaling function, but I'm not sure what (I know, this isn't a question)
+
+3. When I do go about trying to reconcile the relationship between TRACE, curve estimates based on looks and curve estimates based on saccades, should I do anything at all about the collection of subjects with fixation proportions below 0.5?
+

@@ -21,14 +21,10 @@
 %\input{main.tex}
 
 \begin{abstract}
-The Bootstrapped Differences of Timeseries (bdots) was first introduced by Oleson (and others) as a method for controlling type I error in a composite of serially correlated tests of differences between two time series curves in the context of eye tracking data.  This methodology was originally implemented in R by Seedorff 2018. Here, we revist the underlying methodology and suggest a new approach to identifying regions of statistically significant differences between (time series? functional time series?) as well as improving our estimate of group distributions in the context of the visual world paradigm. We also investigate the relationship between power, timepoints sampled, and other things
+The Bootstrapped Differences of Timeseries (bdots) was first introduced by Oleson (and others) as a method for controlling type I error in a composite of serially correlated tests of differences between two time series curves in the context of eye tracking data.  This methodology was originally implemented in R by Seedorff 2018. Here, we revist the underlying methodology and suggest a new approach to identifying regions of statistically significant differences between time series, or more generally, functions in time, as well as improving our estimate of group distributions in the context of the visual world paradigm. We also investigate the relationship between power, sample density and something else. 
 \end{abstract}
 
 \section{Introduction}
-
-I am really starting to think that this paper can be very short.\\
-
-I don't think that addressing the case of paired tests needs to be in the main, perhaps supplemental materials. \\
 
 
 Introductions are tedious. The main takeaway of the original bdots paper begins with the understanding that we start with densly sampled time series (in the form of eyetracking data) that is averaged across time to create something that appears to be a nonlinear curve. It is unclear what effect this averaging has on the presupposed autocorrelation of the corresponding curves.

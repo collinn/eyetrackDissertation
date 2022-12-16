@@ -123,8 +123,11 @@ scaler <- function(a) { #a is max activation
   (ss <- 1/den)
 }
 
+
 ## Find maximum activation at each time 
 trace_luce[, maxact := max(target, cohort, rhyme, ur), by = time]
+
+trace_copy <- copy(trace_luce)
 
 ## Get scale term
 trace_luce[, scaler_term := scaler(maxact)]
@@ -182,7 +185,7 @@ Things seem better when I set the scaling term to $w=1$, but it looks like it st
 ```{r, fig.width=4, fig.height=4, echo = FALSE}
 scaler2 <- function(a) { #a is max activation
   s <- 4
-  #w <- 0.0001
+  w <- 0.0001
   w <- 1
   cc <- 0.25
   den <- 1 + w * exp(-s * (cc - a))^(1/w)
@@ -193,6 +196,64 @@ plot(act, scaler2(act), type = 'l', main = "Activation scaling term",
      xlab = "max activation", ylab = "scale term")
 
 ```
+
+## Try with  new scaler
+
+Changes include
+
+* s = 1
+* exponentiate everything in den
+* add p  and b
+* a - cc
+
+```{r}
+scaler2 <- function(a, b = 0, p = 1) { #a is max activation
+  s <- 4
+  w <- 0.0001
+  cc <- 0.25
+  den <- (1 + w * exp(-s * (a - cc)))^(1/w)
+  (ss <- (p-b)/den + b)
+}
+
+## Find maximum activation at each time 
+trace_luce <- copy(trace_copy)
+trace_luce[, maxact := max(target, cohort, rhyme, ur), by = time]
+
+## Get scale term
+trace_luce[, scaler_target:= scaler2(maxact, min(target), max(target))]
+
+im <- which.max(trace_luce$target)
+imm <- which.min(trace_luce$target)
+
+trace_luce[c(imm, im), .(target,  maxact, scaler_target)]
+
+plot(trace_luce$time, trace_luce$scaler_target, type = 'l', col = 'steelblue')
+```
+
+## Try without luce choice rule
+
+```{r}
+trace[, maxact := max(target, cohort, rhyme, ur), by = time]
+trace[,  scale_target := scaler2(maxact, min(target), max(target))]
+trace[,  scale_target2 := scaler2(maxact, 0, 1)]
+
+par(mfrow = c(1, 2))
+plot(trace$time, trace$scale_target, type = 'l', col = 'steelblue', main = "min, max")
+plot(trace$time, trace$scale_target2, type = 'l', col = 'steelblue', main = "0, 1")
+```
+
+
+## Look at this (using looks)
+
+```{r}
+looks[, targetm := mean(target), by = time]
+looks[, `:=`(subject = NULL, unrel = NULL, cohort = NULL, unrelated = NULL, rhyme = NULL, target = NULL)]
+looks <- unique(looks)
+plot(looks$time, looks$targetm, type = 'l', col = 'blue')
+lines(trace$time, trace$scale_target, col = 'red')
+lines(trace$time, trace$scale_target2, col = 'green')
+```
+
 
 
 ## Questions

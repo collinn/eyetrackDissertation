@@ -23,6 +23,11 @@ Right now this is just copied over from the overview given after prospectus (and
 \end{abstract}
 
 \section{Introduction}
+
+n.b., need to remove/move pretty much everything in oculomotor delay because it is beyond irrelevant for this
+
+Also, what stays in the body, what goes in the appendix?
+
 Spoken words create analog signals that are processed by the brain in real time. That is, as the spoken word unfolds, a cohort of possible resolutions are considered until the target word is recognized. The degree to which a particular candidate word is recognized is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
 Our interest is in measuring the degree of activation of a target relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eyetracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. Any particular trial could have anywhere from 3 to 10 eye movements, known as saccades, followed by fixations lasting between 200ms-100ms. An illustration of these terms is given in Figure 1. 
@@ -208,7 +213,43 @@ We will interogate a number of potential methods for dealing with this issue, th
 
 \section{Compare with TRACE}
 
-I need to download this data from Bob and just do it. Part of my hestitation, I believe, is the fact that it might not work. That would be shitty
+This section needs to move to the prominent spot since its the meat of my argument 
+Here is a snippet I stole from elsewhere (that i also wrote):
+
+\noindent\rule{2cm}{0.4pt}
+
+In Allopenna (1998), they say "... A time course analysis of the proportion of fixations on the target object (currect referent), cohort competitor, and unrelated objects suggested that this measure would be extremely sensistive to the uptake of information during the lexical process. *Futhermore, the shapes of the functions suggested that they could be closely mapped onto activation levels*...*We also put forth an explicit account of the mapping between activation levels simulated by the TRACE model and fixation probabilities.*"
+
+That is, it seems like the connection between fixations and activation was first posited due to the similarities in shape of the functions with TRACE models. ("linking hypothesis" -- also, see magnuson)
+
+Actually, this entire paper gives an explicit transformation from what was predicted in TRACE to what should be predicted as proportion/probability of fixation
+
+\noindent\rule{2cm}{0.4pt}
+
+\subsection{Collecting TRACE data}
+
+Here, I want to cover a handful of things:
+
+\begin{enumerate}
+\item Where did this trace data come from (bob's paper)
+\item How could it be reconstructed in trace (parameters)
+\item What words were used
+\item How did I get it into acceptable format for me
+\item Luce choice rule, time transformation, scaling term
+\end{enumerate}
+
+We validate our arguments above using a fortuituous study by McMurray (2010) in which subject data was collected to be analyzed against a collection of hyperparameters in TRACE testing a number of theoretical constructs in language impairment, including sensory and phonological confusion, vocabulary size, etc., presenting us with both a collection of empirically collected data from the subjects, as well as accompanying TRACE data, simulated with words used in the empirical portion of the study. Using this, we will be able to examine the relationship between empirically collected look data, saccade data, and validating TRACE data.
+
+\subsection{TRACE Data}
+
+In McMurray (2011), a range of simulated TRACE data was collected across the space of hyperparameters, each simulation containing 14 trials, each with a Target, Cohort, Rhyme, and Unrelatd object (Appendix B. in Bob's paper). Here, we included only TRACE data associated with the default parameters specified in jTRACE (magnuson) and found the average TRACE activation across frames/cycles for each object (target, cohort, etc.,).
+
+As has been discussed elsewhere (Allopena, Magnuson, Bob), TRACE outputs a set of activations relative to all of the words included in its lexicon, and what is needed is a linking function the is able to return a simple mapping of TRACE activations to an estimated probability. We follow the steps given in the appendix of McMurray (2011), which we briefly outline here. 
+
+First is an implementation of the Luce Choice Rule (from somewhere) which dictates that, when considering the probability of fixation of a candidate word, we need only consider the probability of fixation relative to the other candidates present rather than our entire lexicon. This means that in the context of the VWP, our probability of fixation would be relative to the (usually three) other objects on the screen, rather than the thousands of words with which we may be familiar.  
+
+Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. 
+
 
 \section{Discussion}
 

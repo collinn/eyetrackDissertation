@@ -106,10 +106,9 @@ legend(1000, .250, legend = c("look w rt cut", "look wo rt", "sac w rt cut", "sa
        col = c("red", "blue", "green", "purple"), lwd = 1)
 
 
+## Pretty sure I figured out trace
+trace <- fread("~/dissertation/data/bob_trace_data/trace_curves.csv")
 
-### TRACE stuff
-trace <- fread("../data/bob_trace_data/trace_curves.csv")
-# (also looks like bob did this on activation not luce choice rule transform)
 scaler <- function(a, b = 0, p = 1) { #a is max activation
   s <- 4
   w <- 0.0001
@@ -118,7 +117,8 @@ scaler <- function(a, b = 0, p = 1) { #a is max activation
   (ss <- (p-b)/den + b)
 }
 
-lucer <- function(l, tau = 3.5) {
+# Range tau = 2-4.5
+lucer <- function(l, tau = 4) {
   expl <- lapply(l, function(x) {
     exp(tau * x)
   })
@@ -126,33 +126,37 @@ lucer <- function(l, tau = 3.5) {
   rr <- lapply(expl, function(x) as.data.table(x / ss))
   rr
 }
+
+## Implement luce
 l <- as.list(trace[, -"time", with = FALSE])
 trace_luce <- Reduce(`cbind`, (lucer(l)))
 names(trace_luce) <- names(l)
 trace_luce <- cbind(trace[, .(time)], trace_luce)
 
-## Prep trace 
-trace_luce[, maxact := max(target, cohort, rhyme, ur), by = time]
-trace_luce[, ss := scaler(maxact, 0, 1)] # 0, 1 looks better and makes more sense
-trace_luce[, sst := scaler(maxact, min(target), max(target))]
-trace_luce[, targets := target * ss]
-trace_luce[, targetss := target * sst]
-# lines(trace_luce$time, trace_luce$ss, col = "black", lty = 2)
+## Compute scaling term, using both p/b and 0/1
+# for target specifically
+bb_t <- trace_luce[1, target] # first
+pp_t <- trace_luce[108, target] # last
 
-#trace <- trace_luce
-# plot(trace_luce$time, trace_luce$ss, type = 'l', ylim = c(0, 1))
-# lines(trace_luce$time, trace_luce$targets, col = 'red', lty = 2)
-# lines(trace$time, trace$target*trace_luce$ss, col = 'seagreen', lty = 2)
+## Once using the correct p/b
+trace_luce[, ss_targ := scaler(max(target, cohort, rhyme, ur), bb_t, pp_t), by = time]
+trace_luce[, ss_targ2 := scaler(max(target, cohort, rhyme, ur), 0, 1), by = time]
 
-trace[, maxact_trace := max(target, cohort, rhyme, ur), by = time]
-trace[, ss_trace := scaler(maxact_trace, 0, 1)]
+trace_luce[, `:=`(targ1 = target * ss_targ, 
+                  targ2 = target * ss_targ2)]
 
+plot(trace_luce$time, trace_luce$targ2,type = 'l', col = 'red')
+lines(trace_luce$time, trace_luce$targ1, col = 'blue')
+legend(x = 1200, y = 0.2, legend = c("using p, b", "using 0, 1"), col = c("blue", "red"), lty = 1)
+
+
+## Comparing fits with tracec
+time <- 0:1780
 plot(time, f1, type = 'l', col = 'red', ylim = c(0, 1), ylab = "proportions")
 lines(time, f2, type = 'l', col = 'blue')
 lines(time, f3, type = 'l', col = 'green')
 lines(time, f4, type = 'l', col = 'purple')
 legend(1000, .250, legend = c("look w rt cut", "look wo rt", "sac w rt cut", "sac wo rt"), 
        col = c("red", "blue", "green", "purple"), lwd = 1)
-lines(trace$time,  trace$ss_trace, lwd = 2, lty = 2)
-lines(trace$time,  trace_luce$targets, lwd = 2, lty = 2, col = 'red')
-lines(trace$time,  trace_luce$targetss, lwd = 2, lty = 2, col = 'blue')
+
+lines(trace_luce$time, trace_luce$targ1, col = 'orange', lwd = 2)

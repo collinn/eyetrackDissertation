@@ -160,3 +160,75 @@ legend(1000, .250, legend = c("look w rt cut", "look wo rt", "sac w rt cut", "sa
        col = c("red", "blue", "green", "purple"), lwd = 1)
 
 lines(trace_luce$time, trace_luce$targ1, col = 'orange', lwd = 2)
+
+
+##################################3
+## Ok, time to repeat with cohort data (gulp)
+
+
+fit_looks <- bdotsFit(data = looks, 
+                      subject = "subject", 
+                      time = "time", 
+                      y = "cohort", 
+                      group = "group", 
+                      curveType = doubleGauss())
+
+fit_looks2 <- bdotsFit(data = looks2, 
+                       subject = "subject", 
+                       time = "time", 
+                       y = "cohort", 
+                       group = "group", 
+                       curveType = doubleGauss())
+
+
+fit_sacs  <- bdotsFit(data = sacs, 
+                      subject = "subject", 
+                      time = "starttime", 
+                      y = "cohort", 
+                      group = "group", 
+                      curveType = doubleGauss2())  
+fit_sacs2  <- bdotsFit(data = sacs2, 
+                       subject = "subject", 
+                       time = "starttime", 
+                       y = "cohort", 
+                       group = "group", 
+                       curveType = doubleGauss())  
+
+
+trace <- fread("~/dissertation/data/bob_trace_data/trace_curves.csv")
+
+scaler <- function(a, b = 0, p = 1) { #a is max activation
+  s <- 4
+  w <- 0.0001
+  cc <- 0.25
+  den <- (1 + w * exp(-s * (a - cc)))^(1/w)
+  (ss <- (p-b)/den + b)
+}
+
+# Range tau = 2-4.5
+lucer <- function(l, tau = 4) {
+  expl <- lapply(l, function(x) {
+    exp(tau * x)
+  })
+  ss <- Reduce(`+`, expl)
+  rr <- lapply(expl, function(x) as.data.table(x / ss))
+  rr
+}
+
+## Implement luce
+l <- as.list(trace[, -"time", with = FALSE])
+trace_luce <- Reduce(`cbind`, (lucer(l)))
+names(trace_luce) <- names(l)
+trace_luce <- cbind(trace[, .(time)], trace_luce)
+
+## Compute scaling term, using both p/b and 0/1
+# for target specifically
+bb_c <- trace_luce[1, cohort] # first
+pp_c <- trace_luce[108, cohort] # last
+
+## Once using the correct p/b
+trace_luce[, ss_co := scaler(max(target, cohort, rhyme, ur), bb_c, pp_c), by = time]
+trace_luce[, ss_co2 := scaler(max(target, cohort, rhyme, ur), 0, 1), by = time]
+
+trace_luce[, `:=`(co1 = cohort * ss_co, 
+                  co2 = cohort * ss_co2)]

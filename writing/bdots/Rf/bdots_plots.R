@@ -75,6 +75,11 @@ bdotsRefit(res2, fitCode = 4)
 library(bdots)
 fit <- readRDS("eightgrpfit.rds")
 
+png("../img/car_fit.png", width = 480*1.4)
+plot(fit[1:4, ])
+dev.off()
+
+
 boot <- bdotsBoot(y ~ Vehicle(car, truck) + Origin(domestic), fit)
 png("../img/car_boot_both.png", width = 480*1.4)
 plot(boot)

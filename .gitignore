@@ -13,6 +13,7 @@
 .*.lb
 *.synctex.gz
 *.rds
+*.RData
 
 data/trace_n_things/**
 data/bob_trace_data/**

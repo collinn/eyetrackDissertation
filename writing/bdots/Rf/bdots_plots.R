@@ -45,7 +45,7 @@ dev.off()
 # res$fitCode <- 1
 # bdotsRefit(res)
 
-res <- bdotsFit(data = cohort_unrelated,
+res <- bdotsFit(data = df_cohort_unrelated,
                   subject = "Subject",
                   time = "Time",
                   y = "Fixations",
@@ -55,9 +55,9 @@ res <- bdotsFit(data = cohort_unrelated,
                   numRefits = 2,
                   cores = 8,
                   verbose = FALSE)
-bdotsRefit(res, fitCode = 4)
+bdotsRefit(res, fitCode = 3)
 
- # not used
+
 res2 <- bdotsFit(data = df_cohort_unrelated,
                 subject = "subjectID",
                 time = "Time",
@@ -68,24 +68,5 @@ res2 <- bdotsFit(data = df_cohort_unrelated,
                 numRefits = 2,
                 cores = 8,
                 verbose = FALSE)
-bdotsRefit(res2, fitCode = 4)
 
-
-### OK here we do things with the fake car data
-library(bdots)
-fit <- readRDS("eightgrpfit.rds")
-
-png("../img/car_fit.png", width = 480*1.4)
-plot(fit[1:4, ])
-dev.off()
-
-
-boot <- bdotsBoot(y ~ Vehicle(car, truck) + Origin(domestic), fit)
-png("../img/car_boot_both.png", width = 480*1.4)
-plot(boot)
-dev.off()
-
-
-png("../img/car_boot_single.png", width = 480*1.4)
-plot(boot, ciBands = FALSE, plotDiffs = FALSE)
-dev.off()
+bdotsRefit(res, fitCode = 3)

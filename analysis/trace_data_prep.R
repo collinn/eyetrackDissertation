@@ -38,3 +38,79 @@ trace[, `:=`(simulation = NULL, targetact = NULL,
 ## Unique only
 trace <- unique(trace)
 fwrite(trace, file = "~/dissertation/data/bob_trace_data/trace_curves.csv")
+
+## Now let's set up the correct adjustments
+
+###############
+## TARGET #####
+###############
+
+scale_trace <- function(tau = 4.5) {
+  trace <- fread("~/dissertation/data/bob_trace_data/trace_curves.csv")
+  scaler <- function(a, b = 0, p = 1) { #a is max activation
+    s <- 4
+    w <- 0.0001
+    cc <- 0.25
+    den <- (1 + w * exp(-s * (a - cc)))^(1/w)
+    (ss <- (p-b)/den + b)
+  }
+  
+  # Range tau = 2-4.5
+  lucer <- function(l, tt = tau) {
+    expl <- lapply(l, function(x) {
+      exp(tt * x)
+    })
+    ss <- Reduce(`+`, expl)
+    rr <- lapply(expl, function(x) as.data.table(x / ss))
+    rr
+  }
+  
+  ## Implement luce
+  l <- as.list(trace[, -"time", with = FALSE])
+  trace_luce <- Reduce(`cbind`, (lucer(l)))
+  names(trace_luce) <- names(l)
+  trace_luce <- cbind(trace[, .(time)], trace_luce)
+  
+  ## Compute scaling term, using both p/b and 0/1
+  # for target specifically
+  bb_t <- trace_luce[1, target] # first
+  pp_t <- trace_luce[108, target] # last
+  
+  ## Once using the correct p/b
+  trace_luce[, ss_targ := scaler(max(target, cohort, rhyme, ur), bb_t, pp_t), by = time]
+  trace_luce[, ss_targ2 := scaler(max(target, cohort, rhyme, ur), 0, 1), by = time]
+  
+  trace_luce[, `:=`(targ_bp = target * ss_targ, 
+                    targ_nobp = target * ss_targ2)]
+  
+  ###############
+  ## COHORT #####
+  ###############
+  
+  bb_c <- trace_luce[1, cohort] # first
+  pp_c <- trace_luce[108, cohort] # last
+  
+  ## Once using the correct p/b
+  trace_luce[, ss_co := scaler(max(target, cohort, rhyme, ur), bb_c, pp_c), by = time]
+  trace_luce[, ss_co2 := scaler(max(target, cohort, rhyme, ur), 0, 1), by = time]
+  
+  trace_luce[, `:=`(cohort_bp = cohort * ss_co, 
+                    cohort_nobp = cohort * ss_co2)]
+  
+  
+  ## Get rid of intermediate pieces
+  trace_luce[, `:=`(ss_targ = NULL, 
+                    ss_targ2 = NULL, 
+                    ss_co = NULL, 
+                    ss_co2 = NULL)]
+  trace_luce
+}
+
+# This allows us to scale trace, neat
+aa <- scale_trace(tau = 4.5)
+bb <- scale_trace(tau = 3)
+
+aa <- scale_trace(tau = 4.5)
+bb <- scale_trace(tau = 3)
+fwrite(aa, "~/dissertation/data/bob_trace_data/trace_scaled_4.5.csv")
+fwrite(bb, "~/dissertation/data/bob_trace_data/trace_scaled_3.csv")

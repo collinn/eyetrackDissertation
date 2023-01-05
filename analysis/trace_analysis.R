@@ -21,60 +21,45 @@ looks2[, group := "A"]
 sacs2[, group := "A"]
 
 
+if (file.exists("target_fits_bdots.RData")) {
+  load("target_fits_bdots.RData")
+} else {
+  fit_looks <- bdotsFit(data = looks, 
+                        subject = "subject", 
+                        time = "time", 
+                        y = "target", 
+                        group = "group", 
+                        curveType = logistic())
+  
+  fit_looks2 <- bdotsFit(data = looks2, 
+                         subject = "subject", 
+                         time = "time", 
+                         y = "target", 
+                         group = "group", 
+                         curveType = logistic())
+  
+  #sacs <- sacs[starttime <= 2000, ]
+  
+  fit_sacs  <- bdotsFit(data = sacs, 
+                        subject = "subject", 
+                        time = "starttime", 
+                        y = "target", 
+                        group = "group", 
+                        curveType = logistic())  
+  fit_sacs2  <- bdotsFit(data = sacs2, 
+                         subject = "subject", 
+                         time = "starttime", 
+                         y = "target", 
+                         group = "group", 
+                         curveType = logistic())  
+  
+  save(fit_looks, fit_looks2, fit_sacs, fit_sacs2, file = "target_fits_bdots.RData")
+}
 
 
-fit_looks <- bdotsFit(data = looks, 
-                      subject = "subject", 
-                      time = "time", 
-                      y = "target", 
-                      group = "group", 
-                      curveType = logistic())
-
-fit_looks2 <- bdotsFit(data = looks2, 
-                      subject = "subject", 
-                      time = "time", 
-                      y = "target", 
-                      group = "group", 
-                      curveType = logistic())
-
-#sacs <- sacs[starttime <= 2000, ]
-
-
-# ll <- as.numeric(sort(unique(sacs$subject)))
-# i <- 1
-# 
-# # i == 8, 15, 17, 34, 38
-# for (i in seq_along(ll)) {
-#   i <- 1
-#   fit_sacs  <- bdotsFit(data = sacs[subject == 120, ], 
-#                         subject = "subject", 
-#                         time = "starttime", 
-#                         y = "target", 
-#                         group = "group", 
-#                         curveType = logistic())  
-#   
-#   i <- i+1
-#   print(i)
-# }
-# 
-# ll[c(8, 15, 17, 34, 38)]
-# # 120, 37, 43, 87, 97
-
-fit_sacs  <- bdotsFit(data = sacs, 
-                      subject = "subject", 
-                      time = "starttime", 
-                      y = "target", 
-                      group = "group", 
-                      curveType = logistic())  
-fit_sacs2  <- bdotsFit(data = sacs2, 
-                      subject = "subject", 
-                      time = "starttime", 
-                      y = "target", 
-                      group = "group", 
-                      curveType = logistic())  
 
 ## This makes sense why this happens now
-(mm <- colMeans(coef(fit_looks[fitCode >= 5, ])))
+(mm <- colMeans(coef(fit_looks[fitCode <= 5, ])))
 (mm2 <- colMeans(coef(fit_looks2)))
 
 ## Remove wrong ones (R2 and fitcode useless here)
@@ -102,48 +87,13 @@ plot(time, f1, type = 'l', col = 'red', ylim = c(0, 1), ylab = "proportions")
 lines(time, f2, type = 'l', col = 'blue')
 lines(time, f3, type = 'l', col = 'green')
 lines(time, f4, type = 'l', col = 'purple')
-legend(1000, .250, legend = c("look w rt cut", "look wo rt", "sac w rt cut", "sac wo rt"), 
+legend(1000, .250, legend = c("look w rt", "look wo rt", "sac w rt", "sac wo rt"), 
        col = c("red", "blue", "green", "purple"), lwd = 1)
 
 
 ## Pretty sure I figured out trace
-trace <- fread("~/dissertation/data/bob_trace_data/trace_curves.csv")
+trace <- fread("~/dissertation/data/bob_trace_data/trace_scaled_4.5.csv")
 
-scaler <- function(a, b = 0, p = 1) { #a is max activation
-  s <- 4
-  w <- 0.0001
-  cc <- 0.25
-  den <- (1 + w * exp(-s * (a - cc)))^(1/w)
-  (ss <- (p-b)/den + b)
-}
-
-# Range tau = 2-4.5
-lucer <- function(l, tau = 4) {
-  expl <- lapply(l, function(x) {
-    exp(tau * x)
-  })
-  ss <- Reduce(`+`, expl)
-  rr <- lapply(expl, function(x) as.data.table(x / ss))
-  rr
-}
-
-## Implement luce
-l <- as.list(trace[, -"time", with = FALSE])
-trace_luce <- Reduce(`cbind`, (lucer(l)))
-names(trace_luce) <- names(l)
-trace_luce <- cbind(trace[, .(time)], trace_luce)
-
-## Compute scaling term, using both p/b and 0/1
-# for target specifically
-bb_t <- trace_luce[1, target] # first
-pp_t <- trace_luce[108, target] # last
-
-## Once using the correct p/b
-trace_luce[, ss_targ := scaler(max(target, cohort, rhyme, ur), bb_t, pp_t), by = time]
-trace_luce[, ss_targ2 := scaler(max(target, cohort, rhyme, ur), 0, 1), by = time]
-
-trace_luce[, `:=`(targ1 = target * ss_targ, 
-                  targ2 = target * ss_targ2)]
 
 plot(trace_luce$time, trace_luce$targ2,type = 'l', col = 'red')
 lines(trace_luce$time, trace_luce$targ1, col = 'blue')
@@ -165,15 +115,15 @@ lines(trace_luce$time, trace_luce$targ1, col = 'orange', lwd = 2)
 ##################################3
 ## Ok, time to repeat with cohort data (gulp)
 
+# 
+# fit_looks_g <- bdotsFit(data = looks, 
+#                       subject = "subject", 
+#                       time = "time", 
+#                       y = "cohort", 
+#                       group = "group", 
+#                       curveType = doubleGauss())
 
-fit_looks <- bdotsFit(data = looks, 
-                      subject = "subject", 
-                      time = "time", 
-                      y = "cohort", 
-                      group = "group", 
-                      curveType = doubleGauss())
-
-fit_looks2 <- bdotsFit(data = looks2, 
+fit_looks2_g <- bdotsFit(data = looks2, 
                        subject = "subject", 
                        time = "time", 
                        y = "cohort", 
@@ -181,13 +131,13 @@ fit_looks2 <- bdotsFit(data = looks2,
                        curveType = doubleGauss())
 
 
-fit_sacs  <- bdotsFit(data = sacs, 
-                      subject = "subject", 
-                      time = "starttime", 
-                      y = "cohort", 
-                      group = "group", 
-                      curveType = doubleGauss2())  
-fit_sacs2  <- bdotsFit(data = sacs2, 
+# fit_sacs_g  <- bdotsFit(data = sacs, 
+#                       subject = "subject", 
+#                       time = "starttime", 
+#                       y = "cohort", 
+#                       group = "group", 
+#                       curveType = doubleGauss2())  
+fit_sacs2_g  <- bdotsFit(data = sacs2, 
                        subject = "subject", 
                        time = "starttime", 
                        y = "cohort", 
@@ -195,40 +145,7 @@ fit_sacs2  <- bdotsFit(data = sacs2,
                        curveType = doubleGauss())  
 
 
-trace <- fread("~/dissertation/data/bob_trace_data/trace_curves.csv")
+colMeans(coef(fit_looks2_g[c(1:37, 39:40)]))
 
-scaler <- function(a, b = 0, p = 1) { #a is max activation
-  s <- 4
-  w <- 0.0001
-  cc <- 0.25
-  den <- (1 + w * exp(-s * (a - cc)))^(1/w)
-  (ss <- (p-b)/den + b)
-}
 
-# Range tau = 2-4.5
-lucer <- function(l, tau = 4) {
-  expl <- lapply(l, function(x) {
-    exp(tau * x)
-  })
-  ss <- Reduce(`+`, expl)
-  rr <- lapply(expl, function(x) as.data.table(x / ss))
-  rr
-}
 
-## Implement luce
-l <- as.list(trace[, -"time", with = FALSE])
-trace_luce <- Reduce(`cbind`, (lucer(l)))
-names(trace_luce) <- names(l)
-trace_luce <- cbind(trace[, .(time)], trace_luce)
-
-## Compute scaling term, using both p/b and 0/1
-# for target specifically
-bb_c <- trace_luce[1, cohort] # first
-pp_c <- trace_luce[108, cohort] # last
-
-## Once using the correct p/b
-trace_luce[, ss_co := scaler(max(target, cohort, rhyme, ur), bb_c, pp_c), by = time]
-trace_luce[, ss_co2 := scaler(max(target, cohort, rhyme, ur), 0, 1), by = time]
-
-trace_luce[, `:=`(co1 = cohort * ss_co, 
-                  co2 = cohort * ss_co2)]

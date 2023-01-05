@@ -56,9 +56,9 @@ scale_trace <- function(tau = 4.5) {
   }
   
   # Range tau = 2-4.5
-  lucer <- function(l, tt = tau) {
+  lucer <- function(l, tau = 4.5) {
     expl <- lapply(l, function(x) {
-      exp(tt * x)
+      exp(tau * x)
     })
     ss <- Reduce(`+`, expl)
     rr <- lapply(expl, function(x) as.data.table(x / ss))
@@ -67,9 +67,11 @@ scale_trace <- function(tau = 4.5) {
   
   ## Implement luce
   l <- as.list(trace[, -"time", with = FALSE])
-  trace_luce <- Reduce(`cbind`, (lucer(l)))
+  trace_luce <- Reduce(`cbind`, (lucer(l, tau)))
   names(trace_luce) <- names(l)
   trace_luce <- cbind(trace[, .(time)], trace_luce)
+  
+  trace_luce <- trace
   
   ## Compute scaling term, using both p/b and 0/1
   # for target specifically

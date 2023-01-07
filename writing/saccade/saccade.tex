@@ -19,19 +19,23 @@
 %\input{main.tex}
 
 \begin{abstract}
-Right now this is just copied over from the overview given after prospectus (and the follow up). Sections correspond to topics rather than paper sections (for now)
+ll
 \end{abstract}
 
 \section{Introduction}
-
-n.b., need to remove/move pretty much everything in oculomotor delay because it is beyond irrelevant for this
-
-Also, what stays in the body, what goes in the appendix?
+``introductions are the hardest part"
 
 Spoken words create analog signals that are processed by the brain in real time. That is, as the spoken word unfolds, a cohort of possible resolutions are considered until the target word is recognized. The degree to which a particular candidate word is recognized is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
 Our interest is in measuring the degree of activation of a target relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eyetracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. Any particular trial could have anywhere from 3 to 10 eye movements, known as saccades, followed by fixations lasting between 200ms-100ms. An illustration of these terms is given in Figure 1. 
 
+\textbf{Research goals: } Some more context is helpful hear to try an understand what exactly it is that researchers are trying to learn from this data. As mentioned previously, we are largely concerned with ``activation". In particular, though, we are often interested in how the activation of competing words compare. Specifically, we might ask, ``at what point in the audio signal does the subject begin to identify the target word, relevant to competitors." This is of special interest in studying language development in typically developed children and those with cochlear implants, where atypical children may require more of a signal before they are able to disambiguate what they are hearing. As such, it is often of interest to ask when and how activation differs both between target words and competitors, as well as between different subjects. It is largely these last two areas that have dominated much of the VWP research.
+
+Our specific goal here is to determine if a method of estimating activation, measured as being more consistent with the predictions of TRACE, can be improved by relying solely on saccade data rather than the traditional method using fixation based approaches
+
+
+\section{A brief history}
+start with a brief history to where we are today
 %\begin{figure}[t]
 %    \centering
 %    \includegraphics[scale=0.5]{img/om_saccade_fixation_label_minimal.png}
@@ -39,31 +43,52 @@ Our interest is in measuring the degree of activation of a target relative to co
 %\end{figure}
 %\newpage
 
-\textbf{Fixation curve and relation to TRACE: } How speech is perceived and understood has been a subject of much debate for a significant portion of psycholinguistic's history. Starting in the 1980s and persisting today, most researchers subscribe to what is known as the connectionist model of speech perception. Briefly, this model posits that speech perception is best understood as a hierarchical dynamical system in which aspects of the model are either self reinforcing or self inhibiting with feedforward and feedback mechanisms. For example, hearing the phoneme \textbackslash h\textbackslash as in ``hit" will ``feedfoward", cognitively activating words that begin with the \textbackslash h\textbackslash sound. These activated words then ``feedback" to the phoneme letter, inhibiting activation for competing phonemes such as \textbackslash b\textbackslash or \textbackslash t\textbackslash. In 1986, McClelland and Elman implemented the TRACE model (TRACE doesn't stand for anything -- the name is a reference to ``the trace", a network structure for dynamically processing things in memory) implementing theoretical considerations into a computer model \cite{elman1985speech}.
+\paragraph{TRACE } How speech is perceived and understood has been a subject of much debate for a significant portion of psycholinguistic's history. Starting in the 1980s and persisting today, most researchers subscribe to what is known as the connectionist model of speech perception. Briefly, this model posits that speech perception is best understood as a hierarchical dynamical system in which aspects of the model are either self reinforcing or self inhibiting with feedforward and feedback mechanisms. For example, hearing the phoneme \textbackslash h\textbackslash  \ as in ``hit" will ``feedfoward", cognitively activating words that begin with the \textbackslash h\textbackslash \  sound. These activated words then ``feedback" to the phoneme letter, inhibiting activation for competing phonemes such as \textbackslash b\textbackslash \ or \textbackslash t\textbackslash. In 1986, McClelland and Elman implemented the TRACE model (TRACE doesn't stand for anything -- the name is a reference to ``the trace", a network structure for dynamically processing things in memory) implementing theoretical considerations into a computer model \cite{elman1985speech}.
 
-It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data \cite{allopenna1998tracking}. By coding the period of a fixation as a 0 or 1, depending on the referent and taking the average of fixations towards a referent at each time point (originally measured at intervals of 33ms, today  measured at intervals of 4ms), Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE. Since this publication, it has been this transformation of the data that has guided the last 25 years of VWP research. An illustration depicting these curves, along with an example of a VWP trial, is presented in Figure 2.
+\paragraph{vwp} [need section here to introduce vwp]
 
-%\textsc{\begin{figure}
-%    \centering
-%    \includegraphics[width=\textwidth]{img/vwp_example.png}
-%    \caption{Illustration of eye mechanics}
-%\end{figure}}
+\paragraph{allopena} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data \cite{allopenna1998tracking}. By coding the period of a fixation as a 0 or 1, depending on the referent and taking the average of fixations towards a referent at each time point (originally measured at intervals of 33ms, today  measured at intervals of 4ms), Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE. Since this publication, it has been this transformation of the data that has guided the last 25 years of VWP research. An illustration depicting these curves, along with an example of a VWP trial, is presented in Figure 2.
 
-\textbf{Research goals: } Some more context is helpful hear to try an understand what exactly it is that researchers are trying to learn from this data. As mentioned previously, we are largely concerned with ``activation". In particular, though, we are often interested in how the activation of competing words compare. Specifically, we might ask, ``at what point in the audio signal does the subject begin to identify the target word, relevant to competitors." This is of special interest in studying language development in typically developed children and those with cochlear implants, where atypical children may require more of a signal before they are able to disambiguate what they are hearing. As such, it is often of interest to ask when and how activation differs both between target words and competitors, as well as between different subjects. It is largely these last two areas that have dominated much of the VWP research.
-
-Our specific goal here is to determine if a method of estimating activation, measured as being more consistent with the predictions of TRACE, can be improved by relying solely on saccade data rather than the traditional method using fixation based approaches
+\paragraph{parametric methods (sli paper)}/
 
 
-\textbf{A (mostly) irrelevant history: } Decades of papers chart the pursuit of relevant metrics that can be meaningfully asked of the data. These have included metrics such as AUC (area under the curve), mixed and hierarchical models, Metropolis-Hastings simulations and more. Typical of these attempts is either a lack of specificity (AUC can tell us \textit{that} curves are different, but not when) or over specificity (contributing to large researcher degrees-of-freedom). One notable attempt was made by McMurray, where parameterized functional forms of the data were posited \cite{mcmurray2010individual}. This allowed non-linear curve fitting algorithms to generate meaningful parameter estimates of the data, such as the four-parameter logistic model which included parameters such as ``crossover point"
- and the slope at the point of inflection. While this served to give functional form to the observed data, it was still subject to the same shortcomings of previous research in terms of specificity. 
-In 2022, McMurray simulated eye tracking data generated by these parametric forms and showed that the curve fitting algorithms resulted in highly biased estimates \cite{mcmurray2022m}. In particular, he sought to have ``true" data-generating curves that can create a distribution of possible subject curves. These curves, and the variance in the distribution, were generated empirically from previous studies (although these values were based on fixation assumption). A major weakness in this paper is the assumption of data-generating mechanisms, of which he performed four. It was noted in the paper that this was a weakness, but the argument was made that if recovery could not be successfully performed under moderate assumptions of data generation, then attempts with far more complex ``real data" would be hopeless. 
 
-\textbf{The algorithm: } To understand what follows, its helpful to have a brief idea of the algorithm suggested by McMurray. Effectively, the algorithm for generating ``looks" was this: At some time $t$, a value is drawn from a binomial distribution (or a curve at time, $t$, representing the trajectory of probability) and asks: what is the probability that a saccade launched at this time would land on the target object. Depending on this outcome, a duration of fixation would be randomly drawn next: if the saccade was determined to land on the ``target", the fixation would be long; if not, it would be shorter. At the end of each fixation, another saccade was launched. Critically, the time $t$ as which this is determined does not occur at the END of the present fixation, but rather at the beginning. This is to account, in part, with oculomotor delay shown in Figure 1. In other words, once an eye moves, it is already premeditating where to move next. Additionally, once that decision is made cognitively, it is usually another 200ms before it is launched.
+\textbf{A (mostly) irrelevant history: } Decades of papers chart the pursuit of relevant metrics that can be meaningfully asked of the data. These have included metrics such as AUC (area under the curve), mixed and hierarchical models, Metropolis-Hastings simulations and more. Typical of these attempts is either a lack of specificity (AUC can tell us \textit{that} curves are different, but not when) or over specificity (contributing to large researcher degrees-of-freedom). One notable attempt was made by McMurray, where parameterized functional forms of the data were posited \cite{mcmurray2010individual}. This allowed non-linear curve fitting algorithms to generate meaningful parameter estimates of the data, such as the four-parameter logistic model which included parameters such as ``crossover point" and the slope at the point of inflection. While this served to give functional form to the observed data, it was still subject to the same shortcomings of previous research in terms of specificity. (what?)
 
-\textbf{The insight:} In short, we begin by recognizing that the actual object of interest is the underlying activation mediated through some cognitive mechanism upstream from eye movements. If we are interested in this mechanism as it unfolds over time, we should sample from this mechanism. As such, the only unit of observation that represents a sample in time is that of the launch of a saccade: past that point, and until the end of the fixation, we are receiving no more additional information about the underlying activation, with the exception of whatever can be gleaned by the length of the fixation. At any rate, it is at least incorrect to treat data launched at the saccade and the ongoing fixation as the same information relying the underlying cognitive mechanism.
+[figure for logistic curve and interpretation]
+
+In 2022, McMurray simulated eye tracking data generated by these parametric forms and showed that the curve fitting algorithms resulted in highly biased estimates \cite{mcmurray2022m}. In particular, he sought to have ``true" data-generating curves that can create a distribution of possible subject curves. These curves, and the variance in the distribution, were generated empirically from previous studies (although these values were based on fixation assumption). A major weakness in this paper is the assumption of data-generating mechanisms, of which he performed four. It was noted in the paper that this was a weakness, but the argument was made that if recovery could not be successfully performed under moderate assumptions of data generation, then attempts with far more complex ``real data" would be hopeless. This brings us to where our story today begins.
+
+\section{where we are}
+
+Context in hand, we are ready to introduce some of the characters of our story. this includes the finer points of the vwp, eye tracking data, and how allopena's introduction ties in with bob's parametric
+
+\subsection{anatomy of eye  movements}
+
+\begin{enumerate}
+\item looks
+\item saccades
+\item oculomotor delay
+\end{enumerate}
+
+\subsection{VWP data}
+
+\begin{equation}
+y_{it} = \frac1J \sum z_{ijt}
+\end{equation}
+and
+\begin{equation}
+f_{\theta}(t) \equiv y_t
+\end{equation}
+
+\subsection{princess bride paper}
+
+stuff, text, etc
+
+\paragraph{The algorithm: } To understand what follows, its helpful to have a brief idea of the algorithm suggested by McMurray. Effectively, the algorithm for generating ``looks" was this: At some time $t$, a value is drawn from a binomial distribution (or a curve at time, $t$, representing the trajectory of probability) and asks: what is the probability that a saccade launched at this time would land on the target object. Depending on this outcome, a duration of fixation would be randomly drawn next: if the saccade was determined to land on the ``target", the fixation would be long; if not, it would be shorter. At the end of each fixation, another saccade was launched. Critically, the time $t$ as which this is determined does not occur at the END of the present fixation, but rather at the beginning. This is to account, in part, with oculomotor delay shown in Figure 1. In other words, once an eye moves, it is already premeditating where to move next. Additionally, once that decision is made cognitively, it is usually another 200ms before it is launched.
+
+\paragraph{The insight:} [basically here describe the problem] In short, we begin by recognizing that the actual object of interest is the underlying activation mediated through some cognitive mechanism upstream from eye movements. If we are interested in this mechanism as it unfolds over time, we should sample from this mechanism. As such, the only unit of observation that represents a sample in time is that of the launch of a saccade: past that point, and until the end of the fixation, we are receiving no more additional information about the underlying activation, with the exception of whatever can be gleaned by the length of the fixation. At any rate, it is at least incorrect to treat data launched at the saccade and the ongoing fixation as the same information relying the underlying cognitive mechanism.
 The solution to this, then, is to simply use the saccade data, omitting information collected from the fixation period. While this seems obvious now, a visualisation of saccade information would have been nothing more than a discrete collection of 0s and 1s, having no visual similarity to the TRACE simulations. \textit{However}, taking the assumption presented by McMurray in 2010, we can still fit non-linear curves to this data, resulting in estimates of probabilities that match those predicted by TRACE.
-
-This document serves to briefly illustrate current methods of using eyetracking data to gain insight on the underlying activation of spoken words, along with a presentation of a proposed method. We argue that the proposed method is both closer to the mental process we wish to recover in addition to being a more mathematically defensible model of the data collected.
 
 \section{Eyetracking data} 
 
@@ -248,19 +273,13 @@ As has been discussed elsewhere (Allopena, Magnuson, Bob), TRACE outputs a set o
 
 First is an implementation of the Luce Choice Rule (from somewhere) which dictates that, when considering the probability of fixation of a candidate word, we need only consider the probability of fixation relative to the other candidates present rather than our entire lexicon. This means that in the context of the VWP, our probability of fixation would be relative to the (usually three) other objects on the screen, rather than the thousands of words with which we may be familiar.  
 
-Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. 
+Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. Or this can be in the appendix
 
 
 \section{Discussion}
 
+what have we learned?
 
-With regards to the curve described, there are a number of avenues seemingly worthy of investigation. The most pressing of these appears to be methods to minimize the amount of bias present in scenario three, which presents the largest obstacle in the functional recovery of the data generating mechanism. Of special note here is the fact that the particular intervals in which this bias occurs can have a large effect on the overall bias, over and above that introduced by the occulomotor delay. 
-
-For example, consider the plot above in the situation in which there is an unknown random delay (blue curve). We may observe at 500ms the value of the data generating mechanism at 300ms (that is, we observed $g_{\theta}(500) = f_{\theta}(300)$), while $g_{\theta}(500) \approx f_{\theta}(500)$. In other words, the bias over this area is small if we make no correction.
-
-In contrast, an observation at $t = 1000$ results in a highly biased estimate, as $g_{\theta}(1000) \ll f_{\theta}(1000)$. Accordingly, we note that the amount of bias at an observed point is a function of the derivative of the data generating function in a neighborhood of that point. Whether or not this observation proves profitable remains to be seen.
-
-There also seems to be value in finding a way to incorporate the length of fixations into the modeling process. For example, we might consider the impact of weighting each saccade by the duration of its subsequent fixation, as it seems intuitive that saccades resulting in longer fixation periods are more likely initiated by activation rather than a searching pattern.
 
 \section{limitations}
 
@@ -271,11 +290,34 @@ probably good idea to keep running list of these all in one place
 \item trace parameters maybe/general degrees of freedom
 \item only evidenced on logistic, though for practical not theoretical reasons
 \item adding parametric form (necessity for saccade method)
-\item oculomotor delay
+\item oculomotor delay, where to discuss
 \end{enumerate}
 
 \bibliographystyle{plain} % We choose the "plain" reference style
 \bibliography{../bib/dissertation} % Entries are in the refs.bib file
+
+\section{appendices}
+
+Here  I am just including more or less random sections that either do not have a definite place yet in the main body of the paper, are part of what might be considered future work, or truly are things that belong in the appendix
+
+\section*{Appendix A}
+Here, I can talk about preparing the TRACE data from bob's paper, as well as preparing the other data. In particular, I can include info on changing the temperature parameter from luce choice rule
+
+\section*{Appendix B}
+
+Here, I can discuss parallel results when I adjusts for reaction time when gathering observations
+
+\section*{Appendix C}
+
+Idk, maybe oculmotor delay? That is kind of a disjoint section of this paper, and i don't think would get more than a mention, really, outside of a published paper. but its relevant for future direcitons, it's relevant for calling things what they are, it's not relevant for considering trace vs empirical results. Here is copy pasted out of the discussion of old paper what I had originally recordered for this:
+
+With regards to the curve described, there are a number of avenues seemingly worthy of investigation. The most pressing of these appears to be methods to minimize the amount of bias present in scenario three, which presents the largest obstacle in the functional recovery of the data generating mechanism. Of special note here is the fact that the particular intervals in which this bias occurs can have a large effect on the overall bias, over and above that introduced by the occulomotor delay. 
+
+For example, consider the plot above in the situation in which there is an unknown random delay (blue curve). We may observe at 500ms the value of the data generating mechanism at 300ms (that is, we observed $g_{\theta}(500) = f_{\theta}(300)$), while $g_{\theta}(500) \approx f_{\theta}(500)$. In other words, the bias over this area is small if we make no correction.
+
+In contrast, an observation at $t = 1000$ results in a highly biased estimate, as $g_{\theta}(1000) \ll f_{\theta}(1000)$. Accordingly, we note that the amount of bias at an observed point is a function of the derivative of the data generating function in a neighborhood of that point. Whether or not this observation proves profitable remains to be seen.
+
+There also seems to be value in finding a way to incorporate the length of fixations into the modeling process. For example, we might consider the impact of weighting each saccade by the duration of its subsequent fixation, as it seems intuitive that saccades resulting in longer fixation periods are more likely initiated by activation rather than a searching pattern.
 
 
 \end{document}

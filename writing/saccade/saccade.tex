@@ -165,16 +165,18 @@ Nonlinear parametric curves can be fit to the observed $y_t$ as is done in the \
 
 Here, I've copied and pasted what I had about this elsewhere. There are bits and pieces I like from each, so for now going to leave them both and make them ``do it" and have babies later. 
 
-One method employed to use this data involves measuring intervals of fixation to a target over a series of trials. For each trial $i$ and time point $t$ (typically sampled at intervals of 4ms, i.e., $t = 0, 4, \dots, 2000$), we collect a sample of $z_{it}$, an indicator of whether a participant is fixated on the target object at that point in time. Averaging over the collection of trials, we construct an estimate of $f_{\theta}(t)$, 
+One method employed to use this data involves measuring intervals of fixation to a target over a series of trials. For each trial $j$ and time point $t$ (typically sampled at intervals of 4ms, i.e., $t = 0, 4, \dots, 2000$), we collect a sample of $z_{it}$, an indicator of whether a participant is fixated on the target object at that point in time. Averaging over the collection of trials, we construct an estimate of $f_{\theta}(t)$, 
 
 $$
-y_t = \frac{1}{J} \sum_{i} z_{it}.
+y_t = \frac{1}{J} \sum_{j} z_{jt}.
 $$
 In other words, it is implicitly assumed that the trajectory of the eye follows the trajectory of activation, where the average proportion of fixations at a particular time is a direct estimate of activation. As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by `bdots`, are then used to construct estimates of function parameters fitted to this curve.
 
 [this really belongs with a compare-and-contrast section following saccades. primary benefit of this....over what?] One of the primary benefits of this method is that it captures the duration of fixations, with longer times being associated with stronger activations. This becomes important when differentiating fixations associated with searching patterns (i.e., what images exist on screen?) against those associated with consideration (is this the image I've just heard?). A shortcoming, however, is that it conflates two distinct types of data, generated via different mechanisms, the fixation and saccade. 
 
-\section{where we are going}
+\section{where we are going} 
+
+ok so now what
 
 \subsection{princess bride paper}
 
@@ -225,7 +227,7 @@ Naturally, as the complexity of the assumptions increased, so did the observed b
 
 At any rate, I'm getting to caught up in the particulars when what I really want or need to say is quite simple. It comes down to this: \textit{the only observed behavior governed by the generating curve is the saccade when launched.}
 
-\paragraph{saccades}
+\paragraph{Saccades}
 
 The entirety of the bias resulting from FBS and FBS+T we the consequences of two facts, or put differently, there are two sources of bias that we need to consider:
 \begin{singlespace}
@@ -308,6 +310,8 @@ g_{\theta}(t) = f_{\theta}(t - \rho(t))
 \end{equation}
 
 
+
+
 Each simulation will be conducted with $N = 300$ trials, sampled from the same data generating function for each, with the attempted recovery of the generating curve done using the \xt{bdots} package. 
 
 
@@ -376,6 +380,15 @@ Really, though, does this have to be done at all? Can I not simply point to bob'
 \section{Discussion}
 
 what have we learned?
+
+Here I think are some of the main takeaways. First Bob showed that even under moderate assumptions, the fixation method is unable to recover unbiased parameter estimates for the generating function. Here, we examined the sources of this bias and demonstrated that by removing the period of fixation from the observed data, we are better able to estimate the generating curve. 
+
+Of course, the conclusions drawn from this rest on the tacit assumption that there is some parameteric generating function mediating the relationship between word activation and physiological behavior. By no means do we seek to argue for this either -- this lies in the domain of the linking hypothesis, a.k.a someone else's problem. However, the content of the arguments made is worth consideration. In particular, putting names to the two types of bias observed almost certainly have parallels in the empirical world, the oculomotor delay (delay bias) being a known phenomenon, and the added observation bias being tautologically true under moderate assumptions about the linking hypothesis. At very least, there is the question of the linear relationship between fixation length and activation, casting doubt on the validity of treating indicators of fixation equally at the beginning of a fixation period (and especially during the refraction  period of a fixation) as those at the end. Treating only the saccades as observations removes this issue and is more defensible from a theoretical/statistical perspective. To what degree the proposed saccade method is representative of the true state of nature is up for debate.
+
+Insomuch as it relates to the fixation method, it is worth recalling the proportion of fixation method itself was never (I think) argued for from the ground up. That is, its validity and subsequent adoption was a consequence of its agreement with the predictions of the TRACE model. To this end, we have shown that even with agreement to TRACE being the guiding principle, the saccade method shows greater fidelity to what would be predicted, even after accounting for researcher degrees of freedom.
+
+[I need to reread magnuson before using such strong langauge here]
+The conclusions that we draw from this are twofold. Even under moderate assumptions regarding the linking hypothesis, the fixation method contains at least one source of bias by conflating two very distinct types of data. Really, that's the only main conclusion, that and saccade method is cool. I said twofold above because twofold is a cool thing to have in a concluding paragraph and im pretty sure that onefold isn't a word, and even if it is it isn't as neat of a word as twofold.
 
 
 \section{limitations}

@@ -303,6 +303,8 @@ In light of this, we will seek to combine the functional impact of oculomotor de
 \end{enumerate}
 \end{singlespace}
 
+As such, we will not be including as a part of this the original 200ms oculomotor delay.
+
 As in the princess bride paper, we will let $f_{\theta}(t)$ be a four parameter logistic, representing of generating or activation curve. Understanding that what we observe at time $t$ was drawn from this function at time $t - \rho(t)$, we will differentiate the underlying activation curve the the observed data, 
 
 \begin{equation}
@@ -314,28 +316,33 @@ g_{\theta}(t) = f_{\theta}(t - \rho(t))
 
 Each simulation will be conducted with $N = 300$ trials, sampled from the same data generating function for each, with the attempted recovery of the generating curve done using the \xt{bdots} package. 
 
+Note somewhere: this and all other code used available on my github
 
-\subsection{Known Delay}
+\subsection{Simulations}
 
+Funny it seems that all this shit is on my home computer. even then, its been long enough now that i don't quite remember. probably a worthwhile endeavor to just rerun those simulations since i know far more definitively now why they work and what i want them to do
 
-In the case in which the oculomotor delay is known, an unbiased recovery of the data generating curve is not an issue -- we simply horizontally shift each observed saccade by its known oculmotor delay.
+things that i will include in each section
 
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-3mm}
+\item plots of generating and estimated curves (3 curves total, no shift)
+\item histogram of parameter estimates against each ($\leftarrow$ and actually he plots bias against these bad boys not pars themselves)
+\item mean integrated squared error or. $R^2$
+\item fun little quips
+\end{enumerate}
+\end{singlespace}
 
-\subsection{Unknown Fixed Delay}
+So reading it a bit more closely, here's the rub. he does this for 1000 subjects. only one set of historgrams, showing bias for each, nbd. however, he doesn't have just \textit{one} generating curve against which he compares -- he does this for all, and most of his analysis is on the parameters. What we will do look at representative collection of them, have a table of MISE and $R^2$ (or whatever) and then have an average for fixation method and saccade method,  so 3 by 9 table or whatever. i do not intend on replicating all of this distributino of parameter business because i quite simply do not care.
 
+\subsubsection{Fixed Delay}
 
-The simulation was conducted using a fixed oculomotor delay of $\rho = 200ms$. Although the resulting recovered curve is biased, this bias simply results in a horizontal shift, $g(t) = f(t - \rho)$. This is especially relevant in a situation in which we are interested in comparing the data generating curve between two groups. 
+Since horizontal shifts don't matter (as evidenced by HFS simulation and common sense) we let this be zero to reduce complexity. Doing so also removes by design the delay observation bias, showing how added observation bias is what fucks things up
 
-For example, one method of analyzing VWP data (which inspired the `bdots` package) was to determine on which intervals $I = \cup_{k} I_k$ two data generating curves were statistically different. Suppose, for simplicity, that there is an interval $I = [t_1, t_2]$ on which the difference between two curves, $f(t | \theta_1) - f(t|\theta_2)$, is statistically significant. Given that we observe $g_i(t) = f(t - \rho | \theta_i)$, we would simply find that a significant difference occurs at $I + \{\rho\} = [t_1 + \rho, t_2 + \rho]$, a horizontal shift resulting from the oculomotor delay.
+\subsubsection{Random Delay}
 
-In other words, the size of the interval would remain the same, and the relative differences between curves would be preserved under a horizontal shift. 
-
-\subsection{Unknown Random Delay}
-
-
-The final scenario for consideration involves a situation is which the OM delay is unknown and random. Here, the bias will not be resolved with a simple horizontal shift, and the shape of the curve itself may be different between the one generating the data and the one observed. This has largest implications when comparing estimated curves between two groups.
-
-We will interogate a number of potential methods for dealing with this issue, though we do feel confident that, even with this known bias, our proposed method will still be preferable to existing ones. 
+This is the kicker. We will just add a random delay for each time, combining fbs and fbs+t. i forget the exact details, also why i should just go back and rerun things.
 
 \section{Compare with TRACE}
 
@@ -354,21 +361,12 @@ Actually, this entire paper gives an explicit transformation from what was predi
 
 \subsection{Collecting TRACE data}
 
-Here, I want to cover a handful of things:
+My main concern in this entire endeavor is that the TRACE data never baselines at 0, pretty much no matter what. I can change luce choice temperature, I can change whether or not i use empirical peak/baseline for scaling factor, it doesn't matter.  i never get near 0. Going back to email where we discussed issues with scaling factor, there was this line:
 
-\begin{enumerate}
-\item Where did this trace data come from (bob's paper)
-\item How could it be reconstructed in trace (parameters)
-\item What words were used
-\item How did I get it into acceptable format for me
-\item Luce choice rule, time transformation, scaling term
-\end{enumerate}
+When I implement those things, I get a smooth function that goes up from .0002 at maxact = -.2 to .739 at maxct = .55.  
 
-We validate our arguments above using a fortuituous study by McMurray (2010) in which subject data was collected to be analyzed against a collection of hyperparameters in TRACE testing a number of theoretical constructs in language impairment, including sensory and phonological confusion, vocabulary size, etc., presenting us with both a collection of empirically collected data from the subjects, as well as accompanying TRACE data, simulated with words used in the empirical portion of the study. Using this, we will be able to examine the relationship between empirically collected look data, saccade data, and validating TRACE data.
+I was able to replicate these numbers. The issue is on pg 23 of the SLI paper, it looks like the plot for the model is the scaling factor, not luce choice transform times the scaling factor
 
-I don't want to in the paper go through the entire thing of how i manipulated either trace or the empirical data. i might only metnion that for a brief section in considered the implications of adjusting for the response time -- i saw that bob did do this in his in sort of a weird way, cutting off each person at their own median so that half of the observed data would be truncated, half of it would not be truncated. i dont remember the  exact reason for this but it seemed fine. not what i did though what i did was more standard.
-
-There is a question if i should not limit things to only starttimes that occur before 1780, which i believe is the total number of cycles. of course, having that be the end vs another would have impacts on peak, slope etc. researcher degrees of freedom, hooray! 
 
 \subsection{TRACE Data}
 
@@ -380,6 +378,11 @@ First is an implementation of the Luce Choice Rule (from somewhere) which dictat
 
 Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. Or this can be in the appendix
 
+
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{sac_fix_trace_compare.png}
+\end{figure}
 
 \section{Discussion}
 
@@ -415,7 +418,24 @@ probably good idea to keep running list of these all in one place
 Here  I am just including more or less random sections that either do not have a definite place yet in the main body of the paper, are part of what might be considered future work, or truly are things that belong in the appendix
 
 \section*{Appendix A}
-Here, I can talk about preparing the TRACE data from bob's paper, as well as preparing the other data. In particular, I can include info on changing the temperature parameter from luce choice rule
+
+
+
+Here, I want to cover a handful of things:
+
+\begin{enumerate}
+\item Where did this trace data come from (bob's paper)
+\item How could it be reconstructed in trace (parameters)
+\item What words were used
+\item How did I get it into acceptable format for me
+\item Luce choice rule, time transformation, scaling term
+\end{enumerate}
+
+We validate our arguments above using a fortuituous study by McMurray (2010) in which subject data was collected to be analyzed against a collection of hyperparameters in TRACE testing a number of theoretical constructs in language impairment, including sensory and phonological confusion, vocabulary size, etc., presenting us with both a collection of empirically collected data from the subjects, as well as accompanying TRACE data, simulated with words used in the empirical portion of the study. Using this, we will be able to examine the relationship between empirically collected look data, saccade data, and validating TRACE data.
+
+I don't want to in the paper go through the entire thing of how i manipulated either trace or the empirical data. i might only metnion that for a brief section in considered the implications of adjusting for the response time -- i saw that bob did do this in his in sort of a weird way, cutting off each person at their own median so that half of the observed data would be truncated, half of it would not be truncated. i dont remember the  exact reason for this but it seemed fine. not what i did though what i did was more standard.
+
+There is a question if i should not limit things to only starttimes that occur before 1780, which i believe is the total number of cycles. of course, having that be the end vs another would have impacts on peak, slope etc. researcher degrees of freedom, hooray! 
 
 \section*{Appendix B}
 
@@ -460,6 +480,16 @@ where $g_{\theta}(t)$ is what is \textit{observed} at time $t$. A saccade planne
 At present, it is common under the proportion method to account for this delay via a 200ms shift of the entire constructed proportion curve. We will propose instead a method whereby each saccade may be shifted individually and less homogenously. Reasons and implications for this will be presented in the next section.
 
 We now consider a variety of scenarios for oculomotor delay and the subsequent impacts on the recovery of the underlying fixation curve from the observed data.
+
+There is also this from elsewhere that i didn't delete:
+
+---
+
+The simulation was conducted using a fixed oculomotor delay of $\rho = 200ms$. Although the resulting recovered curve is biased, this bias simply results in a horizontal shift, $g(t) = f(t - \rho)$. This is especially relevant in a situation in which we are interested in comparing the data generating curve between two groups. 
+
+For example, one method of analyzing VWP data (which inspired the `bdots` package) was to determine on which intervals $I = \cup_{k} I_k$ two data generating curves were statistically different. Suppose, for simplicity, that there is an interval $I = [t_1, t_2]$ on which the difference between two curves, $f(t | \theta_1) - f(t|\theta_2)$, is statistically significant. Given that we observe $g_i(t) = f(t - \rho | \theta_i)$, we would simply find that a significant difference occurs at $I + \{\rho\} = [t_1 + \rho, t_2 + \rho]$, a horizontal shift resulting from the oculomotor delay.
+
+In other words, the size of the interval would remain the same, and the relative differences between curves would be preserved under a horizontal shift. 
 
 \section*{Appendix D}
 

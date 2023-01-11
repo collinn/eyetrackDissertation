@@ -71,7 +71,7 @@ scale_trace <- function(tau = 4.5) {
   names(trace_luce) <- names(l)
   trace_luce <- cbind(trace[, .(time)], trace_luce)
   
-  trace_luce <- trace
+  #trace_luce <- trace
   
   ## Compute scaling term, using both p/b and 0/1
   # for target specifically
@@ -114,5 +114,9 @@ bb <- scale_trace(tau = 3)
 
 aa <- scale_trace(tau = 4.5)
 bb <- scale_trace(tau = 3)
+cc <- scale_trace(tau = 3.5)
+dd <- scale_trace(tau = 4)
 fwrite(aa, "~/dissertation/data/bob_trace_data/trace_scaled_4.5.csv")
 fwrite(bb, "~/dissertation/data/bob_trace_data/trace_scaled_3.csv")
+fwrite(cc, "~/dissertation/data/bob_trace_data/trace_scaled_3.5.csv")
+fwrite(dd, "~/dissertation/data/bob_trace_data/trace_scaled_4.csv")

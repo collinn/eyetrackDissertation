@@ -340,9 +340,78 @@ So reading it a bit more closely, here's the rub. he does this for 1000 subjects
 
 Since horizontal shifts don't matter (as evidenced by HFS simulation and common sense) we let this be zero to reduce complexity. Doing so also removes by design the delay observation bias, showing how added observation bias is what fucks things up
 
+
+\begin{figure}[h]
+\centering
+\includegraphics{fixation_fixed_par_bias.pdf}
+\caption{bias bias bias}
+\label{fig:fixation_fixed_par_bias}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics{fixation_fixed_pb_curves.pdf}
+\caption{bias bias bias}
+\label{fig:asgs}
+\end{figure}
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics{saccade_fixed_par_bias.pdf}
+\caption{bias bias bias}
+\label{fig:asdfasd}
+\end{figure}
+
+
+\begin{figure}[h]
+\centering
+\includegraphics{saccade_fixed_pb_curves.pdf}
+\caption{bias bias bias}
+\label{fig:somethingwieliajslk}
+\end{figure}
+
+
+
 \subsubsection{Random Delay}
 
 This is the kicker. We will just add a random delay for each time, combining fbs and fbs+t. i forget the exact details, also why i should just go back and rerun things.
+
+
+\begin{figure}[h]
+\centering
+\includegraphics{fixation_random_par_bias.pdf}
+\caption{bias bias bias}
+\label{fig:fixation_random_par_bias}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics{fixation_random_pb_curves.pdf}
+\caption{bias bias bias}
+\label{fig:something_else2}
+\end{figure}
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics{saccade_random_par_bias.pdf}
+\caption{bias bias bias}
+\label{fig:saccade_random_par_bias}
+\end{figure}
+
+
+
+
+\begin{figure}[h]
+\centering
+\includegraphics{saccade_random_pb_curves.pdf}
+\caption{bias bias bias}
+\label{fig:something_else}
+\end{figure}
+
 
 \section{Compare with TRACE}
 
@@ -382,6 +451,7 @@ Really, though, does this have to be done at all? Can I not simply point to bob'
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{sac_fix_trace_compare.png}
+\caption{need to label this}
 \end{figure}
 
 \section{Discussion}
@@ -396,6 +466,8 @@ Insomuch as it relates to the fixation method, it is worth recalling the proport
 
 [I need to reread magnuson before using such strong langauge here]
 The conclusions that we draw from this are twofold. Even under moderate assumptions regarding the linking hypothesis, the fixation method contains at least one source of bias by conflating two very distinct types of data. Really, that's the only main conclusion, that and saccade method is cool. I said twofold above because twofold is a cool thing to have in a concluding paragraph and im pretty sure that onefold isn't a word, and even if it is it isn't as neat of a word as twofold.
+
+something to have somewhere re decoupling of saccade and fixation and infromation gaterhing. somewhre presetned idea of weighting saccades but the info gathering itself may be implicit, whereby longer fixations simply increase propensity of movements to target, etc., removing need to control for it explicitly. Idk im not really going to touch linking hypothesis stuff because it would involve me pretending to know a lot more about this than i do.
 
 
 \section{limitations}

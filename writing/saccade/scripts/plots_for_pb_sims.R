@@ -29,17 +29,20 @@ getParBias <- function(ss, ff) {
 }
 
 ## Starting with fixed (0 delay)
-rr <- coef(fit_sac_fixed2)
+rr <- coef(fit_sac_fixed)
 idx <- which(rr[,4] == 0 | rr[,2] < rr[,1] | rr[,3] < 0)
 idx <- setdiff(1:1000, idx)
 
+idx <-
+
+
 fsim <- subsetSim(sim_fixed, idx)
 ff <- fit_fix_fixed[idx, ]
-ss <- fit_sac_fixed2[idx, ]
+ss <- fit_sac_fixed[idx, ]
 
 
 bb <- getParBias(fsim, ff)
-pdf("../img/fixation_fixed_par_bias.pdf", 
+pdf("../img/fixation_fixed_par_bias.pdf",
     width = 6.5, height = 4.5)
 ggplot(bb, aes(x = value)) + geom_histogram(bins=40) +
   geom_vline(xintercept = 0, color = 'red') +
@@ -53,7 +56,7 @@ dev.off()
 
 ## Biasa with saccade
 bb2 <- getParBias(fsim, ss)
-pdf("../img/saccade_fixed_par_bias.pdf", 
+pdf("../img/saccade_fixed_par_bias.pdf",
     width = 6.5, height = 4.5)
 ggplot(bb2, aes(x = value)) + geom_histogram(bins=40) +
   geom_vline(xintercept = 0, color = 'red') +
@@ -74,7 +77,7 @@ ff <- fit_fix_random[idx, ]
 ss <- fit_sac_random[idx, ]
 
 bb3 <- getParBias(fsim, ff)
-pdf("../img/fixation_random_par_bias.pdf", 
+pdf("../img/fixation_random_par_bias.pdf",
     width = 6.5, height = 4.5)
 ggplot(bb3, aes(x = value)) + geom_histogram(bins=40) +
   geom_vline(xintercept = 0, color = 'red') +
@@ -86,7 +89,7 @@ ggplot(bb3, aes(x = value)) + geom_histogram(bins=40) +
 dev.off()
 
 bb4 <- getParBias(fsim, ss)
-pdf("../img/saccade_random_par_bias.pdf", 
+pdf("../img/saccade_random_par_bias.pdf",
     width = 6.5, height = 4.5)
 ggplot(bb4, aes(x = value)) + geom_histogram(bins=40) +
   geom_vline(xintercept = 0, color = 'red') +
@@ -126,22 +129,22 @@ fixCurve <- getCurve(fixp, "Fixation")
 
 fixxy <- rbindlist(list(trueCurve, fixCurve))
 
-pdf("../img/fixation_fixed_pb_curves.pdf", 
+pdf("../img/fixation_fixed_pb_curves.pdf",
     width = 6.5, height = 4.5)
-ggplot(fixxy, aes(time, curve, color = Curve)) + 
-  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) + 
-  theme_bw() + labs(y = "Activation", x = "Time") + 
+ggplot(fixxy, aes(time, curve, color = Curve)) +
+  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) +
+  theme_bw() + labs(y = "Activation", x = "Time") +
   ggtitle("Representative Curves, Fixation, Fixed Delay")
 dev.off()
 
 
 saccy <- rbindlist(list(trueCurve, sacCurve))
 
-pdf("../img/saccade_fixed_pb_curves.pdf", 
+pdf("../img/saccade_fixed_pb_curves.pdf",
     width = 6.5, height = 4.5)
-ggplot(saccy, aes(time, curve, color = Curve)) + 
-  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) + 
-  theme_bw() + labs(y = "Activation", x = "Time") + 
+ggplot(saccy, aes(time, curve, color = Curve)) +
+  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) +
+  theme_bw() + labs(y = "Activation", x = "Time") +
   ggtitle("Representative Curves, Saccade, Fixed Delay")
 dev.off()
 
@@ -165,11 +168,11 @@ fixCurve <- getCurve(fixp, "Fixation")
 
 fixxy <- rbindlist(list(trueCurve, fixCurve))
 
-pdf("../img/fixation_random_pb_curves.pdf", 
+pdf("../img/fixation_random_pb_curves.pdf",
     width = 6.5, height = 4.5)
-ggplot(fixxy, aes(time, curve, color = Curve)) + 
-  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) + 
-  theme_bw() + labs(y = "Activation", x = "Time") + 
+ggplot(fixxy, aes(time, curve, color = Curve)) +
+  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) +
+  theme_bw() + labs(y = "Activation", x = "Time") +
   ggtitle("Representative Curves, Fixation, Random Delay")
 dev.off()
 
@@ -178,11 +181,11 @@ saccy <- rbindlist(list(trueCurve, sacCurve))
 
 
 ## Some of these are incredibly obviously incorrect
-pdf("../img/saccade_random_pb_curves.pdf", 
+pdf("../img/saccade_random_pb_curves.pdf",
     width = 6.5, height = 4.5)
-ggplot(saccy, aes(time, curve, color = Curve)) + 
-  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) + 
-  theme_bw() + labs(y = "Activation", x = "Time") + 
+ggplot(saccy, aes(time, curve, color = Curve)) +
+  geom_line(lwd = 1) + facet_wrap(~id, nrow = 2) +
+  theme_bw() + labs(y = "Activation", x = "Time") +
   ggtitle("Representative Curves, Saccade, Random Delay")
 dev.off()
 

@@ -7,19 +7,23 @@ library(gridExtra)
 library(bdots)
 library(eyetrackSim)
 
-setwd("~/dissertation/analysis/")
+oldwd <- setwd("~/dissertation/analysis/")
 ## Relevant data
 looksrt <- fread("../data/bob_trace_data/human_looks_rt_cut.csv")
 sacsrt <- fread("../data/bob_trace_data/human_saccades_rt_cut.csv")
 
 looks <- fread("../data/bob_trace_data/human_looks_rt_nocut.csv")
 sacs <- fread("../data/bob_trace_data/human_saccades_rt_nocut.csv")
+setwd(oldwd) # reset dir
 
 ## Should consider making group niot necessary in bdots
 looksrt[, group := "A"]
 sacsrt[, group := "A"]
 looks[, group := "A"]
 sacs[, group := "A"]
+
+
+#sacs <- sacs[starttime > 0, ]
 
 
 if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")) {
@@ -46,13 +50,13 @@ if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
                         time = "starttime", 
                         y = "target", 
                         group = "group", 
-                        curveType = logistic2())  
+                        curveType = logistic(c(mini = 0, peak = 1, slope = 0.002, cross = 750)))  
   fit_sacs_rt  <- bdotsFit(data = sacsrt, 
                          subject = "subject", 
                          time = "starttime", 
                          y = "target", 
                          group = "group", 
-                         curveType = logistic2())  
+                         curveType = logistic(c(mini = 0, peak = 1, slope = 0.002, cross = 750)))  
   
   save(fit_looks, fit_looks_rt, fit_sacs, fit_sacs_rt, 
        file = "~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
@@ -62,8 +66,8 @@ if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
 ## But not going to compare those with rt removed bewcause nonstandard
 
 # Remove these from looks
-idxrm0 <- which(fit_looks$fitCode >= 5 | fit_looks$fitCode >= 5)
-idxrm1 <- which(fit_looks_rt$fitCode >= 5 | fit_looks_rt$fitCode >= 5)
+idxrm0 <- which(fit_looks$fitCode >= 5)
+idxrm1 <- which(fit_looks_rt$fitCode >= 5)
 
 # Remove these from saccades 
 qq <- coef(fit_sacs)
@@ -106,67 +110,65 @@ dt3 <- data.table(time = trace_luce$time, y = trace_luce$targ_bp, Method = "TRAC
 
 dt <- rbindlist(list(dt1, dt2, dt3))
 
-png("../img/sac_fix_trace_compare.png", width = 480*1.4)
+pdf("../img/sac_fix_trace_compare.pdf", 
+    width = 5.5, height = 4)
 ggplot(dt, aes(x = time, y = y, color = Method)) + 
-  geom_line(lwd = 1.5) + ylim(c(min(dt1$y),1)) + theme_bw(base_size=16) +
+  geom_line(linewidth = 1.5) + ylim(c(min(dt1$y),1)) + theme_bw() +
   ggtitle("Comparison of Fixation/Saccade\nMethods with TRACE") +
   labs(y = expression(f[theta](t)), x = "Time")
 dev.off()
 
 
-###---------------------------------------------------
-############ New logistic
-#' Logistic curve function for nlme (test use with saccade, NOT FOR GENERAL USE)
-#'
-#' Logistic function used in fitting nlme curve for observations
-#'
-#' @param dat subject data to be used
-#' @param y outcome variable
-#' @param time time variable
-#' @param params \code{NULL} unless user wants to specify starting parameters for gnls
-#' @param ... just in case
-#'
-#' @details \code{y ~ mini + (peak - mini) / (1 + exp(4 * slope * (cross - (time)) / (peak - mini)))}
-#' @export
-logistic2 <- function(dat, y, time, params = NULL, ...) {
-  
-  logisticPars <- function(dat, y, time, ...) {
-    time <- dat[[time]]
-    y <- dat[[y]]
-    
-    # idx <- order(time)
-    # time <- time[idx]
-    # y <- y[idx]
-    
-    ## Remove cases with zero variance
-    if (var(y) == 0) {
-      return(NULL)
-    }
-    
-    ## Starting estimates based on thing
-    mini <- 0
-    peak <- 1
-    cross <- 750
-    slope <- 0.002
-    
-    return(c(mini = mini, peak = peak, slope = slope, cross = cross))
-  }
-  
-  if (is.null(params)) {
-    params <- logisticPars(dat, y, time)
-  } else {
-    if (length(params) != 4) stop("logistic requires 4 parameters be specified for refitting")
-    if (!all(names(params) %in% c("mini", "peak", "slope", "cross"))) {
-      stop("logistic parameters for refitting must be correctly labeled")
-    }
-  }
-  ## Return NA list if var(y) is 0
-  if (is.null(params)) {
-    return(NULL)
-  }
-  y <- str2lang(y)
-  time <- str2lang(time)
-  ff <- bquote(.(y) ~ mini + (peak - mini) / (1 + exp(4 * slope * (cross - (.(time))) / (peak - mini))))
-  attr(ff, "parnames") <- names(params)
-  return(list(formula = ff, params = params))
+## And now let's get some tables up in this bitch
+library(xtable)
+
+
+TRACE_fun <- approxfun(x = trace_luce$time, 
+                       y = trace_luce$targ_bp)
+
+getRmvIdx <- function(ff) {
+  rr <- coef(ff)
+  idx <- which(rr[,4] == 0 | rr[,2] < rr[,1] | rr[,3] < 0)
+  idx
 }
+
+mise <- function(pars) {
+  times <- 100:101
+  
+  if (is.matrix(pars)) {
+    pars <- split(pars, 1:nrow(pars))
+    mv <- vapply(pars, function(x) {
+      g <- function(tt) {
+        (logistic_f(x, tt) - TRACE_fun(tt))^2
+      }
+      integrate(g, lower = min(times), upper = max(times))$value
+    }, 1)
+  } else {
+    g <- function(tt) {
+      (logistic_f(pars, tt) - TRACE_fun(tt))^2
+    }
+    mv <- integrate(g, lower = min(times), upper = max(times))$value
+  }
+  mv
+}
+
+## These already subset above
+mm1 <- colMeans(coef(fit_looks))
+mm3 <- colMeans(coef(fit_sacs))
+
+## Do just mean first
+mise(mm1)
+rr <- mise(coef(fit_looks))
+
+
+mise(mm3)
+ss <- mise(coef(fit_sacs))
+
+
+ss1 <- setnames(transpose(data.table(as.numeric(summary(rr)))), names(summary(rr)))
+ss2 <- setnames(transpose(data.table(as.numeric(summary(ss)))), names(summary(ss)))
+
+nn <- data.table(Method = c("Fixation", "Saccade"))
+ss <- cbind(nn, rbindlist(list(ss1, ss2)))
+
+print(xtable(ss, digits = 8), include.rownames = FALSE)

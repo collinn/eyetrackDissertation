@@ -12,6 +12,7 @@
 \usepackage{listings}
 
 \usepackage{subfigure}
+\usepackage{float}
 
 \graphicspath{{img/}}
 \begin{document}
@@ -23,23 +24,33 @@
 %\input{main.tex}
 
 \begin{abstract}
-Basically there is the vwp and it is used as a proxy for word recognition. This use follows from allopenna 1996, in which he showed the the proportion of fixations to different referrents matches what would be expected with TRACE (after suitable transformation, of course). This resulted in over two decades of vwp use for such purposes. In 2021, mcmurray asked if that curve really was what we thought it was. Through an analysis of generating hypotheses of increasing (but still relatively minimal) complexity via simulation, bob showed that even in cases of moderate complexity, we were not able to positively recover the generating curve responsible for eye movements. why was this, and what are the implications for understanding these curves? In this paper, we revist the 2021 princess bride paper and offer an explanation for the extreme demonstrated bias of the simulations. from this, we propose a new method for using vwp data to estimate underlying activation curves. finally, we top this all off by comparing the proposed method to allopena 1996 in a head-to-head, single elimination match up, a battle suitable for mount olympus itself in which two ultimate theories fight to a bloody and violent death to see which has been ordained by god to reign as total champion in the hearts and minds of language psychologists the world over.
+Basically there is the vwp and it is used as a proxy for word recognition. This use follows from allopenna 1996, in which he showed the the proportion of fixations to different referrents matches what would be expected with TRACE (after suitable transformation, of course). This resulted in over two decades of vwp use for such purposes. In 2021, mcmurray asked if that curve really was what we thought it was. Through an analysis of generating hypotheses of increasing (but still relatively minimal) complexity via simulation, bob showed that even in cases of moderate complexity, we were not able to positively recover the generating curve responsible for eye movements. why was this, and what are the implications for understanding these curves? In this paper, we revist the 2021 princess bride paper and offer an explanation for the demonstrated bias of the simulations. from this, we propose a new method for using vwp data to estimate underlying activation curves. finally, we top this all off by comparing the proposed method to allopena 1996 in a head-to-head, single elimination match up, a battle suitable for mount olympus itself in which two ultimate theories fight to a bloody and violent death to see which has been ordained by god to reign as total champion in the hearts and minds of language psychologists the world over.
 \end{abstract}
 
+\section*{Notes}
+
+Also not sure where to include information on the linking hypothessis
+
+Sections that are more ``narrative" are less fleshed out, including introduction. Citations are hard coded but no bib created yet. Some plots need to be completely redone. There is also some meta-narrative that is partially intended for the reader but mostly itended for the author
+
 \section{Introduction}
-``introductions are the hardest part"
 
 Spoken words create analog signals that are processed by the brain in real time. That is, as the spoken word unfolds, a cohort of possible resolutions are considered until the target word is recognized. The degree to which a particular candidate word is recognized is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
-Our interest is in measuring the degree of activation of a target relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eyetracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. 
+%[don't like this next section]
 
-\textbf{Research goals: } Some more context is helpful hear to try an understand what exactly it is that researchers are trying to learn from this data. As mentioned previously, we are largely concerned with ``activation". In particular, though, we are often interested in how the activation of competing words compare. Specifically, we might ask, ``at what point in the audio signal does the subject begin to identify the target word, relevant to competitors." This is of special interest in studying language development in typically developed children and those with cochlear implants, where atypical children may require more of a signal before they are able to disambiguate what they are hearing. As such, it is often of interest to ask when and how activation differs both between target words and competitors, as well as between different subjects. It is largely these last two areas that have dominated much of the VWP research.
 
-Our specific goal here is to determine if a method of estimating activation, measured as being more consistent with the predictions of TRACE, can be improved by relying solely on saccade data rather than the traditional method using fixation based approaches
+Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eyetracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. In the last few years, researchers have begun to rexamine some of the underlying assumptions associated with the VWP, calling into question the validity of current methods. We present here a brief history of the VWP and an examination of contemporary concerns. We further address some of these directly, presenting a different method for relating eyetracking data to word activation. We demonstrate how this is resolve and conclude by comparing our new method to the original impetutus for the current. This paragraph needs work but it mostly covers the gist of what I am trying to convey, namely we are about to go from history $\rightarrow$ current stuff $\rightarrow$ proposal and comparison $\rightarrow$ back to beginning.
+
+%\textbf{Research goals: } Some more context is helpful hear to try an understand what exactly it is that researchers are trying to learn from this data. As mentioned previously, we are largely concerned with ``activation". In particular, though, we are often interested in how the activation of competing words compare. Specifically, we might ask, ``at what point in the audio signal does the subject begin to identify the target word, relevant to competitors." This is of special interest in studying language development in typically developed children and those with cochlear implants, where atypical children may require more of a signal before they are able to disambiguate what they are hearing. As such, it is often of interest to ask when and how activation differs both between target words and competitors, as well as between different subjects. It is largely these last two areas that have dominated much of the VWP research.
+
+I addressed above ``contemporary concerns" but i could elaborate on the more fully here. In particular, this paper is motivated by the realization that the linking hypothesis is implicitly xyz with a few contenders (none of which implemented) and then bob pretty much showing that the leading implicit assumption is ``patently false".
 
 
 \section{A brief history}
-start with a brief history to where we are today. I think the order goes:
+We begin with a brief history to give context to later discussion. In particular, we will consider one of the leading theoretical models in speech perception, TRACE, followed by the introduction of the leading experimental paradigm, the VWP. We examine empirical evidence for the relation between these, and relevant theoretical advancements that have been made. Topics here are presented only briefly and limited to those directly relevant to the present work. For a fuller discussion of the history and uses of vwp, use google. (Or Huettig 2011b? Haven't read, found this citation in magnuson)
+
+An outline of the presentation (for internal use only):
 
 \begin{singlespace}
 \begin{enumerate}
@@ -55,19 +66,15 @@ start with a brief history to where we are today. I think the order goes:
 \end{enumerate}
 \end{singlespace}
 
-I can flesh these out in more details later, it's mostly narrative here and not crucial to the work being evaluated
+I don't really like any of these paragraphs and each needs to be fleshed in more detail, but its mostly expository and not mission critical.
 
-\paragraph{TRACE } How speech is perceived and understood has been a subject of much debate for a significant portion of psycholinguistic's history. Starting in the 1980s and persisting today, most researchers subscribe to what is known as the connectionist model of speech perception. Briefly, this model posits that speech perception is best understood as a hierarchical dynamical system in which aspects of the model are either self reinforcing or self inhibiting with feedforward and feedback mechanisms. For example, hearing the phoneme \textbackslash h\textbackslash  \ as in ``hit" will ``feedfoward", cognitively activating words that begin with the \textbackslash h\textbackslash \  sound. These activated words then ``feedback" to the phoneme letter, inhibiting activation for competing phonemes such as \textbackslash b\textbackslash \ or \textbackslash t\textbackslash. In 1986, McClelland and Elman introduced the TRACE\footnote{TRACE doesn't stand for anything -- the name is a reference to ``the trace", a network structure for dynamically processing things in memory} model implementing theoretical considerations into a computer model \cite{elman1985speech}.
+\paragraph{TRACE } How speech is perceived and understood has been a subject of much debate for a significant portion of psycholinguistic's history. Starting in the 1980s and persisting today, many researchers subscribe to what is known as the connectionist model of speech perception. Briefly, this model posits that speech perception is best understood as a hierarchical dynamical system in which aspects of the model are either self reinforcing or self inhibiting with feedforward and feedback mechanisms. For example, hearing the phoneme \textbackslash h\textbackslash  \ as in ``hit" will ``feedfoward", cognitively activating words that begin with the \textbackslash h\textbackslash \  sound. These activated words then ``feedback" to the phoneme letter, inhibiting activation for competing phonemes such as \textbackslash b\textbackslash \ or \textbackslash t\textbackslash. In 1986, McClelland and Elman introduced the TRACE\footnote{TRACE doesn't stand for anything -- the name is a reference to ``the trace", a network structure for dynamically processing things in memory} model implementing theoretical considerations into a computer model \cite{elman1985speech}. Maybe useful here to discuss activation, sigmoid shape, etc., 
 
-\paragraph{vwp} Tannenhaus 1995, really, though I don't want to go into more than just the basics, Magnuson 2019 has a good review of the history (amongst other things), but I'll leave this for now:
+\paragraph{VWP} To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. 
 
-To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. Any particular trial could have anywhere from 3 to 10 eye movements, known as saccades, followed by fixations lasting between 200ms-100ms. 
+\paragraph{Relating TRACE to VWP} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data \cite{allopenna1998tracking}. By coding the period of a fixation as a 0 or 1, depending on the referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE. Since this publication, it has been this transformation of the data that has guided the last 25 years of VWP research. Could include here an illustration of VWP. also a lot of other various details from allopena
 
-\paragraph{allopena} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data \cite{allopenna1998tracking}. By coding the period of a fixation as a 0 or 1, depending on the referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE. Since this publication, it has been this transformation of the data that has guided the last 25 years of VWP research. Could include here an illustration of VWP. also a lot of other various details from allopena
-
-
-
-\paragraph{parametric methods and individual curves (sli paper)} Probably other developments in vwp world occured between 98 and here, but limited to what's relevant in this paper. In 2010, McMurray et al expanded the domain of vwp by introducing emphasis on individual differences in participant activation curves. While the implications of this are surely great in the application of the vwp, two aspects of this paper are relevant here. First, although they were not the first to introduce non-linear functions to be fit to observed data, they did introduce a number of important parametric functions in use today, namely the four (or five) parameter logistic and the double-gauss (asymetrical gauss). Second, which I suppose was also introduced by Mirman (2008) to some degree (though I have not read it yet) is specifying individual subject curves across participants. This has been critical along with the introduction of the four-parameter logistic in that:
+\paragraph{Parametric Methods and Individual Curves} While there have most certainly been advancements to the use of the VWP for speech perception and recognition (and expanded into related domains, such as sentence processing and characterizing language disorders (according to Bob)), we  limit ourselves here to one in particular. In 2010, McMurray et al expanded the domain of the VWP by introducing emphasis on individual differences in participant activation curves. Two aspects of this paper are relevant here. First, although they were not the first to introduce non-linear functions to be fit to observed data, they did introduce a number of important parametric functions in use today, namely the four (or five) parameter logistic and the double-gauss (asymetrical gauss). Second, which I suppose was also introduced by Mirman (2008) to some degree (though I have not read it yet) is specifying individual subject curves across participants. This has been critical in that:
 
 \begin{singlespace}
 \begin{enumerate}
@@ -77,20 +84,32 @@ To briefly illustrate, the VWP is an experimental design in which participants u
 \end{enumerate}
 \end{singlespace}
 
-As an aside, this also served as impetus for new methods for analyzing this data. A history of that is given in Seedorff 2018, as he describes other methods originally used prior to \xt{bdots}, including AUC and cluster-based permutation testing. There is also some discussion of that in this paper, but again, not relevant to the task at hand.
+This also served as the impetus for investigating group differences in word activation through the use of bootstrapped differences in time series (Oleson 2017) and the subsequent development of the \xt{bdots} software in R for analyzing such differences. (A history of exploring differences in group curves can be found in (Seedorff 2018 bdots paper)).
 
-At any rate, we now find ourselves in a place where TRACE-validated VWP data is being used to measure word recognition, and in a particular VWP study, subjects are measured, their data aggregated, and non-linear parametric curves with interpretable parameters are fit, giving rise to empirical distributions of curves across experimental or treatment groups. The comparison of these groups has given rise to bdots, which is significantly more badass now, see chapter 1 of my dissertation.
+This brings us to the current day, where the state of things is such that TRACE-validated VWP data is widely used to measure word recognition by collecting data on individual subjects and fitting to them non-linear parametric curves with interpretable parameters. Context in hand, we are now able to introduce some of the main characters of our story, specifically how data in the VWP is understood and used. 
+
+\paragraph{linking hypothesis?} not sure if this is a section worth elaborating on. more interesting narrative, but relevant insomuch as our conclusions are adjacent to the conversations regarding linking hypotheses.  some minor inclusion of that here may make for an interesting call back/tie in when i bring up the saccade and its proximity to the construct (activation) in question, which I note I haven't fully addressed yet. Specifically, the fact that there is some construct in question that we are trying to measure through physiological response. 
+
+
+%At any rate, we now find ourselves in a place where TRACE-validated VWP data is being used to measure word recognition, and in a particular VWP study, subjects are measured, their data aggregated, and non-linear parametric curves with interpretable parameters are fit, giving rise to empirical distributions of curves across experimental or treatment groups. The comparison of these groups has given rise to bdots, which is significantly more badass now, see chapter 1 of my dissertation.
+
+%\paragraph{Parametric Methods and Individual Curves} Probably other developments in vwp world occured between '98 and here, but limited to what's relevant in this paper. In 2010, McMurray et al expanded the domain of vwp by introducing emphasis on individual differences in participant activation curves. While the implications of this are surely great in the application of the vwp, two aspects of this paper are relevant here. First, although they were not the first to introduce non-linear functions to be fit to observed data, they did introduce a number of important parametric functions in use today, namely the four (or five) parameter logistic and the double-gauss (asymetrical gauss). Second, which I suppose was also introduced by Mirman (2008) to some degree (though I have not read it yet) is specifying individual subject curves across participants. This has been critical along with the introduction of the four-parameter logistic in that:
 
 
 
-\begin{figure}
+%As an aside, this also served as impetus for new methods for analyzing this data. A history of that is given in Seedorff 2018, as he describes other methods originally used prior to \xt{bdots}, including AUC and cluster-based permutation testing. There is also some discussion of that in this paper, but again, not relevant to the task at hand.
+
+%At any rate, we now find ourselves in a place where TRACE-validated VWP data is being used to measure word recognition, and in a particular VWP study, subjects are measured, their data aggregated, and non-linear parametric curves with interpretable parameters are fit, giving rise to empirical distributions of curves across experimental or treatment groups. The comparison of these groups has given rise to bdots, which is significantly more badass now, see chapter 1 of my dissertation.
+
+
+
+\begin{figure}[h]
 \centering
 \includegraphics[scale=0.4]{logistic_label.png}
 \caption{An illustartion of the four-parameter logistic and its associated parameters. also might be premature to include here since i haven't even shown the logistic or detailed its case, only its existence. Still, ill leave this up so that the image can be moved around if needed. What i would do in this caption otherwise is explain each of the parameters.}
 \label{fig:bob_diagram_full}
 \end{figure}
 
-\paragraph{linking hypothesis?} not sure if this is a section worth elaborating on. more interesting narrative, but relevant insomuch as our conclusions are adjacent to the conversations regarding linking hypotheses. Its been awhile since ive read magnuson's paper but i remember it being interesting. some minor inclusion of that here may make for an interesting call back/tie in when i bring up the saccade and its proximity to the construct (activation) in question.
 
 
 \section{Where we are now}
@@ -340,37 +359,40 @@ So reading it a bit more closely, here's the rub. he does this for 1000 subjects
 
 Since horizontal shifts don't matter (as evidenced by HFS simulation and common sense) we let this be zero to reduce complexity. Doing so also removes by design the delay observation bias, showing how added observation bias is what fucks things up
 
-
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics{fixation_fixed_par_bias.pdf}
-\caption{bias bias bias}
-\label{fig:fixation_fixed_par_bias}
-\end{figure}
-
-\begin{figure}[h]
-\centering
-\includegraphics{fixation_fixed_pb_curves.pdf}
-\caption{bias bias bias}
-\label{fig:asgs}
+\includegraphics{fixed_delay_par_bias.pdf}
+\caption{Distribution of parameter bias for fixation and saccade methods under fixed-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias. Somewhere note these are TRUE PARS - FIT PARS. We see evidence that added observation bias has the effect of ``pulling" the curve forward, resulting in later cross over and less steep curves}
+\label{fig:fixed_par_bias}
 \end{figure}
 
 
+blahkja ls 
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics{fixation_fixed_par_bias.pdf}
+%\caption{bias bias bias}
+%\label{fig:fixation_fixed_par_bias}
+%\end{figure}
+%
+%
+%
+%\begin{figure}[h]
+%\centering
+%\includegraphics{saccade_fixed_par_bias.pdf}
+%\caption{bias bias bias}
+%\label{fig:saccade_fixed_par_bias}
+%\end{figure}
+
 
 \begin{figure}[h]
 \centering
-\includegraphics{saccade_fixed_par_bias.pdf}
-\caption{bias bias bias}
-\label{fig:asdfasd}
+\includegraphics{fixed_pb_curves.pdf}
+\caption{Representative collection of fixed-delay curve, including  the generating function, as well as estimated curves from fitting data using fixation and saccade methods}
+\label{fig:fixed_pb_curves}
 \end{figure}
 
-
-\begin{figure}[h]
-\centering
-\includegraphics{saccade_fixed_pb_curves.pdf}
-\caption{bias bias bias}
-\label{fig:somethingwieliajslk}
-\end{figure}
 
 
 
@@ -379,38 +401,39 @@ Since horizontal shifts don't matter (as evidenced by HFS simulation and common 
 This is the kicker. We will just add a random delay for each time, combining fbs and fbs+t. i forget the exact details, also why i should just go back and rerun things.
 
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics{fixation_random_par_bias.pdf}
-\caption{bias bias bias}
-\label{fig:fixation_random_par_bias}
+\includegraphics{random_delay_par_bias.pdf}
+\caption{Distribution of parameter bias for fixation and saccade methods under random-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias AND delay bias, which has consequence of further shifting crossover parameter underestimating slope, but now with saccade too. Somewhere note these are TRUE PARS - FIT PARS. We see evidence that added observation bias has the effect of ``pulling" the curve forward, resulting in later cross over and less steep curves}
+\label{fig:random_par_bias}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
-\includegraphics{fixation_random_pb_curves.pdf}
-\caption{bias bias bias}
-\label{fig:something_else2}
+\includegraphics{random_pb_curves.pdf}
+\caption{Representative collection of random-delay curve, including  the generating function, as well as estimated curves from fitting data using fixation and saccade methods}
+\label{fig:random_pb_curves}
 \end{figure}
 
+See though I could have all of the results together here or in individual sections. I think it makes more sense to have them together for an ``overall" sort of discussion thing
 
-
-\begin{figure}[h]
+% latex table generated in R 4.2.1 by xtable 1.8-4 package
+% Fri Jan 13 14:36:54 2023
+\begin{table}[ht]
 \centering
-\includegraphics{saccade_random_par_bias.pdf}
-\caption{bias bias bias}
-\label{fig:saccade_random_par_bias}
-\end{figure}
-
-
-
-
-\begin{figure}[h]
-\centering
-\includegraphics{saccade_random_pb_curves.pdf}
-\caption{bias bias bias}
-\label{fig:something_else}
-\end{figure}
+\begin{tabular}{llrrrrrr}
+  \hline
+Curve & Delay & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+  \hline
+Fixation & Fixed & 1.95 & 8.18 & 11.40 & 13.28 & 15.98 & 215.67 \\ 
+  Saccade & Fixed & 0.01 & 0.16 & 0.32 & 0.52 & 0.56 & 78.22 \\ 
+  Fixation & Random & 20.25 & 50.95 & 68.60 & 73.08 & 90.92 & 192.56 \\ 
+  Saccade & Random & 5.74 & 21.42 & 29.29 & 33.40 & 40.63 & 185.79 \\ 
+   \hline
+\end{tabular}
+\caption{Summary of mean integrated squared error of the fits with their generating curves}
+\label{tab:mise_fixed_delay}
+\end{table}
 
 
 \section{Compare with TRACE}
@@ -448,11 +471,29 @@ First is an implementation of the Luce Choice Rule (from somewhere) which dictat
 Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. Or this can be in the appendix
 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{sac_fix_trace_compare.png}
-\caption{need to label this}
+\includegraphics{sac_fix_trace_compare.pdf}
+\caption{this is just the mean value of the curve parameters. also only includes NH subjects. I feel like confidence intervals would make this chart look messy so might just instead include table of mean integrated squared error using approxfun since trace only has 108 data points and need a function to integrate in R}
 \end{figure}
+
+Actually, can have two tables here and see which makes sense. We can look at the boring as normal mean vs trace and see what shakes OR we can find MISE of each curve against trace predictions. lets do that. 30 Subjects retained after removing shitty fittys
+
+% latex table generated in R 4.2.1 by xtable 1.8-4 package
+% Fri Jan 13 15:12:22 2023
+\begin{table}[ht]
+\centering
+\begin{tabular}{lrrrrrr}
+  \hline
+Method & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+  \hline
+Fixation & 0.01440949 & 0.01613453 & 0.01695755 & 0.01714883 & 0.01807178 & 0.02283428 \\ 
+  Saccade & 0.00000315 & 0.00065379 & 0.00333943 & 0.00451492 & 0.00762961 & 0.01847311 \\ 
+   \hline
+\end{tabular}
+\caption{Summary of mean integrated squared error of 30 NH subjects fit with \xt{bdots} against TRACE, fit with both fixation and saccade method}
+\label{tab:mise_trace}
+\end{table}
 
 \section{Discussion}
 

@@ -9,16 +9,16 @@ library(eyetrackSim)
 
 oldwd <- setwd("~/dissertation/analysis/")
 ## Relevant data
-looksrt <- fread("../data/bob_trace_data/human_looks_rt_cut.csv")
-sacsrt <- fread("../data/bob_trace_data/human_saccades_rt_cut.csv")
+# looksrt <- fread("../data/bob_trace_data/human_looks_rt_cut.csv")
+# sacsrt <- fread("../data/bob_trace_data/human_saccades_rt_cut.csv")
 
 looks <- fread("../data/bob_trace_data/human_looks_rt_nocut.csv")
 sacs <- fread("../data/bob_trace_data/human_saccades_rt_nocut.csv")
 setwd(oldwd) # reset dir
 
 ## Should consider making group niot necessary in bdots
-looksrt[, group := "A"]
-sacsrt[, group := "A"]
+# looksrt[, group := "A"]
+# sacsrt[, group := "A"]
 looks[, group := "A"]
 sacs[, group := "A"]
 
@@ -36,13 +36,13 @@ if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
                         y = "target",
                         group = "group",
                         curveType = logistic())
-
-  fit_looks_rt <- bdotsFit(data = looksrt,
-                         subject = "subject",
-                         time = "time",
-                         y = "target",
-                         group = "group",
-                         curveType = logistic())
+#
+#   fit_looks_rt <- bdotsFit(data = looksrt,
+#                          subject = "subject",
+#                          time = "time",
+#                          y = "target",
+#                          group = "group",
+#                          curveType = logistic())
 
   #sacs <- sacs[starttime <= 2000, ]
   ## logistic2() at bottom of this script
@@ -52,14 +52,16 @@ if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
                         y = "target",
                         group = "group",
                         curveType = logistic(c(mini = 0, peak = 1, slope = 0.002, cross = 750)))
-  fit_sacs_rt  <- bdotsFit(data = sacsrt,
-                         subject = "subject",
-                         time = "starttime",
-                         y = "target",
-                         group = "group",
-                         curveType = logistic(c(mini = 0, peak = 1, slope = 0.002, cross = 750)))
+  # fit_sacs_rt  <- bdotsFit(data = sacsrt,
+  #                        subject = "subject",
+  #                        time = "starttime",
+  #                        y = "target",
+  #                        group = "group",
+  #                        curveType = logistic(c(mini = 0, peak = 1, slope = 0.002, cross = 750)))
 
-  save(fit_looks, fit_looks_rt, fit_sacs, fit_sacs_rt,
+  # save(fit_looks, fit_looks_rt, fit_sacs, fit_sacs_rt,
+  #      file = "~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
+  save(fit_looks, fit_sacs,
        file = "~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
 }
 
@@ -68,15 +70,15 @@ if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
 
 # Remove these from looks
 idxrm0 <- which(fit_looks$fitCode >= 5)
-idxrm1 <- which(fit_looks_rt$fitCode >= 5)
+#idxrm1 <- which(fit_looks_rt$fitCode >= 5)
 
 # Remove these from saccades
 qq <- coef(fit_sacs)
 idxrm2 <- which(qq[,3] < 0 | qq[,4] < 0 | qq[,1] > qq[,2])
 
 ## Remove these from  saccades rt
-qq <- coef(fit_sacs_rt)
-idxrm3 <- which(qq[,3] < 0 | qq[,4] < 0 | qq[,1] > qq[,2])
+#qq <- coef(fit_sacs_rt)
+#idxrm3 <- which(qq[,3] < 0 | qq[,4] < 0 | qq[,1] > qq[,2])
 
 #idxrm <- Reduce(union, list(idxrm0, idxrm1, idxrm2, idxrm3))
 idxrm <- Reduce(union, list(idxrm0, idxrm2)) # no need for RT stuff here
@@ -90,15 +92,15 @@ fit_sacs <- fit_sacs[idx, ]
 #fit_sacs_rt <- fit_sacs_rt[idx, ]
 
 mm1 <- colMeans(coef(fit_looks))
-mm2 <- colMeans(coef(fit_looks_rt))
+#mm2 <- colMeans(coef(fit_looks_rt))
 mm3 <- colMeans(coef(fit_sacs))
-mm4 <- colMeans(coef(fit_sacs_rt))
+#mm4 <- colMeans(coef(fit_sacs_rt))
 
 time <- 0:1787
 f_fix <- logistic_f(mm1, time)
-f_fix_rt <- logistic_f(mm2, time)
+#f_fix_rt <- logistic_f(mm2, time)
 f_sac <- logistic_f(mm3, time)
-f_sac_rt <- logistic_f(mm4, time)
+#f_sac_rt <- logistic_f(mm4, time)
 
 ## Pretty sure I figured out trace (4 looks best)
 #trace_luce <- fread("~/dissertation/data/bob_trace_data/trace_scaled_4.5.csv")

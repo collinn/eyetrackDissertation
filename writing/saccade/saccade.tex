@@ -434,6 +434,8 @@ For the fixation method, we still see evidence of the ``pulling" behavior at bot
 
 \subsection{Discussion}
 
+Perhaps unsurprisingly, Table~\ref{tab:mise_fixed_delay} demonstrates that (1) Situations in which there is no delay between the generating function and observed behavior are easier to recover parameters and (2) the saccade method performed much better in all these cases. This table only includes MISE, I need to add $R^2$, though the results will functionally be the same (to the degree maybe don't need $R^2$).
+
 % latex table generated in R 4.2.1 by xtable 1.8-4 package
 % Fri Jan 13 14:36:54 2023
 \begin{table}[ht]
@@ -452,65 +454,156 @@ Fixation & Fixed & 1.95 & 8.18 & 11.40 & 13.28 & 15.98 & 215.67 \\
 \label{tab:mise_fixed_delay}
 \end{table}
 
+As an aside, this section needs to be where I present my strongest argument, as I have come to conclude that the section on TRACE doesn't offer stronger evidence one way or the other for fixation or saccade method (I will elaborate further in that section). Parts of this may belong in general discussion at the end instead of here.
+
+There has recently been what appears to be a renewed interest in establishing a more concrete link between lexical activation/word recognition and what is being measured with the VWP. On a grander scale, this comes down to a collection of competing hypotheses presented by Magnuson (2019). Yet, seemingly independent of the theoretical argument is what appears to be a more practical issue, namely dealing with VWP data in a tractable way. McMurray 2022 seemed to suggest that many of us carry an implicit HFS assumption and that any deviations from this (of which there certainly are) raises a number of issues in terms of what we are actually measuring with proportions of fixations in the VWP.
+
+McMurray 2022 did not set out to establish a competing hypothesis linking theory to data; rather, he demonstrated that even under moderate deviations from HFS, what we recover is a fundamentally biased index of the mechanism we are purporting to measure. The simulations presented did commit to few additional assumptions, most generally that a generating function assume some parametric form and that this function directly determines the probability of launching a saccade (and consequently fixating) on the target object. Distilled from the particulars of these assumptions, however, are two phenomena worthy of consideration for any hypothesis linking activation to eye mechanics:
+
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-3mm}
+\item There is certainly a delay between the mechanism of interest and any physiological behavior, and this delay almost certainly has a random component (as opposed to a fixed 200ms delay). This includes aspects of oculomotor delay, saccade refractionary periods, etc.,. We can be agnostic to any of the particular details of this delay so long as an appropriate distribution of the delay can be estimated
+\item The mechanisms governing saccades and fixations are perhaps necessarily different, and there is utility is treating them as observations from separate processes. This allows accomodation of a wider range of possibilities, from scanning behavior, information gathering from the visual world, and account for length of fixation, etc.,.
+\end{enumerate}
+\end{singlespace}
+
+Note: relating to the first point, while it was not shown here explicly (as we only included the assumptions with FBS rather than FBS+T, there is likely a nonlinear effect to the added observation bias in light of greater and greater delayed observation bias (that is, more added observations that themselves are more biased). We sought merely to demonstrate the existence of these biases rather than the effect, though it is likely that with investigation we could show further benefit to the saccade method when the fixation durations are more random, further distorting the ``shape" of the estiamted function. 
+
+In short, what we have hoped to accomplish here is not to drastically change the original assumptions presented in Allopenna (1996) and elaborated upon in Magnuson (2019), but rather to qualify them in statistically sound ways. This starts by separating the processes governing saccade movement and duration of fixation.
+
+As a not really conclusion, I am left to wonder to what degree the proportion of fixation method was a  ``local minimum" is the pursuit of utilizing eye-tracking data. The proportion of fixations created an ostensible curve, prompting McMurray to establish theoretically grounded non-linear functions to model them. These, in turn, where shown to be suitable functions with which to model saccade data over a period of trials. Had saccades leant themselves so naturally to visualizing as the proportion of fixations, perhaps that is where we may have started.
 
 \section{Compare with TRACE}
 
-This section needs to move to the prominent spot since its the meat of my argument 
-Here is a snippet I stole from elsewhere (that i also wrote):
+I have a few issues with this section, and as I have fleshed out my reading and understanding of things, my intention with this section has changed. Originally (and as is still mentioned in the abstract), my hope was to show that non-linear functions fit with empirical saccade data would be a better match to what is predicted by TRACE than what is found using fixation data. 
 
-\noindent\rule{2cm}{0.4pt}
+This, however, seems to be the wrong thing to do. There is apparently a magnificent number of ways with which to transform TRACE activation data to probabilities of fixation. Neverminding the fact that the saccade curve is a fundamentally \textit{different} function than the proportion of fixations, calling into question the value of a direct comparison as well as calling into question the validity of suggested transformations for evaluating the saccade method, including those in McMurray (2010). This is related to an observation made earlier by Allopenna and friends, 
 
-In Allopenna (1998), they say "... A time course analysis of the proportion of fixations on the target object (currect referent), cohort competitor, and unrelated objects suggested that this measure would be extremely sensistive to the uptake of information during the lexical process. *Futhermore, the shapes of the functions suggested that they could be closely mapped onto activation levels*...*We also put forth an explicit account of the mapping between activation levels simulated by the TRACE model and fixation probabilities.*"
+``It is important to note that although the TRACE simulations provided good fits to the behavioral data, the results should be taken as evidence in support of the class of continuous mappping models, rather than support for particular architectural assumptions made by TRACE."
 
-That is, it seems like the connection between fixations and activation was first posited due to the similarities in shape of the functions with TRACE models. ("linking hypothesis" -- also, see magnuson)
+Of course, this finds us in a bit of a circular loop -- Allopenna suggested that the consistency of evidence was used to support the assumptions of TRACE, and here we are suggesting TRACE as evidence for the saccade method.
 
-Actually, this entire paper gives an explicit transformation from what was predicted in TRACE to what should be predicted as proportion/probability of fixation
+What seems more appropriate, then, is to demonstrate that there \textit{exist} transformations of TRACE data in which \textit{either} the saccade or fixation methods creates a better fit (as measured by $R^2$ or MISE). As such, it makes less sense to use TRACE to show which is ``better", but rather to use TRACE to demonstrate that what is estimated with the saccade method continues to be consistent with the continuous mapping model of lexical activation. Having established theoretical consistency, my argument for the saccade method will rest on what was presented in the previous section, namely the separation of saccades and fixations, and the problems illustrated with the ``added observation" bias. 
 
-\noindent\rule{2cm}{0.4pt}
+As it is, I have a few sections here addressing high level concerns. How it should be precisely organized is up for debate, but the work itself should be largely finished.
+
+
+\subsection{On fitting saccade data}
+
+Only using the TD subjects here
+
+I will go into more detail later on the precise transformations that I did to arrive at the empirical data from the raw data.  One key thing to note, however, is that rather than using saccade data, I finished cleaning the fixation data and then transformed this to saccade data based on the start time of subsequent fixations. This helped address ambiguities that resulted from deciding which saccades to be included. For example, if we neglected to include any saccades that began before the onset of the audio signal, the first saccades recorded (generally) had a probability of fixating on the target of about 0.25, resulting in an empirical curve with a base parameter much closer to 0.2. This was addressed by artificially setting the first saccade to have occured at $t = 0$, which nearly always had an associated recorded fixation not at the target. After making this adjustment, the baseline of the saccade  curve matched nearly that of the fixation curve, making the saccade curve more closely match the shape of the fixation curve.
+
+Slightly more of an indulgence was how to treat the end of the saccade curves at each trial. Necessarily in all cases, following the last saccade, recorded fixations were constant until the end of the trial, drastically increasing the ``added observation" bias and resulting in a fixation curve with a peak much closer to 1.
+
+On one hand, this could perhaps have been dealt with by addressing response times and making the appropriate adjustments. Or, far more simply (and with fewer researcher degrees of freedom), I simply added one last saccade to each trial with it's target location being that of the last fixation (typically the VWP Target). The rest of the analysis does not depend on this decision in any fashion, and as the results are functionally the same, I elected to use the saccade curve with the inflated data. This most closely matches our expectation of the relation between the fixation and saccade curves and addresses (to some degree) the asymptotic behavior of the saccades which would otherwise be uncollected. A demonstration of these differences is given in Figure~\ref{fig:saccade_inflate}.
+
+\begin{figure}
+\centering
+\includegraphics{sac_inflate_compare.pdf}
+\caption{this is what happens when i inflate saccade with additional saccade at last endpoint}
+\label{fig:saccade_inflate}
+\end{figure}
 
 \subsection{Collecting TRACE data}
 
-My main concern in this entire endeavor is that the TRACE data never baselines at 0, pretty much no matter what. I can change luce choice temperature, I can change whether or not i use empirical peak/baseline for scaling factor, it doesn't matter.  i never get near 0. Going back to email where we discussed issues with scaling factor, there was this line:
+Only using TRACE data with default parameters from jTRACE
 
-When I implement those things, I get a smooth function that goes up from .0002 at maxact = -.2 to .739 at maxct = .55.  
+My primary concern with the TRACE data is I am seemingly unable to reconcile it visually with what is presented in the 2010 SLI paper. Specifically, I never acheive a baseline near 0. Things I have played with include:
 
-I was able to replicate these numbers. The issue is on pg 23 of the SLI paper, it looks like the plot for the model is the scaling factor, not luce choice transform times the scaling factor
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-3mm}
+\item Adjusting the temperature in luce choice rule, both with constant factors as well as sigmoidal shapes with different parameters
+\item Adjusting scaling factor to have baseline and peak values of 0 and 1 rather than values from the object being scaled
+\end{enumerate}
+\end{singlespace}
 
+Referring back to an email we exchanged 12/14/2022, you gave me a list of adjustments to make to the scaling factor, including swaping the activation and crossover, as well as expanding the exponential term in the denomenator. I did this and confirmed that, as you had, the function goes from 0.0002 at maxact=-0.2 to .739 at maxact = .55. The issue, though, is that this is performed \textit{after} luce choice rule implemented. In that situation, the minimum activation observed is 0.25 rather than -0.2. This made me think that perhaps some other permutation of transformations would result in a curve starting closer to 0 and peaking nearer to .75
 
-\subsection{TRACE Data}
+From there though, I can't find any combination of things that seems to correct for this. It might be a bit much, but I want to present plots of the target activation at each step to demonstrate how it changes. The order of plots is:
 
-In McMurray (2011), a range of simulated TRACE data was collected across the space of hyperparameters, each simulation containing 14 trials, each with a Target, Cohort, Rhyme, and Unrelatd object (Appendix B. in Bob's paper). Here, we included only TRACE data associated with the default parameters specified in jTRACE (magnuson) and found the average TRACE activation across frames/cycles for each object (target, cohort, etc.,).
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-3mm}
+\item Raw TRACE data
+\item TRACE data after performing LCR with sigmoidal temperature data
+\item Scaling factor after correcting formula
+\item Scaling factor times TRACE factor after luce 
+\item Here I tried multiplying the scaling factor times the raw TRACE, skipping luce choice rule (thinking that this would  preserve baseline values near zero)
+\end{enumerate}
+\end{singlespace}
 
-As has been discussed elsewhere (Allopena, Magnuson, Bob), TRACE outputs a set of activations relative to all of the words included in its lexicon, and what is needed is a linking function the is able to return a simple mapping of TRACE activations to an estimated probability. We follow the steps given in the appendix of McMurray (2011), which we briefly outline here. 
-
-First is an implementation of the Luce Choice Rule (from somewhere) which dictates that, when considering the probability of fixation of a candidate word, we need only consider the probability of fixation relative to the other candidates present rather than our entire lexicon. This means that in the context of the VWP, our probability of fixation would be relative to the (usually three) other objects on the screen, rather than the thousands of words with which we may be familiar.  
-
-Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. Or this can be in the appendix
+Plot (c) in Figure~\ref{fig:shades_of_trace} is both the result following the list of transformations in the appendix of (2010) and also what is used in the analysis here. My only concern is that it's baseline value seems much larger than I feel that it should.
 
 
 \begin{figure}[H]
-\centering
-\includegraphics{sac_fix_trace_compare.pdf}
-\caption{this is just the mean value of the curve parameters. also only includes NH subjects. I feel like confidence intervals would make this chart look messy so might just instead include table of mean integrated squared error using approxfun since trace only has 108 data points and need a function to integrate in R}
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{TRACE_test/raw_trace.pdf}} 
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{TRACE_test/luce_choice.pdf}} 
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{TRACE_test/scaling_factor.pdf}}
+        \subfigure[]{\includegraphics[width=0.45\textwidth]{TRACE_test/scaling_times_luce.pdf}}
+            \subfigure[]{\includegraphics[width=0.45\textwidth]{TRACE_test/skipping_luce.pdf}}
+    \caption{sdfg}
+\label{fig:shades_of_trace}
 \end{figure}
+
+
+%
+%
+%\subsection{TRACE Data}
+%
+%In McMurray (2011), a range of simulated TRACE data was collected across the space of hyperparameters, each simulation containing 14 trials, each with a Target, Cohort, Rhyme, and Unrelatd object (Appendix B. in Bob's paper). Here, we included only TRACE data associated with the default parameters specified in jTRACE (Magnuson) and found the average TRACE activation across frames/cycles for each object (target, cohort, etc.,).
+%
+%As has been discussed elsewhere (Allopena, Magnuson, Bob), TRACE outputs a set of activations relative to all of the words included in its lexicon, and what is needed is a linking function the is able to return a simple mapping of TRACE activations to an estimated probability. We follow the steps given in the appendix of McMurray (2011), which we briefly outline here. 
+%
+%First is an implementation of the Luce Choice Rule (from somewhere) which dictates that, when considering the probability of fixation of a candidate word, we need only consider the probability of fixation relative to the other candidates present rather than our entire lexicon. This means that in the context of the VWP, our probability of fixation would be relative to the (usually three) other objects on the screen, rather than the thousands of words with which we may be familiar.  
+%
+%Really, though, does this have to be done at all? Can I not simply point to bob's paper and be like, look, this is the trace data and this has all the data on the subjects. here we are just going to look at the results because nothing else matters or is relevant. Or this can be in the appendix
+
+\subsection{Comparisons}
+
+Here is where I would suggest the consistency of the models. What I show here is a moderated version of this, namely I show that there are two transformations of TRACE (changing the parameters of the sigmoid function for Luce choice rule) that each match one or the other of the fixation/saccade curves better. As such, neither is superior in any sense, but both are in the realm of consistency.
+
+
+\begin{figure}[H]
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{sac_fix_trace_1.pdf}} 
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{sac_fix_trace_2.pdf}} 
+
+    \caption{Examples of different temperatures used in LCR and how this effects TRACE activation. In (a), this leads to greater consistency with the saccade curve; in (b), with the fixation curve. This is evidenced also by RMS values}
+\label{fig:shades_of_trace2}
+\end{figure}
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics{sac_fix_trace_compare.pdf}
+%\caption{this is just the mean value of the curve parameters. also only includes NH subjects. I feel like confidence intervals would make this chart look messy so might just instead include table of mean integrated squared error using approxfun since trace only has 108 data points and need a function to integrate in R}
+%\end{figure}
 
 Actually, can have two tables here and see which makes sense. We can look at the boring as normal mean vs trace and see what shakes OR we can find MISE of each curve against trace predictions. lets do that. 30 Subjects retained after removing shitty fittys
 
-% latex table generated in R 4.2.1 by xtable 1.8-4 package
-% Fri Jan 13 15:12:22 2023
+
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Wed Jan 18 18:41:24 2023
 \begin{table}[ht]
 \centering
-\begin{tabular}{lrrrrrr}
+\begin{tabular}{rllrrrrrr}
   \hline
-Method & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+ & Method & TRACE & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
   \hline
-Fixation & 0.01440949 & 0.01613453 & 0.01695755 & 0.01714883 & 0.01807178 & 0.02283428 \\ 
-  Saccade & 0.00000315 & 0.00065379 & 0.00333943 & 0.00451492 & 0.00762961 & 0.01847311 \\ 
+1 & Fixation & TRACE1 & 0.1148 & 0.1743 & 0.2181 & 0.2226 & 0.2583 & 0.4407 \\ 
+  2 & Saccade & TRACE1 & 0.0749 & 0.1051 & 0.1396 & 0.1449 & 0.1655 & 0.2933 \\ \hline
+  3 & Fixation & TRACE2 & 0.0991 & 0.1270 & 0.1529 & 0.1606 & 0.1712 & 0.3875 \\ 
+  4 & Saccade & TRACE2 & 0.0957 & 0.1404 & 0.1830 & 0.1879 & 0.2275 & 0.3734 \\ 
    \hline
 \end{tabular}
-\caption{Summary of mean integrated squared error of 30 NH subjects fit with \xt{bdots} against TRACE, fit with both fixation and saccade method}
+\caption{Summary of RMS of two transformations of TRACE against saccade and fixation method}
 \label{tab:mise_trace}
 \end{table}
+
+
 
 \section{Discussion}
 
@@ -569,7 +662,7 @@ There is a question if i should not limit things to only starttimes that occur b
 
 \section*{Appendix B}
 
-Here, I can discuss parallel results when I adjusts for reaction time when gathering observations
+Changed mind on this section.
 
 \section*{Appendix C}
 
@@ -635,7 +728,7 @@ There also seems to be value in finding a way to incorporate the length of fixat
 
 \section*{Appendix E}
 
-Why no double gauss treatment? simply for the reason that it is unable to find optimal fits in bdots curvefitters. in other words, with double gauss as it relates to the saccade method, there is a shortcoming in implementation rather than anything unique to it theoretically. as this is a theoretical paper, we limit presentation to those methods that may be implemented successfully on a computer as well.
+Why no double gauss treatment? simply for the reason that it is unable to find optimal fits in bdots curvefitters. in other words, with double gauss as it relates to the saccade method, there is a shortcoming in implementation rather than anything unique to it theoretically. this is mostly a consequence of \xt{gnls} sensitivity to starting parameters when fitting a function and lack of good starting parameters for dg. As this is a theoretical paper, we limit presentation to those methods that may be implemented successfully on a computer as well.
 
 \end{document}
 

@@ -201,11 +201,10 @@ scale_trace_sigmoid <- function(pp = NULL) {
 }
 
 
-aa <- scale_trace(tau = 4.5)
-bb <- scale_trace(tau = 3)
 xx <- scale_trace_sigmoid()
-
-xx2 <- scale_trace_sigmoid(c(2, 4.5, 0.002, 600))
+xx2 <- scale_trace_sigmoid(c(2, 4.8, 0.001, 300))
+xx3 <- scale_trace_sigmoid(c(2, 5.5, 0.004, 1000))
 
 fwrite(xx, "~/dissertation/data/bob_trace_data/trace_sigmoid.csv")
 fwrite(xx2, "~/dissertation/data/bob_trace_data/trace_sigmoid2.csv")
+fwrite(xx3, "~/dissertation/data/bob_trace_data/trace_sigmoid3.csv")

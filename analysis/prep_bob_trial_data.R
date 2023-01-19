@@ -26,7 +26,7 @@ looks <- merge(looks, trials)
 # only keep before rt
 looks <- looks[time < rt, ]
 
-looks[, `:=`(unrel= sum(`vstim-Unrelated1`, `vstim-Unrelated2`, `vstim-Unrelated3`, `vstim-Unrelated4`)), 
+looks[, `:=`(unrel= sum(`vstim-Unrelated1`, `vstim-Unrelated2`, `vstim-Unrelated3`, `vstim-Unrelated4`)),
       by = .(trial, time)]
 
 ## Any trials have zero looks to target?
@@ -39,18 +39,18 @@ looks <- looks[anyTarget != 0, ]
 
 ## Get mean value of each activation by subject
 looks[, `:=`(target = mean(`vstim-Target`, na.rm = TRUE),
-             cohort = mean(`vstim-Cohort`, na.rm = TRUE), 
-             unrelated = mean(unrel, na.rm = TRUE), 
-             rhyme = mean(`vstim-Rhyme`, na.rm = TRUE)), 
+             cohort = mean(`vstim-Cohort`, na.rm = TRUE),
+             unrelated = mean(unrel, na.rm = TRUE),
+             rhyme = mean(`vstim-Rhyme`, na.rm = TRUE)),
       by = .(subject, time)]
 
 ## Remove those I don't want
-looks[, `:=`(lookID = NULL, StartTime = NULL, 
-             None = NULL, NoData = NULL, saccadenum = NULL, 
+looks[, `:=`(lookID = NULL, StartTime = NULL,
+             None = NULL, NoData = NULL, saccadenum = NULL,
              `vstim-Unrelated1` = NULL,
              `vstim-Unrelated2` = NULL, `vstim-Unrelated3` = NULL,
-             `vstim-Unrelated4` = NULL, `vstim-Rhyme` = NULL, 
-             `vstim-Target` = NULL, `vstim-Cohort` = NULL, unrel = NULL, 
+             `vstim-Unrelated4` = NULL, `vstim-Rhyme` = NULL,
+             `vstim-Target` = NULL, `vstim-Cohort` = NULL, unrel = NULL,
              anyTarget = NULL, trial = NULL, rt = NULL)]
 
 ## Only need one set of time points for each subject (since averaged across trials)
@@ -80,12 +80,12 @@ dts <- dts[starttimemod < rt, ]
 # dts[, anyTarget := sum(`vstim-Target`), by = trial]
 # noTarg2 <- unique(dts[anyTarget == 0, trial])
 
-# sum(noTarg2 %in% noTarg) 
+# sum(noTarg2 %in% noTarg)
 # be safe and just remove all noTarg
 # Confirmed that one subsumes the other
 dts <- dts[!(trial %in% noTarg), ]
 
-## These are very short (not proper saccades) 
+## These are very short (not proper saccades)
 # so we should remove these rows as well since
 dts <- dts[NoData == 0, ]
 
@@ -119,7 +119,7 @@ looks2 <- looks2[subject %in% keepsub, ]
 # Not doing this here
 #looks <- looks[time < rt, ]
 
-looks2[, `:=`(unrel= sum(`vstim-Unrelated1`, `vstim-Unrelated2`, `vstim-Unrelated3`, `vstim-Unrelated4`)), 
+looks2[, `:=`(unrel= sum(`vstim-Unrelated1`, `vstim-Unrelated2`, `vstim-Unrelated3`, `vstim-Unrelated4`)),
       by = .(trial, time)]
 
 ## Computed previously, but sure we remove same
@@ -127,18 +127,18 @@ looks2 <- looks2[!(trial %in% noTarg), ]
 
 ## Get mean value of each activation by subject
 looks2[, `:=`(target = mean(`vstim-Target`, na.rm = TRUE),
-             cohort = mean(`vstim-Cohort`, na.rm = TRUE), 
-             unrelated = mean(unrel, na.rm = TRUE), 
-             rhyme = mean(`vstim-Rhyme`, na.rm = TRUE)), 
+             cohort = mean(`vstim-Cohort`, na.rm = TRUE),
+             unrelated = mean(unrel, na.rm = TRUE),
+             rhyme = mean(`vstim-Rhyme`, na.rm = TRUE)),
       by = .(subject, time)]
 
 ## Remove those I don't want
-looks2[, `:=`(lookID = NULL, StartTime = NULL, 
-             None = NULL, NoData = NULL, saccadenum = NULL, 
+looks2[, `:=`(lookID = NULL, StartTime = NULL,
+             None = NULL, NoData = NULL, saccadenum = NULL,
              `vstim-Unrelated1` = NULL,
              `vstim-Unrelated2` = NULL, `vstim-Unrelated3` = NULL,
-             `vstim-Unrelated4` = NULL, `vstim-Rhyme` = NULL, 
-             `vstim-Target` = NULL, `vstim-Cohort` = NULL, unrel = NULL, 
+             `vstim-Unrelated4` = NULL, `vstim-Rhyme` = NULL,
+             `vstim-Target` = NULL, `vstim-Cohort` = NULL, unrel = NULL,
              trial = NULL)]
 
 ## Only need one set of time points for each subject (since averaged across trials)
@@ -167,7 +167,7 @@ dts2 <- dts2[starttimemod <= 2300 & endtimemod >= 0, ]
 # dts2[, anyTarget := sum(`vstim-Target`), by = trial]
 # noTarg2 <- unique(dts2[anyTarget == 0, trial])
 
-# sum(noTarg2 %in% noTarg) 
+# sum(noTarg2 %in% noTarg)
 # be safe and just remove all noTarg
 dts2 <- dts2[!(trial %in% noTarg), ]
 
@@ -189,3 +189,6 @@ dts2$trial <- NULL
 colnames(dts2) <- c("subject", "starttime", "endtime",
                    "target", "cohort")
 fwrite(dts2, file = "~/dissertation/data/bob_trace_data/human_saccades_rt_nocut.csv")
+
+
+

@@ -225,7 +225,7 @@ results <- lapply(gg, function(arg) {
   do.call(runSim, arg)
 })
 # beepr::beep(3)
-saveRDS(results, file = "../data/results.rds")
+saveRDS(results, file = "~/dissertation/data/results.rds")
 
 ## Ok, let's practice on a single instance of this (only one that worked, fuck)
 # rr <- results[[1]]
@@ -451,7 +451,7 @@ results <- lapply(gg, function(arg) {
   do.call(runSim_bdots, arg)
 })
 # beepr::beep(3)
-saveRDS(results, file = "../data/bdots_coverage_results.rds")
+saveRDS(results, file = "~/dissertation/data/bdots_coverage_results.rds")
 
 results_bdots <- results
 

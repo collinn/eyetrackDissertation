@@ -9,8 +9,8 @@ library(ggplot2)
 #results <- readRDS("../../data/old_bdots_boot_coverage/coverage_results.rds")
 #res_bdots <- readRDS("../../data/old_bdots_boot_coverage/bdots_coverage_results.rds")
 
-results <- readRDS("../../data/results.rds")
-res_bdots <- readRDS("../../data/bdots_coverage_results.rds")
+results <- readRDS("~/dissertation/data/results.rds")
+res_bdots <- readRDS("~/dissertation/data/bdots_coverage_results.rds")
 
 pp <- lapply(results, `[[`, 1)
 ppb <- lapply(res_bdots, `[[`, 1)

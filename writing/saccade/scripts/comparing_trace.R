@@ -204,3 +204,46 @@ ss_sig <- cbind(nn_sig, rbindlist(list(ss1_sig, ss2_sig)))
 print(xtable(rbind(ss, ss_sig), digits = 4), include.rownames = TRUE)
 
 
+#########################################################################################
+##### Weird case where old saccade really matches trace ################################3
+
+trace_luce <- fread("~/dissertation/data/bob_trace_data/trace_scaled_4.csv")
+trace_sigmoid <- fread("~/dissertation/data/bob_trace_data/trace_sigmoid.csv")
+trace_sigmoid2 <- fread("~/dissertation/data/bob_trace_data/trace_sigmoid2.csv") # best for saccade
+trace_sigmoid3 <- fread("~/dissertation/data/bob_trace_data/trace_sigmoid3.csv") # best for fixation
+
+
+
+sac_old <- fread("~/dissertation/data/bob_trace_data/human_saccades_rt_nocut.csv")
+sac_old$group <- "A"
+fit_sacs_old  <- bdotsFit(data = sac_old,
+                      subject = "subject",
+                      time = "starttime",
+                      y = "target",
+                      group = "group",
+                      curveType = logistic(c(mini = 0, peak = 1, slope = 0.002, cross = 750)))
+
+qq <- coef(fit_sacs_old)
+idxrm <- which(qq[,3] < 0 | qq[,4] < 0 | qq[,1] > qq[,2])
+fit_sacs_old <- fit_sacs_old[setdiff(1:40, idxrm), ]
+
+mm <- colMeans(coef(fit_sacs_old))
+
+time <- 0:1787
+f_sac_old <- logistic_f(mm, time)
+
+dto <- data.table(time = time, y = f_sac_old, Method = "Unadjusted Saccade")
+dtf <- data.table(time = time, y = f_fix, Method = "Fixation")
+dtn <- data.table(time = trace_sigmoid$time, y = trace_luce$targ_bp, Method = "TRACE")
+#dt2 <- data.table(time = trace_sigmoid$time, y = trace_luce$targ_nobp, Method = "TRACE no bp")
+#dt1 <- data.table(time = trace_sigmoid$time, y = trace_sigmoid2$targ_bp, Method = "TRACE1")
+
+dt <- rbindlist(list(dto, dtn, dtf))
+
+pdf("../img/unadjusted_sac_w_trace.pdf",
+    width = 5.5, height = 3)
+ggplot(dt, aes(x = time, y = y, color = Method)) +
+  geom_line(size = 1.5) + ylim(c(min(dt$y),0.91)) + theme_bw() +
+  ggtitle("Unadjusted Saccade against TRACE") +
+  labs(y = expression(f[theta](t)), x = "Time")
+dev.off()

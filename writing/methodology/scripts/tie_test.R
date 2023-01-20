@@ -74,4 +74,4 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMagnitude 
   return(list(dts = dts, parsA = newpars, parsB = newpars2))
 }
 
-tt <- createData(n = 2, pars = pars, paired = TRUE, pairMagnitude = 0.01)
+tt <- createData(n = 25, pars = pars, paired = TRUE, pairMagnitude = 0.01)

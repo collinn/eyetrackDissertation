@@ -42,7 +42,7 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMag = 0.05
   ## Then we make our parameters for group 2
   if (!paired) {
     ## Basically just repeat above, exact same distribution
-    newpars2 <- do.call(rmvnorm, as.list(c(n, newpars)))
+    newpars2 <- do.call(rmvnorm, as.list(c(n, pars)))
     newpars2[,1] <- abs(newpars2[,1]) # need base > 0
     newpars2[,2] <- pmin(newpars2[,2], 1) # need peak < 1
   } else {
@@ -90,9 +90,9 @@ runSim <- function(n = 25, trials = 100, pars,
                   curveType = logistic(),
                   cores = 7L)
 
-  boot <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500)
-  suppressMessages(bootp <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500,
-                     permutation = TRUE, skipDist = TRUE))
+  boot <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 250, cores = 6)
+  suppressMessages(bootp <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 250,
+                     permutation = TRUE, skipDist = TRUE, cores = 6))
 
   list(bootSig = boot$sigTime, permSig = bootp$sigTime)
 }
@@ -107,6 +107,12 @@ sims <- replicate(100, runSim(pars = pars))
 #simsv <- replicate(100, runSim(pars = pars_bigVar))
 #simsPairv <- replicate(1000, runSim(pars = pars_bigVar, paired = TRUE))
 
-#save.image(file = "tie.RData")
+save.image(file = "sim_tie.RData")
 
-#load("tie.RData")
+load("sim_tie.RData")
+
+bf <- apply(sims, 2, function(y) is.null(y[[1]]))
+pf <- apply(sims, 2, function(y) is.null(y[[2]]))
+
+sum(bf)
+sum(pf)

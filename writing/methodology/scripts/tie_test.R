@@ -5,6 +5,7 @@ library(mvtnorm)
 ## Start by generating an empirical distribution
 ci <- as.data.table(ci)
 ci <- ci[LookType == "Target", ]
+#ci <- ci[LookType == "Target" & protocol != "NH", ]
 fit <- bdotsFit(data = ci,
                 y = "Fixations",
                 subject = "Subject",
@@ -13,7 +14,7 @@ fit <- bdotsFit(data = ci,
 
 ## Except this time I only need one empirical dist
 ## Here I am using BOTH TD/ND to create more variability
-cc <- coef(fit)
+cc <- coef(fit[])
 vv <- var(cc)
 cc <- colMeans(cc)
 cc[1] <- abs(cc[1])
@@ -21,7 +22,7 @@ cc[2] <- pmin(cc[2], 1)
 pars <- list(mean = cc, sigma = vv)
 
 ## Will always create twice what N is (so two groups by default)
-createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMagnitude = 0.1) {
+createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMag = 0.05) {
   time <- seq(0, 2000, by = 4)
   newpars <- do.call(rmvnorm, as.list(c(n, pars)))
   newpars[,1] <- abs(newpars[,1]) # need base > 0
@@ -35,13 +36,13 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMagnitude 
                      true = eyetrackSim:::logistic_f(pp, time))
     dt[, fixations := mean(rbinom(trials, 1, true)), by = time]
   })
-  
+
   dts1 <- rbindlist(dts1)
-  
+
   ## Then we make our parameters for group 2
-  if (paired) {
+  if (!paired) {
     ## Basically just repeat above, exact same distribution
-    newpars2 <- do.call(rmvnorm, as.list(c(n, pars)))
+    newpars2 <- do.call(rmvnorm, as.list(c(n, newpars)))
     newpars2[,1] <- abs(newpars2[,1]) # need base > 0
     newpars2[,2] <- pmin(newpars2[,2], 1) # need peak < 1
   } else {
@@ -50,7 +51,7 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMagnitude 
     ## Then make one with mean 0
     pars2 <- pars
     pars2$mean[] <- 0
-    pars2$sigma <- pars2$sigma*pairMagnitude
+    pars2$sigma <- pars2$sigma*pairMag
     ## This gets the variance
     varpars <- do.call(rmvnorm, as.list(c(n, pars2)))
     ## And then we make our paired parameters
@@ -58,10 +59,9 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMagnitude 
     newpars2[,1] <- abs(newpars2[,1]) # need base > 0
     newpars2[,2] <- pmin(newpars2[,2], 1) # need peak < 1
   }
-  
   spars2 <- split(newpars2, row(newpars2))
-  dts2 <- lapply(seq_len(n), function(x) {
-    pp <- spars2[[x]]
+  dts2 <- lapply(seq_len(n) + n, function(x) {
+    pp <- spars2[[x - n]]
     dt <- data.table(id = x,
                      time = time,
                      group = "B",
@@ -74,4 +74,39 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMagnitude 
   return(list(dts = dts, parsA = newpars, parsB = newpars2))
 }
 
-tt <- createData(n = 25, pars = pars, paired = TRUE, pairMagnitude = 0.01)
+
+
+runSim <- function(n = 25, trials = 100, pars,
+                   paired = FALSE, pairedMag = 0.05) {
+
+  tt <- createData(n, trials, pars, paired, pairedMag)
+
+  dat <- tt$dts
+  fit <- bdotsFit(subject = "id",
+                  time = "time",
+                  y = "fixations",
+                  group = "group",
+                  dat = dat,
+                  curveType = logistic(),
+                  cores = 7L)
+
+  boot <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500)
+  suppressWarnings(bootp <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500,
+                     permutation = TRUE, skipDist = TRUE))
+
+  list(bootSig = boot$sigTime, permSig = bootp$sigTime)
+}
+
+sims <- replicate(100, runSim(pars = pars))
+#simsPair <- replicate(1000, runSim(pars = pars, paired = TRUE))
+
+pars_bigVar <- pars
+pars_bigVar$sigma <- pars_bigVar$sigma*1.2
+
+simsv <- replicate(100, runSim(pars = pars_bigVar))
+#simsPairv <- replicate(1000, runSim(pars = pars_bigVar, paired = TRUE))
+
+save.image(file = "tie.RData")
+
+
+load("tie.RData")

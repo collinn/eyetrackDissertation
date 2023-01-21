@@ -91,22 +91,22 @@ runSim <- function(n = 25, trials = 100, pars,
                   cores = 7L)
 
   boot <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500)
-  suppressWarnings(bootp <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500,
+  suppressMessages(bootp <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 500,
                      permutation = TRUE, skipDist = TRUE))
 
   list(bootSig = boot$sigTime, permSig = bootp$sigTime)
 }
 
+#
 sims <- replicate(100, runSim(pars = pars))
 #simsPair <- replicate(1000, runSim(pars = pars, paired = TRUE))
 
-pars_bigVar <- pars
-pars_bigVar$sigma <- pars_bigVar$sigma*1.2
+#pars_bigVar <- pars
+#pars_bigVar$sigma <- pars_bigVar$sigma*1.2
 
-simsv <- replicate(100, runSim(pars = pars_bigVar))
+#simsv <- replicate(100, runSim(pars = pars_bigVar))
 #simsPairv <- replicate(1000, runSim(pars = pars_bigVar, paired = TRUE))
 
-save.image(file = "tie.RData")
+#save.image(file = "tie.RData")
 
-
-load("tie.RData")
+#load("tie.RData")

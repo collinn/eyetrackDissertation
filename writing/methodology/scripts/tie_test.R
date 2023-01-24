@@ -60,6 +60,7 @@ createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMag = 0.05
     newpars2[,2] <- pmin(newpars2[,2], 1) # need peak < 1
   }
   spars2 <- split(newpars2, row(newpars2))
+  # id not correct for paired here
   dts2 <- lapply(seq_len(n) + n, function(x) {
     pp <- spars2[[x - n]]
     dt <- data.table(id = x,
@@ -90,29 +91,74 @@ runSim <- function(n = 25, trials = 100, pars,
                   curveType = logistic(),
                   cores = 7L)
 
-  boot <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 250, cores = 6)
+  boot <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 250, cores = 7L)
   suppressMessages(bootp <- bdotsBoot(formula = y ~ group(A,B), bdObj = fit, Niter = 250,
-                     permutation = TRUE, skipDist = TRUE, cores = 6))
+                     permutation = TRUE, skipDist = TRUE, cores = 7L))
 
   list(bootSig = boot$sigTime, permSig = bootp$sigTime)
 }
 
 #
-sims <- replicate(100, runSim(pars = pars))
-#simsPair <- replicate(1000, runSim(pars = pars, paired = TRUE))
+#sims <- replicate(1000, runSim(pars = pars))
+#sim2 <- replicate(500, runSim(n = 10, pars = pars))
+#sim3 <- replicate(500, runSim(n = 50, pars = pars))
+#sim4 <- replicate(500, runSim(trials = 300, pars = pars))
 
-#pars_bigVar <- pars
-#pars_bigVar$sigma <- pars_bigVar$sigma*1.2
+## These are all unpaired
 
-#simsv <- replicate(100, runSim(pars = pars_bigVar))
-#simsPairv <- replicate(1000, runSim(pars = pars_bigVar, paired = TRUE))
+## Standard with 100 trials, try with n = 10, 25, 50, 100
+sim1 <- replicate(10, runSim(n = 10, pars = pars))
+sim2 <- replicate(10, runSim(n = 25, pars = pars))
+sim3 <- replicate(10, runSim(n = 50, pars = pars))
+sim4 <- replicate(10, runSim(n = 100, pars = pars))
 
-save.image(file = "sim_tie.RData")
+print("set 1")
 
-load("sim_tie.RData")
+## Then try with 300 trials, n = 10, 25, 50, 100
+sim5 <- replicate(10, runSim(n = 10, trials = 300, pars = pars))
+sim6 <- replicate(10, runSim(n = 25, trials = 300, pars = pars))
+sim7 <- replicate(10, runSim(n = 50, trials = 300, pars = pars))
+sim8 <- replicate(10, runSim(n = 100, trials = 300, pars = pars))
 
-bf <- apply(sims, 2, function(y) is.null(y[[1]]))
-pf <- apply(sims, 2, function(y) is.null(y[[2]]))
+print("set 2")
 
-sum(bf)
-sum(pf)
+## Then try with 50 trials, n = 10, 25, 50, 100
+sim9 <- replicate(10, runSim(n = 10, trials = 50, pars = pars))
+sim10 <- replicate(10, runSim(n = 25, trials = 50, pars = pars))
+sim11 <- replicate(10, runSim(n = 50, trials = 50, pars = pars))
+sim12 <- replicate(10, runSim(n = 100, trials = 50, pars = pars))
+
+print("set 3")
+
+save.image(file = "sim_tie_practice.RData")
+
+load("sim_tie_practice.RData")
+#load("sim_tie.RData")
+
+#btie <- apply(sims, 2, function(y) !is.null(y[[1]])) |> mean()
+#ptie <- apply(sims, 2, function(y) !is.null(y[[2]])) |> mean()
+
+
+tie <- function(x) {
+  a <- apply(x, 2, function(y) !is.null(y[[1]])) |> mean()
+  b <- apply(x, 2, function(y) !is.null(y[[2]])) |> mean()
+  c(boot = a, perm = b)
+}
+
+# standard
+tie(sim1)
+tie(sim2)
+tie(sim3)
+tie(sim4)
+
+# more trials
+tie(sim5)
+tie(sim6)
+tie(sim7)
+tie(sim8)
+
+# less trials
+tie(sim9)
+tie(sim10)
+tie(sim11)
+tie(sim12)

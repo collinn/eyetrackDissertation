@@ -71,9 +71,17 @@ p2 <- ggplot(bb2, aes(x = value)) + geom_histogram(bins=40) +
   theme_bw() +
   ggtitle("Saccade Parameter Bias, Fixed Delay")
 
-pdf("../img/fixed_delay_par_bias.pdf", 
-    width = 6.5, height = 7.5)
-grid.arrange(p1, p2, ncol = 1)
+# pdf("../img/fixed_delay_par_bias.pdf",
+#     width = 6.5, height = 7.5)
+# grid.arrange(p1, p2, ncol = 1)
+# dev.off()
+
+pdf("../img/fixed_delay_par_bias_fixation.pdf")
+p1
+dev.off()
+
+pdf("../img/fixed_delay_par_bias_saccade.pdf")
+p2
 dev.off()
 
 
@@ -108,9 +116,17 @@ p2 <- ggplot(bb4, aes(x = value)) + geom_histogram(bins=40) +
   ggtitle("Saccade Parameter Bias, Random Delay")
 
 
-pdf("../img/random_delay_par_bias.pdf", 
-    width = 6.5, height = 7.5)
-grid.arrange(p1, p2, ncol = 1)
+# pdf("../img/random_delay_par_bias.pdf",
+#     width = 6.5, height = 7.5)
+# grid.arrange(p1, p2, ncol = 1)
+# dev.off()
+
+pdf("../img/random_delay_par_bias_fixation.pdf")
+p1
+dev.off()
+
+pdf("../img/random_delay_par_bias_saccade.pdf")
+p2
 dev.off()
 
 ###################################################
@@ -154,12 +170,12 @@ fixCurve <- getCurve(fixp, "Fixation")
 plotty <- rbindlist(list(trueCurve, fixCurve, sacCurve))
 
 pdf("../img/fixed_pb_curves.pdf",
-    width = 7.5, height = 4)
+    width = 6, height = 5)
 ggplot(plotty, aes(time, curve, color = Curve)) +
   geom_line(linewidth = 1) + facet_wrap(~id, nrow = 2) +
   theme_bw() + labs(y = "Activation", x = "Time") +
-  ggtitle("Representative Curves, Fixed Delay") + 
-  scale_x_discrete(limits = c(0, 750, 1500))
+  ggtitle("Representative Curves, Fixed Delay") +
+  scale_x_discrete(limits = c(0, 750, 1500)) + theme(legend.position = "bottom")
 dev.off()
 
 #### Now with random delay
@@ -182,12 +198,12 @@ fixCurve <- getCurve(fixp, "Fixation")
 plotty <- rbindlist(list(trueCurve, fixCurve, sacCurve))
 
 pdf("../img/random_pb_curves.pdf",
-    width = 7.5, height = 4)
+    width = 6, height = 5)
 ggplot(plotty, aes(time, curve, color = Curve)) +
   geom_line(linewidth = 1) + facet_wrap(~id, nrow = 2) +
   theme_bw() + labs(y = "", x = "Time") +
-  ggtitle("Representative Curves, Random Delay") + 
-  scale_x_discrete(limits = c(0, 750, 1500))
+  ggtitle("Representative Curves, Random Delay") +
+  scale_x_discrete(limits = c(0, 750, 1500)) + theme(legend.position = "bottom")
 dev.off()
 
 
@@ -196,7 +212,7 @@ mise <- function(fp, tp) {
   times <- 0:2000
   fp <- split(fp, 1:nrow(fp))
   tp <- split(tp, 1:nrow(tp))
-  
+
   mv <- Map(function(x, y) {
     g <- function(tt) {
       (logistic_f(x, tt) - logistic_f(y, tt))^2
@@ -244,7 +260,7 @@ ss3 <- setnames(transpose(data.table(as.numeric(summary(rr3)))), names(summary(r
 ss4 <- setnames(transpose(data.table(as.numeric(summary(rr4)))), names(summary(rr4)))
 
 ss <- rbindlist(list(ss1, ss2, ss3, ss4))
-nn <- data.table(Curve = c("Fixation", "Saccade", "Fixation", "Saccade"), 
+nn <- data.table(Curve = c("Fixation", "Saccade", "Fixation", "Saccade"),
                  Delay = c("Fixed", "Fixed", "Random", "Random"))
 ss <- cbind(nn, ss)
 print(xtable(ss), include.rownames=FALSE)

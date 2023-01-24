@@ -26,7 +26,7 @@ lucer <- function(l, ttt, pp = NULL) {
   # temperature parmeters
   if (is.null(pp)) {
     temp_pars <- c(2, 4.5, 0.004, 1000)
-  } else
+  } else {
     temp_pars <- pp
   }
 

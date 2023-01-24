@@ -120,7 +120,7 @@ pdf("../img/sac_fix_trace_1.pdf",
 ggplot(dt, aes(x = time, y = y, color = Method)) +
   geom_line(size = 1.5) + ylim(c(min(dt$y),0.91)) + theme_bw() +
   ggtitle("Comparison of Fixation/Saccade\nMethods with TRACE") +
-  labs(y = expression(f[theta](t)), x = "Time")
+  labs(y = expression(f[theta](t)), x = "Time") + theme(legend.position = "bottom")
 dev.off()
 
 dt <- rbindlist(list(dt1, dt8, dt7))
@@ -129,7 +129,7 @@ pdf("../img/sac_fix_trace_2.pdf",
 ggplot(dt, aes(x = time, y = y, color = Method)) +
   geom_line(size = 1.5) + ylim(c(min(dt$y),0.91)) + theme_bw() +
   ggtitle("Comparison of Fixation/Saccade\nMethods with TRACE") +
-  labs(y = expression(f[theta](t)), x = "Time")
+  labs(y = expression(f[theta](t)), x = "Time") + theme(legend.position = "bottom")
 dev.off()
 
 

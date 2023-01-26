@@ -22,7 +22,7 @@ cc[2] <- pmin(cc[2], 1)
 pars <- list(mean = cc, sigma = vv)
 
 ## Will always create twice what N is (so two groups by default)
-createData <- function(n = 25, trials = 100, pars, paired = FALSE, pairMag = 0.05) {
+createData <- function(n = 25, trials = 10, pars, paired = FALSE, pairMag = 0.05) {
   time <- seq(0, 2000, by = 4)
   newpars <- do.call(rmvnorm, as.list(c(n, pars)))
   newpars[,1] <- abs(newpars[,1]) # need base > 0
@@ -60,11 +60,10 @@ createData <- function(n = 25, trials = 100, pars, paired = FALSE, pairMag = 0.0
     newpars2[,2] <- pmin(newpars2[,2], 1) # need peak < 1
   }
   spars2 <- split(newpars2, row(newpars2))
-  ipn <- ifelse(paired, 0, n)
   # id not correct for paired here
-  dts2 <- lapply(seq_len(n), function(x) {
-    pp <- spars2[[x]]
-    dt <- data.table(id = x + ipn, #ipn is 0 if paired
+  dts2 <- lapply(seq_len(n) + n, function(x) {
+    pp <- spars2[[x - n]]
+    dt <- data.table(id = x,
                      time = time,
                      group = "B",
                      true = eyetrackSim:::logistic_f(pp, time))
@@ -107,59 +106,71 @@ runSim <- function(n = 25, trials = 100, pars,
 
 ## These are all unpaired
 
-## Standard with 100 trials, try with n = 10, 25, 50, 100
-sim1 <- replicate(10, runSim(n = 10, pars = pars))
-sim2 <- replicate(10, runSim(n = 25, pars = pars))
-sim3 <- replicate(10, runSim(n = 50, pars = pars))
-sim4 <- replicate(10, runSim(n = 100, pars = pars))
+## Prep this for argon submission
+idx <- as.numeric(commandArgs(TRUE))
 
-print("set 1")
+## Standard with 100 trials, try with n = 10, 25, 50, 100
+
+N <- 2
+
+if (idx == 1) {
+  sim1 <- replicate(N, runSim(n = 10, pars = pars))
+  sim2 <- replicate(N, runSim(n = 25, pars = pars))
+  sim3 <- replicate(N, runSim(n = 50, pars = pars))
+  sim4 <- replicate(N, runSim(n = 100, pars = pars))
+  save.image(file = "sim_tie_1.RData")
+} else if (idx == 2) {
+  sim5 <- replicate(N, runSim(n = 10, trials = 300, pars = pars))
+  sim6 <- replicate(N, runSim(n = 25, trials = 300, pars = pars))
+  sim7 <- replicate(N, runSim(n = 50, trials = 300, pars = pars))
+  sim8 <- replicate(N, runSim(n = 100, trials = 300, pars = pars))
+  save.image(file = "sim_tie_2.RData")
+} else {
+  sim9 <- replicate(N, runSim(n = 10, trials = 50, pars = pars))
+  sim10 <- replicate(N, runSim(n = 25, trials = 50, pars = pars))
+  sim11 <- replicate(N, runSim(n = 50, trials = 50, pars = pars))
+  sim12 <- replicate(N, runSim(n = 100, trials = 50, pars = pars))
+  save.image(file = "sim_tie_3.RData")
+}
+
+
 
 ## Then try with 300 trials, n = 10, 25, 50, 100
-sim5 <- replicate(10, runSim(n = 10, trials = 300, pars = pars))
-sim6 <- replicate(10, runSim(n = 25, trials = 300, pars = pars))
-sim7 <- replicate(10, runSim(n = 50, trials = 300, pars = pars))
-sim8 <- replicate(10, runSim(n = 100, trials = 300, pars = pars))
 
-print("set 2")
 
 ## Then try with 50 trials, n = 10, 25, 50, 100
-sim9 <- replicate(10, runSim(n = 10, trials = 50, pars = pars))
-sim10 <- replicate(10, runSim(n = 25, trials = 50, pars = pars))
-sim11 <- replicate(10, runSim(n = 50, trials = 50, pars = pars))
-sim12 <- replicate(10, runSim(n = 100, trials = 50, pars = pars))
 
-print("set 3")
+
 
 save.image(file = "sim_tie_practice.RData")
 
-load("sim_tie_practice.RData")
+#load("sim_tie_practice.RData")
 #load("sim_tie.RData")
 
 #btie <- apply(sims, 2, function(y) !is.null(y[[1]])) |> mean()
 #ptie <- apply(sims, 2, function(y) !is.null(y[[2]])) |> mean()
 
-
-tie <- function(x) {
-  a <- apply(x, 2, function(y) !is.null(y[[1]])) |> mean()
-  b <- apply(x, 2, function(y) !is.null(y[[2]])) |> mean()
-  c(boot = a, perm = b)
-}
-
-# standard
-tie(sim1)
-tie(sim2)
-tie(sim3)
-tie(sim4)
-
-# more trials
-tie(sim5)
-tie(sim6)
-tie(sim7)
-tie(sim8)
-
-# less trials
-tie(sim9)
-tie(sim10)
-tie(sim11)
-tie(sim12)
+#
+# tie <- function(x) {
+#   a <- apply(x, 2, function(y) !is.null(y[[1]])) |> mean()
+#   b <- apply(x, 2, function(y) !is.null(y[[2]])) |> mean()
+#   c(boot = a, perm = b)
+# }
+#
+# # standard
+# tie(sim1)
+# tie(sim2)
+# tie(sim3)
+# tie(sim4)
+#
+# # more trials
+# tie(sim5)
+# tie(sim6)
+# tie(sim7)
+# tie(sim8)
+#
+# # less trials
+# tie(sim9)
+# tie(sim10)
+# tie(sim11)
+# tie(sim12)

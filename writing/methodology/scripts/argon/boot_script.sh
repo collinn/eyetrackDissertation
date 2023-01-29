@@ -6,6 +6,6 @@ date +"%r"
 for i in {1..16}
 do
         echo "sim $i"
-        R CMD BATCH --no-save --no-restore "--args $i" createSimFitData.R
+        R CMD BATCH --no-save --no-restore "--args $i" bootSim.R
 done
 date +"%r"

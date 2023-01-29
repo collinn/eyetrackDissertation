@@ -14,6 +14,7 @@
 *.synctex.gz
 *.rds
 *.RData
+*.Rout
 
 data/trace_n_things/**
 data/bob_trace_data/**

@@ -48,5 +48,5 @@ for (i in seq_along(bf)) {
     print(msg)
   }
 }
-saveRDS(object = sims, file = rf)
+saveRDS(object = res, file = rf)
 sink()

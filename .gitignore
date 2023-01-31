@@ -18,5 +18,7 @@
 
 data/trace_n_things/**
 data/bob_trace_data/**
+writing/methodology/scripts/argon/prog_boot/**
+writing/methodology/scripts/argon/prog_txt/**
 
 # *.png

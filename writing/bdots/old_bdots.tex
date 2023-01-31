@@ -1,0 +1,653 @@
+\documentclass{article}
+\title{bdots}
+\date{}
+
+\usepackage{setspace}
+\doublespacing
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{hhline}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{xcolor}
+
+\newcommand{\xt}{\texttt}% \xt will be replaced with \textit
+
+\usepackage{listings}
+
+\begin{document}
+
+%https://www.namsu.de/Extra/klassen/latex-article-template.html
+
+\maketitle
+
+%\input{main.tex}
+
+\begin{abstract}
+The Bootstrapped Differences of Timeseries (bdots) was first introduced by Oleson (and others) as a method for controlling type I error in a composite of serially correlated tests of differences between two time series curves in the context of eye tracking data.  This methodology was originally implemented in R by Seedorff 2018. Here, we revist the original package, both expanding the underlying theoretical components and creating a more robust implementation.
+\end{abstract}
+
+
+\section{Introduction}
+
+In 2017, Oleson et al. introduced a method for detecting time-specific differences between (group? idk rewrite this sentence) functions in time. This largely centered around bootstrapping and computing a series of highly correlated $t$-statistics and using estimates of the autocorrelation as an adjustment for the family-wise error rate, presented in the context of the Visual World Paradigm (VWP), an experimental paradigm combining eyetracking with an interactive environment to measure dynamics in language processing. In 2018, \xt{bdots} was introduced on CRAN to perform a limited version of the analysis proposed in Oleson. Here, we introduce \texttt{bdots} v2, an update to the CRAN package that broadly expands the capabilities of the original. 
+
+This paper is not intended to serve as a complete use guidefor the bdots package. Rather, the purpose is to showcase major changes and improvements to the package, with those seeking a more comprehensive treatment directed to the package vignettes. Updates to the bdots package have been such that there is little resemblance to the original. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use:
+
+\begin{singlespace}
+\begin{enumerate}
+\item Simplified user interface
+%\item Parameter and nonparametric functions (not going to be true)
+\item User defined curves
+\item Permit fitting for arbitrary number of groups
+\item Updates to bootstrapping algorithm and introduction of permutation test
+\item Automatic detection of paired tests based on subject identifier
+\item Allows for non-homogenous sampling of data across subjects and groups
+\item Introduce formula syntax for bootstrapping difference function
+%\item Removal of auto-correlation assumption
+\item The fitted bdots object inherits from data.table class
+\end{enumerate}
+\end{singlespace}
+
+\paragraph{Bootstrapped differences in time series}
+
+The high level motivation of \xt{bdots}, abstracted from the particulars, is more or less as follows: we are often interested in generally comparing time series between two or more groups and in particular, identifying a window of time in which they differ significantly without a priori specification of any regions. A full(er) review of previous methods can be found in Seedorff, though here we limit the scope of interest to specifying that we are interested in ``developing a statistical tool to (1) detect differences in two time series (such as the VWP) and (2) to offer a precise characterization of the time window in which a difference occurs \cite{seedorff2018bdots}." This is subsequently done in two steps. First, we use a bootstrapping procedure to estimate the group distributions of two time series; and second, we use either a FWER correction or permutation testing to identify time windows in which differences occur.
+
+A typical instantiation of this problem occurs when we have two groups (or experimental conditions, etc.,) in which individual subjects have an associated time series. For example, we may be interested in comparing the growth of a particular tumor in mice over time between a control group and several candidate treatment groups. It's assumed that each group has some distribution of associated functions in time, and we are interested in identifying windows in time in which these distributions of functions are significantly different. This is done by analyzing the difference of timeseries.
+
+
+The original bdots package was predicated on comparing differences between dense, highly correlated time series by first specifying functional forms and then performing statistical tests on each of the observed time points. With verison 2.0, capabilities have drastically improved, and \xt{bdots} is able to fit parameteric functions to any type of data observed in time. Along with methodological improvements, we have included more options in determining statistical significance in the differences of curves, utilizing a {\color{red} robust} permutation testing framework when the assumptions of autocorrelation do not hold. In addition to methodology, a number of quality-of-life improvements have also been made, greatly simplifying syntax, creating more {\color{red} robust} functions, and including a collection of useful methods for handling returned objects.
+
+In summary, \texttt{bdots} has transitioned from a package focused exclusively on densly sampled timeseries assuming a limited number of functional forms to a {\color{red} robust} framework for identifying time windows of significant difference across a wide breadth of timeseries-adjacent data. 
+
+
+\section{Methodology and Overview} 
+
+A standard analysis using \xt{bdots} consists of two steps: estimating distributions of functions for groups of interest and then determining where in time the difference of these functions is statistically significant.
+
+
+[can maybe delete this par since i kinda say it in next section] In addition to changes in the underlying methodology of the original \xt{bdots} package, version 2.0 introduces permutation testing for situations in which assumptions of autocorrelation do not hold. These changes have impacts on both the estimation of the group distributions, as well as for identifying significant time windows. A fuller treatment of these methodologies is given in chapter 3.
+
+\subsection{Creating Group Distributions}
+
+Broadly, there are two steps to performing an analysis with the \xt{bdots} package: fitting the curves to observed data and bootstrapping differences between groups. The first step involves specifying an underlying curve $f$, which is assumed to be parametric\footnote{the option to include non-parametric functions is anticipated in the future work of this package. The process will be similar, however, with $\theta$ then representing the number and location of the knots for splines}. Along with the observed data $y$ for each $i$th subject, \xt{bdots}, via fitting with \xt{gnls}, returns a set of parameters along with an estimate of their covariance.
+
+\begin{equation}
+F: f \times y_i \rightarrow N(\hat{\theta_i}, V_{i}),
+\end{equation}
+where $\theta$ is a length-$p$ vector representing the parameters of the function.
+
+Once the fits have been made, we are ready to estimate the generating distributions for the groups being compared. The bootstrapping algorithm for each group is as follows (this does not address the new issue with paired bdots from bob):
+
+%Once fits have been made, we are ready for testing the bootstrapped difference between curves. After specifying the groups of interest for analysis, two algorithms are implemented: a bootstrapping algorithm is used to determine the distribution of each group of curves, and either permutation testing or bootstrapping is used to specify regions of statistically significant differences, depending on the underlying assumptoins made. The algorithm for  bootstrapping for each group is as follows:
+
+\begin{enumerate}
+\item For a group of size $n$, select $n$ subjects from the group, \textit{with replacement}. This controls for the between subject variability
+\item For each selected subject, draw a set of parameters from the distribution $\theta_{i}^* \sim N(\hat{\theta}_i, V_i)$. This permits us to account for within subject variability
+\item For each of the resampled $\theta_i^*$, find the $b$th bootstrap estimate for the group $\theta_b = \frac1n \sum_{i=1}^n \theta_i^*$
+\item Perform this sequence $B$ times
+\end{enumerate}
+
+
+The end results is a $B \times p$ matrix containing a bootstrapped sample of the group distribution for $\theta$. Each row of this matrix is used to create a $1 \times T$ vector representing $f_{\theta}$ evaluted at $T$ time points. This results in a $B \times T$ matrix representing a collection of bootstrapped curves evaluated at each time point, in total representing a bootstrapped distribution of the curves.
+
+
+%Each of these is used to construct a $B \times T$ matrix ($T$ the number of time points), a collection of bootstrapped curves. Each column of this matrix represents a time point, $t$, from which we can compute the mean and standard deviation of the group curve at that time (wordy). $\Leftarrow$ this also might contain too specific of detail. they don't care that its a matrix. they care for each time point we can construct an estimate of the mean and sd. And really, even this is only from CI and group distribution. There could possibly be an option to skip computing this at all and just do the permutation test.
+
+Group distributions in hand, we next attend to idenfiying regions in which a statistically significant difference between curves is present, choosing from one of the two methods currently available.
+
+\subsection{Evaluating significance differences}
+
+There are a number of methods included in the \xt{bdots} package for identifying windows where time series differ significantly. First, there are a collection of FWER alpha adjustments, including Oleson's method (2017). New to version 2.0 are methods related to permutation testing. A review of the theoretical considerations, as well as underlying assumptions for each are briefly presented here. 
+
+
+\subsubsection{Permutation Testing}
+maybe switch order of this and fwer
+
+The simplest method implemented for idenfiying time-specific differences is permutation testing, ideal when minimal assumptions can be made on the observed data. 
+
+We begin by computing a $t$-statistic of the difference at each time point, 
+
+\begin{equation}
+T(t) = \frac{|\overline{f}_1(t) - \overline{f}_2(t)|}{\sqrt{\frac{1}{n_2} \text{Var}(f_1(t)) + \frac{1}{n_2} \text{Var}(f_2(t))}}, 
+\end{equation}
+or, in the case of paired groups, 
+
+\begin{equation}
+T(t) = \frac{\overline{f}_D(t)}{\sqrt{\frac1n \text{Var}(f_D(t))}}.
+\end{equation}
+
+Next, we go about creating a null distribution against which to test our hypothesis that there is no difference between each group at each time point. We do this with permutations, the algorithm being as follows: for two groups, with $n_1$ and $n_2$ subjects in each:
+
+\begin{enumerate}
+	\item Assign to each subject a label indicating group membership
+	\item Randomly shuffle the lables indicating membership, creating two new groups with $n_1$ and $n_2$ subjects in each
+	\item Recalculate the $t$-statistic, $T(t)$ and record the maximum of each permutation
+\end{enumerate}
+
+The collection of maximum values for $T(t)$ will serve as the null distribution against which to compare our observed $T(t)$. Regions in which the observed $t$ statistic are beyond the specified $\alpha$ in the null distribution are then considered significant.
+
+
+\subsubsection{FWER Adjustment}
+
+In addition to permutation testing, there are also adjustments that can be made to control for the family-wise error rate. As was done with permutation testing, we begin by computing a $t$-statistic at each time point for the observed data, 
+
+\begin{equation}
+T(t) = \frac{|\overline{f}_1(t) - \overline{f}_2(t)|}{\sqrt{\frac{1}{n_2} \text{Var}(f_1(t)) + \frac{1}{n_2} \text{Var}(f_2(t))}}, 
+\end{equation}
+or, again in the case of paired groups, 
+
+\begin{equation}
+T(t) = \frac{\overline{f}_D(t)}{\sqrt{\frac1n \text{Var}(f_D(t))}}.
+\end{equation}
+
+Unlike the case with the permuted data, we have no need for a null distribution, instead determining significance by considering the observed statistics against a modified $\alpha$.  Adjustments that can be made include all of the adjustments found in \xt{stats::p.adjust}, as well as the adjustment ``oleson" used in the original \xt{bdots} package. In short, the ``oleson" adjustment makes use of an autocorrelation parameter to adjust for the highly correlated series of $t$-statistics. A full treatment of this methodology, along with a comparison to other FWER adjustments and adjustments based on FDR, is included in Oleson 2017.
+
+
+\section{Example Data}
+
+We will illustrate use of the updated \xt{bdots} package with a worked example, using an artificial dataset to help detail some of the newer aspects of the package. The dataset will consist of outcomes for a collection of vehicles, consisting of eight distinct groups. These groups will be nested in order of vehicle origin (foreign or domesetic), vehicle class (car or truck), and vehicle color (red or blue). Further, vehicles of different color but within the same origin and class groups will be considered paired observations. A table detailing the relationship of the groups is shown here:
+
+
+\begin{table}[h]
+\centering
+\def\arraystretch{1.5}
+\begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color}\\
+\hline
+\multirow{4}{*}{foreign} & \multirow{2}{*}{car} & red \\
+\hhline{~~-}
+& & blue \\
+\hhline{~--}
+& \multirow{2}{*}{truck} & red \\
+\hhline{~~-}
+& & blue \\
+\hline
+\multirow{4}{*}{domestic} & \multirow{2}{*}{car} & red \\
+\hhline{~~-}
+& & blue \\
+\hhline{~--}
+& \multirow{2}{*}{truck} & red \\
+\hhline{~~-}
+& & blue \\
+\hline
+\end{tabular}
+\caption{table of stuff}
+\label{tab:group_table1}
+\end{table}
+
+The outcome here is simply \xt{y} due to a lack of creativity, but the functional form assumed (and used in data generation) follows the four parameter logistic, 
+
+\begin{equation}
+f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (x-t) \right)},
+\end{equation}
+where $b$, $p$, $s$, and $x$ represent the baseline, peak, slope, and crossover points, respectively
+
+
+\section{Standard Analysis}
+
+
+\subsection{Fitting Curves}
+
+The curve fitting process is performed with the \texttt{bfit} function (previously \texttt{bdotsFit}), taking the following arguments:
+
+\begin{center}
+\begin{verbatim}
+bfit(data, subject, time, y, group, curveType, cores, ...)
+\end{verbatim}
+\end{center}
+
+Each of \texttt{subject}, \texttt{time}, and \texttt{y}, are length one character vectors representing columns of the dataset used in \texttt{data}, while \xt{group} is a character vector (of varying length), also column(s) found in \xt{data}.
+
+\paragraph{Curve functions}  New here is \texttt{curveType}, taking as an argument an R call to a particular curve, for example the four parameter logistic, \texttt{bdots::logistic()}. This is done to self-contain any additional arguments associated with the fitting curve, for example the concavity of the double-Gaussian (\texttt{curveType = doubleGauss(concave = TRUE)}) or the number of degrees in a polynomial (\texttt{curveType = polynomial(degree = 5)}). A number of curves are included with the \texttt{bdots} package, including those for the four-parameter logistic, the double-Gaussian, an exponential curve, and polynomials of arbitrary degree. A detailed vignette on writing custom curves can be found with \texttt{vignette("bdots")}. (and I might write up more about this in appendix)
+
+\paragraph{Return object and generics}
+
+
+The function \texttt{bfit} returns an object of class \texttt{bdotsObj}, inheriting from class \texttt{data.table}. As such, each row uniquely identifies one permutation of subject and group values. Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested \xt{gnls} object.
+
+
+Several methods exist for this object, including \texttt{plot}, \texttt{summary}, and \texttt{coef}, returning a matrix of fitted coefficients returned from \texttt{gnls}. One consequence of inheriting from \texttt{data.table}, we are able to utilize \xt{data.table} syntax. Note, for example, the differences between \texttt{coef(fit)}, \texttt{coef(fit[group == "A",])}, and \texttt{coef(fit[group == "B",])}. This is especially helpful when looking to plot only a subset of the fitted curves, i.e., \xt{plot(fit[group == "A",])}
+
+%Actually, there is one additional thing here that I might include as an aside for now -- for part 2 of disseration, we are fitting curve to saccades instead of an ``observed" function. In this case, $R^2$ ends up being kind of a dumb/silly metric. Same can be said for auto-correlation (in terms of it being relevant). Both of these things are included in the derivation of the \texttt{fitCode}. Have not yet decided how that will be handled. 
+
+\paragraph{Fit Codes}
+
+One column included in \xt{bdotsObj} is \xt{fitCode}, a numeric summary statistic ranked from 0 to 6 detailing information about the quality of the fitted curve. By default, \xt{bfit} assumes autocorrelation in the fitting of individual subject curves, and whether this can be accomplished or not, along with a range of $R^2$ values, gives rise to the value for \xt{fitCode}, presented in Table~\ref{tab:fit_codes}. A fit code of 6 indicates that \xt{gnls} was unable to successfully fit the subject's data. 
+
+\begin{table}[h]
+\centering
+\def\arraystretch{1.5}
+\begin{tabular}{|c|c|c|}
+\hline
+\xt{fitCode} & AR(1) & $R^2$ \\
+\hline
+0 & TRUE & $R^2 > 0.95$ \\
+1 & TRUE & $0.8 < R2 < 0.95$ \\
+2 & TRUE & $ R^2 <0.8$ \\
+3 & FALSE & $R^2 >0.95$ \\
+4 & FALSE & $0.8 < R2 < 0.95$ \\
+5 & FALSE &$ R^2 <0.8$  \\
+6 & NA & NA \\
+\hline
+\end{tabular}
+\caption{fit codes, though less relevant for other types of data so idk really what to do about it. nothing for the dissertation, at least}
+\label{tab:fit_codes}
+\end{table}
+
+
+
+need to decide what i'm going to do about this. would be nice if the metric used here was module, and it can be, just not right now because that would be a lot of extra work for nothing. I could just ignore this issue all together, indicate that this is for correlation and R2, and made absolutely no mention of how this possibly conflicts with other types of data
+
+\subsubsection{Worked example (fitting)} 
+
+We begin by fitting our Vehicle data using the \xt{bdots} fitting function, \xt{bfit}
+
+\begin{singlespace}
+\begin{center}
+\begin{verbatim}
+fit <- bfit(data = Vehicle, subject = "vehicle", 
+	 	time = "Time", y = "out", group = c("origin", "class", "color"),
+	 			curveType = logistic())
+\end{verbatim}
+\end{center}
+\end{singlespace}
+
+As the object \xt{fit} is of class \xt{data.table}, the default print option simply prints it as it would any other \xt{data.table} or \xt{data.frame}. A summary method is included, providing information on the type of fit, diagnostics for each group, and diagnostics for fits overall. A subset of this summary output is included here:
+
+\begin{singlespace}
+\begin{verbatim}
+> summary(fit)
+
+bdotsFit Summary
+
+Curve Type: logistic 
+Formula: fixations ~ mini + (peak - mini)/(1 + exp(4 * slope * (cross - (time))/(peak - mini))) 
+Time Range: (0, 2000) [501 points]
+
+
+Origin: foreign Vehicle: car Color: red 
+Num Obs:  25 
+Parameter Values: 
+         mini          peak         slope 
+  0.028636012   0.853162096   0.001868519 
+        cross 
+692.500921721 
+########################################
+############### FITS ###################
+########################################
+AR1,       0.95 <= R2        -- 25 
+AR1,       0.80 < R2 <= 0.95 -- 0 
+AR1,       R2 < 0.8          -- 0 
+Non-AR1,   0.95 <= R2        -- 0 
+Non-AR1,   0.8 < R2 <= 0.95  -- 0 
+Non-AR1,   R2 < 0.8          -- 0 
+No Fit                       -- 0 
+
+All Fits 
+Num Obs:  200 
+Parameter Values: 
+         mini          peak         slope 
+  0.029165824   0.896574456   0.001688192 
+        cross 
+720.433606844 
+########################################
+############### FITS ###################
+########################################
+AR1,       0.95 <= R2        -- 190 
+AR1,       0.80 < R2 <= 0.95 -- 9 
+AR1,       R2 < 0.8          -- 1 
+Non-AR1,   0.95 <= R2        -- 0 
+Non-AR1,   0.8 < R2 <= 0.95  -- 0 
+Non-AR1,   R2 < 0.8          -- 0 
+No Fit                       -- 0 
+\end{verbatim}
+\end{singlespace}
+
+The default plotting method plots each of the fitted subjects, including  observed and fit data, see Figure~\ref{fig:plot_fits}.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.65]{img/car_fit.png}
+\caption{plot of fits, obviously this doesn't look great, placeholder for now}
+\label{fig:plot_fits}
+\end{figure}
+
+\subsection{Bootstrapping}
+
+Once fits have been made, we are ready to begin estimating the group distributions. Like the fitting function, the bootstrapping process has been consolidated to a single function, \texttt{bboot} (previously \texttt{bdotsBoot}). The number of options included in the \xt{bboot} function have expanded to include a new formula syntax for specifying the analysis of itnerest as well as to include options for permutation testing. A call to \xt{bboot} takes the following form
+
+\begin{center}
+\tt bboot(formula, bdObj, Niter, alpha,   padj = "oleson", \\ cores = 0, permutation = FALSE, ...)
+\end{center}
+
+By default, significance is determined with an adjustment to the family-wise error rate, as was done in the original implementation of \xt{bdots}, using method \xt{padj = "oleson"}. When setting the argument \xt{permutation = TRUE}, \xt{padj} is ignored and permutation testing for regions of difference is used instead. Bootstrapping is still used for determining the group distribution, however. Finally, in contrast to the previous \xt{bdots}, there is no longer a need to specify if the groups are paired; \xt{bboot} determines this automatically based on the subject identifiers in each of the groups.
+
+A key component of the bootstrapping function is specifying which groups in our dataset we are wishing to analyze and how. This is done with a formula syntax unique to \xt{bdots} explained in the next section.
+
+\subsubsection{Bootstrapping Formula}
+
+
+The formula argument serves two functions in \xt{bboot}: first, it specifies the collection of curves we wish to investigate the difference between, and second, it determines if we are interested in directly comparing the differences or the difference of differences between curves. 
+
+To begin, let's reintroduce the structure of the groups we have in our dataset. Recall that we have foreign and domestic cars and trucks, and each of these vehicles comes in red and blue. Recall also that the different colors of each vehicle are considered paired observations.
+
+\begin{table}
+\centering
+\def\arraystretch{1.5}
+\begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|} \hline 
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color}\\
+\hline
+\multirow{4}{*}{foreign} & \multirow{2}{*}{car} & red \\
+\hhline{~~-}
+& & blue \\
+\hhline{~--}
+& \multirow{2}{*}{truck} & red \\
+\hhline{~~-}
+& & blue \\
+\hline
+\multirow{4}{*}{domestic} & \multirow{2}{*}{car} & red \\
+\hhline{~~-}
+& & blue \\
+\hhline{~--}
+& \multirow{2}{*}{truck} & red \\
+\hhline{~~-}
+& & blue \\
+\hline
+\end{tabular}
+\caption{table of stuff}
+\label{tab:group_table}
+\end{table}
+
+
+Beginning with a simple case, suppose we want to investigate the difference in outcome between foreign and domestic vehicles. Notionally, we would write
+
+\begin{center}
+\tt y $\sim$ Origin(foreign, domestic).
+\end{center}
+
+
+Note that this involves the grouping variable, \xt{Origin}, with the two values we are interested in comparing, \xt{domestic} and \xt{foreign}. With this specification, the distribution of functions considered in \xt{domestic} include all red and blue domestic cars and trucks.
+
+
+If we wanted to limit our investigation to only foreign and domestic \textit{trucks}, we would do this by including an extra term specifying the group and the desired value. In this case, 
+
+\begin{center}
+\tt y $\sim$ Origin(foreign, domestic) + Class(truck).
+\end{center}
+To compare only foreign and domestic \textit{red} trucks, we would add an additional term for color:
+
+\begin{center}
+\tt y $\sim$ Origin(foreign, domestic) + Class(truck) + Color(red).
+\end{center}
+
+There are also instances in which we might be considered in the interaction of two groups. Although there is no native way to handle interactions in \xt{bdots}, this can be done indirectly through the difference of differences (McMurray et al 2019, though truthfully I still don't understand why). To illustrate, suppose we are interested in understanding how the color of the vehicle differentially impacts outcome based on the vehicle class. In such a case, we might look at the difference in outcome between red cars and red trucks, and then again the difference between blue cars and blue trucks. Any difference between these two differences would give information regarding the differential impact of color between each of the two classes. This is done in \xt{bdots} using the \xt{diffs} synatx in the formula:
+
+%\textbf{FOUND SOURCE FOR THIS:} \textit{McMurray, Klein-Packard, Tomblin 2019, real time mechanics..pg 7}
+
+
+%[I think I'm going to move this paragraph to a different section since its kinda out of nowhere] Although there is no native way to handle interactions between groups in \xt{bdots}, this can be done indirectly through the differences of differences (McMurray et al 2019, though truthfully I still don't understand why). To illustrate, suppose we are interested in understanding how the color of a vehicle differentially impacts performance based on the vehicle type such as cars and trucks. We might then look at the difference between red cars and red trucks and then the difference between blue cars and blue trucks. If color does not mediate this difference, the difference between red cars and trucks should be the same as the difference between blue cars and trucks. If color does differentially impact performance between cars and trucks, this will be evident when considering the difference between the differences.
+
+
+%[this section needs rewritten still its not correct]
+%In each of these cases, we have specifed particular groups or nesting of groups who's outcomes we wish to compare. Alternatively, we may be interested in comparing the \textit{difference of differences}. For example, suppose we suspect that there may be some difference between red and blue vehicles, and that this difference may be different for cars compared to trucks. Whereas previously we were interested in comparing the differences in \xt{y} between origin, we are now interested in comparing the differences of \xt{y} between colors. Consequently, we will include this difference on the left hand side of the formula as our new outcome. This is done using \xt{diffs} syntax as such:
+
+\begin{center}
+\tt diffs(y, Class(car, truck)) $\sim$ Color(red, blue)
+\end{center}
+
+Here, the \textit{outcome} that we are considering is the difference between vehicle classes, with the outcome of interest being color. This is helpful in remembering which term goes on the LHS of the formula. 
+
+Similar as to the case before, if we wanted to limit this difference of differences investigation to only include domestic vehicles, we can do so by including an additional term:
+
+\begin{center}
+\tt diffs(y, Class(car, truck)) $\sim$ Color(red, blue) + Origin(domestic).
+\end{center}
+
+The formula syntax was originally contrived to make comparisons within groups or within nested groups. Conceivably, however, one could be interested in making the comparison between domestic red trucks and foreign blue cars. Doing so requires a bit of a work around. Examples detailing how one might go about doing this are included in appendix B. 
+
+
+\subsection{Bootstrapping and Permutation}
+
+
+Once we have determined the groups we are interested in comparing, we are ready to call the \xt{bboot} function. As detailed earlier, \xt{bboot} is now able to perform permutation testing on curve differences in addition to bootstrapping. We will discuss each of these briefly in more detail.
+
+\paragraph{Bootstrapping} As in the original iteration of the package, \xt{bdots} seeks to identify differences in curves without a priori specification of a time window. This is done as in (other paper), where curves are bootstrapped to create a sampling distribution, and a collection of $t$-tests is performed at  each observed timepoint. The FWER is controlled against this series of tests by making an adjustment to the nominal $\alpha$ -- the novel contribution of the original \xt{bdots} package was implementing a correction based on an estimate of the autocorrelation of tests (oleson 2017). In addition to this adjustment, \xt{bdots} also allows corrections to be made using a number of other methods, including bonferonni. Although not a correction towards FWER, corrections based on the false discovery rate (FDR) are also included. The type of correction made is specified with the \xt{padj} argument in \xt{bboot}.
+
+\paragraph{Permutation} In addition to the bootstrapping algorithm just described, \xt{bdots} now also includes the option for running a permutation test to establish a null distribution on the differences between curves. This is done by setting the argument in \xt{bboot(..., permutation = TRUE)}.  \xt{Niter} now refers to the number of permutations performed rather than the number of bootstraps. Additionally, when \xt{permutation = TRUE} is set, the argument to \xt{padj} is ignored. Permutation testing may have less power in some cases (explored in other paper), but is maximally robust and ideal for situations in which the number of assumptions made is limited.
+
+\subsection{Summary and Analysis}
+
+Let's begin first by running \xt{bboot} using bootstrapping to compare the outcome between domestic cars and trucks using the FWER adjustment \xt{padj = "oleson"}
+
+\begin{center}
+\tt boot <- bboot(y $\sim$ Vehicle(car, truck) + Origin(domestic), fit, padj = "oleson")
+\end{center}
+
+This returns an object of class \xt{bdotsBootObj}. The default printing method for this is also its summary. Here, it looks like this:
+
+\begin{singlespace}
+\begin{verbatim}
+> summary(boot)
+
+bdotsBoot Summary
+
+Curve Type: logistic 
+Formula: fixations ~ mini + (peak - mini)/(1 + exp(4 * slope * (cross - (time))/(peak - mini))) 
+Time Range: (0, 2000) [501 points]
+
+Difference of difference: FALSE 
+Paired t-test: FALSE 
+Difference: Vehicle 
+
+Autocorrelation Estimate: 0.9872545 
+Alpha adjust method: oleson 
+Alpha: 0.05
+Adjusted alpha: 0.001020216 
+Significant Intervals at adjusted alpha:
+     [,1] [,2]
+[1,]    0  212
+[2,]  464  960
+\end{verbatim}
+\end{singlespace}
+
+There are a few components of this worth identifying when reporting the results. First, included at the top is the name of the function used, its expression in R, and the range of time points considered. Below this is information related to the provided formula, namely: is this a difference of difference (for interaction terms), are the elements of the groups paired, and what grouping was used in determining the differences. The final section includes information on the bootstrapped differences, along with the adjusted alpha term. Finally included is a matrix of significant intervals. This is NULL if no significant differences were found at the specified alpha, otherwise one row is included for each disjointed region of significance. 
+
+In addition to the provided summary output, plotting methods are available
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.45]{img/car_boot_both.png}
+\caption{need to manually change title and legend size later}
+\end{figure}
+
+Depending on user needs, these plots can be recreated both without confidence bands or without the additional difference curve
+
+\begin{figure}[h]
+\centering
+\includegraphics[scale=0.45]{img/car_boot_single.png}
+\caption{need to manually change title and legend size later and also maybe width of curves.}
+\end{figure}
+
+
+
+
+\section{Extras}
+
+Let's do a brief tour of some of the other additions to bdots that probably doesn't warrant its own section for use
+
+\subsection{Non-homogenous sampling}
+
+[not sure if i need this section or if i should elaborate]
+
+The \texttt{bdots} package now has support for data with non-homogenous time sampling across subjects or trials. For example, here is data collected comparing tumor growth for 451LuBr cell line in mice with repeated measures and five treatment groups
+
+\begin{figure}
+\centering
+\texttt{with(tumrdata[subjects 1-4, ], plot(observations as points))}
+\includegraphics[scale=0.75]{img/mouse.png}
+\caption{mousey data}
+\end{figure}
+
+
+
+It is not a problem to fit these groups and perform our bootstrapping analysis either on the union of observed time, or some custom range in between
+
+\begin{center}
+\texttt{example?}
+\end{center}
+
+\texttt{bdots} also allows for repeated observations, as is the case with saccade data from the VWP. Here, an individual subject has 30 trials with saccades taken at the trial level. That is, rather than taking a sequence of observations for each subject, \texttt{bfit} allows for an unordered set with observations and associated time, $\mathcal{S}_i = \{(y_j, t_j)\}$ across $j$ observations. As this relates to the VWP, you can read more about his development in my dope ass other paper called chapter 2.
+
+
+\subsection{Refitting}
+
+There are sometimes situations in which the fitted function returned by \texttt{bfit} is a poor fit. This can be evidenced by the \texttt{fitCode} or via a visual inspection of the fitted functions against the observations for each subject.  When this occurs, there are several options available to the user, all of which are provided through the function \texttt{brefit} (previously \texttt{bdotsRefit}). \texttt{brefit} takes the following arguments:
+
+\begin{center}
+\texttt{brefit(bdObj, fitCode = 1L, quickRefit = FALSE, numRefits = 2L, paramDT = NULL, ...)}
+\end{center}
+
+The first of these arguments, outside of the object itself, is \texttt{fitCode}, indicating  the minimum fit code to be included in the refitting process. This is a convenient way to limit the refitting process to those of a particular quality. The \texttt{quickRefit} option allows the fitter to run automatically, jittering the previous set of parameters for each refitted subject and comparing the new fit to the previous, keeping the better of the two; \texttt{numRefits} indicates how many attempts the fitter should make in doing so. Finally, \texttt{paramDT} allows for a \texttt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \texttt{data.table} requires the same format as that returned by \texttt{bdots::coefWriteout}. The use of this functionality is covered in more detail in the \xt{bdots} vignettes.
+
+When \texttt{quickRefit = FALSE}, the user is put through a series of prompts whereby for each subject to be refit, in addition to being given a series of diagnostics. For example, 
+
+\begin{singlespace}
+\begin{verbatim}
+> brefit(fit, fitCode = 4)
+Subject: 4
+R2: 0.644
+AR1: FALSE
+rho: 0.9
+fitCode: 5
+
+ Model Parameters:
+          mu           ht         sig1         sig2        base1 
+848.00000000   0.28787879 456.00000000 256.00000000   0.00000000 
+       base2 
+  0.09090909 
+
+Actions:
+1) Keep original fit
+2) Jitter parameters
+3) Adjust starting parameters manually
+4) Remove AR1 assumption
+5) See original fit metrics
+6) Delete subject
+99) Save and exit refitter
+\end{verbatim}
+\end{singlespace}
+
+
+Along with this is given a plot of the original fit, side-by-side with the suggested alternative. 
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=0.65]{img/refit1.png}
+\caption{size is wrong on this, had to do interactively so can't save png also refitter sucks (do now have svg but will muck with it later)}
+\end{figure}
+
+As the menu item suggests, users have the ability to end the manually refitting process early and save where they had left off. To retain previously refit items and start again where the user left off, pass the first refitted object back into the refitter as such:
+
+\begin{center}
+\texttt{refit <- brefit(fit, ...)} \\
+\texttt{refit <- brefit(refit, ...) \# pass that shit back in}
+\end{center}
+
+A final note should be said regarding the option to delete a subject. As \texttt{bdots} now automatically determines if subjects are paired based on subject identifiers (necessary for  calculations in the significance testing step), it is critical that if a subject has a poor fit in one group and must be removed that he or she is also removed from all additional groups in order to retain paired status. This can be overwritten with a final prompt in the \texttt{brefit} function before they are removed.
+
+The removal of subjects can also be done with the ancillary function, \texttt{bdRemove}, useful for removing subjects without undergoing the entire refitting process. 
+
+
+\subsection{User created curves}
+
+I know I mentioned this elsewhere, but I might erase it there and move a fuller discussion of it here
+
+\subsection{Correlations}
+
+There are sometimes cases in which we are interested in determining the correlation of a fixed attribute with group outcome responses across time (what such a case may be, I have no idea). This can be done with the \texttt{bcorr} function (previously \texttt{bdotsCorr}), which takes as an argument an object of class \texttt{bdotsObj} as well as a character vector representing a column from the original dataset used in \texttt{bfit}
+
+\begin{center}
+\texttt{bcorr(fit, "value", ciBands, method = "pearson")} 
+\end{center}
+
+This returns a thing that can be plotted. Idk, it really doesn't seem that important 
+
+\subsection{$\alpha$ Adjustment}
+
+Finally, we consider an extension to the \texttt{p.adjust} function, \texttt{p\_adjust}, identical to \texttt{p.adjust} except that it accepts method \texttt{"oleson"} and takes additional arguments \texttt{rho}, \texttt{df}, and \texttt{cores}. \texttt{rho} determines the autocorrelation estimate for the oleson adjustment while \texttt{df} returns the degrees of freedom used to compute the original vector of t-statistics. If an estimate of \texttt{rho} isn't available, one can be computed on a vector of t-statistics using the \texttt{ar1Solver} function:
+
+\begin{center}
+\texttt{t <- diffinv(rnorm(100))} \\
+\texttt{rho <- ar1Solver(t)} \\
+\texttt{unadj\_p <- pt(t, df = 10)} \\
+\texttt{adj\_p <- p\_adjust(unadj\_p, method = "oleson", df = 10, rho = rho)}
+\end{center}
+
+
+
+
+\section{Discussion}
+
+First paragraph of conclusion. Maybe say things like here are the problems bdots has tried to solve, etc., idk it just needs to be reconciled with the last paragraph, which i kinda like.
+
+While significant improvements have been made, there is of course room for further expansion, and it is this area that we are most excited about future directions. The most obvious of these is the need to include support for non-parametric functions, the utility of which cannot be overstated. Not only would this alleviate the need for the researcher to specify in advance a functional form for the data, it would implicitly accomodate more heterogeneity of functional forms within a group. Along with this, the current implementation is also limited in the quality-of-fit statistics used in the fitting steps to assess performance. $R^2$ and the presence of autocorrelation are relevant to only a subset of the types of data that can be fit, and allowing users more flexibility in specifying this metric is an active goal for future work. In all, future directions of this package will be primarily focused on user interface, non-parametric functions, and flexibility in fit metrics (this last sentence kind of sucks).
+
+The original implementation of \xt{bdots} set out to address a very narrow set of problems which it succeeded in doing. Previous solutions beget new opportunities, however, and it is in this space that the second iteration of \xt{bdots} has sought to expand. Since then, the interface between programmer and application has been significantly revamped, creating a simple, reproducible workflow that is able to quickly and simply address a far broader range of problems. This includes not only introducing support for a far wider variety of types of data but also expanding the methods by which data can be analyzed through the introduction of user-specified parametric curves. Further, the implementation of the underlying methodology has been improved and expanded upon, offering far better coverage of the estimated distributions, as well as increasing the methods by which significance testing is conducted, accomodating a broader range of underlying assumptions. Finally, a full suite of ancillary functions have been added, ranging from simple quality of life additions (methods, refitting) to those that add (can't say expand again) (?) analytical questions (?) (correlation function, etc.,). Concluding sentence. The end.
+
+
+\appendix
+
+\section*{Appendix A - custom curves}
+
+From an R programming perspective, this is perhaps the most novel and interesting portion of the new package update. Worked use-case examples are included in the pacakge vignettes, so here we will limit discussion to the theoretical considerations when implementing it since it's actually pretty neat (I think). plus it adds length to my dissertation and everybody knows longer $==$ more intelligent
+
+\section*{Appendix B - Fitting non-nested groups}
+
+(currently just copy pasted from the body of document, not editted so no need to really review)
+
+First, there would be some function of sorts, something like \xt{makeUniqueGroups} which would create a new group column with each permutation of previous groups being given a unique identifier. Doing this on the vehicle example would look something like \xt{fit <- makeuniquewhatever} resulting in the following grouping structure (for example) (and maybe you could specify group name and values who knows, kinda like factor this is just a working thought example)
+
+\begin{center}
+
+\begin{tabular}{|p{0.9in}|p{0.9in}|p{0.9in}|p{0.5in}|} \hline 
+\rowcolor{lightgray} \multicolumn{1}{|c|}{Origin} & \multicolumn{1}{c|}{Class} & \multicolumn{1}{c|}{Color} & \multicolumn{1}{c|}{bgroup}\\
+\hline
+\multirow{4}{*}{foreign} & \multirow{2}{*}{car} & red & A\\
+\hhline{~~--}
+& & blue & B \\
+\hhline{~---}
+& \multirow{2}{*}{truck} & red & C\\
+\hhline{~~--}
+& & blue & D\\
+\hline
+\multirow{4}{*}{domestic} & \multirow{2}{*}{car} & red & E \\
+\hhline{~~--}
+& & blue & F\\
+\hhline{~---}
+& \multirow{2}{*}{truck} & red & G\\
+\hhline{~~--}
+& & blue & H\\
+\hline
+\end{tabular}
+\end{center}
+
+To then investigate differences in outcome between a foreign red car and a domestic blue truck would simply then be
+
+\begin{center}
+\tt y $\sim$ bgroup(A, H)
+\end{center}
+
+yeah not like sexy or anything but whatever it would work.
+
+
+
+\end{document}
+
+
+
+
+
+

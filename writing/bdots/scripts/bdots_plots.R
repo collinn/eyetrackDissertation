@@ -6,9 +6,11 @@ library(gridExtra)
 ## On collin home machine
 # mouse <- fread("~/packages/rat_data_tumr/hammond.csv")
 # mm <- fread("~/packages/rat_data_tumr/SLB19-022.csv")
-m2 <- fread("~/packages/rat_data_tumr/GJZ16-091.csv")
+mouse <- fread("~/packages/rat_data_tumr/GJZ16-091.csv")
 
-tt <- bdotsFit(data = m2,
+head(mouse)
+
+mouse_fit <- bdotsFit(data = mouse,
         subject = "ID",
         time = "Day",
         y = "Volume",
@@ -16,8 +18,8 @@ tt <- bdotsFit(data = m2,
         curveType = expCurve())
 
 
-png("../img/mouse.png")
-rr <- plot(tt[1:4, ])
+pdf("../img/mouse_fit.pdf", width = 6, height = 5)
+rr <- plot(mouse_fit[1:4, ])
 ## Trying to fix this is for fucking retards im done
 # rr[[1]] <- rr[[1]] + theme(base_size=22)
 # rr[[2]] <- rr[[2]] + theme(base_size=22)
@@ -27,6 +29,37 @@ rr <- plot(tt[1:4, ])
 #              rr[[3]], rr[[4]])
 dev.off()
 
+mouse_refit <- bdotsRefit(mouse_fit)
+
+mouse_boot <- bdotsBoot(Volume ~ Treatment(A, E),
+                         mouse_fit, permutation = TRUE)
+summary(mouse_boot)
+pdf("../img/mouse_boot_plot.pdf", width = 6, height = 5)
+plot(mouse_boot)
+dev.off()
+
+pdf("../img/mouse_boot_plot_extra.pdf", width = 6, height = 5)
+plot(mouse_boot, ciBands = FALSE, plotDiffs = FALSE)
+dev.off()
+
+mft <- copy(mouse_fit)
+tt <- attr(mft, "time")
+tt <- tt[tt < 60]
+attributes(mft)$time <- tt
+
+mouse_boot_t <- bdotsBoot(Volume ~ Treatment(A, E),
+                        mft, permutation = TRUE)
+summary(mouse_boot_t)
+plot(mouse_boot_t)
+
+summary(mouse_boot)
+pdf("../img/mouse_boot_plot.pdf", width = 6, height = 5)
+plot(mouse_boot_t)
+dev.off()
+
+pdf("../img/mouse_boot_plot_extra.pdf", width = 6, height = 5)
+plot(mouse_boot_t, ciBands = FALSE, plotDiffs = FALSE)
+dev.off()
 
 ## Let's do some bdots shit
 # load("~/packages/bdots/data/ci.rda")
@@ -46,10 +79,10 @@ dev.off()
 # bdotsRefit(res)
 
 res <- bdotsFit(data = df_cohort_unrelated,
-                  subject = "Subject",
+                  subject = "subjectID",
                   time = "Time",
-                  y = "Fixations",
-                  group = c("Group", "LookType"),
+                  y = "AvgOfCohort",
+                  group = c("Group", "trialcodecond"),
                   curveType = doubleGauss(concave = TRUE),
                   cor = TRUE,
                   numRefits = 2,

@@ -36,10 +36,22 @@ fwertotal <- rbindlist(lapply(gg, `[[`, 1))
 meant <- timeSliceFwer(gg, mean)
 mediant <- timeSliceFwer(gg, median)
 
-ff <- list.files(path = "rds_boot/", pattern = "rds", full.names = TRUE)
+ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/alt_par/rds_boot/", pattern = "rds", full.names = TRUE)
+ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot/", pattern = "rds", full.names = TRUE)
+
+# simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
+#                                paired = c(TRUE, FALSE),
+#                                ar1 = c(TRUE, FALSE),
+#                                bdotscor = c(TRUE, FALSE))
+
+
 gg <- lapply(ff, getFWER)
 fwer <- rbindlist(lapply(gg, `[[`, 1))
-tfwer <- avgTimefwer(gg)
+tfwer <- timeSliceFwer(gg, median)
+
+fwer <- cbind(simDataSettings, fwer)
+as.data.table(fwer)[order(rev(paired), manymeans, ar1, decreasing = TRUE), ] |> xtable() |> print(include.rownames = FALSE)
+as.data.table(cbind(simDataSettings, tfwer))[order(manymeans, ar1, decreasing = TRUE)] |> xtable() |> print(include.rownames = FALSE)
 
 
 
@@ -74,6 +86,3 @@ timetie <- function(mm) {
   return(rr)
 }
 
-timeSliceFWER <- function(y) {
-
-}

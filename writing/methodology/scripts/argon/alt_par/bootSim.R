@@ -11,7 +11,7 @@ tt <- readRDS(ff)
 bf <- lapply(tt,`[[`, 1)
 
 # get rid of shitty fitty
-bf <- lapply(bf, function(y) y[fitCode < 2])
+bf <- lapply(bf, function(y) y[R2 > 0.8, ])
 
 res <- vector("list", length = length(bf))
 

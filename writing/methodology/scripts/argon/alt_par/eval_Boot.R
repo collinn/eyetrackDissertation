@@ -68,8 +68,6 @@ getMeans <- function(y) {
 
 ff <- list.files(path = "rds_boot/", pattern = "rds", full.names = TRUE)
 gg <- lapply(ff, getMeans)
-gg1 <- gg[1:6]
-gg3 <- list(data.table(sm = "NA", mm = "NA", pm = "NA"))
-gg2 <- gg[7:15]
-gg <- rbindlist(c(gg1,gg3 , gg2))
+gg <- rbindlist(gg)
+
 

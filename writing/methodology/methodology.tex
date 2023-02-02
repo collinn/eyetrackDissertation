@@ -8,6 +8,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{float}
 \graphicspath{img}
 
 \usepackage{listings}
@@ -21,175 +22,216 @@
 %\input{main.tex}
 
 \begin{abstract}
+Gutting this entire thing and starting from scrayatch
+
 The Bootstrapped Differences of Timeseries (bdots) was first introduced by Oleson (and others) as a method for controlling type I error in a composite of serially correlated tests of differences between two time series curves in the context of eye tracking data.  This methodology was originally implemented in R by Seedorff 2018. Here, we revist the underlying methodology and suggest a new approach to identifying regions of statistically significant differences between time series, or more generally, functions in time, as well as improving our estimate of group distributions in the context of the visual world paradigm. We also investigate the relationship between power, sample density and something else. 
 \end{abstract}
 
 \section{Introduction}
 
+\section{Data Generation}
 
-Introductions are tedious. The main takeaway of the original bdots paper begins with the understanding that we start with densly sampled time series (in the form of eyetracking data) that is averaged across time to create something that appears to be a nonlinear curve. It is unclear what effect this averaging has on the presupposed autocorrelation of the corresponding curves.
+In exploring the number of alternative methodologies, we have sought to construct simulated data under a number of differing assumptions.
 
-Nonlinear curves are fit to this data (parametric or otherwise), and comparisons are made between different groups across timepoints, allegedly resulting in a series of correlated tests. This curve fitting process is meant to smooth out the data (I read that somewhere) and adjust for any idiosyncrasies that may arise. ($\Leftarrow$ ``The smoothing is important as individual subjects' curves can be fairly noisy despite inherent reality, which suggets gradual change" oleson 2018)
+\subsection{Mean Structure}
 
-Imposing a functional structure on this aggregated data, parametric or otherwise, raises questions about the autocorrelated assumptions. Instead, we argue that systematic differnences between functional forms borrow from tools in functional data analysis. This, along with a proposed change to the bootstrapping algorithm presented in Oleson, leads to a more accurate estimate of group level distributions of curves (maybe earlier discuss the idea of comparing between groups) and more power to detect statistically significant differences in said curves.
+There are primarily two situations we consider here regarding the subject observations and their relation to the group. 
 
-There are two major changes that we propose to improve the original BDOTS (three if you count the lowercase stylization, "bdots"). First, we amend a step in the original bootstrapping algorithm to better reflect the between-subject variability of a group, leading to the generation of more accurate confidence intervals with drastically better coverage. Second, and most drastically, we propose leveraging the assumed functional form of the data in deriving tests and controlling the FWER when detecting regions of statistically significant differences.
+The mean structure in simulating subject data will have profound implications for the observed variability. 
 
-\paragraph{Introduction (Attempt 2)} The bdots package was originally created to implement a novel statistical methodology using the bootstrapped differences of time series to detect time-specific differnces between temporal nonlinear (parametric) curves. Motivated by the context of the visual world paradigm (I can elaborate), the bdots method sought to rectify the problem of identifying differences in functions in time without a priori specification of a time window. In other words, the problem was not simply to detect \textit{if} two time series differ, but specifically at what time points they differ. 
+\subsubsection{Single Means}
 
-In the context of the VWP, the idea was that individual subjects have a probability of fixating on a particular object that changes in time, say, $p_{it}$. Based on empirical data, a (parametric) nonlinear curve is then fit to observed data, resulting in both a parameter estimate, $\theta_i$, as well as an estimate of the covariance based on the resulting hessian matrix, $V_i$.
+The first situation, which we call the ``single mean" assumption (we can change this name its just in contrast to many means) goes like this: for a particular group of subjects, there is a single set of parameters, $\theta$ from which all  subject specific observations are derived. For the generating function $f$, we have that the subject specific observations are
 
-Often, we are interested in comparing groups rather than individual subjects. In this case, each individual $\theta_i$ can be considered an observation from a particular group distribution. Ultimately, then, we are interested in creating an estimate of the mean temporal curve from this group, comparing it against the mean curve of another. Said a different way -- each group of interest is understood to have a distribution of nonlinear curves, with an associated mean curve as well as a degree of variability. Distributions of these group curves are estimated with a bootstrapping algorithm. Ultimately, our goal is to determine specific regions in time in which these mean curves differ in a statistically significant way, based off their mean estimates and the amount of observed variability.
+\begin{equation}\label{eq:sm_f_general}
+y_{it} = f_{\theta}(t) + \epsilon_{it}
+\end{equation}
+where the error structure may be either independent and normally distributed or maintain an autocorrelated structure. We will go into more detail on the error term later.
 
-The proposed method by Oleson comes down to performing a $t$-test between the distributions, one at each of a sequence of time points within the domain of observations (originally at each of the sampled time points of the VWP, consiting of 4ms samples between times of 0ms and 2000ms). 
+Under this assumption, all subjects have the same underlying parametric function with the only deviation between these subjects being their subject specific error terms. Under this assumption, we fit a nonlinear model to the data returning a parameter estimate and covariance matrix. It must be the case that we assume that the only relevant variability here is the subject specific variability, captured by the covariance matrix. That is, the difference between parameter mean estimates between subjects is of no interest (I actually don't even think here that is true, but that is essentially what is assumed in the Oleson bootstrapping method).
 
-OR you know, maybe we can just paraphrase directly from Oleson: \\
+\subsubsection{Many Means}
 
-``Here we develop a testing method to detect specific points in time at which two time series significantly differ. Our approach handles this task in three steps. First, we fit nonlinear curves to each participant's data. Second, for between-group comparisons, we bootstrap those fitted functions to estimate the mean of the group curves and the variance associated with these estimators. For within-subject comparisons, the bootstrapping is accomplished to assess the variation of the subject-specific curves. Third, we use these estimated curves along with the associated bootstrap measures of accuracy to make statistical comparisons at each point in time. Finally, we apply a novel family-wise error correction that is sensitive to the autocorrelation in the data to ensure appropriately conservative inference."
+The second situation is the many means assumption. Similar to the single means assumption, we assume that a group of subjects has a group mean, $\theta$. In addition, however, we also assume variability, $V$ in this group. This manifests itself by having subject specific parameters $\theta_i \sim N(\theta, \Sigma)$. From here, we assume that subject specific observations have the following structure:
 
-We suggest two changes to this original statement. First, we propose an adjustment to the original bootstrapping algorithm that we show significantly improves coverage and better reflects the true distribution. This is necessary in estimating the amount of within-group variation for statistical comparisons at each point in time. Second, we take advantage of the functional form of the data to propose an alternative method for determining regions of difference with simple permutation testing, without the need of autocorrelation assumptions. This allows for a more powerful method while also reducing the number of assumptions made. We validate this method via simulation in which regions and magnitudes of differences between curves are known.
+\begin{equation} \label{eq:mm_f_general}
+y_{it} = f_{\theta_i}(t) + \epsilon_{it}
+\end{equation}
+Similar to Equation~\ref{eq:sm_f_general}, each individual subject has a mean strucutre around the generating function with an associated error; the difference here is that each subject's mean structure is dependent on their own subject-specific parameters. As such, not only must we estimate variability in our bootstrap based on the subject's estimated covariance matrix to capture within-subject variability, as was done in the single means method, we must also capture the \textit{between} subject variability, an estimate of $\Sigma$, by bootstrapping the subjects themselves with replacement
 
-\section{Proposed changes}
+\subsection{Error Structure}
 
-More detail on the changes
+We assume an error structure in the generation of our data. We will construct data with AR(1) correlation and without
 
-\subsection{Bootstrap}
+\subsubsection{Autocorrelated errors}
 
-First, we begin with the original bootstrapping algorithm:
+In the case of autocorrelated errors, we assume
 
-\begin{enumerate}
-\item[1.] For each subject, fit the nonlinear function, speciying AR(1) autocorrelation structure for model errors. Assuing large sample normality, the sampling distribution of each estimator can be approximated by a noraml distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error
+\begin{equation}
+e_{it} \sim \rho e_{i, t-1} + w_{it}
+\end{equation}
+where $\rho$ is the autocorrelation parameter and
+\begin{equation}
+w_{it} \sim N(0, \sigma^2).
+\end{equation}
 
-\item[2.] Using the approximate sampling distributions in (1.), randomly draw one bootstrap estimate for each of the model parameters on every subject
+\subsubsection{Independent errors}
 
-\item[3.] Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap esteiamtes across individuals
+In the indepenent error case, we assume that the errors are independent and normally distributed
+\begin{equation}
+e_{it} \sim N(0, \sigma^2)
+\end{equation}
 
-\item[4.] Use the mean estimates to determine the predicted population level curve, which provides the average population response at each time point
-\end{enumerate}
+Not sure if this is worth discussing here or in some section detailing the actual construction of these estiamtes -- what is actually done is we for a subject with $N$ trials at each time point we have
 
-In other words, at each step $b$ of the bootstrapping algorithm, we are asked to find
+\begin{equation}
+y_{it} \sim Bin(N, f_{\theta_t}(t))
+\end{equation}
 
-\begin{align*}
-\theta_b = \frac 1n \sum \hat{\theta}_{ib}
-\end{align*}
-where
-\begin{align*}
-\hat{\theta}_{ib} \sim N(\theta_i, V_i)
-\end{align*}
+This has the nice benefit of creating normally distributed errors with variances modulated by the number of trials.
 
-Here, maybe, we can tie in the discussion of the many normal means problem, where $E (\hat{\theta}_i) = \theta_i$, but $\theta_i$ itself is drawn from a group distribution, $(\theta, \Sigma)$. This would be relevant in showing that
+\section{Tables}
 
-\begin{align*}
-\overline{\theta}_b \sim N \left(\theta, \frac{1}{n^2} \sum V_i \right)
-\end{align*}
-which is not a reflection of the true variance $\Sigma$.
+This will go elsewhere, but for now we include it here just to be able to see it in one place. There are two sets of sets of simulations, each using 25 subjects, 100 trials in each condition. Consider the difference in the generating curves for each:
 
-At any rate, the only proposals we change here are
-
-\begin{enumerate}
-\item[1.] Fit nonlinear function without AR(1) assumption on model errors
-\item[2.] At each bootstrap iteration, sample $n$ subjects \textit{with replacement}
-\end{enumerate}
-
-This will make it such that the bootstrap estimates capture both within-subject and between-subject variability
-
-\subsection{Permutation}
-
-Here, I don't really want to go into all of the details of the autocorrelation argument as they're not entirely relevant. So I'll stick with this instead. The original bdots method used the old bootstrapping algorithm in order to make estimates of the group curve distributions, using the resulting means and variances at each time point to compute a $t$-statistic evalution the differences between the two curves. Nothing fancy here, it was simply
-
-\begin{align*}
-T(t) = \frac{\overline{p}_{1t} - \overline{p}_{2t}}{\sqrt{s_{1t}^2 + s_{2t}^2}}
-\end{align*}
-
-Great. Now, the whole idea behind this methodology was that at subsequent time points, these t-statistics are going to be highly correlated, causing a bit of a pickle for controlling FWER. The assumptions made assume that the sequence of t statistics is correlated, withi 
-
-\begin{align*}
-T_t = \rho T_t + \epsilon_t; \quad t = 1, \dots, N
-\end{align*}
-where $\epsilon_t \sim N(0, (1 - \rho^2))$, $\rho$ being the autoregressive parameter estimated from the original step (1). This gave that
-
-\begin{align*}
-T_t | T_{t-1} \sim N
-\end{align*}
-
-\section{Methodology and Overview} 
-
-
-
-It would seem as if it doesn't make much sense to try and mathematically argue why moving to an FDA domain would be better than the present argument for autocorrelation, outside of the fact that autocorrelation makes less sense once the data has been aggregated. Since bdots assumes a functional form (and indeed used a four-parameter logistic when originally arguing for this), we will again do so, albeit more systematically the the original. The ``proof", then, will lie in the outcome of the simulations.
-
-To that end, there are two proposed changes that we wish to make. First, we offer an adjustment to the bootstrapping algorithm that is able to better
-
-To that end, there are two proposed changes that we wish to make. First, we offer and adjustment to the bootstrapping algorithm that is a little awkward to bring up because it really is just turning an existing algorithm that doesn't actually bootstrap into one that does. To do this, we will begin with a set of empirical eyetracking data collected (from bob), fit these curves using bdots, and use the collection of parameter estimates from the four parameter logistic to estimate the mean and covariance matrix for a group-level normal distribution. We can call this mean the true mean, $\theta$, and the curve derived from these parameters $f_{\theta}$.
-
-We will sample parameters from this distribution to create $n$ additional subjects with binomial noise (to simulate fixations based on the current time/probability). These subjects will again be fit in bdots, and a comparison of the two algorithms will be made. What we plan to show is that ours has significantly better coverage in terms of both the bootstrapped parameters, as well as curve coverage.
-
-Next, we argue that leveraging the assumption of a functional form to use permutation testing is superior than the current implementation assuming autocorrelation. To this end, we will use a two-parameter piecewise linear function, specifying the breakpoint and the slope, while the competitor/alternative curve will be constant. We will compare the permutation and autocorrelated approaches in each case to determine type I error rate and power. 
-
-\section{Simulations}
-
-Simulations we ran to generally test two comparisons. First, we examined the differences between the original bdots algorithm with a modified form. In each case, we build a bootstrapped distribution and examine 90\% quantiles to determine coverage of the true generating curve. Next, we compare bdots (with updated algorithm, since its better) with a permutation style test. Here, we are examining the power in detecting differences between the modified alpha method for controlling fwer and permtutations. I haven't done that simulation yet.
-
-Each of these simulations was performed with 25 simulated participants in the visual world paradigm, each with a total of 10, 25, 50, 75, and 100 trials. Simulations were performed 100 times. 
-
-\subsection{Setup and Data Generation}
-
-The creation of the simulated data was the same for each simulation, so it will be described in detail here. As we are simulating data for the visual world paradigm, we started with data collected empircally from (source dataset, the one in bdots). Twenty-eight experiment normal hearing participants were fit using the \texttt{bdotsFit} function to the four-parameter logistic curve (using looks to the Target). Fitted parameters for these subjects were extracted and use to construct an empirical group mean and empirical covariance matrix. These values were used as the normal parameters for our generating curve. That is, the empirical mean of these parameters, as well as the four parameter logistic function fit from this mean, represent our oracle curve. (I can report these values, I guess, if I rerun the simulation, but I don't have seeds in bdotsFit so this won't be practical).
-
-For each of the 25 simulated subjects, we did the following:
-
-\begin{enumerate}
-	\item First draw a set of parameters from $\theta_i \sim N(\theta, V_{\theta})$, constrained for the baseline parameter, $b \geq 0$ and for the peak parameter, $h \leq 1$
-	\item The drawn parameters were then used to create a subject specific generating curve $f_i$ ($f_{\theta_i}$)
-	\item This is originally where I did the binomials to simulate looks based on probability at each time point. Patrick suggested normal distribution because he's unimaginative. That's fine, and I can redo it. I can also redo it with more than 100 simulations. At any rate, this is the step where we add noise. 
-	\item THAT IS, for $m$ trials, at each time point for each subject we drew $y_{it} \sim Bin(f_i(t), m)$ or rather the expectation of this
-\end{enumerate}
-
-
-The final result was a data.frame with 25 subjects, each subject having 501 observed time points (12525x3 data.frame). This data.frame was used again in \texttt{bdotsFit} with the four-parameter logistic to parameter estimates for each of the subjects.
-
-\subsection{Simulations for Bootstrap}
-
-Our primary question here is if the resulting bootstrapped distribution appropriately covers the true generating curve, specified in the prior section. We compare the methodology used in the original bdots package, which we call bdots, with an updated methodology descriped in the first section, which we are calling bootstrap (granted, they are both bootstrapping algorithms). Simulations for each method are described in the following sections
-
-\subsubsection{bdots method}
-
-am i going into too much detail here? is this all necessary? do i need separate sections to detail this? because its pretty small
-
-For the original bdots method, we simply took the object returned from \texttt{bdotsFit} and used it in the bootstrapping function, \texttt{bdotsBoot} with $B = 1000$ bootstraps. This function returns several things. First, we return a matrix of each of the bootstrapped mean parameters, in this case a matrix of size $1000 \times 4$. The function additionally returns a logistic function for each bootstrapped set of parameters evaluated at each time point, here a $1000 \times 501$ matrix, which is used
-
-
-
-\subsubsection{bootstrap method}
-
-\subsubsection{Results}
-
-\begin{figure}[h!]
+\begin{figure}[H]
 \centering
-\includegraphics[scale=0.65]{img/par_coverage.png}
-\caption{Coverage of generating parameter values}
+\includegraphics{img/compare_par_plot.pdf}
+\caption{The generating curve used in finding TIE in Oleson 2017 against the one using empirically computed parameters}
 \end{figure}
 
-\begin{figure}[h!]
+\subsection{Using Oleson 2017 Parameters}
+
+In evaluating the logistic function in the original bdots paper, they examined a time period from 0 to 1600, sampled at 4ms intervals. The logistic curve they used had parameters: baseline = 0, peak = 0.75, slope = 0.0025, and crossover point = 200
+
+First up we have the type I error rate
+
+\begin{table}[H]
 \centering
-\includegraphics[scale=0.5]{img/pointwise_cover.png}
-\caption{Coverage of generating parameter values}
-\end{figure}
+\begin{tabular}{lllccc}
+  \hline
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  \hline
+FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.03 \\ 
+  FALSE & TRUE & FALSE & 0.76 & 0.01 & 0.01 \\ 
+  FALSE & FALSE & TRUE & 0.06 & 0.01 & 0.05 \\ 
+  FALSE & FALSE & FALSE & 0.05 & 0.02 & 0.11 \\ 
+  TRUE & TRUE & TRUE & 0.97 & 0.04 & 0.02 \\ 
+  TRUE & TRUE & FALSE & 1.00 & 0.03 & 0.00 \\ 
+  TRUE & FALSE & TRUE & 0.99 & 0.02 & 0.01 \\ 
+  TRUE & FALSE & FALSE & 1.00 & 0.02 & 0.01 \\ 
+   \hline
+\end{tabular}
+\caption{type 1 error rate using Oleson parameters}
+\end{table}
 
+Then we have median per comparison error rate. So looking at error rate of each time slice
 
-\subsection{Simulations for Region Testing}
+\begin{table}[H]
+\centering
+\begin{tabular}{lllccc}
+  \hline
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  \hline
+FALSE & TRUE & TRUE & 0.01 & 0.01 & 0.02 \\ 
+  FALSE & TRUE & FALSE & 0.32 & 0.00 & 0.00 \\ 
+  FALSE & FALSE & TRUE & 0.01 & 0.00 & 0.00 \\ 
+  FALSE & FALSE & FALSE & 0.01 & 0.00 & 0.02 \\ 
+  TRUE & TRUE & TRUE & 0.82 & 0.02 & 0.00 \\ 
+  TRUE & TRUE & FALSE & 0.92 & 0.02 & 0.00 \\ 
+  TRUE & FALSE & TRUE & 0.88 & 0.01 & 0.00 \\ 
+  TRUE & FALSE & FALSE & 0.91 & 0.00 & 0.00 \\ 
+\hline
+\end{tabular}
+\caption{median per comparison error rate (why is this something considered?)}
+\end{table}
+\subsection{Using Empirical Starting parameters}
 
-Well, realizing now the writeup for this will be different since we are using different curve. We are going to write simulation so that we can explore a variety of conditions. It's going to be a piecewise linear function with a crossover point, and they will differ in the slope of the second part
+Here we used parameters from Normal hearing subjects from one of Bob's papers. I should find out exactly which. But in this case, we have mean = 0.21, peak = 0.90, slope = 0.0016, and crossover point = 725. What is especially relevant here is the EXTREME difference in crossover points. Having it previously at 200? It will asymptote way before 1600 (the end point considered) giving far fewer places for any actual differences to be observed. That's absurd.
 
-piecewise function makes the most sense here. maybe also the double humped rectangles?
+Whatever. Here are the TIE, broken into paired case and unpaired case. Paired case at the end
 
-\section{Discussion}
+\begin{table}[H]
+\centering
+\begin{tabular}{lllccc}
+  \hline
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  \hline
+FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.21 \\ 
+  FALSE & TRUE & FALSE & 0.87 & 0.08 & 0.18 \\ 
+  FALSE & FALSE & TRUE & 0.08 & 0.00 & 0.14 \\ 
+  FALSE & FALSE & FALSE & 0.15 & 0.02 & 0.21 \\ 
+  TRUE & TRUE & TRUE & 0.92 & 0.03 & 0.03 \\ 
+  TRUE & TRUE & FALSE & 0.96 & 0.02 & 0.04 \\ 
+  TRUE & FALSE & TRUE & 0.99 & 0.05 & 0.01 \\ 
+  TRUE & FALSE & FALSE & 1.00 & 0.05 & 0.03 \\  
+   \hline
+\end{tabular}
+\caption{TIE for realistic parameters (unpaired)}
+\end{table}
 
-Wow this was neat
+\begin{table}[H]
+\centering
+\begin{tabular}{lllccc}
+  \hline
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation \\ 
+  \hline
+FALSE & TRUE & TRUE & 0.12 & 0.02 & 0.03 \\ 
+  FALSE & TRUE & FALSE & 0.86 & 0.08 & 0.03 \\ 
+  FALSE & FALSE & TRUE & 0.09 & 0.01 & 0.01 \\ 
+  FALSE & FALSE & FALSE & 0.14 & 0.01 & 0.03 \\ 
+  TRUE & TRUE & TRUE & 0.49 & 0.02 & 0.01 \\ 
+  TRUE & TRUE & FALSE & 0.94 & 0.03 & 0.02 \\ 
+  TRUE & FALSE & TRUE & 0.72 & 0.02 & 0.00 \\ 
+  TRUE & FALSE & FALSE & 0.74 & 0.04 & 0.00 \\ 
+   \hline
+\end{tabular}
+\caption{TIE for realistic parameters (paired)}
+\end{table}
 
-\section{Conclusion}
+Then we again look at the median per slice comparison, though this (again) doesn't seem like an important metric if the goal is comparing fwer
 
-Life is a distrupting burst of consciousness, bookended by eternal blackness and despair. Why are we even here? Why do we try at all?
+\begin{table}[H]
+\centering
+\begin{tabular}{lllrrr}
+  \hline
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  \hline
+FALSE & TRUE & TRUE & 0.01 & 0.00 & 0.04 \\ 
+  FALSE & TRUE & FALSE & 0.31 & 0.00 & 0.04 \\ 
+  FALSE & FALSE & TRUE & 0.00 & 0.00 & 0.02 \\ 
+  FALSE & FALSE & FALSE & 0.00 & 0.00 & 0.03 \\ 
+  TRUE & TRUE & TRUE & 0.51 & 0.01 & 0.01 \\ 
+  TRUE & TRUE & FALSE & 0.76 & 0.01 & 0.00 \\ 
+  TRUE & FALSE & TRUE & 0.86 & 0.01 & 0.00 \\ 
+  TRUE & FALSE & FALSE & 0.81 & 0.01 & 0.00 \\ 
+   \hline
+\end{tabular}
+\caption{median per comparison error rate (unpaired)}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllrrr}
+  \hline
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  \hline
+FALSE & TRUE & TRUE & 0.03 & 0.00 & 0.00 \\ 
+  FALSE & TRUE & FALSE & 0.26 & 0.00 & 0.00 \\ 
+  FALSE & FALSE & TRUE & 0.00 & 0.00 & 0.00 \\ 
+  FALSE & FALSE & FALSE & 0.01 & 0.00 & 0.00 \\ 
+  TRUE & TRUE & TRUE & 0.13 & 0.00 & 0.00 \\ 
+  TRUE & TRUE & FALSE & 0.52 & 0.02 & 0.00 \\ 
+  TRUE & FALSE & TRUE & 0.38 & 0.01 & 0.00 \\ 
+  TRUE & FALSE & FALSE & 0.44 & 0.01 & 0.00 \\ 
+   \hline
+\end{tabular}
+\caption{median per comparison error rate (paired)}
+\end{table}
+
+%\section{Conclusion}
+
+%Life is a distrupting burst of consciousness, bookended by eternal blackness and despair. Why are we even here? Why do we try at all?
 
 \end{document}
 

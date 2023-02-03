@@ -61,7 +61,7 @@ timetie <- function(mm) {
 library(bdots)
 library(xtable)
 
-ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/alt_par/rds_boot/", pattern = "rds", full.names = TRUE)
+ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/alt_par/rds_boot", pattern = "rds", full.names = TRUE)
 
 
 simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
@@ -81,7 +81,11 @@ as.data.table(cbind(simDataSettings, tfwer))[order(rev(manymeans), ar1, decreasi
 
 
 
-ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot/", pattern = "rds", full.names = TRUE)
+ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot", pattern = "rds", full.names = TRUE)
+
+## OH MY GOD WRONG ORDER
+ff <- ff[c(1, 9:16, 2:8)]
+
 simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
                                paired = c(TRUE, FALSE),
                                ar1 = c(TRUE, FALSE),

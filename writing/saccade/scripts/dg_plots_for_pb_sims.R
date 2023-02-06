@@ -13,7 +13,7 @@ library(eyetrackSim)
 
 #load("~/dissertation/writing/saccade/data/pb_data_sim.RData")
 #load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst.RData")
-load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst.RData")
+load("~/packages/eyetrackSim/analysis/dg_pb_data_sim_fbst.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -28,14 +28,14 @@ subsetSim <- function(ss, idx) {
 }
 
 getParBias <- function(ss, ff) {
-  tp <- as.matrix(ss$subPars$pars[, 2:5])
+  tp <- as.matrix(ss$subPars$pars[, 2:7])
   fp <- coef(ff)
   bb <- suppressWarnings(melt(as.data.table(fp-tp))) #obs bias
 }
 
 getRmvIdx <- function(ff) {
   rr <- coef(ff)
-  idx <- which(rr[,4] == 0 | rr[,2] < rr[,1] | rr[,3] < 0)
+  idx <- which(rr[,3] < 100 | rr[,4] < 100 )
   idx
 }
 
@@ -76,14 +76,14 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
   idx2 <- getRmvIdx(sac)
   idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[11:20]
   # get pars
-  truep <- subsetSim(sim, idx)$subPars$pars[, 2:5] |> as.matrix()
+  truep <- subsetSim(sim, idx)$subPars$pars[, 2:7] |> as.matrix()
   fixp <- coef(fix[idx, ])
   sacp <- coef(sac[idx, ])
 
   getCurve <- function(pp, type) {
     pp <- split(pp, seq_len(nrow(pp)))
     rrr <- 0:2000
-    ff <- function(p) logistic_f(p, rrr)
+    ff <- function(p) doubleGauss_f(p, rrr)
     tc <- lapply(pp, function(x) data.table(curve = ff(x), Curve = type, time = rrr))
     for (i in seq_along(tc)) {
       tc[[i]]$id <- i
@@ -115,7 +115,7 @@ makeMiseTable <- function(fix, sac, sim, tit) {
 
     mv <- Map(function(x, y) {
       g <- function(tt) {
-        (logistic_f(x, tt) - logistic_f(y, tt))^2
+        (doubleGauss_f(x, tt) - doubleGauss_f(y, tt))^2
       }
       integrate(g, lower = min(times), upper = max(times))$value
     }, fp, tp)
@@ -128,7 +128,7 @@ makeMiseTable <- function(fix, sac, sim, tit) {
   idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))
 
   # get pars
-  truep <- subsetSim(sim, idx)$subPars$pars[, 2:5] |> as.matrix()
+  truep <- subsetSim(sim, idx)$subPars$pars[, 2:7] |> as.matrix()
   fixp <- coef(fix[idx, ])
   sacp <- coef(sac[idx, ])
 
@@ -147,9 +147,9 @@ makeMiseTable <- function(fix, sac, sim, tit) {
 
 
 ## No delay
-pp <- biasPlot(fit_fix_no_delay,
-               fit_sac_no_delay,
-               sim_no_delay,
+pp <- biasPlot(dg_fit_fix_no_delay,
+               dg_fit_sac_no_delay,
+               dg_sim_no_delay,
                tit = "No Delay",
                xint = 0)
 
@@ -165,9 +165,9 @@ dev.off()
 
 
 ## Now with Uniform delay (lost about 10%)
-pp <- biasPlot(fit_fix_uniform,
-               fit_sac_uniform,
-               sim_uniform,
+pp <- biasPlot(dg_fit_fix_uniform,
+               dg_fit_sac_uniform,
+               dg_sim_uniform,
                tit = "Uniform Delay",
                xint = 0)
 
@@ -182,9 +182,9 @@ pp[[2]]
 dev.off()
 
 ## Now with Weibull delay (lost about 10%)
-pp <- biasPlot(fit_fix_weibull,
-               fit_sac_weibull,
-               sim_weibull,
+pp <- biasPlot(dg_fit_fix_weibull,
+               dg_fit_sac_weibull,
+               dg_sim_weibull,
                tit = "Weibull Delay",
                xint = 0)
 
@@ -207,21 +207,21 @@ dev.off()
 ## NOTE: F < G < S fucks up ordering on the legend
 
 ## Starting with fixed
-pp1 <- sampleCurvePlot(fit_fix_no_delay,
-                      fit_sac_no_delay,
-                      sim_no_delay,
+pp1 <- sampleCurvePlot(dg_fit_fix_no_delay,
+                      dg_fit_sac_no_delay,
+                      dg_sim_no_delay,
                       tit = "No Delay")
 pp1
 
-pp2 <- sampleCurvePlot(fit_fix_uniform,
-                      fit_sac_uniform,
-                      sim_uniform,
+pp2 <- sampleCurvePlot(dg_fit_fix_uniform,
+                      dg_fit_sac_uniform,
+                      dg_sim_uniform,
                       tit = "Uniform Delay")
 pp2
 
-pp3 <- sampleCurvePlot(fit_fix_weibull,
-                      fit_sac_weibull,
-                      sim_weibull,
+pp3 <- sampleCurvePlot(dg_fit_fix_weibull,
+                      dg_fit_sac_weibull,
+                      dg_sim_weibull,
                       tit = "Weibull Delay")
 pp3
 
@@ -229,19 +229,19 @@ grid.arrange(pp, pp3)
 
 ####### Let's make tables, yo
 
-ndtab <- makeMiseTable(fit_fix_no_delay,
-                       fit_sac_no_delay,
-                       sim_no_delay,
+ndtab <- makeMiseTable(dg_fit_fix_no_delay,
+                       dg_fit_sac_no_delay,
+                       dg_sim_no_delay,
                        tit = "No Delay")
 
-unftab <- makeMiseTable(fit_fix_uniform,
-                        fit_sac_uniform,
-                        sim_uniform,
+unftab <- makeMiseTable(dg_fit_fix_uniform,
+                        dg_fit_sac_uniform,
+                        dg_sim_uniform,
                         tit = "Uniform Delay")
 
-wbtab <- makeMiseTable(fit_fix_weibull,
-                       fit_sac_weibull,
-                       sim_weibull,
+wbtab <- makeMiseTable(dg_fit_fix_weibull,
+                       dg_fit_sac_weibull,
+                       dg_sim_weibull,
                        tit = "Weibull Delay")
 
 

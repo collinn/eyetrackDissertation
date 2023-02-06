@@ -134,7 +134,6 @@ print("set 3")
 save.image(file = "sim_tie_practice.RData")
 
 load("sim_tie_practice.RData")
-load("sim_tie_great.RData")
 #load("sim_tie.RData")
 
 #btie <- apply(sims, 2, function(y) !is.null(y[[1]])) |> mean()

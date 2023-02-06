@@ -9,6 +9,7 @@ library(ggplot2)
 #results <- readRDS("../../data/old_bdots_boot_coverage/coverage_results.rds")
 #res_bdots <- readRDS("../../data/old_bdots_boot_coverage/bdots_coverage_results.rds")
 
+# where do these come from?
 results <- readRDS("~/dissertation/data/results.rds")
 res_bdots <- readRDS("~/dissertation/data/bdots_coverage_results.rds")
 
@@ -22,12 +23,12 @@ getParCoverage <- function(pp) {
   pp <- lapply(pp, function(x) {
     parCoverage <- apply(x, 2, function(y) sum(y > 0.05 & y < 0.95) / length(y))
   })
-  
+
   mini <- lapply(pp, `[[`, 1) |> unlist()
   peak <- lapply(pp, `[[`, 2) |> unlist()
   slope <- lapply(pp, `[[`, 3) |> unlist()
   cross <- lapply(pp, `[[`, 4) |> unlist()
-  
+
   return(list(mini = mini, peak = peak, slope = slope, cross = cross))
 }
 
@@ -47,7 +48,7 @@ createDtfromPar <- function(p, simtype) {
   tt <- vector("numeric", length = length(nn[[2]]))
   qq <- as.numeric(nn[[2]])
   for (i in seq_along(qq)) {
-    tt[i] <- switch(qq[i], 10, 25, 50, 75, 100)  
+    tt[i] <- switch(qq[i], 10, 25, 50, 75, 100)
   }
   dtp$trial <- tt
   dtp$sim <- simtype
@@ -68,7 +69,7 @@ ggplot(data = dt, aes(x = trial, y = val, color = sim)) +
   ggtitle("Parameter Coverage") + theme_bw() + theme(legend.position = "bottom",
                                                      legend.text = element_text(size = 20),
                                                      legend.title = element_text(size = 20),
-                                                     legend.key.width= unit(2, 'cm'), 
+                                                     legend.key.width= unit(2, 'cm'),
                                                      axis.text=element_text(size = 15),
                                                      axis.title=element_text(size=15),
                                                      plot.title=element_text(size=25))
@@ -91,11 +92,11 @@ cc_coverb <- lapply(ccb, function(x) {
 
 
 dt1 <- data.table(val = cc_cover,
-                  trial = c(10, 25, 50, 75, 100), 
+                  trial = c(10, 25, 50, 75, 100),
                   Simulation = "bootstrap")
 
 dt2 <- data.table(val = cc_coverb,
-                  trial = c(10, 25, 50, 75, 100), 
+                  trial = c(10, 25, 50, 75, 100),
                   Simulation = "bdots")
 dt <- rbindlist(list(dt1, dt2))
 
@@ -109,7 +110,7 @@ ggplot(data = dt, aes(x = trial, y = val, color = Simulation)) +
   ggtitle("Pointwise Coverage") + theme_bw() + theme(legend.position = "bottom",
                                                      legend.text = element_text(size = 20),
                                                      legend.title = element_text(size = 20),
-                                                     legend.key.width= unit(2, 'cm'), 
+                                                     legend.key.width= unit(2, 'cm'),
                                                      axis.text=element_text(size = 20),
                                                      axis.title=element_text(size=20),
                                                      plot.title=element_text(size=25))

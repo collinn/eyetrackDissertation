@@ -58,28 +58,28 @@ timetie <- function(mm) {
 # fwertotal <- rbindlist(lapply(gg, `[[`, 1))
 # meant <- timeSliceFwer(gg, mean)
 # mediant <- timeSliceFwer(gg, median)
-library(bdots)
-library(xtable)
-
-ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/alt_par/rds_boot", pattern = "rds", full.names = TRUE)
-
-
-simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
-                               #paired = c(TRUE, FALSE),
-                               ar1 = c(TRUE, FALSE),
-                               bdotscor = c(TRUE, FALSE))
-
-
-gg <- lapply(ff, getFWER)
-fwer <- rbindlist(lapply(gg, `[[`, 1))
-tfwer <- timeSliceFwer(gg, median)
-
-fwer <- cbind(simDataSettings, fwer)
-# rev(paired)
-as.data.table(fwer)[order(rev(manymeans), ar1, decreasing = TRUE), ] |> xtable() |> print(include.rownames = FALSE)
-as.data.table(cbind(simDataSettings, tfwer))[order(rev(manymeans), ar1, decreasing = TRUE)] |> xtable() |> print(include.rownames = FALSE)
-
-
+# library(bdots)
+# library(xtable)
+#
+# ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/alt_par/rds_boot", pattern = "rds", full.names = TRUE)
+#
+#
+# simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
+#                                #paired = c(TRUE, FALSE),
+#                                ar1 = c(TRUE, FALSE),
+#                                bdotscor = c(TRUE, FALSE))
+#
+#
+# gg <- lapply(ff, getFWER)
+# fwer <- rbindlist(lapply(gg, `[[`, 1))
+# tfwer <- timeSliceFwer(gg, median)
+#
+# fwer <- cbind(simDataSettings, fwer)
+# # rev(paired)
+# as.data.table(fwer)[order(rev(manymeans), ar1, decreasing = TRUE), ] |> xtable() |> print(include.rownames = FALSE)
+# as.data.table(cbind(simDataSettings, tfwer))[order(rev(manymeans), ar1, decreasing = TRUE)] |> xtable() |> print(include.rownames = FALSE)
+#
+#
 
 ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot", pattern = "rds", full.names = TRUE)
 
@@ -115,9 +115,9 @@ tt <- 0:1600
 ofp <- c(0,0.75, 0.0025, 200)
 pp <- eyetrackSim:::EMPIRICAL_START_PARS$mean
 
-pdf("~/dissertation/writing/methodology/img/compare_par_plot.pdf", width = 7, heigh = 4)
-par(mfrow = c(1, 2))
-f <- function(...) eyetrackSim:::logistic_f(..., t = tt)
-plot(tt, f(ofp), type = 'l', main = "Oleson Pars", ylab = "f", xlab = "time")
-plot(tt, f(pp), type = 'l', main = "Empirical Pars", ylab = "f", xlab = "time")
-dev.off()
+# pdf("~/dissertation/writing/methodology/img/compare_par_plot.pdf", width = 7, heigh = 4)
+# par(mfrow = c(1, 2))
+# f <- function(...) eyetrackSim:::logistic_f(..., t = tt)
+# plot(tt, f(ofp), type = 'l', main = "Oleson Pars", ylab = "f", xlab = "time")
+# plot(tt, f(pp), type = 'l', main = "Empirical Pars", ylab = "f", xlab = "time")
+# dev.off()

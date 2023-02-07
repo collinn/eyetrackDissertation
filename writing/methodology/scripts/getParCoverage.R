@@ -81,7 +81,10 @@ getParCoverage <- function(dd, bb) {
   combineforPar <- function(z, n) {
     w <- Map(parQuants, x = z, tp = n)
     w <- Reduce(cbind, w)
-    sum(w > 0.05 & w < 0.95) / length(w)
+    mm <- apply(w, 1, function(a) {
+      sum(a > 0.05 & a < 0.95) / length(a)
+    })
+    mm
   }
 
   ## results

@@ -1,3 +1,7 @@
+
+library(eyetrackSim)
+library(bdots)
+
 simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
                                paired = c(TRUE, FALSE),
                                ar1 = c(TRUE, FALSE),

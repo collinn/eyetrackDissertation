@@ -1,0 +1,5 @@
+[1] "starting index: 1"
+
+> proc.time()
+   user  system elapsed 
+  1.742   0.155  88.121 

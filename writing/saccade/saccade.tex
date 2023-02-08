@@ -47,10 +47,10 @@ Spoken words create analog signals that are processed by the brain in real time.
 %[don't like this next section]
 
 
-Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eye-tracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995). In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation. Finally, we show consistency of our method with existing continuous mapping models of activation using empirical data along with predictions made by TRACE.
+Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eye-tracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995). In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
 
 
-This section needs work but it mostly covers the gist of what I am trying to convey, namely we are about to go from history $\rightarrow$ current state of the world $\rightarrow$ proposal and comparison $\rightarrow$ validation.
+This section needs work but it mostly covers the gist of what I am trying to convey, namely we are about to go from history $\rightarrow$ current state of the world $\rightarrow$ proposal and comparison $\rightarrow$ results.
 
 %\textbf{Research goals: } Some more context is helpful hear to try an understand what exactly it is that researchers are trying to learn from this data. As mentioned previously, we are largely concerned with ``activation". In particular, though, we are often interested in how the activation of competing words compare. Specifically, we might ask, ``at what point in the audio signal does the subject begin to identify the target word, relevant to competitors." This is of special interest in studying language development in typically developed children and those with cochlear implants, where atypical children may require more of a signal before they are able to disambiguate what they are hearing. As such, it is often of interest to ask when and how activation differs both between target words and competitors, as well as between different subjects. It is largely these last two areas that have dominated much of the VWP research.
 
@@ -65,9 +65,8 @@ An outline of the presentation (for internal use only):
 \begin{singlespace}
 \begin{enumerate}
 \vspace{-2mm}
-\item TRACE in 1986 along with connectionist model of language
 \item VWP by Tannenhaus 1995
-\item VWP + TRACE, Allopenna 1996
+\item VWP + TRACE, Allopenna 1996 (trace aspect no longer relevant, just an aside)
 \item As far as I can tell, it's Bob's 2010 paper that was among first to 
 \begin{enumerate}
 \item Look at individual differences in word recognition (not counting the ortho polynomial fits) (also relevant for the ``group distribution of curves" hypothesis) and
@@ -78,11 +77,10 @@ An outline of the presentation (for internal use only):
 
 All of the paragraphs in this section are narrative and not mission critical. Need to be fleshed out
 
-\paragraph{TRACE } How speech is perceived and understood has been a subject of much debate for a significant portion of psycholinguistics' history. Starting in the 1980s and persisting today, many researchers subscribe to what is known as the connectionist model of speech perception. Briefly, this model posits that speech perception is best understood as a hierarchical dynamical system in which aspects of the model are either self reinforcing or self inhibiting with feed-forward and feedback mechanisms. For example, hearing the phoneme \textbackslash h\textbackslash  \ as in ``hit" will ``feed-foward", cognitively activating words that begin with the \textbackslash h\textbackslash \  sound. These activated words then ``feedback" to the phoneme letter, inhibiting activation for competing phonemes such as \textbackslash b\textbackslash \ or \textbackslash t\textbackslash. In 1986, McClelland and Elman introduced the TRACE\footnote{TRACE doesn't stand for anything -- the name is a reference to ``the trace", a network structure for dynamically processing things in memory} model implementing theoretical considerations into a computer model \cite{elman1985speech}. Maybe useful here to discuss activation, sigmoidal shape, etc., 
 
 \paragraph{VWP} To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. 
 
-\paragraph{Relating TRACE to VWP} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
+\paragraph{Proportion of fixation born} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
 
 \begin{singlespace}
 \begin{enumerate}
@@ -271,20 +269,20 @@ Lastly, each section will present a histogram of the observed bias in the recove
 Will elaborate on plots, analysis of histograms, etc., but not integral for general organization of paper right yet
 
 
-\begin{figure}[H]
-    \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{fixed_delay_par_bias_fixation.pdf}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{fixed_delay_par_bias_saccade.pdf}} 
-    \caption{Distribution of parameter bias for fixation and saccade methods under fixed-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias./ We see evidence that added observation bias has the effect of ``pulling" the curve at both ends, resulting in later crossover and less steep curves}
-\label{fig:fixed_par_bias}
-\end{figure}
+%\begin{figure}[H]
+%    \centering
+%    \subfigure[]{\includegraphics[width=0.45\textwidth]{fixed_delay_par_bias_fixation.pdf}} 
+%    \subfigure[]{\includegraphics[width=0.45\textwidth]{fixed_delay_par_bias_saccade.pdf}} 
+%    \caption{Distribution of parameter bias for fixation and saccade methods under fixed-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias./ We see evidence that added observation bias has the effect of ``pulling" the curve at both ends, resulting in later crossover and less steep curves}
+%\label{fig:fixed_par_bias}
+%\end{figure}
 
 
 
 
 \begin{figure}[H]
 \centering
-\includegraphics{fixed_pb_curves.pdf}
+%\includegraphics{fixed_pb_curves.pdf}
 \caption{Representative collection of fixed-delay curve, including  the generating function, as well as estimated curves from fitting data using fixation and saccade methods}
 \label{fig:fixed_pb_curves}
 \end{figure}
@@ -297,8 +295,8 @@ Will elaborate on plots, analysis of histograms, etc., but not integral for gene
 
 \begin{figure}[H]
     \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{random_delay_par_bias_fixation.pdf}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{random_delay_par_bias_saccade.pdf}} 
+%    \subfigure[]{\includegraphics[width=0.45\textwidth]{random_delay_par_bias_fixation.pdf}} 
+%    \subfigure[]{\includegraphics[width=0.45\textwidth]{random_delay_par_bias_saccade.pdf}} 
 \caption{Distribution of parameter bias for fixation and saccade methods under random-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias AND delay bias, which has consequence of further shifting crossover parameter underestimating slope, but now with saccade too. We see evidence that added observation bias has the effect of ``pulling" the curve forward, resulting in later cross over and less steep curves}
 \label{fig:random_par_bias}
 \end{figure}
@@ -307,7 +305,7 @@ Will elaborate on plots, analysis of histograms, etc., but not integral for gene
 
 \begin{figure}[H]
 \centering
-\includegraphics{random_pb_curves.pdf}
+%\includegraphics{random_pb_curves.pdf}
 \caption{Representative collection of random-delay curve, including  the generating function, as well as estimated curves from fitting data using fixation and saccade methods. Note the distortion in shape apparent now in both saccade and fixation curves. Specifically, note how none of the recovered curves are ever steeper than the generating}
 \label{fig:random_pb_curves}
 \end{figure}
@@ -373,7 +371,81 @@ As a not really conclusion, I am sometimes left to wonder to what degree the pro
 
 
 
-\section{Compare with TRACE}
+
+\section{Discussion}
+
+what have we learned?
+
+Here are really the main takeaways.
+
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-2mm}
+\item We are all revisiting question of linking hypothesis
+\item In the process of doing so, Bob identified some critical issues, revealing two distinct sources of bias
+\item By introducing saccade method, we remove one source of bias and clearly delineate two separate but likely correlated mechanisms
+\item This effectively keeps the assumptions from Allopenna and all of the benefits of constructing a function in time for activation, but also allowing room now for fixations to be used separately in a number of ways (length of fixation, latency to look, total fixations, etc.,)
+\end{enumerate}
+\end{singlespace}
+
+
+%Here I think are some of the main takeaways. First Bob showed that even under moderate assumptions, the fixation method is unable to recover unbiased parameter estimates for the generating function. Here, we examined the sources of this bias and demonstrated that by removing the period of fixation from the observed data, we are better able to estimate the generating curve. 
+%
+%Of course, the conclusions drawn from this rest on the tacit assumption that there is some parameteric generating function mediating the relationship between word activation and physiological behavior. By no means do we seek to argue for this either -- this lies in the domain of the linking hypothesis, a.k.a someone else's problem. However, the content of the arguments made is worth consideration. In particular, putting names to the two types of bias observed almost certainly have parallels in the empirical world: the oculomotor delay (delay bias) being a known phenomenon, and the added observation bias being tautologically true under moderate assumptions about the linking hypothesis. At very least, there is the question of the linear relationship between fixation length and activation, casting doubt on the validity of treating indicators of fixation equally at the beginning of a fixation period (and especially during the refraction  period of a fixation) as those at the end. Treating only the saccades as observations removes this issue and is more defensible from a theoretical/statistical perspective. To what degree the proposed saccade method is representative of the true state of nature is up for debate.
+%
+%Insomuch as it relates to the fixation method, it is worth recalling the proportion of fixation method itself was never (I think) argued for from the ground up. That is, its validity and subsequent adoption was a consequence of its agreement with the predictions of the TRACE model. To this end, we have shown that even with agreement to TRACE being the guiding principle, the saccade method shows greater fidelity to what would be predicted, even after accounting for researcher degrees of freedom.
+%
+%[I need to reread magnuson before using such strong langauge here]
+%The conclusions that we draw from this are twofold. Even under moderate assumptions regarding the linking hypothesis, the fixation method contains at least one source of bias by conflating two very distinct types of data. Really, that's the only main conclusion, that and saccade method is cool. I said twofold above because twofold is a cool thing to have in a concluding paragraph and im pretty sure that onefold isn't a word, and even if it is it isn't as neat of a word as twofold.
+%
+
+
+
+\section{limitations}
+
+probably good idea to keep running list of these all in one place
+
+\begin{singlespace}
+\begin{enumerate}
+\item linking hypothesis/cognition curve
+\item trace parameters maybe/general degrees of freedom
+\item only evidenced on logistic, though for practical not theoretical reasons
+\item adding parametric form (necessity for saccade method)
+\item oculomotor delay, where to discuss
+\end{enumerate}
+\end{singlespace}
+
+\bibliographystyle{plain} % We choose the "plain" reference style
+\bibliography{../bib/dissertation} % Entries are in the refs.bib file
+
+\section{appendices}
+
+Here  I am just including more or less random sections that either do not have a definite place yet in the main body of the paper, are part of what might be considered future work, or truly are things that belong in the appendix. Presented in no particular order
+
+\section*{Appendix A}
+
+Treatment of empirical data from McMurray 2010 to get fixation and saccade curves,  along with treatment of TRACE data
+
+\section*{Appendix B}
+
+I'm not sure if appendix appropriate, but discussion on why double gauss/cohort not considered. This is primarily a consequence of failure to fit adequate models with \xt{bdots}, arising from the fact that \xt{gnls} is highly sensitive to starting parameters. I have demonstrated that they \textit{can} be fit, but successful fits are able to be acquired with a huge range of parameters, bringing into question any validity. As the point of this paper is to demonstrate bias and counter saccade/fixation methods, this seemed an unnecessary addition.
+
+\section*{Appendix C}
+
+Maybe catch-all for all things OM related. Originally included work showing that fixed delay simply results in horizontal shift, as well as investigation into how the amount of bias is a function both of the length of delay along with the derivative of the generating curve around the delay. Bias near the asymptotes has minimal impact relative to delay near the crossover point.
+
+I think this would be interesting for future research but a bit beyond the scope to detail much here. Could expand on the idea if there was interest as I already have code written up that samples differentially at different time points.
+
+\section*{Appendix D -- TRACE}
+
+[Moving everything TRACE related here because it turns out we don't actually need it]
+
+
+
+\paragraph{TRACE } How speech is perceived and understood has been a subject of much debate for a significant portion of psycholinguistics' history. Starting in the 1980s and persisting today, many researchers subscribe to what is known as the connectionist model of speech perception. Briefly, this model posits that speech perception is best understood as a hierarchical dynamical system in which aspects of the model are either self reinforcing or self inhibiting with feed-forward and feedback mechanisms. For example, hearing the phoneme \textbackslash h\textbackslash  \ as in ``hit" will ``feed-foward", cognitively activating words that begin with the \textbackslash h\textbackslash \  sound. These activated words then ``feedback" to the phoneme letter, inhibiting activation for competing phonemes such as \textbackslash b\textbackslash \ or \textbackslash t\textbackslash. In 1986, McClelland and Elman introduced the TRACE\footnote{TRACE doesn't stand for anything -- the name is a reference to ``the trace", a network structure for dynamically processing things in memory} model implementing theoretical considerations into a computer model \cite{elman1985speech}. Maybe useful here to discuss activation, sigmoidal shape, etc., 
+
+
+\subsection{TRACE -- section}
 
 I have a few issues with this section, and as I have fleshed out my reading and understanding of things, my intention with this section has changed. Originally, my hope was to show that non-linear functions fit with empirical saccade data would be a better match to what is predicted by TRACE than what is found using fixation data. This, however, seems to be the wrong thing to do. There is an apparently magnificent number of ways with which to transform TRACE activation data to probabilities of fixation, Neverminding the fact that the saccade curve is a fundamentally \textit{different} concept/mechanism than the proportion of fixations, calling into question the value of a direct comparison (though I'm not sure that this is really much of an issue, as none of these transformations had mechanics uniquely specific to the properties of fixations).
 
@@ -479,72 +551,6 @@ Presented in Table~\ref{tab:mise_trace} is a summary of the RMS error of the 100
 
 As an aside, this also lends itself to the idea of having a \textit{distribution} of curves associated with lexical activation rather than pursuing point estimation.  In some sense, this allows a natural way to account for the observed variability in experimental conditions without having to attempt to model it. Not sure if this is an idea worth elaborating on.
 
-
-
-\section{Discussion}
-
-what have we learned?
-
-Here are really the main takeaways.
-
-\begin{singlespace}
-\begin{enumerate}
-\vspace{-2mm}
-\item We are all revisiting question of linking hypothesis
-\item In the process of doing so, Bob identified some critical issues, revealing two distinct sources of bias
-\item By introducing saccade method, we remove one source of bias and clearly delineate two separate but likely correlated mechanisms
-\item This effectively keeps the assumptions from Allopenna and all of the benefits of constructing a function in time for activation, but also allowing room now for fixations to be used separately in a number of ways (length of fixation, latency to look, total fixations, etc.,)
-\item Showed that this was still consistent with continuous mapping models by agreement with TRACE
-\end{enumerate}
-\end{singlespace}
-
-
-%Here I think are some of the main takeaways. First Bob showed that even under moderate assumptions, the fixation method is unable to recover unbiased parameter estimates for the generating function. Here, we examined the sources of this bias and demonstrated that by removing the period of fixation from the observed data, we are better able to estimate the generating curve. 
-%
-%Of course, the conclusions drawn from this rest on the tacit assumption that there is some parameteric generating function mediating the relationship between word activation and physiological behavior. By no means do we seek to argue for this either -- this lies in the domain of the linking hypothesis, a.k.a someone else's problem. However, the content of the arguments made is worth consideration. In particular, putting names to the two types of bias observed almost certainly have parallels in the empirical world: the oculomotor delay (delay bias) being a known phenomenon, and the added observation bias being tautologically true under moderate assumptions about the linking hypothesis. At very least, there is the question of the linear relationship between fixation length and activation, casting doubt on the validity of treating indicators of fixation equally at the beginning of a fixation period (and especially during the refraction  period of a fixation) as those at the end. Treating only the saccades as observations removes this issue and is more defensible from a theoretical/statistical perspective. To what degree the proposed saccade method is representative of the true state of nature is up for debate.
-%
-%Insomuch as it relates to the fixation method, it is worth recalling the proportion of fixation method itself was never (I think) argued for from the ground up. That is, its validity and subsequent adoption was a consequence of its agreement with the predictions of the TRACE model. To this end, we have shown that even with agreement to TRACE being the guiding principle, the saccade method shows greater fidelity to what would be predicted, even after accounting for researcher degrees of freedom.
-%
-%[I need to reread magnuson before using such strong langauge here]
-%The conclusions that we draw from this are twofold. Even under moderate assumptions regarding the linking hypothesis, the fixation method contains at least one source of bias by conflating two very distinct types of data. Really, that's the only main conclusion, that and saccade method is cool. I said twofold above because twofold is a cool thing to have in a concluding paragraph and im pretty sure that onefold isn't a word, and even if it is it isn't as neat of a word as twofold.
-%
-
-
-
-\section{limitations}
-
-probably good idea to keep running list of these all in one place
-
-\begin{singlespace}
-\begin{enumerate}
-\item linking hypothesis/cognition curve
-\item trace parameters maybe/general degrees of freedom
-\item only evidenced on logistic, though for practical not theoretical reasons
-\item adding parametric form (necessity for saccade method)
-\item oculomotor delay, where to discuss
-\end{enumerate}
-\end{singlespace}
-
-\bibliographystyle{plain} % We choose the "plain" reference style
-\bibliography{../bib/dissertation} % Entries are in the refs.bib file
-
-\section{appendices}
-
-Here  I am just including more or less random sections that either do not have a definite place yet in the main body of the paper, are part of what might be considered future work, or truly are things that belong in the appendix. Presented in no particular order
-
-\section*{Appendix A}
-
-Treatment of empirical data from McMurray 2010 to get fixation and saccade curves,  along with treatment of TRACE data
-
-\section*{Appendix B}
-
-I'm not sure if appendix appropriate, but discussion on why double gauss/cohort not considered. This is primarily a consequence of failure to fit adequate models with \xt{bdots}, arising from the fact that \xt{gnls} is highly sensitive to starting parameters. I have demonstrated that they \textit{can} be fit, but successful fits are able to be acquired with a huge range of parameters, bringing into question any validity. As the point of this paper is to demonstrate bias and counter saccade/fixation methods, this seemed an unnecessary addition.
-
-\section*{Appendix C}
-
-Maybe catch-all for all things OM related. Originally included work showing that fixed delay simply results in horizontal shift, as well as investigation into how the amount of bias is a function both of the length of delay along with the derivative of the generating curve around the delay. Bias near the asymptotes has minimal impact relative to delay near the crossover point.
-
-I think this would be interesting for future research but a bit beyond the scope to detail much here. Could expand on the idea if there was interest as I already have code written up that samples differentially at different time points.
 
 
 

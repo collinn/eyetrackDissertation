@@ -8,28 +8,28 @@ library(mvtnorm)
 # slope of different slope after in the condition group (else zero)
 
 # time[251] == 0 ## Fucking hardcoded length of time here thats fine
-TIME <- seq(-2, 2, length.out = 501)
+TIME <- seq(-1, 1, length.out = 501)
 
 
 ## Pars for piecewise function in bdots
 # (t < t1)*p1 + (t>=t1)*(mt + p1)
 plinePars <- function(dat, y, time, params = NULL, ...) {
   y2 <- dat[[y]]
-  
+
   ll <- length(y2)
   mm <- round(ll/2)
   r1 <- `:`(1, mm+1) # range first half
   r2 <- `:`(mm+1, ll) # range second half
   yy <- y2[r2]
   tt <- dat[[time]][r2]
-  
+
   ## baseline
-  b <- mean(y2[r1])
+  b <- mean(y2[r1]) / 10 # let's move this b* closer to zero
   ## slope
-  m <- (yy %*% tt) / (tt %*% tt)
+  m <- max(0, (yy %*% tt) / (tt %*% tt))
   params <- c(b, m)
   names(params) <- c("b", "m")
-  
+
   y <- str2lang(y)
   time <- str2lang(time)
   ff <- bquote(.(y) ~ (.(time) < 0)*b +
@@ -41,75 +41,78 @@ plinePars <- function(dat, y, time, params = NULL, ...) {
 ## Function to create piecewise line
 pline <- function(p, time, gp) {
   stopifnot(length(p) == 2)
-  
+
   ll <- length(time)
   mm <- round(ll/2)
   r1 <- `:`(1, mm+1) # range first half
   r2 <- `:`(mm+1, ll) # range second half
-  
+
   y <- vector("numeric", length = length(time))
   if (gp == "A") {
     y[r1] <- p[1]
     y[r2] <- p[1] + p[2] * time[r2]
   } else {
     y[] <- p[1]
-    #y <- p[1] # ooooooh
   }
   y
 }
 
+
 # no need for trials (I want trials, so I will continue to use binomial here)
 createPlineData <- function(n = 25, trials = 100, pars = c(0,1), gp = "A") {
-  
+
   p <- rmvnorm(n, mean = pars, sigma = diag(length(pars))*0.05)
-  
-  ## Try making group variables even less random
-  # if (gp == "A") {
-  #   p[1, ] <- pars[1]
-  #   p[2, ] <- pars[2]
-  # } else {
-  #   p[] <- 0
-  # }
-  
+
+
   ## We actually need there to be no slope
   if (gp == "B") p[, 2] <- p[, 1]
-  
+
   p <- abs(p)
   spars <- split(p, row(p))
   dts <- lapply(seq_len(n), function(x) {
     pp <- spars[[x]]
-    dt <- data.table(id = x, 
-                     time = TIME, 
-                     group = gp, 
+    dt <- data.table(id = x,
+                     time = TIME,
+                     group = gp,
                      true = pline(pp, TIME, gp))
-    dt[, fixations := rnorm(1, true, sd = 10/trials), by = time]
-    #dt[, fixations := mean(rbinom(trials, 1, 0.1)) + true, by = time]
-    #dt[, fixations := abs(fixations)]
+    dt[, fixations := rnorm(1, true, sd = 0.25/sqrt(trials)), by = time]
   })
   dts <- rbindlist(dts)
-  return(dts) 
+  return(dts)
 }
 
-dt1 <- createPlineData(n = 25, pars = c(0,0.25), gp = "A", trials = 100)
+dt1 <- createPlineData(n = 25, pars = c(0,0.5), gp = "A", trials = 100)
 dt2 <- createPlineData(n = 25, pars = c(0,0), gp = "B", trials = 100)
 dt2[, id := id + 25]
 dt <- rbindlist(list(dt1, dt2))
 
-fit <- bdotsFit(data = dt, 
+fit <- bdotsFit(data = dt,
                 subject = "id",
-                time = "time", 
+                time = "time",
                 group = "group",
-                y = "fixations", 
+                y = "fixations",
                 curveType = plinePars())
-## Bootstrap
-boot <- bdotsBoot(fixations ~ group(A, B), fit)
 
+#plot(fit[1:4, ])
+#plot(fit[47:50, ])
+
+## Bootstrap
+boots <- bdotsBoot(fixations ~ group(A, B), fit, singleMeans = TRUE, Niter = 250)
+bootm <- bdotsBoot(fixations ~ group(A, B), fit, Niter = 250)
+bootp <- bdotsBoot(fixations ~ group(A, B), fit, skipDist = TRUE,
+                   permutation = TRUE, Niter = 250)
+
+boots$sigTime
+bootm$sigTime
+bootp$sigTime
+
+plot(bootp)
 ## Check with old bdots?
-# fit0 <- bdots0::bdotsFit(data = dt, 
+# fit0 <- bdots0::bdotsFit(data = dt,
 #                 subject = "id",
-#                 time = "time", 
+#                 time = "time",
 #                 group = "group",
-#                 y = "fixations", 
+#                 y = "fixations",
 #                 curveType = plinePars())
 ## Bootstrap
 boot0 <- bdots0::bdotsBoot(fixations ~ group(A, B), fit)
@@ -132,13 +135,13 @@ getT <- function(x, idx, whole = FALSE) {
     vvn <- vv/nrow(cc)
     list(mean = mm, nvar = vvn)
   })
-  
+
   ## Guess I don't need a function for this
   x <- mvl[[1]]; y <- mvl[[2]]
   xm <- x$mean; xv <- x$nvar
   ym <- y$mean; yv <- y$nvar
   Tt <- abs(xm-ym) / sqrt(yv + xv)
-  
+
   ifelse(whole, return(Tt), return(max(Tt)))
 }
 

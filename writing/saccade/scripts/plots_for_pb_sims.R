@@ -14,6 +14,7 @@ library(eyetrackSim)
 #load("~/dissertation/writing/saccade/data/pb_data_sim.RData")
 #load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst.RData")
 load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst.RData")
+load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_no_start_par.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -35,7 +36,7 @@ getParBias <- function(ss, ff) {
 
 getRmvIdx <- function(ff) {
   rr <- coef(ff)
-  idx <- which(rr[,4] == 0 | rr[,2] < rr[,1] | rr[,3] < 0)
+  idx <- which(rr[,4] <= 0 | rr[,2] < rr[,1] | rr[,3] < 0)
   idx
 }
 

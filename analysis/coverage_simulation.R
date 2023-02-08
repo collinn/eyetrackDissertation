@@ -50,15 +50,15 @@ groupDist <- lapply(split(fit, by = "protocol"), function(x) {
 # dts <- Map(function(x, y) {
 #   createData(n = 10, trials = 20, pars = x, gp = y)
 # }, x = groupDist, y = list("A", "B"))
-# 
+#
 # ## Change ID
 # dts[[2]]$dts$id <- dts[[2]]$dts$id + 25
 # dt <- rbindlist(lapply(dts, `[[`, 1))
-# 
+#
 # ## starting parameters
 # parsA <- groupDist$CI$mean
 # parsB <- groupDist$NH$mean
-# 
+#
 # ## Ok bdots
 # fit <- bdotsFit(data = dt,
 #                 group = "group",
@@ -66,8 +66,8 @@ groupDist <- lapply(split(fit, by = "protocol"), function(x) {
 #                 time = "time",
 #                 subject = "id",
 #                 curveType = logistic())
-# 
-# 
+#
+#
 # boot <- bdotsBoot(formula = fixations ~ group(A,B), fit)
 
 
@@ -117,13 +117,13 @@ createData <- function(n = 25, trials = 10, pars, gp = "A") {
   # ggplot(dts, aes(time, true, group = id)) + geom_line(aes(color = as.character(id)))
   return(list(dts = dts, pars = newpars))
 }
-# 
+#
 # dts <- Map(function(x, y) {
 #   createData(n = 10, trials = 20, pars = x, gp = y)
 # }, x = groupDist, y = list("A", "B"))
-# 
+#
 # dat <- createData(n = 25, trials = 10, pars = groupDist[[1]], gp = "A")
-# 
+#
 # ## Ok bdots
 # fit <- bdotsFit(data = dat[[1]],
 #                 group = "group",
@@ -229,33 +229,33 @@ saveRDS(results, file = "~/dissertation/data/results.rds")
 
 ## Ok, let's practice on a single instance of this (only one that worked, fuck)
 # rr <- results[[1]]
-# 
+#
 # pp <- lapply(results, `[[`, 1)
 # cc <- lapply(results, `[[`, 2)
-# 
+#
 # ## Parameters first, let's say 90 percent coverage
 # pp <- lapply(pp, function(x) {
 #   parCoverage <- apply(x, 2, function(y) sum(y > 0.05 & y < 0.95) / length(y))
 # })
-# 
+#
 # mini <- lapply(pp, `[[`, 1) |> unlist()
 # peak <- lapply(pp, `[[`, 2) |> unlist()
 # slope <- lapply(pp, `[[`, 3) |> unlist()
 # cross <- lapply(pp, `[[`, 4) |> unlist()
-# 
+#
 # par(mfrow = c(2,2))
 # plot(mini, ylim = c(0, 1.1), main = "mini", type = 'b', xaxt = 'n', xlab = "# Trials")
 # abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
 # axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
+#
 # plot(peak, ylim = c(0, 1.1), main = "peak", type = 'b', xaxt = 'n', xlab = "# Trials")
 # abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
 # axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
+#
 # plot(slope, ylim = c(0, 1.1), main = "slope", type = 'b', xaxt = 'n', xlab = "# Trials")
 # abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
 # axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
+#
 # plot(cross, ylim = c(0, 1.1), main = "cross", type = 'b', xaxt = 'n', xlab = "# Trials")
 # abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
 # axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
@@ -284,7 +284,7 @@ saveRDS(results, file = "~/dissertation/data/results.rds")
 #   mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
 #   #mean(mm)
 # }) #|> unlist()
-# 
+#
 # par(mfrow = c(2, 3))
 # mtrials <- c(10, 25, 50, 75, 100)
 # for (i in seq_along(cc_time)) {
@@ -315,7 +315,7 @@ saveRDS(results, file = "~/dissertation/data/results.rds")
 # abline(h = 0.9, col = 'red', lty = 2)
 # axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
 # text(1:5, unlist(cc_band) + 0.005, unlist(cc_band), cex = 0.8)
-# 
+#
 # ## For example, here is a band of quantiles needed to cover. Which is 90?
 # quantile(mm, 0.9)
 
@@ -459,85 +459,6 @@ results_bdots <- results
 
 
 
-
-# 
-# 
-# ####### Delete this below
-# pp <- lapply(results, `[[`, 1)
-# cc <- lapply(results, `[[`, 2)
-# 
-# ## Parameters first, let's say 90 percent coverage
-# pp <- lapply(pp, function(x) {
-#   parCoverage <- apply(x, 2, function(y) sum(y > 0.05 & y < 0.95) / length(y))
-# })
-# 
-# mini <- lapply(pp, `[[`, 1) |> unlist()
-# peak <- lapply(pp, `[[`, 2) |> unlist()
-# slope <- lapply(pp, `[[`, 3) |> unlist()
-# cross <- lapply(pp, `[[`, 4) |> unlist()
-# 
-# par(mfrow = c(2,2))
-# plot(mini, ylim = c(0, 1.1), main = "mini", type = 'b', xaxt = 'n', xlab = "# Trials")
-# abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
-# axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
-# plot(peak, ylim = c(0, 1.1), main = "peak", type = 'b', xaxt = 'n', xlab = "# Trials")
-# abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
-# axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
-# plot(slope, ylim = c(0, 1.1), main = "slope", type = 'b', xaxt = 'n', xlab = "# Trials")
-# abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
-# axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
-# plot(cross, ylim = c(0, 1.1), main = "cross", type = 'b', xaxt = 'n', xlab = "# Trials")
-# abline(h = 0.9, col = 'red', lty = 2, ylab = "Coverage")
-# axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
-# ## This takes average across time points, then average across trials, then average total
-# cc_cover <- lapply(cc, function(x) {
-#   ## Here we just do full band for now
-#   mm <- apply(x, 1, function(y) mean(y))
-#   mean(mm)
-# }) |> unlist()
-# #cc_cover <- Reduce(`+`, cc_cover) / length(cc_cover)
-# par(mfrow = c(1,1))
-# plot(cc_cover, ylim = c(0, 1.1), main = "Average pointwise coverage", type = 'b',
-#      xaxt = 'n', xlab = "# Trials", ylab = "Coverage")
-# abline(h = 0.9, col = 'red', lty = 2)
-# axis(1, at = 1:5, labels = c(10, 25, 50, 75, 100))
-# 
-# cc2 <- lapply(results_bdots, `[[`, 2)
-# cc_cover2 <- lapply(cc2, function(x) {
-#   ## Here we just do full band for now
-#   mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
-#   mean(mm)
-# }) |> unlist()
-# 
-# #################################################
-# ## ok lets look at coverage at each time point ##
-# #################################################
-# 
-# ## Practice with the first
-# cc_time <- lapply(cc, function(x) {
-#   ## Here we just do full band for now
-#   mm <- apply(x, 1, function(y) sum(y > 0.05 & y < 0.95) / length(y))
-#   #mean(mm)
-# }) #|> unlist()
-# 
-# par(mfrow = c(2, 3))
-# mtrials <- c(10, 25, 50, 75, 100)
-# for (i in seq_along(cc_time)) {
-#   x <- cc_time[[i]]
-#   plot(x, ylim = c(0.5, 1.05), xlab = "Time", xaxt = 'n', type = 'l',
-#        ylab = 'coverage', main = paste(mtrials[i], "Trials"))
-#   abline(h = 0.9, col = 'red', lty = 2)
-#   axis(1, at = seq(0, 2000, by = 50), labels = seq(0, 2000, by = 50))
-# }
-# 
-# 
-# 
-# 
-# 
 
 
 

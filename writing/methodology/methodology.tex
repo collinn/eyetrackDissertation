@@ -366,7 +366,20 @@ FALSE & TRUE & TRUE & 0.03 & 0.00 & 0.00 \\
 
 \section{Power Simulations}
 
-[Fuck maybe I accidentally did pseudo-paired data? Actually I definitely did paired data because when doing this with unpaired data it was impossible to get a sense of power when everything was marked as different. Or, at any rate, it was paired data for the period less than 0, but maybe this is fine. Idk. Maybe I also did this entire thing wrong. We can discuss]
+A few notes to qualify what follows:
+
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-2mm}
+\item Permutation has been updated for power, so it correctly samples from the gnls distribution for each subject
+\item We should discuss what simulations to include bad bootstrap in. I have included them all here. And to prevent it from just flagging entire regions as different, I basically generated the data to be ``paired" with regards to the intercept parameter, meaning for half of the generated data, its pretending likes its not paired when it is. There are still a few cases where TIE occurs, and I have noted them and removed them from the summary
+\item There are a few different simulation results presented here, all different in slightly different ways (time intervals, variability in generating distribution, etc). I have tried to note which is which
+
+\item they might want paired testing
+\end{enumerate}
+\end{singlespace}
+
+
 
 All this talk on the type I error rate sure is interesting, but what good is having a low type I rate if we are just trading it in for type II? In this hard hitting piece of investigative journalism, we set out to determine the empirical power of the proposed methods under a variety of conditions, similar to those above but excluding the case of paired observations. Inb4 comments like ``oh but power between paired cases is what we are interested in most!", well, maybe if there's time.
 
@@ -378,7 +391,7 @@ b \quad &x < 0 \\
 mx + b \quad &x \geq 0
 \end{cases}
 \end{equation}
-where $b \sim |N(0, 0.05)|$ and $m \sim N(\mu_i, 0.05)$, where $\mu_i = 0$ for the group without effect and $\mu_i = 0.5$ for the group with effect (I guess this is called a folded normal distribution?). A depiction of these mean structures is given in Figure~\ref{fig:power_plot}.
+where $b \sim |N(0, 0.005)|$ and $m \sim N(\mu_i, 0.005)$, where $\mu_i = 0$ for the group without effect and $\mu_i = 0.5$ for the group with effect (I guess this is called a folded normal distribution? I could have written something like $b = |\gamma|, \gamma \sim N(0, 0.005)$, but maybe there is an even slicker way of expression this). A depiction of these mean structures is given in Figure~\ref{fig:power_plot}.
 
 \begin{figure}[H]
 \centering
@@ -391,32 +404,28 @@ where $b \sim |N(0, 0.05)|$ and $m \sim N(\mu_i, 0.05)$, where $\mu_i = 0$ for t
 
 Beginning with the ``Effect" group, we draw slope and intercept parameters for each subject, taking the absolute value of each to ensure the slope is oriented in the correct direction. Fitting a mean structure to each subject's parameters, we then add error according to the AR(1) assumption identically to the method used in the calculation of the type I error rate.
 
-For the ``No Effect" group, we took as intercept parameters the same values drawn for the ``Effect" group -- this was to minimize the difference in distribution of the values in the range (-2, 0) since the TIE rate there is awful and not doing this resulted in significant differences everywhere (since it is constant in that region, having one difference means having them all different). The slopes for the ``No Effect" group were assigned to be the baseline value. So not random at all. Why did I do this?
+For the ``No Effect" group, we took as intercept parameters the same values drawn for the ``Effect" group -- this was to minimize the difference in distribution of the values in the range (-2, 0) since the TIE rate there is awful and not doing this resulted in significant differences everywhere (since it is constant in that region, having one difference means having them all different). 
 
-For the manymanys = FALSE, we basically did the same thing as above, but only drew parameters for one subject, assigning the remaining 24 subjects the same mean structure but deriving for each their own error structure. Fuck, am I retarded? Maybe. We can talk about this in person. At any rate, I don't anticipate the results changing too much, so let's go on to see how we would present them anyways.
+For the manymanys = FALSE, we basically did the same thing as above, but only drew parameters for one subject, assigning the remaining 24 subjects the same mean structure but deriving for each their own error structure. And actually, its a slight variant of that to help the sim along -- I still drew 25 but then picked the min/max of $b$ and $m$ to be closest to $0$ and $0$ or $0.5$ depending on their groups, respectively. Is that cheating? I could also do like I did with the TIE sims and just set them to all be exactly 0 and 0/0.5 and have the error be the only difference
 
 As a final thing, I also ran this over two different intervals: \xt{seq(-1,1,length.out = 401)} and \xt{seq(-2,2, length.out = 501)} to see if anything would change. Fortunately, the impact was not very noticeable. Alright, let's get to results
 
 \subsection{Results}
 
-The columns for manymeans, ar1, and bdotscorr are the same as before. Right now, Time = 1 indicates from (-2,2) while Time = 2 is (-1,1). This table presents a summary of the time at which a difference was detected. In all cases, the true effect begins at 0
-
-\subsubsection{Older version}
-
-I think these values are not entirely correct
+The columns for manymeans, ar1, and bdotscorr are the same as before. Right now, Time = 2 indicates from (-2,2) while Time = 1 is (-1,1). This table presents a summary of the time at which a difference was detected. In all cases, the true effect begins at 0. It has $\sigma = 0.025$, time for (-1,1) and (-2,2), the intercept term is ``paired", everything else should be certified kosher. 500 bootstraps/permutations, 100 sims for each
 
 \begin{table}[H]
 \centering
 \begin{tabular}{lllcccccccc}
   \hline
 manymeans & ar1 & bdotscorr & Time & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-   \hline
-FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0098 & 0.0080 & 0.0160 \\ 
-  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0050 & 0.0100 & 0.0100 & 0.0099 & 0.0100 & 0.0150 \\ 
-  TRUE & TRUE & FALSE &     1 & 0.2300 & 0.0080 & 0.0080 & 0.0080 & 0.0084 & 0.0080 & 0.0160 \\ 
-  TRUE & TRUE & FALSE &     2 & 0.2700 & 0.0050 & 0.0050 & 0.0050 & 0.0071 & 0.0100 & 0.0100 \\ 
-  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
-  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.0050 & 0.0050 & 0.0050 & 0.0051 & 0.0050 & 0.0100 \\ 
+  \hline
+FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0050 & 0.0100 & 0.0100 & 0.0107 & 0.0100 & 0.0200 \\ 
+  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0160 & 0.0121 & 0.0160 & 0.0160 \\ 
+  TRUE & TRUE & FALSE &     1 & 0.2500 & 0.0050 & 0.0050 & 0.0050 & 0.0070 & 0.0100 & 0.0100 \\ 
+  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
+  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0050 & 0.0050 & 0.0050 & 0.0051 & 0.0050 & 0.0100 \\ 
+  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
    \hline
 \end{tabular}
 \caption{Power for bad bootstrap} 
@@ -428,13 +437,13 @@ FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0098 & 0.008
 \begin{tabular}{lllcccccccc}
   \hline
 manymeans & ar1 & bdotscorr & Time & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
- \hline
-FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0080 & 0.0080 & 0.0160 & 0.0134 & 0.0160 & 0.0160 \\ 
-  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0100 & 0.0100 & 0.0150 & 0.0131 & 0.0150 & 0.0200 \\ 
-  TRUE & TRUE & FALSE &     1 & 0.0000 & 0.1280 & 0.1760 & 0.1920 & 0.2014 & 0.2240 & 0.2880 \\ 
-  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.1200 & 0.1700 & 0.1850 & 0.1905 & 0.2050 & 0.2950 \\ 
-  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.1360 & 0.1680 & 0.2000 & 0.1974 & 0.2240 & 0.3200 \\ 
-  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.1300 & 0.1750 & 0.1950 & 0.1947 & 0.2100 & 0.2800 \\ 
+  \hline
+FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0100 & 0.0100 & 0.0150 & 0.0143 & 0.0150 & 0.0250 \\ 
+  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0155 & 0.0160 & 0.0240 \\ 
+  TRUE & TRUE & FALSE &     1 & 0.0000 & 0.0950 & 0.1300 & 0.1450 & 0.1457 & 0.1650 & 0.2050 \\ 
+  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.1440 & 0.1460 & 0.1480 & 0.1480 & 0.1500 & 0.1520 \\ 
+  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0850 & 0.1300 & 0.1400 & 0.1433 & 0.1562 & 0.2150 \\ 
+  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.1040 & 0.1360 & 0.1440 & 0.1476 & 0.1600 & 0.2000 \\ 
    \hline
 \end{tabular}
 \caption{Power for good bootstrap} 
@@ -449,51 +458,107 @@ FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0080 & 0.0080 & 0.0160 & 0.0134 & 0.016
   \hline
 manymeans & ar1 & bdotscorr & Time & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
   \hline
-FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0090 & 0.0080 & 0.0160 \\ 
-  FALSE & TRUE & TRUE &     2 & 0.0100 & 0.0050 & 0.0050 & 0.0100 & 0.0091 & 0.0100 & 0.0150 \\ 
-  TRUE & TRUE & FALSE &     1 & 0.0000 & 0.1280 & 0.1820 & 0.2040 & 0.2109 & 0.2400 & 0.3280 \\ 
-  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.1300 & 0.1800 & 0.2025 & 0.2074 & 0.2250 & 0.3250 \\ 
-  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.1280 & 0.1760 & 0.2080 & 0.2096 & 0.2400 & 0.3280 \\ 
-  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.1400 & 0.1900 & 0.2125 & 0.2128 & 0.2400 & 0.3350 \\ 
+FALSE & TRUE & TRUE &     1 & 0.0100 & 0.0050 & 0.0100 & 0.0100 & 0.0094 & 0.0100 & 0.0200 \\ 
+  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0101 & 0.0160 & 0.0160 \\ 
+  TRUE & TRUE & FALSE &     1 & 0.0000 & 0.0950 & 0.1300 & 0.1525 & 0.1529 & 0.1712 & 0.2150 \\ 
+  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.1440 & 0.1440 & 0.1440 & 0.1440 & 0.1440 & 0.1440 \\ 
+  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0800 & 0.1300 & 0.1450 & 0.1472 & 0.1600 & 0.2250 \\ 
+  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.0960 & 0.1280 & 0.1480 & 0.1475 & 0.1600 & 0.2080 \\ 
    \hline
 \end{tabular}
 \caption{Power for permutation} 
 \label{tab:perm_pwr}
 \end{table}
 
-\subsection{corrected version}
+%\subsection{corrected version}
+%
+%only did 50 simulations here and without looking at other time (just -2 to 2) with $\sigma = 0.025$
+%
+%
+%% latex table generated in R 4.2.2 by xtable 1.8-4 package
+%% Wed Feb  8 14:13:03 2023
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllrrrrrrr}
+%  \hline
+%manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.0200 & 0.0080 & 0.0080 & 0.0160 & 0.0140 & 0.0160 & 0.0240 \\ 
+%  TRUE & TRUE & FALSE & 0.1600 & 0.0080 & 0.0080 & 0.0080 & 0.0086 & 0.0080 & 0.0160 \\ 
+%  TRUE & FALSE & FALSE & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
+%   \hline
+%\end{tabular}
+%\caption{Power for bad bootstrap, (-2,2), } 
+%\label{tab:bad_boot_pwr2}
+%\end{table}
+%
+%% latex table generated in R 4.2.2 by xtable 1.8-4 package
+%% Wed Feb  8 14:14:23 2023
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllrrrrrrr}
+%  \hline
+%manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0182 & 0.0240 & 0.0320 \\ 
+%  TRUE & TRUE & FALSE & 0.0000 & 0.0560 & 0.0720 & 0.0720 & 0.0766 & 0.0880 & 0.1040 \\ 
+%  TRUE & FALSE & FALSE & 0.0000 & 0.0560 & 0.0640 & 0.0720 & 0.0758 & 0.0880 & 0.1040 \\ 
+%   \hline
+%\end{tabular}
+%\caption{Power for good bootstrap} 
+%\label{tab:good_boot_pwr2}
+%\end{table}
+%
+%% latex table generated in R 4.2.2 by xtable 1.8-4 package
+%% Wed Feb  8 14:14:33 2023
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllrrrrrrr}
+%  \hline
+%manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.0200 & 0.0080 & 0.0080 & 0.0160 & 0.0132 & 0.0160 & 0.0160 \\ 
+%  TRUE & TRUE & FALSE & 0.0000 & 0.0480 & 0.0640 & 0.0680 & 0.0690 & 0.0780 & 0.1120 \\ 
+%  TRUE & FALSE & FALSE & 0.0000 & 0.0480 & 0.0560 & 0.0720 & 0.0685 & 0.0800 & 0.0880 \\ 
+%   \hline
+%\end{tabular}
+%\caption{Power for permutation} 
+%\label{tab:perm_pwr2}
+%\end{table}
 
-only did 50 simulations here and without looking at other time (just -2 to 2)
 
+\subsection{smaller variance version}
+
+looking at times (-2, 2), leaving the baseline parameter ``paired", but significantly reducing the variance of the distributions im drawing from $(\sigma = 0.005$). Also only did 50 simulations for each
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 14:13:03 2023
-\begin{table}[H]
+% Wed Feb  8 19:28:44 2023
+\begin{table}[ht]
 \centering
 \begin{tabular}{lllrrrrrrr}
   \hline
 manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
   \hline
-FALSE & TRUE & TRUE & 0.0200 & 0.0080 & 0.0080 & 0.0160 & 0.0140 & 0.0160 & 0.0240 \\ 
-  TRUE & TRUE & FALSE & 0.1600 & 0.0080 & 0.0080 & 0.0080 & 0.0086 & 0.0080 & 0.0160 \\ 
+FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0080 & 0.0160 & 0.0136 & 0.0160 & 0.0160 \\ 
+  TRUE & TRUE & FALSE & 0.2600 & 0.0080 & 0.0080 & 0.0080 & 0.0082 & 0.0080 & 0.0160 \\ 
   TRUE & FALSE & FALSE & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
    \hline
 \end{tabular}
-\caption{Power for bad bootstrap, (-2,2), } 
+\caption{Power for bad bootstrap} 
 \label{tab:bad_boot_pwr2}
 \end{table}
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 14:14:23 2023
-\begin{table}[H]
+% Wed Feb  8 19:28:58 2023
+\begin{table}[ht]
 \centering
 \begin{tabular}{lllrrrrrrr}
   \hline
 manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
   \hline
-FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0182 & 0.0240 & 0.0320 \\ 
-  TRUE & TRUE & FALSE & 0.0000 & 0.0560 & 0.0720 & 0.0720 & 0.0766 & 0.0880 & 0.1040 \\ 
-  TRUE & FALSE & FALSE & 0.0000 & 0.0560 & 0.0640 & 0.0720 & 0.0758 & 0.0880 & 0.1040 \\ 
+FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0178 & 0.0160 & 0.0240 \\ 
+  TRUE & TRUE & FALSE & 0.0000 & 0.0480 & 0.0640 & 0.0800 & 0.0750 & 0.0800 & 0.1040 \\ 
+  TRUE & FALSE & FALSE & 0.0000 & 0.0560 & 0.0660 & 0.0720 & 0.0755 & 0.0800 & 0.1120 \\ 
    \hline
 \end{tabular}
 \caption{Power for good bootstrap} 
@@ -501,26 +566,21 @@ FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0182 & 0.0240 & 0.03
 \end{table}
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 14:14:33 2023
-\begin{table}[H]
+% Wed Feb  8 19:29:14 2023
+\begin{table}[ht]
 \centering
 \begin{tabular}{lllrrrrrrr}
   \hline
 manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
   \hline
-FALSE & TRUE & TRUE & 0.0200 & 0.0080 & 0.0080 & 0.0160 & 0.0132 & 0.0160 & 0.0160 \\ 
-  TRUE & TRUE & FALSE & 0.0000 & 0.0480 & 0.0640 & 0.0680 & 0.0690 & 0.0780 & 0.1120 \\ 
-  TRUE & FALSE & FALSE & 0.0000 & 0.0480 & 0.0560 & 0.0720 & 0.0685 & 0.0800 & 0.0880 \\ 
+FALSE & TRUE & TRUE & 0.0200 & 0.0080 & 0.0080 & 0.0160 & 0.0121 & 0.0160 & 0.0160 \\ 
+  TRUE & TRUE & FALSE & 0.0000 & 0.0400 & 0.0560 & 0.0720 & 0.0669 & 0.0720 & 0.0960 \\ 
+  TRUE & FALSE & FALSE & 0.0000 & 0.0480 & 0.0640 & 0.0640 & 0.0672 & 0.0720 & 0.0960 \\ 
    \hline
 \end{tabular}
 \caption{Power for permutation} 
 \label{tab:perm_pwr2}
 \end{table}
-
-
-\subsection{another corrected version}
-
-looking at times (-0.5, 2)
 
 \section{Discussion and concluding remarks}
 

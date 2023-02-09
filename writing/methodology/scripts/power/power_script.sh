@@ -2,7 +2,7 @@
 
 # run sims
 date +"%r"
-for i in {1..3}
+for i in {1..6}
 do
         echo "sim $i"
         R CMD BATCH --no-save --no-restore "--args $i" power_simulation.R

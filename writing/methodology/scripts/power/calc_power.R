@@ -58,7 +58,7 @@ ff <- ff[!grepl("redo", ff)]
 
 # just the redo
 ff <- list.files("rds_files", pattern = "redo", full.names = TRUE)
-ff <- ff[grepl("st", ff)]
+ff <- ff[grepl("st22", ff)]
 
 res <- lapply(ff, getPowerTab)
 

@@ -6,10 +6,3 @@
 [1] "index: 5, iteration: 50"
 [1] "index: 5, iteration: 60"
 [1] "index: 5, iteration: 70"
-[1] "index: 5, iteration: 80"
-[1] "index: 5, iteration: 90"
-[1] "index: 5, iteration: 100"
-
-> proc.time()
-    user   system  elapsed 
-  47.852    3.701 3314.029 

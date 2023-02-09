@@ -11,5 +11,5 @@
 [1] "index: 6, iteration: 100"
 
 > proc.time()
-   user  system elapsed 
-  53.25    3.80 3407.57 
+    user   system  elapsed 
+  60.092    4.918 4370.838 

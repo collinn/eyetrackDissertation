@@ -14,6 +14,8 @@ dt2 <- data.table(Condition = "No Effect",
 dt2[, y := pline(c(0, 0), time, "B")]
 dt <- rbindlist(list(dt1, dt2))
 
-
+pdf("~/dissertation/writing/methodology/img/power_plot.pdf",
+    width = 6, height = 4)
 ggplot(dt, aes(Time, y, color = Condition)) +
-  geom_line() + theme_bw()
+  geom_line(linewidth = 1, alpha = 0.75) + theme_bw()
+dev.off()

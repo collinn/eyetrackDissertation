@@ -78,85 +78,100 @@ While there is no immediate solution to the effects of randomness in the delayed
 
 \section{Simulations}
 
-Simulations we created to isolate and investigate the aforementioned types of bias under a variety of conditions but in the context of fixations to a target object using the four-parameter logistic function denoted $f_{\theta_i}(t)$, where $t$ is time and $\theta_i$ is a subject-specific set of parameters drawn from an empirically determined distribution from normal hearing participants in (Farris-Trimble et al., 2014). 1,000 subject parameters were drawn at random, and for each subject 300 trials were simulated.
+\subsection{No Delay}
 
-Trials were simulated with a sequence of fixations with a binomial probability that the subject would fixate on a target. A fixation onset at time $t$ was determined by the generating function, $f_{\theta_i}$ at time $t - \rho(t)$ -- here, $\rho(t)$ represents a delayed observation that will differ between simulations which I elaborate on in the next section. The duration of each fixation was randomly drawn from a gamma distribution with values independent of time and previous fixations (this is consistent with the generating curve acting independent of visual stimuli). Consistent with a standard VWP analysis, an indicator of $\{0,1\}$ was made at each 4ms interavls recording whether or not the current fixation was towards the target or not. In addition to this, I separately recorded the onset time of each fixation along its destination. Each trial continued until the cumulative sums of fixation durations surpassed 2000ms. (maybe here bring in the $z_{ijt}$ notation, show that fixation is $y_{it}$ and $\mathcal{S}_i = \{(s_k, t_k)\}$ for each of the saccade undifferentiated by trial).
-
-A saccade launched at time $t$ was decided at time $t-\rho(t)$
- 
-
-All saccade and fixation data was then fit to the four parameter logistic function with the R package \xt{bdots} (v2) using the \xt{logistic()} function. Given sensitivity to the starting parameters when fitting the curves and to ensure consistency in the fitting algorithm, both groups were given starting parameters \xt{params = c(mini = 0, peak = 1, slope = 0.002,  cross = 750)}. The results were not sensitive to the starting parameters. For curves fit to the fixation data, fitted functions with $R^2 < 0.8$ were discarded; for saccade data, fits were excluded if the base parameter estimate exceeded the base parameter or if the slope or crossover estimates were negative. Only subjects who passed both criteria were included. In all, 996 of the original 1000 subjects were kept under fixed delay conditions and 903 under the random delay conditions.
-
-Lastly, each section will present a histogram of the observed bias in the recovery of the generating parameters. Each section will also present a representative collection of the fitted curves, both using the saccade and fixation methods, against the original, generating curves. Summary statistics on the quality of fits are reserved for the Results section where some more general comments are made. 
-
-
-\subsection{Fixed Delay}
-
-Will elaborate on plots, analysis of histograms, etc., but not integral for general organization of paper right yet
-
-
-\begin{figure}[H]
-    \centering
-%    \subfigure[]{\includegraphics[width=0.45\textwidth]{fixed_delay_par_bias_fixation.pdf}} 
-%    \subfigure[]{\includegraphics[width=0.45\textwidth]{fixed_delay_par_bias_saccade.pdf}} 
-    \caption{Distribution of parameter bias for fixation and saccade methods under fixed-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias./ We see evidence that added observation bias has the effect of ``pulling" the curve at both ends, resulting in later crossover and less steep curves}
-\label{fig:fixed_par_bias}
-\end{figure}
-
-
-
+763 retained
 
 \begin{figure}[H]
 \centering
-%\includegraphics{fixed_pb_curves.pdf}
-\caption{Representative collection of fixed-delay curve, including  the generating function, as well as estimated curves from fitting data using fixation and saccade methods}
-\label{fig:fixed_pb_curves}
+\includegraphics{no_delay_par_bias.pdf}
+\caption{Parameter bias for no oculmotor delay}
+\label{fig:par_bias_no_delay}
 \end{figure}
-
-\subsection{Random Delay}
-
-
-Will elaborate on plots, analysis of histograms, etc., but not integral for general organization of paper right yet
-
-
-\begin{figure}[H]
-    \centering
-%    \subfigure[]{\includegraphics[width=0.45\textwidth]{random_delay_par_bias_fixation.pdf}} 
-%    \subfigure[]{\includegraphics[width=0.45\textwidth]{random_delay_par_bias_saccade.pdf}} 
-\caption{Distribution of parameter bias for fixation and saccade methods under random-delay simulation. The bias induced in the fixation method is all a consequence of the added observation bias AND delay bias, which has consequence of further shifting crossover parameter underestimating slope, but now with saccade too. We see evidence that added observation bias has the effect of ``pulling" the curve forward, resulting in later cross over and less steep curves}
-\label{fig:random_par_bias}
-\end{figure}
-
-
 
 \begin{figure}[H]
 \centering
-%\includegraphics{random_pb_curves.pdf}
-\caption{Representative collection of random-delay curve, including  the generating function, as well as estimated curves from fitting data using fixation and saccade methods. Note the distortion in shape apparent now in both saccade and fixation curves. Specifically, note how none of the recovered curves are ever steeper than the generating}
-\label{fig:random_pb_curves}
+\includegraphics{rep_curves_no_delay.pdf}
+\caption{Representative curves for no oculmotor delay}
+\label{fig:rep_curves_no_delay}
+\end{figure}
+
+\subsection{Uniform Delay}
+
+685 retained
+
+\begin{figure}[H]
+\centering
+\includegraphics{uniform_delay_par_bias.pdf}
+\caption{Parameter bias for uniform OM delay}
+\label{fig:par_bias_uniform_delay}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics{rep_curves_uniform_delay.pdf}
+\caption{Representative curves for uniform oculmotor delay}
+\label{fig:rep_curves_uniform_delay}
+\end{figure}
+
+
+\subsection{Weibull Delay}
+
+691 retained
+
+\begin{figure}[H]
+\centering
+\includegraphics{weibull_delay_par_bias.pdf}
+\caption{Parameter bias for weibull OM delay}
+\label{fig:par_bias_weibull_delay}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics{rep_curves_weibull_delay.pdf}
+\caption{Representative curves for weibull oculmotor delay}
+\label{fig:rep_curves_weibull_delay}
 \end{figure}
 
 \subsection{Results}
 
-Perhaps unsurprisingly, Table~\ref{tab:mise_fixed_delay} demonstrates that (1) situations in which there is no delay between the generating function and observed behavior are easier to recover parameters and (2) the saccade method performed much better in all these cases. This table only includes MISE, I could add $R^2$, though the results will functionally be the same.
-
-% latex table generated in R 4.2.1 by xtable 1.8-4 package
-% Fri Jan 13 14:36:54 2023
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Wed Feb  8 15:10:31 2023
 \begin{table}[ht]
 \centering
 \begin{tabular}{llrrrrrr}
   \hline
 Curve & Delay & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
   \hline
-Fixation & Fixed & 1.95 & 8.18 & 11.40 & 13.28 & 15.98 & 215.67 \\ 
-  Saccade & Fixed & 0.01 & 0.16 & 0.32 & 0.52 & 0.56 & 78.22 \\ 
-  Fixation & Random & 20.25 & 50.95 & 68.60 & 73.08 & 90.92 & 192.56 \\ 
-  Saccade & Random & 5.74 & 21.42 & 29.29 & 33.40 & 40.63 & 185.79 \\ 
+Look Onset & No Delay & 0.01 & 0.30 & 0.55 & 0.71 & 0.94 & 5.57 \\ 
+  Look Onset & Uniform Delay & 0.02 & 0.43 & 0.86 & 1.24 & 1.62 & 15.02 \\ 
+  Look Onset & Weibull Delay & 0.02 & 0.95 & 1.86 & 2.68 & 3.51 & 19.27 \\ 
+  Proportion & No Delay & 9.08 & 25.26 & 33.11 & 35.99 & 43.80 & 195.63 \\ 
+  Proportion & Uniform Delay & 7.73 & 25.22 & 35.25 & 37.84 & 46.95 & 146.85 \\ 
+  Proportion & Weibull Delay & 4.39 & 23.09 & 33.36 & 35.83 & 45.23 & 113.68 \\ 
    \hline
 \end{tabular}
-\caption{Summary of mean integrated squared error of the fits with their generating curves}
-\label{tab:mise_fixed_delay}
+\label{Summary of MISE across simulations}
 \end{table}
+
+A few things of note in list format:
+
+\begin{singlespace}
+\begin{enumerate}
+\vspace{-2mm}
+\item For proportion method it looks like weibull is better than no delay. this is obviously incorrect and is consequence of fact that i didn't adjust for the possibility that the delay is longer than previous fixation, in which case there is some ``added observation" bias on both sides of the observed point, see Figure~\ref{fig:example_delay}. This can be remedied pretty simply I just haven't done it yet
+\item For target fixations, the number of fitted objects not rejected hovers around 69-75 percent. double gauss much worse. I originally tried making this better by seeding them all with the same starting pars -- the consequence of this being that most of the fits ended up being pretty similar. Here, I seeded with no pars and just kept those salvageable. To get better starting parameters for each subject, bob suggested fitting likelihood  over grid of suitable values for each subject (I could put this in the logistic()/doubleGauss() functions, for example) and for each subject use whatever in the grid minimized error most as starting parameter. This is a good idea, I just haven't implemented it yet either.
+\item For look onset (new name for saccade method) the impact of this is all pretty clear -- it doesn't have the same issue as the proportion method since it doesn't create added observation bias to help ``balance" the error out
+\item Even after fixing, I think a pretty solid conclusion will be: OM delay doesn't really matter in proportion method since it already sucks huge donkey b*lls. It does matter in the look onset method, which doesn't suck and is more sensitive to things being incorrect
+\end{enumerate}
+\end{singlespace}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{dist_of_vars_example.pdf}
+\caption{distribution of 1 million fixation lengths (gamma) minus random delays}
+\label{fig:example_delay}
+\end{figure}
 
 \subsection{Discussion}
 

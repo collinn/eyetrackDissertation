@@ -1,46 +1,7 @@
 
 library(bdots)
 library(eyetrackSim)
-
-
-ff <- list.files("rds_files", full.names = TRUE)
-
-tt <- lapply(ff, readRDS)
-
-
-###
-rr <- tt[[2]]
-
-sm <- lapply(rr, `[[`, 1)
-mm <- lapply(rr, `[[`, 2)
-pm <- lapply(rr, `[[`, 3)
-
-powerdetector <- function(mm) {
-  time <- seq(-2, 2, length.out = 501)
-
-  vec <- vector("numeric", length = length(time))
-
-  # each of these into a list
-  sm <- split(mm, row(mm))
-
-  if (length(sm) == 2) {
-    return(-100)
-  } else if (length(sm) == 1) {
-    res <- min(sm[[1]])
-    if (res == -2) {
-      return(-100)
-    } else {
-      return(res)
-    }
-  } else {
-    stop("WHAT THE FUCK?????")
-  }
-}
-
-
-smt <- vapply(sm, powerdetector, 1)
-mmt <- vapply(mm, powerdetector, 1)
-pmt <- vapply(pm, powerdetector, 1)
+library(xtable)
 
 getPowerTab <- function(ff) {
   rr <- readRDS(ff)
@@ -97,7 +58,7 @@ ff <- ff[!grepl("redo", ff)]
 
 # just the redo
 ff <- list.files("rds_files", pattern = "redo", full.names = TRUE)
-ff <- ff[!grepl("st", ff)]
+ff <- ff[grepl("st", ff)]
 
 res <- lapply(ff, getPowerTab)
 
@@ -120,7 +81,7 @@ res_sm <- cbind(simDataSettings, res_sm)[neword, ]
 res_mm <- cbind(simDataSettings, res_mm)[neword, ]
 res_pm <- cbind(simDataSettings, res_pm)[neword, ]
 
-library(xtable)
+
 xtable(res_sm, caption = "Power for bad bootstrap",
        label = "tab:bad_boot_pwr2", digits = 4) |> print(include.rownames = FALSE)
 xtable(res_mm, caption = "Power for good bootstrap",

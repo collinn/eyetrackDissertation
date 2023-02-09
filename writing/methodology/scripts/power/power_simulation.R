@@ -16,7 +16,7 @@ sidx <- simDataSettings[idx, ]
 createFits <- function(sidx, nit = 500) {
 
   #if (sidx$timetog == 1) {
-    tttime <- seq(-1, 1, length.out = 501)
+    tttime <- seq(-2, 2, length.out = 501)
   #} else {
   #  tttime <- seq(-1, 1, length.out = 401)
   #}
@@ -24,7 +24,7 @@ createFits <- function(sidx, nit = 500) {
 
   dat <- createPlineData2(manymeans = sidx$mm,
                          ar1 = sidx$ar,
-                         TIME = tttime)
+                         TIME = tttime, distSig = 0.005)
 
   fit <- bdotsFit(data = dat,
                   y = "fixations",
@@ -50,7 +50,7 @@ createFits <- function(sidx, nit = 500) {
 
 N <- 50
 sims <- vector("list", length = N)
-nn <- paste0("st_redo_sim", idx)
+nn <- paste0("st22_redo_sim", idx)
 sf <- paste0("prog_txt/", nn, ".txt")
 rf <- paste0("rds_files/", nn, ".rds")
 

@@ -1,5 +1,6 @@
 \documentclass{article}
-\title{bdots methodology}
+\title{With great power comes greater responsibility: \\
+\large cheating with bdots}
 \date{}
 
 \usepackage{setspace}
@@ -40,7 +41,7 @@ While we can confirm that the published results do indeed hold for the case they
 
 More likely it is the case that in the comparison of two groups, each group has a typical distribution of parameters for its subjects. God its annoying a little bit how bad and out of order this is, but free write so its ok for now. As we show, when the initial (and restrictive) assumptions made in the original bdots doesn't hold, the resulting TIE is beyond what would be acceptable in most cases.
 
-What we present instead is two alternatives, accommodating flexibility in two of the assumptions made in the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the novel FWER adjustment method presented for autocorrelated errors. In addition to this, we offer a play on a standard permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the TIE rate across a number of experimental conditions, along with the results. Finally if there is time we consider a power analysis of the two resulting methods.
+What we present instead is two alternatives, accommodating flexibility in two of the assumptions made in the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the novel FWER adjustment method presented for autocorrelated errors. In addition to this, we offer a play on a standard permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the TIE rate across a number of experimental conditions, along with the results. Finally if there is time we consider a power analysis of the two resulting methods. I guess it's also fine to consider power in the case in which the original bdots does well. Naturally, the power is great, but then so what?
 
 \section{Detail on the original}
 
@@ -277,18 +278,18 @@ The parameters used in the group distributions were empirically determined from 
 
 \subsection{FWER}
 
-Here are the results for type I FWER
+Here are the results for type I FWER (I have put the new values for permutation in parenthetical, this is after accounting for the within-subject variance with the additional drawing step for coefficients. I only tested this on the first four in unpaired, the rest are not updated)
 
 \begin{table}[H]
 \centering
 \begin{tabular}{lllccc}
   \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation (updated) \\ 
   \hline
-FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.21 \\ 
-  FALSE & TRUE & FALSE & 0.87 & 0.08 & 0.18 \\ 
-  FALSE & FALSE & TRUE & 0.08 & 0.00 & 0.14 \\ 
-  FALSE & FALSE & FALSE & 0.15 & 0.02 & 0.21 \\ 
+FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.21  (0.05) \\ 
+  FALSE & TRUE & FALSE & 0.87 & 0.08 & 0.18  (0.11) \\ 
+  FALSE & FALSE & TRUE & 0.08 & 0.00 & 0.14  (0.03) \\ 
+  FALSE & FALSE & FALSE & 0.15 & 0.02 & 0.21  (0.04) \\ 
   TRUE & TRUE & TRUE & 0.92 & 0.03 & 0.03 \\ 
   TRUE & TRUE & FALSE & 0.96 & 0.02 & 0.04 \\ 
   TRUE & FALSE & TRUE & 0.99 & 0.05 & 0.01 \\ 
@@ -323,12 +324,12 @@ FALSE & TRUE & TRUE & 0.12 & 0.02 & 0.03 \\
 \centering
 \begin{tabular}{lllrrr}
   \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation (updated) \\ 
   \hline
-FALSE & TRUE & TRUE & 0.01 & 0.00 & 0.04 \\ 
-  FALSE & TRUE & FALSE & 0.31 & 0.00 & 0.04 \\ 
-  FALSE & FALSE & TRUE & 0.00 & 0.00 & 0.02 \\ 
-  FALSE & FALSE & FALSE & 0.00 & 0.00 & 0.03 \\ 
+FALSE & TRUE & TRUE & 0.01 & 0.00 & 0.04  (0.00)\\ 
+  FALSE & TRUE & FALSE & 0.31 & 0.00 & 0.04  (0.02)\\ 
+  FALSE & FALSE & TRUE & 0.00 & 0.00 & 0.02  (0.00)\\ 
+  FALSE & FALSE & FALSE & 0.00 & 0.00 & 0.03 (0.00)\\ 
   TRUE & TRUE & TRUE & 0.51 & 0.01 & 0.01 \\ 
   TRUE & TRUE & FALSE & 0.76 & 0.01 & 0.00 \\ 
   TRUE & FALSE & TRUE & 0.86 & 0.01 & 0.00 \\ 
@@ -523,59 +524,70 @@ looking at times (-0.5, 2)
 
 \section{Discussion and concluding remarks}
 
+There isn't really a lot to say in this paper: we pretty quickly identified the issue with the assumption that $V = 0$ for the assumptions in the data generation parameters. We showed pretty conclusively that the type I error is absolutely bonkers in even the mildest of deviations from this, removing any justification from this being the ``default" method in \xt{bdots}. With regards to fitting models assuming AR(1) error structure, there really wasn't any observed penalty in not doing so with the good bootstrap or permutation methods, and if anything it brought the observed TIE closer to 0.05, with some implications for power (though those simulations are still work in progress).
+
+And speaking of power, here is the only case, really, where bad bootstrap can make any argument -- it (naturally) detects a difference far beyond any of the other cases, though as we should discuss, this (so far) is because I have sort have cheated in how I created the data. Judging by the type I error rate, there may be only one case in which it's worth doing a power analysis at all. As to a comparison of the other two, preliminary results on the simulations I think are correct seem to ever so slightly favor permutations, which is neat, I kind of favor them. This is pending a further investigation in what sort of simulation here is really appropriate as far as data generation is concerned.
+
+And that's pretty much it. Not a lot to discuss. There is an open question on the impact of time points (both quantity and range) on where and what we consider significant. Inflating the observed data with huge swaths of obviously different functions might be cheating. We may look at a few things in passing, but likely not enough to make any hard and fast conclusions. It's an interesting question, though, and especially when we consider comparing data with non-homogenous ranges, which we also didn't look it (i.e., mousey tumor data). 
+
+
+
 %\section{Conclusion}
 
 %Life is a distrupting burst of consciousness, bookended by eternal blackness and despair. Why are we even here? Why do we try at all?
 
 \section*{Appendix}
 
-\section*{Appendix A - Oleson 2017 parameters}
+Could include oleson 2017 parameters just to say we did it and verifying the two results that they had previously found (i.e., we have implemented this correctly). Commented out for now
 
-Not sure if this worth including since it basically matches the other. Just demonstrates that we did run with original parameter, verifying the two results that they had previously found (i.e., we have implemented this correctly)
-
-In evaluating the logistic function in the original bdots paper, they examined a time period from 0 to 1600, sampled at 4ms intervals. The logistic curve they used had parameters: baseline = 0, peak = 0.75, slope = 0.0025, and crossover point = 200
-
-First up we have the type I error rate
-
-\begin{table}[H]
-\centering
-\begin{tabular}{lllccc}
-  \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.03 \\ 
-  FALSE & TRUE & FALSE & 0.76 & 0.01 & 0.01 \\ 
-  FALSE & FALSE & TRUE & 0.06 & 0.01 & 0.05 \\ 
-  FALSE & FALSE & FALSE & 0.05 & 0.02 & 0.11 \\ 
-  TRUE & TRUE & TRUE & 0.97 & 0.04 & 0.02 \\ 
-  TRUE & TRUE & FALSE & 1.00 & 0.03 & 0.00 \\ 
-  TRUE & FALSE & TRUE & 0.99 & 0.02 & 0.01 \\ 
-  TRUE & FALSE & FALSE & 1.00 & 0.02 & 0.01 \\ 
-   \hline
-\end{tabular}
-\caption{type 1 error rate using Oleson parameters}
-\end{table}
-
-Then we have median per comparison error rate. So looking at error rate of each time slice
-
-\begin{table}[H]
-\centering
-\begin{tabular}{lllccc}
-  \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.01 & 0.01 & 0.02 \\ 
-  FALSE & TRUE & FALSE & 0.32 & 0.00 & 0.00 \\ 
-  FALSE & FALSE & TRUE & 0.01 & 0.00 & 0.00 \\ 
-  FALSE & FALSE & FALSE & 0.01 & 0.00 & 0.02 \\ 
-  TRUE & TRUE & TRUE & 0.82 & 0.02 & 0.00 \\ 
-  TRUE & TRUE & FALSE & 0.92 & 0.02 & 0.00 \\ 
-  TRUE & FALSE & TRUE & 0.88 & 0.01 & 0.00 \\ 
-  TRUE & FALSE & FALSE & 0.91 & 0.00 & 0.00 \\ 
-\hline
-\end{tabular}
-\caption{median per comparison error rate (why is this something considered?)}
-\end{table}
+%
+%\section*{Appendix A - Oleson 2017 parameters}
+%
+%Not sure if this worth including since it basically matches the other. Just demonstrates that we did run with original parameter, verifying the two results that they had previously found (i.e., we have implemented this correctly)
+%
+%In evaluating the logistic function in the original bdots paper, they examined a time period from 0 to 1600, sampled at 4ms intervals. The logistic curve they used had parameters: baseline = 0, peak = 0.75, slope = 0.0025, and crossover point = 200
+%
+%First up we have the type I error rate
+%
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllccc}
+%  \hline
+%  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.03 \\ 
+%  FALSE & TRUE & FALSE & 0.76 & 0.01 & 0.01 \\ 
+%  FALSE & FALSE & TRUE & 0.06 & 0.01 & 0.05 \\ 
+%  FALSE & FALSE & FALSE & 0.05 & 0.02 & 0.11 \\ 
+%  TRUE & TRUE & TRUE & 0.97 & 0.04 & 0.02 \\ 
+%  TRUE & TRUE & FALSE & 1.00 & 0.03 & 0.00 \\ 
+%  TRUE & FALSE & TRUE & 0.99 & 0.02 & 0.01 \\ 
+%  TRUE & FALSE & FALSE & 1.00 & 0.02 & 0.01 \\ 
+%   \hline
+%\end{tabular}
+%\caption{type 1 error rate using Oleson parameters}
+%\end{table}
+%
+%Then we have median per comparison error rate. So looking at error rate of each time slice
+%
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllccc}
+%  \hline
+%  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.01 & 0.01 & 0.02 \\ 
+%  FALSE & TRUE & FALSE & 0.32 & 0.00 & 0.00 \\ 
+%  FALSE & FALSE & TRUE & 0.01 & 0.00 & 0.00 \\ 
+%  FALSE & FALSE & FALSE & 0.01 & 0.00 & 0.02 \\ 
+%  TRUE & TRUE & TRUE & 0.82 & 0.02 & 0.00 \\ 
+%  TRUE & TRUE & FALSE & 0.92 & 0.02 & 0.00 \\ 
+%  TRUE & FALSE & TRUE & 0.88 & 0.01 & 0.00 \\ 
+%  TRUE & FALSE & FALSE & 0.91 & 0.00 & 0.00 \\ 
+%\hline
+%\end{tabular}
+%\caption{median per comparison error rate (why is this something considered?)}
+%\end{table}
 
 \end{document}
 

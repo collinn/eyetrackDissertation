@@ -1,0 +1,15 @@
+[1] "starting index: 3"
+[1] "index: 3, iteration: 10"
+[1] "index: 3, iteration: 20"
+[1] "index: 3, iteration: 30"
+[1] "index: 3, iteration: 40"
+[1] "index: 3, iteration: 50"
+[1] "index: 3, iteration: 60"
+[1] "index: 3, iteration: 70"
+[1] "index: 3, iteration: 80"
+[1] "index: 3, iteration: 90"
+[1] "index: 3, iteration: 100"
+
+> proc.time()
+    user   system  elapsed 
+  61.983    4.936 4415.058 

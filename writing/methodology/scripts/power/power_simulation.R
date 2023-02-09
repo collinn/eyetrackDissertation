@@ -6,8 +6,8 @@ library(eyetrackSim)
 simDataSettings <- data.table(mm = c(F, T, T),
                               ar = c(T, T, F),
                               bcor = c(T, F, F))
-simDataSettings <- rbind(simDataSettings, simDataSettings)
-simDataSettings$timetog <- c(1, 1, 1, 2, 2, 2)
+#simDataSettings <- rbind(simDataSettings, simDataSettings)
+#simDataSettings$timetog <- c(1, 1, 1, 2, 2, 2)
 
 idx <- as.numeric(commandArgs(TRUE))
 
@@ -15,14 +15,14 @@ sidx <- simDataSettings[idx, ]
 
 createFits <- function(sidx, nit = 500) {
 
-  if (sidx$timetog == 2) {
+  #if (sidx$timetog == 2) {
     tttime <- seq(-2, 2, length.out = 501)
-  } else {
-   tttime <- seq(-1, 1, length.out = 401)
-  }
+  #} else {
+  # tttime <- seq(-1, 1, length.out = 401)
+  #}
 
 
-  dat <- createPlineData2(manymeans = sidx$mm,
+  dat <- createPlineData3(manymeans = sidx$mm,
                          ar1 = sidx$ar,
                          TIME = tttime, distSig = 0.025)
 
@@ -50,7 +50,7 @@ createFits <- function(sidx, nit = 500) {
 
 N <- 100
 sims <- vector("list", length = N)
-nn <- paste0("sim", idx)
+nn <- paste0("no_pair_sim", idx)
 sf <- paste0("prog_txt/", nn, ".txt")
 rf <- paste0("rds_files/", nn, ".rds")
 

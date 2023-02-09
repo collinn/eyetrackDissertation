@@ -60,6 +60,9 @@ ff <- ff[!grepl("redo", ff)]
 ff <- list.files("rds_files", pattern = "redo", full.names = TRUE)
 ff <- ff[grepl("st22", ff)]
 
+ff <- list.files("rds_files", pattern = "no_pair", full.names = TRUE)
+
+
 res <- lapply(ff, getPowerTab)
 
 res_sm <- lapply(res, function(z) setDT(as.list(z[[1]]))) |> rbindlist()
@@ -76,10 +79,15 @@ simDataSettings$Time <- as.integer(c(1, 1, 1, 2, 2, 2))
 names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "Time")
 
 neword <- c(1,4,2,5,3,6)
+neword <- 1:3 # for other cases
 
 res_sm <- cbind(simDataSettings, res_sm)[neword, ]
 res_mm <- cbind(simDataSettings, res_mm)[neword, ]
 res_pm <- cbind(simDataSettings, res_pm)[neword, ]
+
+# res_sm <- cbind(simDataSettings[2:3, ], res_sm)
+# res_mm <- cbind(simDataSettings[2:3, ], res_mm)
+# res_pm <- cbind(simDataSettings[2:3, ], res_pm)
 
 
 xtable(res_sm, caption = "Power for bad bootstrap",

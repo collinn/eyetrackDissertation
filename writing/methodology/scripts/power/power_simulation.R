@@ -6,8 +6,15 @@ library(eyetrackSim)
 simDataSettings <- data.table(mm = c(F, T, T),
                               ar = c(T, T, F),
                               bcor = c(T, F, F))
-#simDataSettings <- rbind(simDataSettings, simDataSettings)
-#simDataSettings$timetog <- c(1, 1, 1, 2, 2, 2)
+#simDataSettings <- rbind(simDataSettings, simDataSettings[2:3, ])
+#simDataSettings$paired <- c(FALSE, FALSE, FALSE, TRUE, TRUE)
+simDataSettings <- rbind(simDataSettings, simDataSettings)
+simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
+simDataSettings$slope <- 0.025
+
+
+simDataSettings <- rbind(simDataSettings, simDataSettings)
+simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
 
 idx <- as.numeric(commandArgs(TRUE))
 
@@ -15,16 +22,15 @@ sidx <- simDataSettings[idx, ]
 
 createFits <- function(sidx, nit = 500) {
 
-  #if (sidx$timetog == 2) {
-    tttime <- seq(-2, 2, length.out = 501)
-  #} else {
-  # tttime <- seq(-1, 1, length.out = 401)
-  #}
+  slp <- sidx$slope
+  ppars <- c(0, slp)
 
-
-  dat <- createPlineData3(manymeans = sidx$mm,
+  ## only setting one of the times
+  dat <- createPlineData(manymeans = sidx$mm,
                          ar1 = sidx$ar,
-                         TIME = tttime, distSig = 0.025)
+                         distSig = sidx$sigVal,
+                         paired = FALSE,
+                         pars = ppars)
 
   fit <- bdotsFit(data = dat,
                   y = "fixations",
@@ -50,7 +56,8 @@ createFits <- function(sidx, nit = 500) {
 
 N <- 100
 sims <- vector("list", length = N)
-nn <- paste0("no_pair_sim", idx)
+attr(sims, "simsettings") <- sidx
+nn <- paste0("sim", idx)
 sf <- paste0("prog_txt/", nn, ".txt")
 rf <- paste0("rds_files/", nn, ".rds")
 
@@ -62,7 +69,6 @@ for (i in seq_len(N)) {
   if (i %% 10 == 0) {
     msg <- paste0("index: ", idx, ", iteration: ", i)
     print(msg)
-    #saveRDS(object = sims, file = rf)
   }
 }
 saveRDS(sims, rf)

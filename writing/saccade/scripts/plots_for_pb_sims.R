@@ -13,8 +13,12 @@ library(eyetrackSim)
 
 #load("~/dissertation/writing/saccade/data/pb_data_sim.RData")
 #load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst.RData")
-load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst.RData")
-load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_no_start_par.RData")
+#load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst.RData")
+# load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_no_start_par.RData")
+# load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst_no_start_par.RData")
+#
+# load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_normal.RData")
+load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst_normal.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -107,7 +111,7 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
   pp
 }
 
-makeMiseTable <- function(fix, sac, sim, tit) {
+makeStatTable <- function(fix, sac, sim, tit, r2=FALSE) {
 
   mise <- function(fp, tp) {
     times <- 0:2000
@@ -123,20 +127,42 @@ makeMiseTable <- function(fix, sac, sim, tit) {
     mv <- unlist(mv, use.names = FALSE)
   }
 
+  get_r2 <- function(fp, tp) {
+    times <- 0:2000
+    fp <- split(fp, 1:nrow(fp))
+    tp <- split(tp, 1:nrow(tp))
+
+    rr <- Map(function(x, y) {
+      yy <- logistic_f(y, times)
+      yh <- logistic_f(x, times)
+      sst <- sum((yy-mean(yy))^2)
+      sse <- sum((yy - yh)^2)
+      rr2 <- 1 - sse/sst
+    }, fp, tp)
+    rr <- unlist(rr, use.names = FALSE)
+  }
+
 
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
   idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))
+
+  print(length(idx) / nrow(fix))
 
   # get pars
   truep <- subsetSim(sim, idx)$subPars$pars[, 2:5] |> as.matrix()
   fixp <- coef(fix[idx, ])
   sacp <- coef(sac[idx, ])
 
-  rr1 <- mise(fixp, truep)
-  rr2 <- mise(sacp, truep)
-  ss1 <- setnames(transpose(data.table(as.numeric(summary(rr1)))), names(summary(rr1)))
-  ss2 <- setnames(transpose(data.table(as.numeric(summary(rr2)))), names(summary(rr2)))
+  if (r2 == TRUE) {
+    mm1 <- get_r2(fixp, truep)
+    mm2 <- get_r2(sacp, truep)
+  } else {
+    mm1 <- mise(fixp, truep)
+    mm2 <- mise(sacp, truep)
+  }
+  ss1 <- setnames(transpose(data.table(as.numeric(summary(mm1)))), names(summary(mm1)))
+  ss2 <- setnames(transpose(data.table(as.numeric(summary(mm2)))), names(summary(mm2)))
   ss <- rbindlist(list(ss1, ss2))
 
   nn <- data.table(Curve = c("Proportion", "Look Onset"),
@@ -145,6 +171,55 @@ makeMiseTable <- function(fix, sac, sim, tit) {
 }
 
 ############### END MAKING FUNCTIONS #################################
+
+# for testing
+fix <- fit_fix_no_delay
+sac <- fit_sac_no_delay
+sim <- sim_no_delay
+tit <- ""
+## Eh, not what we really are trying to go for here
+# ndtabr <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
+#                        sim_no_delay, tit = "No Delay", r2 = TRUE)
+#
+# unftabr <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
+#                         sim_uniform, tit = "Uniform Delay", r2 = TRUE)
+#
+# wbtabr <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
+#                        sim_weibull, tit = "Weibull Delay", r2 = TRUE)
+#
+# bbtabr <- makeStatTable(fit_fix_beta, fit_sac_beta,
+#                        sim_beta, tit = "Beta Delay", r2 = TRUE)
+#
+# nmtabr <- makeStatTable(fit_fix_normal, fit_sac_normal,
+#                        sim_normal, tit = "Normal Delay", r2 = TRUE)
+#
+# misetabr <- rbindlist(list(ndtabr, unftabr, wbtabr, bbtabr, nmtabr))[order(Curve), ]
+# misetabr
+
+#print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
+
+## Or with MISE
+ndtab <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
+                       sim_no_delay, tit = "No Delay", r2 = FALSE)
+
+unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
+                        sim_uniform, tit = "Uniform Delay", r2 = FALSE)
+
+wbtab <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
+                       sim_weibull, tit = "Weibull Delay", r2 = FALSE)
+
+bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
+                       sim_beta, tit = "Beta Delay", r2 = FALSE)
+
+nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
+                       sim_normal, tit = "Normal Delay", r2 = FALSE)
+
+misetab <- rbindlist(list(ndtab, unftab, wbtab, bbtab, nmtab))[order(Curve), ]
+misetab
+
+
+
+########################################################################
 
 
 ## No delay
@@ -158,13 +233,6 @@ pdf("../img/no_delay_par_bias.pdf")
 grid.arrange(pp[[1]], pp[[2]])
 dev.off()
 
-# pdf("../img/no_delay_par_bias_fixation.pdf")
-# pp[[1]]
-# dev.off()
-#
-# pdf("../img/no_delay_par_bias_saccade.pdf")
-# pp[[2]]
-# dev.off()
 
 
 ## Now with Uniform delay (lost about 10%)
@@ -242,29 +310,11 @@ dev.off()
 #
 ####### Let's make tables, yo
 
-ndtab <- makeMiseTable(fit_fix_no_delay,
-                       fit_sac_no_delay,
-                       sim_no_delay,
-                       tit = "No Delay")
-
-unftab <- makeMiseTable(fit_fix_uniform,
-                        fit_sac_uniform,
-                        sim_uniform,
-                        tit = "Uniform Delay")
-
-wbtab <- makeMiseTable(fit_fix_weibull,
-                       fit_sac_weibull,
-                       sim_weibull,
-                       tit = "Weibull Delay")
-
-
-misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
-print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
 
 
 
 ## Why does weibull look better?
-unf <- function() runif(1, min = 100, max = 300)
+unf <- function() abs(rnorm(1, 200, sd = 30)) #runif(1, min = 100, max = 300)
 makeActiveBinding("unf_rv", unf, .GlobalEnv)
 
 wb <- function() rweibull(1, shape = 1.8, scale = 224.9)

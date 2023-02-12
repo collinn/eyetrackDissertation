@@ -11,6 +11,8 @@ getPowerTab <- function(ff) {
   pm <- lapply(rr, `[[`, 3)
 
   powerdetector <- function(mm) {
+
+    if (is.null(mm)) return(-200)
     time <- seq(-2, 2, length.out = 501)
 
     vec <- vector("numeric", length = length(time))
@@ -40,10 +42,12 @@ getPowerTab <- function(ff) {
 
   makeSummary <- function(vv) {
     tie <- mean(vv==-100)
-    ssm <- summary(vv[vv!=-100])
+    t2e <- mean(vv==-200)
+    pwr <- 1 - mean(vv==-200 | vv==-100)
+    ssm <- summary(vv[!(vv %in% c(-100,-200))])
 
-    ssm <- c(tie, ssm)
-    names(ssm)[1] <- "TIE rate"
+    ssm <- c(tie, t2e, pwr, ssm)
+    names(ssm)[1:3] <- c("Type I Error","Type II Error", "Power")
     ssm
   }
 
@@ -54,15 +58,7 @@ getPowerTab <- function(ff) {
 
 # original fuck ups
 ff <- list.files("rds_files", full.names = TRUE)
-ff <- ff[!grepl("redo", ff)]
-
-# just the redo
-ff <- list.files("rds_files", pattern = "redo", full.names = TRUE)
-ff <- ff[grepl("st22", ff)]
-
-ff <- list.files("rds_files", pattern = "no_pair", full.names = TRUE)
-
-
+ff <- ff[c(1, 5:12, 2:4)]
 res <- lapply(ff, getPowerTab)
 
 res_sm <- lapply(res, function(z) setDT(as.list(z[[1]]))) |> rbindlist()
@@ -70,16 +66,22 @@ res_mm <- lapply(res, function(z) setDT(as.list(z[[2]]))) |> rbindlist()
 res_pm <- lapply(res, function(z) setDT(as.list(z[[3]]))) |> rbindlist()
 
 
+# Only doing power on these three things yay
 simDataSettings <- data.table(mm = c(F, T, T),
                               ar = c(T, T, F),
                               bcor = c(T, F, F))
 simDataSettings <- rbind(simDataSettings, simDataSettings)
-simDataSettings$Time <- as.integer(c(1, 1, 1, 2, 2, 2))
+simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
+simDataSettings <- rbind(simDataSettings, simDataSettings)
+simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
+names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma", "slope")
 
-names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "Time")
+#simDataSettings <- simDataSettings[1:6, ]
 
-neword <- c(1,4,2,5,3,6)
-neword <- 1:3 # for other cases
+#neword <- c(1,4,2,5,3,6)
+#neword <- 1:3 # for other cases
+neword <- c(1,7,2,8,3,9,4,10,5,11,6,12)
+#neword <- 1:6
 
 res_sm <- cbind(simDataSettings, res_sm)[neword, ]
 res_mm <- cbind(simDataSettings, res_mm)[neword, ]

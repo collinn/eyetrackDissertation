@@ -13,7 +13,7 @@ library(eyetrackSim)
 
 #load("~/dissertation/writing/saccade/data/pb_data_sim.RData")
 #load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst.RData")
-load("~/packages/eyetrackSim/analysis/dg_pb_data_sim_fbst.RData")
+load("~/packages/eyetrackSim/analysis/dg_pb_data_sim_no_fbst.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -35,7 +35,7 @@ getParBias <- function(ss, ff) {
 
 getRmvIdx <- function(ff) {
   rr <- coef(ff)
-  idx <- which(rr[,3] < 100 | rr[,4] < 100 )
+  idx <- which(rr[,3] < 10 | rr[,4] < 10 )
   idx
 }
 
@@ -59,7 +59,7 @@ biasPlot <- function(fix, sac, sim, tit, xint = 0) {
     labs(y = "Number of Runs", x = "Bias") +
     theme_bw() +
     #theme_bw(base_size = 16) +
-    ggtitle(paste0("Fixation Parameter Bias, ", tit))
+    ggtitle(paste0("Parameter Bias for Proportions Method, ", tit))
 
   p2 <- ggplot(bb2, aes(x = value)) + geom_histogram(bins=40) +
     geom_vline(xintercept = xint, color = 'red') +
@@ -67,7 +67,7 @@ biasPlot <- function(fix, sac, sim, tit, xint = 0) {
     labs(y = "Number of Runs", x = "Bias") +
     #theme_bw(base_size = 16) +
     theme_bw() +
-    ggtitle(paste0("Saccade Parameter Bias, ", tit))
+    ggtitle(paste0("Parameter Bias for Look Onset Method, ", tit))
   return(list(p1, p2))
 }
 
@@ -106,7 +106,7 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
   pp
 }
 
-makeMiseTable <- function(fix, sac, sim, tit) {
+makeMiseTable <- function(fix, sac, sim, tit, r2 = FALSE) {
 
   mise <- function(fp, tp) {
     times <- 0:2000
@@ -122,28 +122,76 @@ makeMiseTable <- function(fix, sac, sim, tit) {
     mv <- unlist(mv, use.names = FALSE)
   }
 
+  get_r2 <- function(fp, tp) {
+    times <- 0:2000
+    fp <- split(fp, 1:nrow(fp))
+    tp <- split(tp, 1:nrow(tp))
+
+    rr <- Map(function(x, y) {
+      yy <- doubleGauss_f(y, times)
+      yh <- doubleGauss_f(x, times)
+      sst <- sum((yy-mean(yy))^2)
+      sse <- sum((yy - yh)^2)
+      rr2 <- 1 - sse/sst
+    }, fp, tp)
+    rr <- unlist(rr, use.names = FALSE)
+  }
+
 
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
   idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))
+
+  print(length(idx) / nrow(fix))
 
   # get pars
   truep <- subsetSim(sim, idx)$subPars$pars[, 2:7] |> as.matrix()
   fixp <- coef(fix[idx, ])
   sacp <- coef(sac[idx, ])
 
-  rr1 <- mise(fixp, truep)
-  rr2 <- mise(sacp, truep)
+  if (r2 == TRUE) {
+    rr1 <- get_r2(fixp, truep)
+    rr2 <- get_r2(sacp, truep)
+  } else {
+    rr1 <- mise(fixp, truep)
+    rr2 <- mise(sacp, truep)
+  }
+
   ss1 <- setnames(transpose(data.table(as.numeric(summary(rr1)))), names(summary(rr1)))
   ss2 <- setnames(transpose(data.table(as.numeric(summary(rr2)))), names(summary(rr2)))
   ss <- rbindlist(list(ss1, ss2))
 
-  nn <- data.table(Curve = c("Fixation", "Saccade"),
+  nn <- data.table(Curve = c("Proportion", "Look Onset"),
                    Delay = rep(tit, 2))
   cbind(nn, ss)
 }
 
 ############### END MAKING FUNCTIONS #################################
+####### Let's make tables, yo
+
+ndtab <- makeMiseTable(dg_fit_fix_no_delay,
+                       dg_fit_sac_no_delay,
+                       dg_sim_no_delay,
+                       tit = "No Delay")
+
+unftab <- makeMiseTable(dg_fit_fix_uniform,
+                        dg_fit_sac_uniform,
+                        dg_sim_uniform,
+                        tit = "Uniform Delay")
+
+wbtab <- makeMiseTable(dg_fit_fix_weibull,
+                       dg_fit_sac_weibull,
+                       dg_sim_weibull,
+                       tit = "Weibull Delay")
+
+
+misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
+misetab
+
+print(xtable::xtable(misetab), include.rownames=FALSE)
+
+
+
 
 
 ## No delay
@@ -227,23 +275,4 @@ pp3
 
 grid.arrange(pp, pp3)
 
-####### Let's make tables, yo
 
-ndtab <- makeMiseTable(dg_fit_fix_no_delay,
-                       dg_fit_sac_no_delay,
-                       dg_sim_no_delay,
-                       tit = "No Delay")
-
-unftab <- makeMiseTable(dg_fit_fix_uniform,
-                        dg_fit_sac_uniform,
-                        dg_sim_uniform,
-                        tit = "Uniform Delay")
-
-wbtab <- makeMiseTable(dg_fit_fix_weibull,
-                       dg_fit_sac_weibull,
-                       dg_sim_weibull,
-                       tit = "Weibull Delay")
-
-
-misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
-print(xtable::xtable(misetab), include.rownames=FALSE)

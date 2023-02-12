@@ -41,15 +41,15 @@ for (i in seq_len(N)) {
   fit <- createFits(sidx)
 
   sm <- bdotsBoot(formula = fixations ~ group(A, B),
-                  bdObj = bf[[i]], singleMeans = TRUE,
+                  bdObj = fit, singleMeans = TRUE,
                   cores = detectCores() - 1L)$sigTime
 
   mm <- bdotsBoot(formula = fixations ~ group(A, B),
-                  bdObj = bf[[i]], singleMeans = FALSE,
+                  bdObj = fit, singleMeans = FALSE,
                   cores = detectCores() - 1L)$sigTime
 
   pm <- suppressMessages(bdotsBoot(formula = fixations ~ group(A, B),
-                                   bdObj = bf[[i]], permutation = TRUE, skipDist = TRUE,
+                                   bdObj = fit, permutation = TRUE, skipDist = TRUE,
                                    cores = detectCores() - 1L))$sigTime
 
   res[[i]] <- list(singleMeans = sm,

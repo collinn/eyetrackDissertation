@@ -25,7 +25,7 @@ createFits <- function(sidx) {
                   curveType = logistic(),
                   cores = detectCores() - 1L,
                   cor = sidx$bdotscor)
-  list(fit = fit, data = dat)
+  fit
 }
 
 N <- 100

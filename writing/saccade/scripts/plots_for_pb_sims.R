@@ -178,14 +178,14 @@ sac <- fit_sac_no_delay
 sim <- sim_no_delay
 tit <- ""
 ## Eh, not what we really are trying to go for here
-# ndtabr <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
-#                        sim_no_delay, tit = "No Delay", r2 = TRUE)
-#
-# unftabr <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
-#                         sim_uniform, tit = "Uniform Delay", r2 = TRUE)
-#
-# wbtabr <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
-#                        sim_weibull, tit = "Weibull Delay", r2 = TRUE)
+ndtabr <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
+                       sim_no_delay, tit = "No Delay", r2 = TRUE)
+
+unftabr <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
+                        sim_uniform, tit = "Uniform Delay", r2 = TRUE)
+
+wbtabr <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
+                       sim_weibull, tit = "Weibull Delay", r2 = TRUE)
 #
 # bbtabr <- makeStatTable(fit_fix_beta, fit_sac_beta,
 #                        sim_beta, tit = "Beta Delay", r2 = TRUE)
@@ -207,15 +207,17 @@ unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
 
 wbtab <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
                        sim_weibull, tit = "Weibull Delay", r2 = FALSE)
+#
+# bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
+#                        sim_beta, tit = "Beta Delay", r2 = FALSE)
+#
+# nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
+#                        sim_normal, tit = "Normal Delay", r2 = FALSE)
 
-bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
-                       sim_beta, tit = "Beta Delay", r2 = FALSE)
-
-nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
-                       sim_normal, tit = "Normal Delay", r2 = FALSE)
-
-misetab <- rbindlist(list(ndtab, unftab, wbtab, bbtab, nmtab))[order(Curve), ]
+misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
 misetab
+print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
+#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
 
 
 

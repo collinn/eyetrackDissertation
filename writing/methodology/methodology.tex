@@ -115,7 +115,7 @@ but note that this isn't \textit{really} a bootstrap of the $\theta_i$ values. I
 \theta^{*}_b \sim N \left( \mu_{\theta}, \frac1n V_{\theta} + \frac{1}{n^2} \sum s_i^2 \right)
 \end{equation}
 The mean value across all bootstraps will be the same as before, but now we are actually accounting for the variability that exits.
-\item As an aside, this sets us up for a useful callback -- when describing the mean structure of the simulations, we can say that they both follow $\theta \sim N(\mu_{\theta}, V_{\theta})$, but one has empirically determined $V_{\theta}$ and the other sets $V_{\theta} = 0$. We can then be like hey go look at Equations~\ref{eq:wo_rep_boot} and~\ref{eq:w_rep_boot} and see how the correct bootstrap can accomodate both cases but bad bootstrap cannot
+\item As an aside, this sets us up for a useful callback -- when describing the mean structure of the simulations, we can say that they both follow $\theta \sim N(\mu_{\theta}, V_{\theta})$, but one has empirically determined $V_{\theta}$ and the other sets $V_{\theta} = 0$. We can then be like hey go look at Equations~\ref{eq:wo_rep_boot} and~\ref{eq:w_rep_boot} and see how the correct bootstrap can accommodate both cases but bad bootstrap cannot
 \item Last aside -- I have not simulated this yet, but Bob did make a comment about the TIE for the good bootstrap being too low, asking about sacrifice in power. While we haven't done power yet (as of this writing), I wonder how the good bootstrap would look if we disregarded the $s_i^2$ terms
 \end{enumerate}
 \end{singlespace}
@@ -154,11 +154,11 @@ This will be our observed test statistic.
 \end{enumerate}
 \end{singlespace}
 
-Paired permutation testing is implemented with a minor adjustment to step (3). Instead of permuting all of the labels between groups, choose one group and randomly assign each subject to either retain their current group membership or to change groups. Make the corresponding reassignment to members in the second group. .This ensures that each permuted group contains one observation from each subject.
+Paired permutation testing is implemented with a minor adjustment to step (3). Instead of permuting all of the labels between groups, choose one group and randomly assign each subject to either retain their current group membership or to change groups. Make the corresponding reassignment to members in the second group. This ensures that each permuted group contains one observation from each subject.
 
 
 
-\section{TIE Simulations}
+\section{Type I Error Simulations}
 
 this section needs reorganized but it is as is for now
 
@@ -190,69 +190,13 @@ e_{it} = \phi e_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma)
 \end{equation}
 where the $w_{it}$ are iid with $\sigma = 0.025$ (it actually is something else that is variable depending on number of trials, but such that for 100 trials it is equal to this, same as Oleson 2017). $\phi$ corresponds to an autocorrelation parameter and is set to $\phi = 0.8$ when the generated data is to be autocorrelated and set to $\phi = 0$ when we assume the errors are all iid. 
 
-Finally, we consider the paired data, which differs in creation according to the mean structure. In the case in which $V_{\theta} \not= 0$, we simply used the same value of $\theta_i$ for the $i$th subject in each group, allowing the only difference to be that corresponding to the error structure. In the case when $V_{\theta} = 0$, however, it was already the case that the set of parameters were the same between subjects in each group (and indeed for all subjects in both groups). As such, letting the observed data for subject $i$ in group $A$ be denoted $y_{iA}$, we set
+\paragraph{Paired Data} Finally, we consider the paired data, which differs in creation according to the mean structure. In the case in which $V_{\theta} \not= 0$, we simply used the same value of $\theta_i$ for the $i$th subject in each group, allowing the only difference to be that corresponding to the error structure. In the case when $V_{\theta} = 0$, however, it was already the case that the set of parameters were the same between subjects in each group (and indeed for all subjects in both groups). As such, letting the observed data for subject $i$ in group $A$ be denoted $y_{iA}$, we set
 \begin{align*}
 y_{iB} = y_{iA} + N(0, \sigma)
 \end{align*}
 so that the only difference between paired subjects was uncorrelated normal noise at each time point. (I get that this is questionable, but what is the alternative? Truly it would just be to half the degrees of freedom in the t-test, which isn't really comparing IRL paired data)
 
-\subsection{extra/should i elaborate on this instead of the general summary above?}
-
-Not sure if this is worth discussing here or in some section detailing the actual construction of these estimates -- what is actually done is we for a subject with $N$ trials at each time point we have
-
-\begin{equation}
-y_{it} \sim Bin(N, f_{\theta_t}(t))
-\end{equation}
-
-This has the nice benefit of creating normally distributed errors with variances modulated by the number of trials. In the other case where it is added separately, we set $\sigma = (1-p)(p)/\sqrt{N}$ so that if we do change the number of observed trials, we are able to adjust the variability in both cases.        Pretty slick, i know
-
-Actually, I had previously gone into this level of detail for both mean structure and error structure. Doing so kind of necessitated breaking these into longer, independent sections. As it is now, I kind of walk through all of it in a paragraph or two (above). I'm not really sure how much the detail/length trade off matters here as i imagine most people wont care about the particulars
-
-
-
-%
-%\paragraph{Single Means}
-%
-%The first situation, which we call the ``single mean" assumption (we can change this name its just in contrast to many means) goes like this: for a particular group of subjects, there is a single set of parameters, $\theta$ from which all  subject specific observations are derived. For the generating function $f$, we have that the subject specific observations are
-%
-%\begin{equation}\label{eq:sm_f_general}
-%y_{it} = f_{\theta}(t) + \epsilon_{it}
-%\end{equation}
-%where the error structure may be either independent and normally distributed or maintain an autocorrelated structure. We will go into more detail on the error term later.
-%
-%Under this assumption, all subjects have the same underlying parametric function with the only deviation between these subjects being their subject specific error terms. Under this assumption, we fit a nonlinear model to the data returning a parameter estimate and covariance matrix. It must be the case that we assume that the only relevant variability here is the subject specific variability, captured by the covariance matrix. That is, the difference between parameter mean estimates between subjects is of no interest (I actually don't even think here that is true, but that is essentially what is assumed in the Oleson bootstrapping method).
-%
-%\paragraph{Many Means}
-%
-% The second situation is the many means assumption. Similar to the single means assumption, we assume that a group of subjects has a group mean, $\theta$. In addition, however, we also assume variability, $V$ in this group. This manifests itself by having subject specific parameters $\theta_i \sim N(\theta, \Sigma)$. From here, we assume that subject specific observations have the following structure:
-%
-%\begin{equation} \label{eq:mm_f_general}
-%y_{it} = f_{\theta_i}(t) + \epsilon_{it}
-%\end{equation}
-%Similar to Equation~\ref{eq:sm_f_general}, each individual subject has a mean structure around the generating function with an associated error; the difference here is that each subject's mean structure is dependent on their own subject-specific parameters. As such, not only must we estimate variability in our bootstrap based on the subject's estimated covariance matrix to capture within-subject variability, as was done in the single means method, we must also capture the \textit{between} subject variability, an estimate of $\Sigma$, by bootstrapping the subjects themselves with replacement
-%
-%\subsection{Error Structure}
-%
-%We assume an error structure in the generation of our data. We will construct data with AR(1) correlation and without
-%
-%\subsubsection{Autocorrelated errors}
-%
-%In the case of autocorrelated errors, we assume
-%
-%\begin{equation}
-%e_{it} \sim \rho e_{i, t-1} + w_{it}
-%\end{equation}
-%where $\rho$ is the autocorrelation parameter and
-%\begin{equation}
-%w_{it} \sim N(0, \sigma^2).
-%\end{equation}
-%
-%\subsubsection{Independent errors}
-%
-%In the independent error case, we assume that the errors are independent and normally distributed
-%\begin{equation}
-%e_{it} \sim N(0, \sigma^2)
-%\end{equation}
+%\subsection{extra/should i elaborate on this instead of the general summary above?}
 %
 %Not sure if this is worth discussing here or in some section detailing the actual construction of these estimates -- what is actually done is we for a subject with $N$ trials at each time point we have
 %
@@ -260,23 +204,21 @@ Actually, I had previously gone into this level of detail for both mean structur
 %y_{it} \sim Bin(N, f_{\theta_t}(t))
 %\end{equation}
 %
-%This has the nice benefit of creating normally distributed errors with variances modulated by the number of trials.
+%This has the nice benefit of creating normally distributed errors with variances modulated by the number of trials. In the other case where it is added separately, we set $\sigma = (1-p)(p)/\sqrt{N}$ so that if we do change the number of observed trials, we are able to adjust the variability in both cases. Pretty slick, i know
+%
+%Actually, I had previously gone into this level of detail for both mean structure and error structure. Doing so kind of necessitated breaking these into longer, independent sections. As it is now, I kind of walk through all of it in a paragraph or two (above). I'm not really sure how much the detail/length trade off matters here as i imagine most people wont care about the particulars
 
-\section{Type I Error}
+
+
+
+\subsection{Results}
 
 The parameters used in the group distributions were empirically determined from (timball 2017) and set $b = 0.21$, $p = 0.90$, $s = 0.00165$ and $x = 725.03$ (how  many decimals, idk. Also won't include variability but I have that too). A four parameter logistic curve with these parameters has the following form:
 
 
 
-%\begin{figure}[H]
-%\centering
-%\includegraphics{img/compare_par_plot.pdf}
-%\caption{I don't think I need either of these plots, will plan on deleting}
-%\end{figure}
 
-
-
-\subsection{FWER}
+\subsubsection{FWER}
 
 Here are the results for type I FWER (I have put the new values for permutation in parenthetical, this is after accounting for the within-subject variance with the additional drawing step for coefficients. I only tested this on the first four in unpaired, the rest are not updated)
 
@@ -318,7 +260,7 @@ FALSE & TRUE & TRUE & 0.12 & 0.02 & 0.03 \\
 \caption{TIE for realistic parameters (paired)}
 \end{table}
 
-\subsection{Median per comparison error rate}
+\subsubsection{Median per comparison error rate}
 
 \begin{table}[H]
 \centering
@@ -361,7 +303,7 @@ FALSE & TRUE & TRUE & 0.03 & 0.00 & 0.00 \\
 \begin{figure}[H]
 \centering
 \includegraphics{TEMP_histogram.pdf}
-\caption{quick put together of what this might look like, frequency of TIE at each spot. obviously the plots cant stay like this. potentially misleading looking at absolute frequency, but this is consequence of breaks being length 32 (or else you cant see color). Just did not take time to do in ggplot. Also, haven't labeled tables yet but this corresponds to the first 8 sims in unpaired. I would maybe like this plot more if the y axis was percentage}
+\caption{quick put together of what this might look like, frequency of TIE at each spot. Since there is no obvious trend here, though, I may just omit this entirely}
 \end{figure}
 
 \section{Power Simulations}
@@ -393,12 +335,7 @@ mx + b \quad &x \geq 0
 \end{equation}
 where $b \sim |N(0, 0.005)|$ and $m \sim N(\mu_i, 0.005)$, where $\mu_i = 0$ for the group without effect and $\mu_i = 0.5$ for the group with effect (I guess this is called a folded normal distribution? I could have written something like $b = |\gamma|, \gamma \sim N(0, 0.005)$, but maybe there is an even slicker way of expression this). A depiction of these mean structures is given in Figure~\ref{fig:power_plot}.
 
-\begin{figure}[H]
-\centering
-\includegraphics{power_plot.pdf}
-\caption{Plot of the generating mean structure for power simulations. This looks more drastic than it is because the x axis spans 4 while the y only 1}
-\label{fig:power_plot}
-\end{figure}
+
 
 \subsection{Data generation -- WARNING: WIP} As before, we tested a limited combination of ``manymeans", ``ar1", and ``bdotscor" (i know these need different names). In each simulation of (100) simulations, two groups were simulated, with 25 subjects in each group. We begin with a description of data generation for the manymeans=TRUE assumption. [also, how to avoid ambiguity with a statement like ``this simulation (with these settings) had 100 simulations (instances of those settings)?]
 
@@ -410,216 +347,144 @@ For the manymanys = FALSE, we basically did the same thing as above, but only dr
 
 As a final thing, I also ran this over two different intervals: \xt{seq(-1,1,length.out = 401)} and \xt{seq(-2,2, length.out = 501)} to see if anything would change. Fortunately, the impact was not very noticeable. Alright, let's get to results
 
+We only set bdots corr to true when many means was false. This is suggesting the new default should be bdotscorr = FALSE, so we omit that column
+
 \subsection{Results}
 
-New: I generated 1000 subjects and have plotted here the distribution of the \textit{true} parameters, i.e., the generating distributions
+[Not sure on column names, maybe also don't need min/max]
 
-\begin{figure}[H]
-    \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{paired_many_means_high_sig_dist_plot.pdf}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{paired_single_means_high_sig_dist_plot.pdf}} 
-    \caption{Paired bases, $\sigma = 0.025$ (a) Many means assumption, (b) single means distribution (obviously it's zero variability since one mean). Note also that the mean slope appears closer to one. This isn't surprising since the \textit{actual} distribution takes the max slope of 25. I'll change this in future sims }
-\label{fig:pair_high_sig_dist_plots}
-\end{figure}
+Presented in this section are the results of each of the aforementioned simulations. The first four columns indicate the parameters of the simulation: the mean structure, the error structure, the variability in the generating distributions and the effect size, or the slope. Note that as each of the simulations contained intervals where there was no difference in actuality, there is a column marked $\alpha$ indicating the observed type I error; similarly, the column labeled $\beta$ indicates the proportion of simulations in which no differences were detected. The remaining column, $1 - \beta - \alpha$, indicates the proportion of simulations in which differences were detected, but only in the regions in which they existed. Finally, the remaining columns offer a summary of when differences were detected. As the true value for this is 0, smaller numbers indicate greater ability to detect smaller effect sizes.
 
-The columns for manymeans, ar1, and bdotscorr are the same as before. Right now, Time = 2 indicates from (-2,2) while Time = 1 is (-1,1). This table presents a summary of the time at which a difference was detected. In all cases, the true effect begins at 0. It has $\sigma = 0.025$, time for (-1,1) and (-2,2), the intercept term is ``paired", everything else should be certified kosher. 500 bootstraps/permutations, 100 sims for each
+I removed Min and Max because who cares, it was noise and took up space. I also removed m = 0.005 because it was pretty similar in all cases except for in the singlemeans case where basically the type II error rate was like 0.9 for everything including v1. It also effed up all my stats at the end. so let's just not do it. This makes my tables MUCH cleaner while conveying pretty much the same information
+
+
+
+\subsubsection{Bootstrap v1}
 
 \begin{table}[H]
 \centering
-\begin{tabular}{lllcccccccc}
+\begin{tabular}{llcccccccc}
   \hline
-manymeans & ar1 & bdotscorr & Time & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+$V \not= 0$ & AR(1) & $\sigma$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$ & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
-FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0050 & 0.0100 & 0.0100 & 0.0107 & 0.0100 & 0.0200 \\ 
-  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0160 & 0.0121 & 0.0160 & 0.0160 \\ 
-  TRUE & TRUE & FALSE &     1 & 0.2500 & 0.0050 & 0.0050 & 0.0050 & 0.0070 & 0.0100 & 0.0100 \\ 
-  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
-  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0050 & 0.0050 & 0.0050 & 0.0051 & 0.0050 & 0.0100 \\ 
-  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
+FALSE & TRUE & 0.005 & 0.03 & 0.00 & 0.97 & 0.279 & 0.325 & 0.356 \\ 
+  FALSE & TRUE & 0.025 & 0.04 & 0.00 & 0.96 & 0.264 & 0.319 & 0.347 \\ 
+  TRUE & FALSE & 0.005 & 0.86 & 0.00 & 0.14 & 0.017 & 0.038 & 0.045 \\ 
+  TRUE & FALSE & 0.025 & 0.95 & 0.00 & 0.05 & 0.010 & 0.017 & 0.019 \\ 
+  TRUE & TRUE & 0.005 & 0.83 & 0.00 & 0.17 & 0.019 & 0.037 & 0.052 \\ 
+  TRUE & TRUE & 0.025 & 0.95 & 0.00 & 0.05 & 0.008 & 0.030 & 0.037 \\
    \hline
 \end{tabular}
-\caption{Power for bad bootstrap} 
+\caption{Power for v1 bootstrap} 
 \label{tab:bad_boot_pwr}
 \end{table}
 
+\subsubsection{Bootstrap v2}
+
 \begin{table}[H]
 \centering
-\begin{tabular}{lllcccccccc}
+\begin{tabular}{llcccccccccc}
   \hline
-manymeans & ar1 & bdotscorr & Time & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+$V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-FALSE & TRUE & TRUE &     1 & 0.0000 & 0.0100 & 0.0100 & 0.0150 & 0.0143 & 0.0150 & 0.0250 \\ 
-  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0155 & 0.0160 & 0.0240 \\ 
-  TRUE & TRUE & FALSE &     1 & 0.0000 & 0.0950 & 0.1300 & 0.1450 & 0.1457 & 0.1650 & 0.2050 \\ 
-  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.1440 & 0.1460 & 0.1480 & 0.1480 & 0.1500 & 0.1520 \\ 
-  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0850 & 0.1300 & 0.1400 & 0.1433 & 0.1562 & 0.2150 \\ 
-  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.1040 & 0.1360 & 0.1440 & 0.1476 & 0.1600 & 0.2000 \\ 
+FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.323 & 0.372 & 0.404 \\ 
+  FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.310 & 0.363 & 0.398 \\ 
+  TRUE & FALSE & 0.005 & 0.00 & 0.13 & 0.87 & 0.372 & 0.497 & 0.634 \\ 
+  TRUE & FALSE & 0.025 & 0.00 & 0.17 & 0.83 & 0.435 & 0.581 & 0.770 \\ 
+  TRUE & TRUE & 0.005 & 0.01 & 0.16 & 0.83 & 0.383 & 0.566 & 0.702 \\ 
+  TRUE & TRUE & 0.025 & 0.00 & 0.13 & 0.87 & 0.413 & 0.581 & 0.748 \\
    \hline
 \end{tabular}
-\caption{Power for good bootstrap} 
+\caption{Power for v2 bootstrap} 
 \label{tab:good_boot_pwr}
 \end{table}
 
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 12:18:22 2023
+\subsection{Permutation}
+
 \begin{table}[H]
 \centering
-\begin{tabular}{lllcccccccc}
+\begin{tabular}{llcccccccccc}
   \hline
-manymeans & ar1 & bdotscorr & Time & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+$V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
-FALSE & TRUE & TRUE &     1 & 0.0100 & 0.0050 & 0.0100 & 0.0100 & 0.0094 & 0.0100 & 0.0200 \\ 
-  FALSE & TRUE & TRUE &     2 & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0101 & 0.0160 & 0.0160 \\ 
-  TRUE & TRUE & FALSE &     1 & 0.0000 & 0.0950 & 0.1300 & 0.1525 & 0.1529 & 0.1712 & 0.2150 \\ 
-  TRUE & TRUE & FALSE &     2 & 0.0000 & 0.1440 & 0.1440 & 0.1440 & 0.1440 & 0.1440 & 0.1440 \\ 
-  TRUE & FALSE & FALSE &     1 & 0.0000 & 0.0800 & 0.1300 & 0.1450 & 0.1472 & 0.1600 & 0.2250 \\ 
-  TRUE & FALSE & FALSE &     2 & 0.0000 & 0.0960 & 0.1280 & 0.1480 & 0.1475 & 0.1600 & 0.2080 \\ 
+FALSE & TRUE & 0.005 & 0.13 & 0.00 & 0.87 & 0.280 & 0.314 & 0.341 \\ 
+  FALSE & TRUE & 0.025 & 0.13 & 0.00 & 0.87 & 0.258 & 0.306 & 0.327 \\ 
+  TRUE & FALSE & 0.005 & 0.03 & 0.05 & 0.92 & 0.444 & 0.568 & 0.666 \\ 
+  TRUE & FALSE & 0.025 & 0.06 & 0.11 & 0.83 & 0.522 & 0.625 & 0.740 \\ 
+  TRUE & TRUE & 0.005 & 0.04 & 0.06 & 0.90 & 0.447 & 0.586 & 0.739 \\ 
+  TRUE & TRUE & 0.025 & 0.03 & 0.08 & 0.89 & 0.458 & 0.608 & 0.720 \\ 
    \hline
 \end{tabular}
 \caption{Power for permutation} 
 \label{tab:perm_pwr}
 \end{table}
 
+\subsubsection{Summary of methods}
 
-\subsection{smaller variance version}
+A general estimate of how well each of these methods does in a variety of conditions can be seen by taking the mean of the summary statistics across each of the trials, given in Table~\ref{tab:type_2_summary}.
 
-looking at times (-2, 2), leaving the baseline parameter ``paired", but significantly reducing the variance of the distributions im drawing from $(\sigma = 0.005$). Also only did 50 simulations for each
+\begin{table}[H]
+\centering
+\begin{tabular}{lcccccccc}
+  \hline
+Method & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
+  \hline
+Bootstrap V1 & 0.610 & 0.000 & 0.390 & 0.100 & 0.128 & 0.143 \\ 
+  Bootstrap V2 & 0.003 & 0.098 & 0.898 & 0.373 & 0.493 & 0.609 \\ 
+  Permtuation & 0.070 & 0.050 & 0.880 & 0.402 & 0.501 & 0.589 \\ 
+   \hline
+\end{tabular}
+\caption{Summary of methods for Type II error. It's worth considering presenting the means separately depending on the $V \not=0$ assumption, because that fucking tanks the Type II error for all of them} 
+\label{tab:type_2_summary}
+\end{table}
 
-Here is plot of distributions first (with lower variance)
+As we can see, the permutation method is the most canonical of the methods considered, with a type I error rate close to the nominal $\alpha = 0.05$ and a type II error rate of $\beta = 0.195$, corresponding to approximately 80\% power. The V2 bootstrap, alternatively, is rather conservative, trading a portion of its power for controlling the type I error rate close to zero. Finally, the V1 bootstrap is a poor contender for identifying differences in time series, with its utility limited to the strict assumptions under which it was originally presented.
 
-\begin{figure}[H]
-    \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{paired_many_means_low_sig_dist_plot.pdf}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{paired_single_means_low_sig_dist_plot.pdf}} 
-    \caption{Paired bases, $\sigma = 0.005$ (a) Many means assumption, (b) single means distribution }
-\label{fig:pair_low_sig_dist_plots}
+Even then, it is worth considering these methods again in this limited context. Considering only the case with single means, an AR(1) error structure and an effect size of $m = 0.025$, the V1 bootstrap is able to first detect an effect only marginally sooner than the V2 bootstrap but with a greater type I error rate. Researchers should carefully consider whether or not this greater acquisition of power is worth the risk.
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllcccccccc}
+  \hline
+Method & $V \not= 0$ & AR(1) & $\sigma$ & $m$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
+  \hline
+V1 & FALSE & TRUE & 0.005 & 0.025 & 0.030 & 0.00 & 0.97 & 0.28 & 0.33 & 0.36 \\ 
+  V1 & FALSE & TRUE & 0.025 & 0.025 & 0.040 & 0.00 & 0.96 & 0.26 & 0.32 & 0.35 \\ 
+  V2 & FALSE & TRUE & 0.005 & 0.025 & 0.010 & 0.00 & 0.99 & 0.32 & 0.37 & 0.40 \\ 
+  V2 & FALSE & TRUE & 0.025 & 0.025 & 0.000 & 0.00 & 1.00 & 0.31 & 0.36 & 0.40 \\ 
+%  Perm & FALSE & TRUE & 0.005 & 0.025 & 0.130 & 0.00 & 0.87 & 0.28 & 0.31 & 0.34 \\ 
+%  Perm & FALSE & TRUE & 0.025 & 0.025 & 0.130 & 0.00 & 0.87 & 0.26 & 0.31 & 0.33 \\ 
+   \hline
+\end{tabular}
+\caption{Summary of bootstraps with $V \not=0$ and with AR(1) error structure}
+\label{tab:best_case}
+\end{table}
+
+
+\begin{figure}
+\centering.
+\includegraphics{type_two_err_time_slice.pdf}
+\caption{check out this badass plot in base R. Power really ain't even all that better in manymeans=FALSE WHO IS YOUR GOD NOW????}
 \end{figure}
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 19:28:44 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{lllrrrrrrr}
-  \hline
-manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0080 & 0.0160 & 0.0136 & 0.0160 & 0.0160 \\ 
-  TRUE & TRUE & FALSE & 0.2600 & 0.0080 & 0.0080 & 0.0080 & 0.0082 & 0.0080 & 0.0160 \\ 
-  TRUE & FALSE & FALSE & 0.0000 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
-   \hline
-\end{tabular}
-\caption{Power for bad bootstrap} 
-\label{tab:bad_boot_pwr2}
-\end{table}
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 19:28:58 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{lllrrrrrrr}
-  \hline
-manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.0000 & 0.0080 & 0.0160 & 0.0160 & 0.0178 & 0.0160 & 0.0240 \\ 
-  TRUE & TRUE & FALSE & 0.0000 & 0.0480 & 0.0640 & 0.0800 & 0.0750 & 0.0800 & 0.1040 \\ 
-  TRUE & FALSE & FALSE & 0.0000 & 0.0560 & 0.0660 & 0.0720 & 0.0755 & 0.0800 & 0.1120 \\ 
-   \hline
-\end{tabular}
-\caption{Power for good bootstrap} 
-\label{tab:good_boot_pwr2}
-\end{table}
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Wed Feb  8 19:29:14 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{lllrrrrrrr}
-  \hline
-manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.0200 & 0.0080 & 0.0080 & 0.0160 & 0.0121 & 0.0160 & 0.0160 \\ 
-  TRUE & TRUE & FALSE & 0.0000 & 0.0400 & 0.0560 & 0.0720 & 0.0669 & 0.0720 & 0.0960 \\ 
-  TRUE & FALSE & FALSE & 0.0000 & 0.0480 & 0.0640 & 0.0640 & 0.0672 & 0.0720 & 0.0960 \\ 
-   \hline
-\end{tabular}
-\caption{Power for permutation} 
-\label{tab:perm_pwr2}
-\end{table}
-
-\subsection{Trying with unpaired case}
-
-looking at times (-2, 2), making the baseline parameter ``unpaired" and leaving  variability at $\sigma = 0.025$. This is running now (8:15am) and should be finished by the time we meet. This has 100 for each sim
-
-\begin{figure}[H]
-    \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{unpaired_many_means_high_sig_dist_plot.pdf}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{unpaired_single_means_high_sig_dist_plot.pdf}} 
-    \caption{Unpaired bases, $\sigma = 0.025$ (a) Many means assumption, (b) single means distribution }
-\label{fig:unpair_high_sig_dist_plots}
-\end{figure}
-
-
-Some interesting things here, I think
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Thu Feb  9 13:26:58 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{lllrrrrrrr}
-  \hline
-manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.4200 & 0.0080 & 0.0080 & 0.0120 & 0.0123 & 0.0160 & 0.0240 \\ 
-  TRUE & TRUE & FALSE & 0.9600 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
-  TRUE & FALSE & FALSE & 0.9200 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 & 0.0080 \\ 
-   \hline
-\end{tabular}
-\caption{Power for bad bootstrap} 
-\label{tab:bad_boot_pwr2}
-\end{table}
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Thu Feb  9 13:27:27 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{lllrrrrrrr}
-  \hline
-manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.2600 & 0.0080 & 0.0080 & 0.0160 & 0.0157 & 0.0220 & 0.0320 \\ 
-  TRUE & TRUE & FALSE & 0.0000 & 0.0080 & 0.1040 & 0.1360 & 0.1496 & 0.1840 & 0.3440 \\ 
-  TRUE & FALSE & FALSE & 0.0000 & 0.0160 & 0.1040 & 0.1520 & 0.1589 & 0.1940 & 0.3760 \\ 
-   \hline
-\end{tabular}
-\caption{Power for good bootstrap} 
-\label{tab:good_boot_pwr2}
-\end{table}
-
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Thu Feb  9 13:27:36 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{lllrrrrrrr}
-  \hline
-manymeans & ar1 & bdotscorr & TIE rate & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-FALSE & TRUE & TRUE & 0.4600 & 0.0080 & 0.0080 & 0.0080 & 0.0116 & 0.0160 & 0.0160 \\ 
-  TRUE & TRUE & FALSE & 0.0200 & 0.0160 & 0.0960 & 0.1360 & 0.1405 & 0.1760 & 0.2880 \\ 
-  TRUE & FALSE & FALSE & 0.0200 & 0.0240 & 0.0980 & 0.1520 & 0.1513 & 0.1920 & 0.3280 \\ 
-   \hline
-\end{tabular}
-\caption{Power for permutation} 
-\label{tab:perm_pwr2}
-\end{table}
 
 
 \section{Discussion and concluding remarks}
 
-There isn't really a lot to say in this paper: we pretty quickly identified the issue with the assumption that $V = 0$ for the assumptions in the data generation parameters. We showed pretty conclusively that the type I error is absolutely bonkers in even the mildest of deviations from this, removing any justification from this being the ``default" method in \xt{bdots}. With regards to fitting models assuming AR(1) error structure, there really wasn't any observed penalty in not doing so with the good bootstrap or permutation methods, and if anything it brought the observed TIE closer to 0.05, with some implications for power (though those simulations are still work in progress).
+Idk, discussion
 
-And speaking of power, here is the only case, really, where bad bootstrap can make any argument -- it (naturally) detects a difference far beyond any of the other cases, though as we should discuss, this (so far) is because I have sort have cheated in how I created the data. Judging by the type I error rate, there may be only one case in which it's worth doing a power analysis at all. As to a comparison of the other two, preliminary results on the simulations I think are correct seem to ever so slightly favor permutations, which is neat, I kind of favor them. This is pending a further investigation in what sort of simulation here is really appropriate as far as data generation is concerned.
+It's worth noting that the FWER adjustment proposed in \cite{Oleson2017} is still valid, if not slightly conservative, and with power similar to that of the permutation method.
 
-And that's pretty much it. Not a lot to discuss. There is an open question on the impact of time points (both quantity and range) on where and what we consider significant. Inflating the observed data with huge swaths of obviously different functions might be cheating. We may look at a few things in passing, but likely not enough to make any hard and fast conclusions. It's an interesting question, though, and especially when we consider comparing data with non-homogenous ranges, which we also didn't look it (i.e., mousey tumor data). 
+There are a few limitations to the current paper that are worthy of investigation. First, limited consideration was given to the effect of sample density on the observed type I error rate or power. As the fitting function in \xt{bdots} simply returns a set of parameters, one could conceivably perform any of the methods presented on any arbitrary collection of points, whether or not any data were observed there. This extends itself to the condition in which subjects were sampled at heterogeneous time points, as may be the case in many clinical settings. What impact this may have or how to best handle these cases remains investigated. The current implementation of \xt{bdots} takes the union of observed time points, though this runs the risk of extrapolating many subjects past what they were ever observed.
+
+We conclude by putting the onus on researchers to determine which of the presented methods is best in the context of their work.
+
+
+%There isn't really a lot to say in this paper: we pretty quickly identified the issue with the assumption that $V = 0$ for the assumptions in the data generation parameters. We showed pretty conclusively that the type I error is absolutely bonkers in even the mildest of deviations from this, removing any justification from this being the ``default" method in \xt{bdots}. With regards to fitting models assuming AR(1) error structure, there really wasn't any observed penalty in not doing so with the good bootstrap or permutation methods, and if anything it brought the observed TIE closer to 0.05, with some implications for power (though those simulations are still work in progress).
+
+%And speaking of power, here is the only case, really, where bad bootstrap can make any argument -- it (naturally) detects a difference far beyond any of the other cases, though as we should discuss, this (so far) is because I have sort have cheated in how I created the data. Judging by the type I error rate, there may be only one case in which it's worth doing a power analysis at all. As to a comparison of the other two, preliminary results on the simulations I think are correct seem to ever so slightly favor permutations, which is neat, I kind of favor them. This is pending a further investigation in what sort of simulation here is really appropriate as far as data generation is concerned.
+
+%And that's pretty much it. Not a lot to discuss. There is an open question on the impact of time points (both quantity and range) on where and what we consider significant. Inflating the observed data with huge swaths of obviously different functions might be cheating. We may look at a few things in passing, but likely not enough to make any hard and fast conclusions. It's an interesting question, though, and especially when we consider comparing data with non-homogenous ranges, which we also didn't look it (i.e., mousey tumor data). 
 
 
 

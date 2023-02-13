@@ -172,23 +172,24 @@ makeMiseTable <- function(fix, sac, sim, tit, r2 = FALSE) {
 ndtab <- makeMiseTable(dg_fit_fix_no_delay,
                        dg_fit_sac_no_delay,
                        dg_sim_no_delay,
-                       tit = "No Delay")
+                       tit = "No Delay", r2 = TRUE)
 
 unftab <- makeMiseTable(dg_fit_fix_uniform,
                         dg_fit_sac_uniform,
                         dg_sim_uniform,
-                        tit = "Uniform Delay")
+                        tit = "Uniform Delay", r2 = TRUE)
 
 wbtab <- makeMiseTable(dg_fit_fix_weibull,
                        dg_fit_sac_weibull,
                        dg_sim_weibull,
-                       tit = "Weibull Delay")
+                       tit = "Weibull Delay", r2 = TRUE)
 
 
 misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
 misetab
 
 print(xtable::xtable(misetab), include.rownames=FALSE)
+print(xtable::xtable(misetab[, c(1:2, 4:5, 7)]), include.rownames=FALSE)
 
 
 
@@ -201,15 +202,10 @@ pp <- biasPlot(dg_fit_fix_no_delay,
                tit = "No Delay",
                xint = 0)
 
+pdf("../img/dg_no_delay_par_bias.pdf")
 grid.arrange(pp[[1]], pp[[2]])
-
-pdf("../img/no_delay_par_bias_fixation.pdf")
-pp[[1]]
 dev.off()
 
-pdf("../img/no_delay_par_bias_saccade.pdf")
-pp[[2]]
-dev.off()
 
 
 ## Now with Uniform delay (lost about 10%)
@@ -221,13 +217,10 @@ pp <- biasPlot(dg_fit_fix_uniform,
 
 grid.arrange(pp[[1]], pp[[2]])
 
-pdf("../img/uniform_delay_par_bias_fixation.pdf")
-pp[[1]]
+pdf("../img/dg_uniform_delay_par_bias.pdf")
+grid.arrange(pp[[1]], pp[[2]])
 dev.off()
 
-pdf("../img/uniform_delay_par_bias_saccade.pdf")
-pp[[2]]
-dev.off()
 
 ## Now with Weibull delay (lost about 10%)
 pp <- biasPlot(dg_fit_fix_weibull,
@@ -238,12 +231,8 @@ pp <- biasPlot(dg_fit_fix_weibull,
 
 grid.arrange(pp[[1]], pp[[2]])
 
-pdf("../img/weibull_delay_par_bias_fixation.pdf")
-pp[[1]]
-dev.off()
-
-pdf("../img/weibull_delay_par_bias_saccade.pdf")
-pp[[2]]
+pdf("../img/dg_weibull_delay_par_bias.pdf")
+grid.arrange(pp[[1]], pp[[2]])
 dev.off()
 
 
@@ -259,20 +248,24 @@ pp1 <- sampleCurvePlot(dg_fit_fix_no_delay,
                       dg_fit_sac_no_delay,
                       dg_sim_no_delay,
                       tit = "No Delay")
+pdf("../img/dg_rep_curves_no_delay.pdf", width = 7, height = 4)
 pp1
+dev.off()
 
 pp2 <- sampleCurvePlot(dg_fit_fix_uniform,
                       dg_fit_sac_uniform,
                       dg_sim_uniform,
                       tit = "Uniform Delay")
+pdf("../img/dg_rep_curves_uniform_delay.pdf", width = 7, height = 4)
 pp2
+dev.off()
 
 pp3 <- sampleCurvePlot(dg_fit_fix_weibull,
                       dg_fit_sac_weibull,
                       dg_sim_weibull,
                       tit = "Weibull Delay")
+pdf("../img/dg_rep_curves_weibull_delay.pdf", width = 7, height = 4)
 pp3
-
-grid.arrange(pp, pp3)
+dev.off()
 
 

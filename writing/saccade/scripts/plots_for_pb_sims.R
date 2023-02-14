@@ -207,12 +207,12 @@ unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
 
 wbtab <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
                        sim_weibull, tit = "Weibull Delay", r2 = FALSE)
-#
-# bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
-#                        sim_beta, tit = "Beta Delay", r2 = FALSE)
-#
-# nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
-#                        sim_normal, tit = "Normal Delay", r2 = FALSE)
+
+bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
+                       sim_beta, tit = "Beta Delay", r2 = FALSE)
+
+nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
+                       sim_normal, tit = "Normal Delay", r2 = FALSE)
 
 misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
 misetab
@@ -231,9 +231,18 @@ pp <- biasPlot(fit_fix_no_delay,
                tit = "No Delay",
                xint = 0)
 
-pdf("../img/no_delay_par_bias.pdf")
-grid.arrange(pp[[1]], pp[[2]])
+# pdf("../img/no_delay_par_bias.pdf")
+# grid.arrange(pp[[1]], pp[[2]])
+# dev.off()
+
+pdf("../img/no_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
 dev.off()
+
+pdf("../img/no_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
+dev.off()
+
 
 
 
@@ -244,17 +253,17 @@ pp <- biasPlot(fit_fix_uniform,
                tit = "Uniform Delay",
                xint = 0)
 
-pdf("../img/uniform_delay_par_bias.pdf")
-grid.arrange(pp[[1]], pp[[2]])
+# pdf("../img/uniform_delay_par_bias.pdf")
+# grid.arrange(pp[[1]], pp[[2]])
+# dev.off()
+
+pdf("../img/uniform_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
 dev.off()
 
-# pdf("../img/uniform_delay_par_bias_fixation.pdf")
-# pp[[1]]
-# dev.off()
-#
-# pdf("../img/uniform_delay_par_bias_saccade.pdf")
-# pp[[2]]
-# dev.off()
+pdf("../img/uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
 
 ## Now with Weibull delay (lost about 10%)
 pp <- biasPlot(fit_fix_weibull,
@@ -263,17 +272,17 @@ pp <- biasPlot(fit_fix_weibull,
                tit = "Weibull Delay",
                xint = 0)
 
-pdf("../img/weibull_delay_par_bias.pdf")
-grid.arrange(pp[[1]], pp[[2]])
+# pdf("../img/weibull_delay_par_bias.pdf")
+# grid.arrange(pp[[1]], pp[[2]])
+# dev.off()
+
+pdf("../img/weibull_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
 dev.off()
-#
-# pdf("../img/weibull_delay_par_bias_fixation.pdf")
-# pp[[1]]
-# dev.off()
-#
-# pdf("../img/weibull_delay_par_bias_saccade.pdf")
-# pp[[2]]
-# dev.off()
+
+pdf("../img/weibull_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
 
 
 

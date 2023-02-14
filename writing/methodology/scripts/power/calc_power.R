@@ -57,8 +57,9 @@ getPowerTab <- function(ff) {
 }
 
 # original
-ff <- list.files("rds_files", full.names = TRUE)
+ff <- list.files("1000_rds_files", full.names = TRUE)
 ff <- ff[c(1, 5:12, 2:4)]
+ff <- ff[7:12] # Getting rid of slope = 0.005
 res <- lapply(ff, getPowerTab)
 
 res_sm <- lapply(res, function(z) setDT(as.list(z[[1]]))) |> rbindlist()
@@ -72,14 +73,15 @@ simDataSettings <- data.table(mm = c(F, T, T),
                               bcor = c(T, F, F))
 simDataSettings <- rbind(simDataSettings, simDataSettings)
 simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
-simDataSettings <- rbind(simDataSettings, simDataSettings)
-simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
-names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma", "m")
+#simDataSettings <- rbind(simDataSettings, simDataSettings)
+#simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
+#names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma", "m")
+names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma")
 
 
-res_sm <- cbind(simDataSettings, res_sm)[order(manymeans, ar1, bdotscorr, sigma, m), ]
-res_mm <- cbind(simDataSettings, res_mm)[order(manymeans, ar1, bdotscorr, sigma, m), ]
-res_pm <- cbind(simDataSettings, res_pm)[order(manymeans, ar1, bdotscorr, sigma, m), ]
+res_sm <- cbind(simDataSettings, res_sm)[order(manymeans, ar1, bdotscorr, sigma), ]
+res_mm <- cbind(simDataSettings, res_mm)[order(manymeans, ar1, bdotscorr, sigma), ]
+res_pm <- cbind(simDataSettings, res_pm)[order(manymeans, ar1, bdotscorr, sigma), ]
 
 
 res_sm[,4:12] <- round(res_sm[,4:12], 3)
@@ -91,20 +93,19 @@ res_sm[, bdotscorr := NULL]
 res_mm[, bdotscorr := NULL]
 res_pm[, bdotscorr := NULL]
 
-digg <- c(1,1,1,3,3,2,2,2,2,2,2,2,2)
+digg <- c(1,1,1,3,2,2,2,2,2,2,2,2)
 
 xtable(res_sm, caption = "Power for v1 bootstrap",
        label = "tab:bad_boot_pwr", digits = digg) |> print(include.rownames = FALSE)
-
 
 xtable(res_mm, caption = "Power for v2 bootstrap",
        label = "tab:good_boot_pwr", digits = digg) |> print(include.rownames = FALSE)
 xtable(res_pm, caption = "Power for permutation",
        label = "tab:perm_pwr", digits = digg) |> print(include.rownames = FALSE)
 
-finalSummary <- rbind(colMeans(res_sm[, 5:12]),
-                      colMeans(res_mm[, 5:12]),
-                      colMeans(res_pm[, 5:12])) |> as.data.table()
+finalSummary <- rbind(colMeans(res_sm[, 4:11]),
+                      colMeans(res_mm[, 4:11]),
+                      colMeans(res_pm[, 4:11])) |> as.data.table()
 finalSummary <- cbind(data.table(Method = c("Bootstrap V1", "Bootstrap V2", "Permtuation")),
                       finalSummary)
 
@@ -112,12 +113,12 @@ xtable(finalSummary, caption = "Summary of methods for Type II error",
        label = "tab:type_2_summary", digits = 3) |> print(include.rownames = FALSE)
 
 
-bestCase <- cbind(data.table(method = rep(c("V1", "V2", "Perm"), each = 12)),
+bestCaseforOriginal <- cbind(data.table(method = rep(c("V1", "V2", "Perm"), each = 6)),
                                           rbind(res_sm, res_mm, res_pm))
-bestCase <- bestCase[manymeans == FALSE & m == 0.025, ]
+bestCaseforOriginal <- bestCaseforOriginal[manymeans == FALSE, ]
 
 fuckyoudigits <- c(1,1,1,1,3,3,3,2,2,2,2,2)
-xtable(bestCase[, c(1:8,10:12)],
+xtable(bestCaseforOriginal[, c(1:8,10:12)],
        digits = fuckyoudigits) |> print(include.rownames = FALSE)
 
 
@@ -125,8 +126,9 @@ xtable(bestCase[, c(1:8,10:12)],
 # Let's repeat the above and remove shitty case where sigma = 0.025 from
 # single means
 
-ff <- list.files("rds_files", full.names = TRUE)
+ff <- list.files("1000_rds_files", full.names = TRUE)
 ff <- ff[c(1, 5:12, 2:4)]
+ff <- ff[7:12] # Getting rid of slope = 0.005
 res <- lapply(ff, getPowerTab)
 
 res_sm <- lapply(res, function(z) setDT(as.list(z[[1]]))) |> rbindlist()
@@ -140,14 +142,12 @@ simDataSettings <- data.table(mm = c(F, T, T),
                               bcor = c(T, F, F))
 simDataSettings <- rbind(simDataSettings, simDataSettings)
 simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
-simDataSettings <- rbind(simDataSettings, simDataSettings)
-simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
-names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma", "m")
+names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma")
 
 
-res_sm <- cbind(simDataSettings, res_sm)[order(manymeans, ar1, bdotscorr, sigma, m), ]
-res_mm <- cbind(simDataSettings, res_mm)[order(manymeans, ar1, bdotscorr, sigma, m), ]
-res_pm <- cbind(simDataSettings, res_pm)[order(manymeans, ar1, bdotscorr, sigma, m), ]
+res_sm <- cbind(simDataSettings, res_sm)[order(manymeans, ar1, bdotscorr, sigma), ]
+res_mm <- cbind(simDataSettings, res_mm)[order(manymeans, ar1, bdotscorr, sigma), ]
+res_pm <- cbind(simDataSettings, res_pm)[order(manymeans, ar1, bdotscorr, sigma), ]
 
 
 res_sm[,4:12] <- round(res_sm[,4:12], 3)
@@ -159,12 +159,6 @@ res_sm[, bdotscorr := NULL]
 res_mm[, bdotscorr := NULL]
 res_pm[, bdotscorr := NULL]
 
-res_sm <- res_sm[!(m == 0.005), ]
-res_mm <- res_mm[!( m == 0.005), ]
-res_pm <- res_pm[!(m == 0.005), ]
-res_sm[, m := NULL]
-res_mm[, m := NULL]
-res_pm[, m := NULL]
 
 # Optional
 res_sm[, `:=`(Min. = NULL, Max. = NULL)]
@@ -172,8 +166,6 @@ res_mm[, `:=`(Min. = NULL, Max. = NULL)]
 res_pm[, `:=`(Min. = NULL, Max. = NULL)]
 
 digg <- c(1,1,1,3,2,2,2,3,3,3)
-
-
 
 xtable(res_sm, caption = "Power for v1 bootstrap",
        label = "tab:bad_boot_pwr", digits = digg) |> print(include.rownames = FALSE)
@@ -194,10 +186,10 @@ xtable(finalSummary, caption = "Summary of methods for Type II error",
        label = "tab:type_2_summary", digits = 3) |> print(include.rownames = FALSE)
 
 
-bestCase <- cbind(data.table(method = rep(c("V1", "V2", "Perm"), each = 12)),
-                  rbind(res_sm, res_mm, res_pm))
-bestCase <- bestCase[manymeans == FALSE & m == 0.025, ]
+bestCaseforOriginal <- cbind(data.table(method = rep(c("V1", "V2", "Perm"), each = 6)),
+                             rbind(res_sm, res_mm, res_pm))
+bestCaseforOriginal <- bestCaseforOriginal[manymeans == FALSE, ]
 
-fuckyoudigits <- c(1,1,1,1,3,3,3,2,2,2,2,2)
-xtable(bestCase[, c(1:8,10:12)],
+fuckyoudigits <- c(1,1,1,1,3,2,2,2,3,3,3)
+xtable(bestCaseforOriginal,
        digits = fuckyoudigits) |> print(include.rownames = FALSE)

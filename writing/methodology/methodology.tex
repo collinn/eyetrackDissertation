@@ -308,54 +308,35 @@ FALSE & TRUE & TRUE & 0.03 & 0.00 & 0.00 \\
 
 \section{Power Simulations}
 
-A few notes to qualify what follows:
-
-\begin{singlespace}
-\begin{enumerate}
-\vspace{-2mm}
-\item Permutation has been updated for power, so it correctly samples from the gnls distribution for each subject
-\item We should discuss what simulations to include bad bootstrap in. I have included them all here. And to prevent it from just flagging entire regions as different, I basically generated the data to be ``paired" with regards to the intercept parameter, meaning for half of the generated data, its pretending likes its not paired when it is. There are still a few cases where TIE occurs, and I have noted them and removed them from the summary
-\item There are a few different simulation results presented here, all different in slightly different ways (time intervals, variability in generating distribution, etc). I have tried to note which is which
-
-\item they might want paired testing
-\end{enumerate}
-\end{singlespace}
-
 
 
 All this talk on the type I error rate sure is interesting, but what good is having a low type I rate if we are just trading it in for type II? In this hard hitting piece of investigative journalism, we set out to determine the empirical power of the proposed methods under a variety of conditions, similar to those above but excluding the case of paired observations. Inb4 comments like ``oh but power between paired cases is what we are interested in most!", well, maybe if there's time.
 
-To determine power, groups were simulated from two mean structures of the form
+To determine power, two experimental groups were simulated with mean structures of the following form:
 
-\begin{equation}
+\begin{equation}\label{eq:piecewise_form}
 y = \begin{cases}
 b \quad &x < 0 \\
 mx + b \quad &x \geq 0
 \end{cases}
 \end{equation}
-where $b \sim |N(0, 0.005)|$ and $m \sim N(\mu_i, 0.005)$, where $\mu_i = 0$ for the group without effect and $\mu_i = 0.5$ for the group with effect (I guess this is called a folded normal distribution? I could have written something like $b = |\gamma|, \gamma \sim N(0, 0.005)$, but maybe there is an even slicker way of expression this). A depiction of these mean structures is given in Figure~\ref{fig:power_plot}.
 
+The first simulated group was ``No Effect", with intercept and slope parameters normally distributed and standard deviation $\sigma$. The second group, the ``Effect" group, was similarly distributed, but with the slope parameter having mean value of $\mu = 0.025$. Absolute values were taken to ensure that all of the parameters were positive, and simulations were run with group variability values of $\sigma = 0.005$ and $\sigma = 0.025$. The error structure was identical to that in the FWER simulations, with both an AR(1) error structure and independent noise included. Finally, we limited consideration to three possible scenarios: first, we assumed the conditions presented in Oleson 2017, assuming homogeneity between subject parameters and an AR(1) error structure, with the model fitting performed assuming autocorrelated errors. For the remaining scenarios, we assumed heterogeneity in the distribution of subject parameters, simulated with and without an AR(1) error structure. In both of these scenarios, we elected to \textit{not} fit the model assuming autocorrelated errors. This was for two reasons: first, simulations exploring the type I error rate suggested that models fit with the autocorrelation assumption tended to be conservative. Second, and given the results of the first, this makes setting the assumption of autocorrelation to FALSE in \xt{bdots} seem like a sensible default, and as such, it would be of interest to see how the model performs in these cases.
 
+For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group memebership and fit using \xt{bdots} on the interval (-0.1,1). Groups were then compared using each of the methods presented (names?). By including the interval (-0.1,0) where there is no true difference, we are able to mitigate the effects of over-zealous methods, and we present this information in the following way: any bootstrapped or permuted resulting identifying the region (-0.1, 0) as being significantly different was marked as having a type I error, regardless of other regions identified. The proportions of simulations for which this occurred in given in the column labeled $\alpha$. The next column, $\beta$, is the type II error rate, giving the proportion of simulations in which no differences were identified. And finally in the remaining greek letter column is   $1-\beta-\alpha$, a modified power metric giving the proportion of simulations in which only differences in the correct region were identified. The remaining columns given a partial summary of the earliest onset of detection. As the true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a base R plot of the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that this does not take into account the rate of type I errors which in all cases occur to the left of the red dashed line.
 
-\subsection{Data generation -- WARNING: WIP} As before, we tested a limited combination of ``manymeans", ``ar1", and ``bdotscor" (i know these need different names). In each simulation of (100) simulations, two groups were simulated, with 25 subjects in each group. We begin with a description of data generation for the manymeans=TRUE assumption. [also, how to avoid ambiguity with a statement like ``this simulation (with these settings) had 100 simulations (instances of those settings)?]
+(I know I used too many colons)
 
-Beginning with the ``Effect" group, we draw slope and intercept parameters for each subject, taking the absolute value of each to ensure the slope is oriented in the correct direction. Fitting a mean structure to each subject's parameters, we then add error according to the AR(1) assumption identically to the method used in the calculation of the type I error rate.
+100 simulations were conducted for each scenario. Here are the results.
 
-For the ``No Effect" group, we took as intercept parameters the same values drawn for the ``Effect" group -- this was to minimize the difference in distribution of the values in the range (-2, 0) since the TIE rate there is awful and not doing this resulted in significant differences everywhere (since it is constant in that region, having one difference means having them all different). 
-
-For the manymanys = FALSE, we basically did the same thing as above, but only drew parameters for one subject, assigning the remaining 24 subjects the same mean structure but deriving for each their own error structure. And actually, its a slight variant of that to help the sim along -- I still drew 25 but then picked the min/max of $b$ and $m$ to be closest to $0$ and $0$ or $0.5$ depending on their groups, respectively. Is that cheating? I could also do like I did with the TIE sims and just set them to all be exactly 0 and 0/0.5 and have the error be the only difference
-
-As a final thing, I also ran this over two different intervals: \xt{seq(-1,1,length.out = 401)} and \xt{seq(-2,2, length.out = 501)} to see if anything would change. Fortunately, the impact was not very noticeable. Alright, let's get to results
-
-We only set bdots corr to true when many means was false. This is suggesting the new default should be bdotscorr = FALSE, so we omit that column
 
 \subsection{Results}
 
-[Not sure on column names, maybe also don't need min/max]
+
 
 Presented in this section are the results of each of the aforementioned simulations. The first four columns indicate the parameters of the simulation: the mean structure, the error structure, the variability in the generating distributions and the effect size, or the slope. Note that as each of the simulations contained intervals where there was no difference in actuality, there is a column marked $\alpha$ indicating the observed type I error; similarly, the column labeled $\beta$ indicates the proportion of simulations in which no differences were detected. The remaining column, $1 - \beta - \alpha$, indicates the proportion of simulations in which differences were detected, but only in the regions in which they existed. Finally, the remaining columns offer a summary of when differences were detected. As the true value for this is 0, smaller numbers indicate greater ability to detect smaller effect sizes.
 
-I removed Min and Max because who cares, it was noise and took up space. I also removed m = 0.005 because it was pretty similar in all cases except for in the singlemeans case where basically the type II error rate was like 0.9 for everything including v1. It also effed up all my stats at the end. so let's just not do it. This makes my tables MUCH cleaner while conveying pretty much the same information
+I removed Min and Max because who cares, it was noise and took up space. I also removed m = 0.005 because it was pretty similar in all cases except for in the singlemeans case where basically the type II error rate was like 0.9 for everything including v1. It also effed up all my stats at the end. so let's just not do it. This makes my tables MUCH cleaner while conveying pretty much the same information. It's also worth noting (especially in the power plots) that there is nothing really all that more interesting when $\sigma = 0.025$ over $\sigma = 0.005$. Maybe I'll just place these all in supplementary materials, indicating that yes we looked at this but there is not enough new information in those simulations to justify including them in the main body of the paper when all they are doing is taking up space.
 
 
 
@@ -367,12 +348,12 @@ I removed Min and Max because who cares, it was noise and took up space. I also 
   \hline
 $V \not= 0$ & AR(1) & $\sigma$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$ & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
-FALSE & TRUE & 0.005 & 0.03 & 0.00 & 0.97 & 0.279 & 0.325 & 0.356 \\ 
-  FALSE & TRUE & 0.025 & 0.04 & 0.00 & 0.96 & 0.264 & 0.319 & 0.347 \\ 
-  TRUE & FALSE & 0.005 & 0.86 & 0.00 & 0.14 & 0.017 & 0.038 & 0.045 \\ 
-  TRUE & FALSE & 0.025 & 0.95 & 0.00 & 0.05 & 0.010 & 0.017 & 0.019 \\ 
-  TRUE & TRUE & 0.005 & 0.83 & 0.00 & 0.17 & 0.019 & 0.037 & 0.052 \\ 
-  TRUE & TRUE & 0.025 & 0.95 & 0.00 & 0.05 & 0.008 & 0.030 & 0.037 \\
+FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\ 
+  FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
+  TRUE & FALSE & 0.005 & 0.90 & 0.00 & 0.10 & 0.008 & 0.017 & 0.030 \\ 
+  TRUE & FALSE & 0.025 & 0.97 & 0.00 & 0.03 & 0.012 & 0.015 & 0.016 \\ 
+  TRUE & TRUE & 0.005 & 0.89 & 0.00 & 0.11 & 0.048 & 0.059 & 0.066 \\ 
+  TRUE & TRUE & 0.025 & 0.91 & 0.00 & 0.09 & 0.023 & 0.032 & 0.037 \\ 
    \hline
 \end{tabular}
 \caption{Power for v1 bootstrap} 
@@ -387,12 +368,12 @@ FALSE & TRUE & 0.005 & 0.03 & 0.00 & 0.97 & 0.279 & 0.325 & 0.356 \\
   \hline
 $V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.323 & 0.372 & 0.404 \\ 
-  FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.310 & 0.363 & 0.398 \\ 
-  TRUE & FALSE & 0.005 & 0.00 & 0.13 & 0.87 & 0.372 & 0.497 & 0.634 \\ 
-  TRUE & FALSE & 0.025 & 0.00 & 0.17 & 0.83 & 0.435 & 0.581 & 0.770 \\ 
-  TRUE & TRUE & 0.005 & 0.01 & 0.16 & 0.83 & 0.383 & 0.566 & 0.702 \\ 
-  TRUE & TRUE & 0.025 & 0.00 & 0.13 & 0.87 & 0.413 & 0.581 & 0.748 \\
+FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\ 
+  FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
+  TRUE & FALSE & 0.005 & 0.00 & 0.12 & 0.88 & 0.373 & 0.576 & 0.756 \\ 
+  TRUE & FALSE & 0.025 & 0.01 & 0.17 & 0.82 & 0.423 & 0.555 & 0.734 \\ 
+  TRUE & TRUE & 0.005 & 0.01 & 0.20 & 0.79 & 0.357 & 0.522 & 0.691 \\ 
+  TRUE & TRUE & 0.025 & 0.00 & 0.12 & 0.88 & 0.444 & 0.555 & 0.737 \\ 
    \hline
 \end{tabular}
 \caption{Power for v2 bootstrap} 
@@ -407,12 +388,12 @@ FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.323 & 0.372 & 0.404 \\
   \hline
 $V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
-FALSE & TRUE & 0.005 & 0.13 & 0.00 & 0.87 & 0.280 & 0.314 & 0.341 \\ 
-  FALSE & TRUE & 0.025 & 0.13 & 0.00 & 0.87 & 0.258 & 0.306 & 0.327 \\ 
-  TRUE & FALSE & 0.005 & 0.03 & 0.05 & 0.92 & 0.444 & 0.568 & 0.666 \\ 
-  TRUE & FALSE & 0.025 & 0.06 & 0.11 & 0.83 & 0.522 & 0.625 & 0.740 \\ 
-  TRUE & TRUE & 0.005 & 0.04 & 0.06 & 0.90 & 0.447 & 0.586 & 0.739 \\ 
-  TRUE & TRUE & 0.025 & 0.03 & 0.08 & 0.89 & 0.458 & 0.608 & 0.720 \\ 
+FALSE & TRUE & 0.005 & 0.05 & 0.00 & 0.95 & 0.259 & 0.299 & 0.332 \\ 
+  FALSE & TRUE & 0.025 & 0.10 & 0.00 & 0.90 & 0.275 & 0.302 & 0.334 \\ 
+  TRUE & FALSE & 0.005 & 0.03 & 0.05 & 0.92 & 0.454 & 0.609 & 0.748 \\ 
+  TRUE & FALSE & 0.025 & 0.08 & 0.08 & 0.84 & 0.490 & 0.610 & 0.721 \\ 
+  TRUE & TRUE & 0.005 & 0.08 & 0.12 & 0.80 & 0.418 & 0.578 & 0.743 \\ 
+  TRUE & TRUE & 0.025 & 0.00 & 0.06 & 0.94 & 0.493 & 0.619 & 0.746 \\ 
    \hline
 \end{tabular}
 \caption{Power for permutation} 
@@ -429,9 +410,9 @@ A general estimate of how well each of these methods does in a variety of condit
   \hline
 Method & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
-Bootstrap V1 & 0.610 & 0.000 & 0.390 & 0.100 & 0.128 & 0.143 \\ 
-  Bootstrap V2 & 0.003 & 0.098 & 0.898 & 0.373 & 0.493 & 0.609 \\ 
-  Permtuation & 0.070 & 0.050 & 0.880 & 0.402 & 0.501 & 0.589 \\ 
+Bootstrap V1 & 0.613 & 0.000 & 0.387 & 0.101 & 0.125 & 0.139 \\ 
+  Bootstrap V2 & 0.003 & 0.102 & 0.895 & 0.368 & 0.486 & 0.617 \\ 
+  Permtuation & 0.057 & 0.052 & 0.892 & 0.398 & 0.503 & 0.604 \\ 
    \hline
 \end{tabular}
 \caption{Summary of methods for Type II error. It's worth considering presenting the means separately depending on the $V \not=0$ assumption, because that fucking tanks the Type II error for all of them} 
@@ -447,14 +428,12 @@ Even then, it is worth considering these methods again in this limited context. 
 \centering
 \begin{tabular}{lllcccccccc}
   \hline
-Method & $V \not= 0$ & AR(1) & $\sigma$ & $m$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
+Method & $V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
-V1 & FALSE & TRUE & 0.005 & 0.025 & 0.030 & 0.00 & 0.97 & 0.28 & 0.33 & 0.36 \\ 
-  V1 & FALSE & TRUE & 0.025 & 0.025 & 0.040 & 0.00 & 0.96 & 0.26 & 0.32 & 0.35 \\ 
-  V2 & FALSE & TRUE & 0.005 & 0.025 & 0.010 & 0.00 & 0.99 & 0.32 & 0.37 & 0.40 \\ 
-  V2 & FALSE & TRUE & 0.025 & 0.025 & 0.000 & 0.00 & 1.00 & 0.31 & 0.36 & 0.40 \\ 
-%  Perm & FALSE & TRUE & 0.005 & 0.025 & 0.130 & 0.00 & 0.87 & 0.28 & 0.31 & 0.34 \\ 
-%  Perm & FALSE & TRUE & 0.025 & 0.025 & 0.130 & 0.00 & 0.87 & 0.26 & 0.31 & 0.33 \\ 
+V1 & FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\ 
+  V1 & FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
+  V2 & FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\ 
+  V2 & FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
    \hline
 \end{tabular}
 \caption{Summary of bootstraps with $V \not=0$ and with AR(1) error structure}
@@ -462,10 +441,11 @@ V1 & FALSE & TRUE & 0.005 & 0.025 & 0.030 & 0.00 & 0.97 & 0.28 & 0.33 & 0.36 \\
 \end{table}
 
 
-\begin{figure}
+\begin{figure}[H]
 \centering.
-\includegraphics{type_two_err_time_slice.pdf}
-\caption{check out this badass plot in base R. Power really ain't even all that better in manymeans=FALSE WHO IS YOUR GOD NOW????}
+\includegraphics[width=\textwidth]{type_two_err_time_slice.pdf}
+\caption{check out this badass plot in base R. Note that the bump in type I error before flattening out around 0.1 is a consequence of simulations in which the no effect group, on average, has a larger intercept than the effect group. When this occurs, the lines ``cross" in the 0 to 0.2 range, making it seem like there is no effect there}
+\label{fig:time_power_plot}
 \end{figure}
 
 
@@ -477,7 +457,7 @@ It's worth noting that the FWER adjustment proposed in \cite{Oleson2017} is stil
 
 There are a few limitations to the current paper that are worthy of investigation. First, limited consideration was given to the effect of sample density on the observed type I error rate or power. As the fitting function in \xt{bdots} simply returns a set of parameters, one could conceivably perform any of the methods presented on any arbitrary collection of points, whether or not any data were observed there. This extends itself to the condition in which subjects were sampled at heterogeneous time points, as may be the case in many clinical settings. What impact this may have or how to best handle these cases remains investigated. The current implementation of \xt{bdots} takes the union of observed time points, though this runs the risk of extrapolating many subjects past what they were ever observed.
 
-We conclude by putting the onus on researchers to determine which of the presented methods is best in the context of their work.
+We conclude pretty much by noting that even in the best case presented in Oleson 2017, these other methods do an identical job, and in situations in which these assumptions are wrong, it is a veritable train wreck. It seems that the $1 - \beta - \alpha$ (whatever this is called) is nearly identical between the v2 bootstrap and permutation, whereas the type II error is much greater in the bootstrap. This seems justification enough for making the permutation method the new default in \xt{bdots} or, should i say PDOTS. It is conceivable that the assumptions presented in Oleson 2017 would have their place, say repeated observation from the same mechanism (i.e., not vwp data), in which case v1 bootstrap has optimal performance. Still, users of \xt{bdots} will need to go out of their way in order to do so, possibly with a warning. Because really, even in that case, it hardly does any better than permutation, perhaps with a bit smaller of a type I error
 
 
 %There isn't really a lot to say in this paper: we pretty quickly identified the issue with the assumption that $V = 0$ for the assumptions in the data generation parameters. We showed pretty conclusively that the type I error is absolutely bonkers in even the mildest of deviations from this, removing any justification from this being the ``default" method in \xt{bdots}. With regards to fitting models assuming AR(1) error structure, there really wasn't any observed penalty in not doing so with the good bootstrap or permutation methods, and if anything it brought the observed TIE closer to 0.05, with some implications for power (though those simulations are still work in progress).

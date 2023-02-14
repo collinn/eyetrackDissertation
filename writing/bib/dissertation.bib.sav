@@ -84,20 +84,3 @@
   year={2018},
   publisher={Elsevier}
 }
-
-@Article{Magnuson2019,
-  author    = {James S. Magnuson},
-  journal   = {Journal of Cultural Cognitive Science},
-  title     = {Fixations in the visual world paradigm: where, when, why?},
-  year      = {2019},
-  month     = {sep},
-  number    = {2},
-  pages     = {113--139},
-  volume    = {3},
-  doi       = {10.1007/s41809-019-00035-3},
-  file      = {:scholar/Magnuson2019_Article_FixationsInTheVisualWorldParad.pdf:PDF},
-  groups    = {review},
-  publisher = {Springer Science and Business Media {LLC}},
-}
-
-@Comment{jabref-meta: databaseType:bibtex;}

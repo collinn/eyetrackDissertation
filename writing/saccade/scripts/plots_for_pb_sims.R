@@ -19,6 +19,7 @@ library(eyetrackSim)
 #
 # load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_normal.RData")
 load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst_normal.RData")
+load("~/packages/eyetrackSim/analysis/no_min_pb_data_sim_no_fbst_normal.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -173,10 +174,10 @@ makeStatTable <- function(fix, sac, sim, tit, r2=FALSE) {
 ############### END MAKING FUNCTIONS #################################
 
 # for testing
-fix <- fit_fix_no_delay
-sac <- fit_sac_no_delay
-sim <- sim_no_delay
-tit <- ""
+# fix <- fit_fix_no_delay
+# sac <- fit_sac_no_delay
+# sim <- sim_no_delay
+# tit <- ""
 ## Eh, not what we really are trying to go for here
 ndtabr <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
                        sim_no_delay, tit = "No Delay", r2 = TRUE)
@@ -215,6 +216,11 @@ nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
                        sim_normal, tit = "Normal Delay", r2 = FALSE)
 
 misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
+misetab
+print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
+#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
+
+misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
 misetab
 print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
 #print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
@@ -258,6 +264,21 @@ pp <- biasPlot(fit_fix_uniform,
 # dev.off()
 
 pdf("../img/uniform_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
+dev.off()
+
+pdf("../img/uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
+
+## Normal
+pp <- biasPlot(fit_fix_normal,
+               fit_sac_normal,
+               sim_uniform,
+               tit = "Normal Delay",
+               xint = 0)
+
+pdf("../img/normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
 pp[[1]]
 dev.off()
 

@@ -9,6 +9,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
+\usepackage{datetime}
 \usepackage{float}
 \newcommand{\xt}{\texttt}
 
@@ -23,21 +24,20 @@
 
 \maketitle
 
+Last compiled: \today \  at \currenttime
+
 %\input{main.tex}
 
 \begin{abstract}
-Gutting this entire thing and starting from scratch
-
-
+Something something high density time series collected to estimate group population curves and compare those for temporal differences while controlling FWER. Original \xt{bdots} made strict assumptions which are likely to not hold in general, resulting in truly disastrous type I error rates. My modify the original 2017 algorithm to introduce an alternative bootstrapping scheme, along with a modified permutation test to examine differences between groups. Our results demonstrate comparable control of FWER and power under the original assumptions while also proving far more robust to divergences in both the mean and error structures of the observed data.
 \end{abstract}
 
 \section{Introduction}
 
-Free write
+Note: I don't really want this to be all ``oh this is bdots and look at what it does and how it's used" because that is all covered in chapter 1. Instead, I am looking for laser sharp focus on the problem we identified and how we seek to resolve it. But since we live in a polite society I will go through the tedious endeavor of creating an introduction.
 
-The original bdots presented a method whereby the difference in time series between two groups could be analyzed using a FWER correction to the alpha based on the autocorrelation of the resulting t-statistics
 
-While we can confirm that the published results do indeed hold for the case they presented, such a situation is likely atypical and not reflective of the typical case involving VWP data. bdots involved testing between two groups, yet assumed that all subjects within a group had identical mean structures -- that is, there was no between-subject variability to be accounted for.
+The original bdots presented a method whereby the difference in time series between two groups could be analyzed using a FWER correction to the alpha based on the autocorrelation of the resulting t-statistics. While we can confirm that the published results do indeed hold for the case they presented, such a situation is likely atypical and not reflective of the typical case involving VWP data. bdots involved testing between two groups, yet assumed that all subjects within a group had identical mean structures -- that is, there was no between-subject variability to be accounted for.
 
 More likely it is the case that in the comparison of two groups, each group has a typical distribution of parameters for its subjects. God its annoying a little bit how bad and out of order this is, but free write so its ok for now. As we show, when the initial (and restrictive) assumptions made in the original bdots doesn't hold, the resulting TIE is beyond what would be acceptable in most cases.
 
@@ -45,7 +45,7 @@ What we present instead is two alternatives, accommodating flexibility in two of
 
 \section{Detail on the original}
 
-Most generally the original bdots proposed that we have empirically observe data resulting from some mean structure with an associated error, with 
+Most generally the original bdots algorithm, which we will call the v1 bootstrap, proposed that we have empirically observe data resulting from some mean structure with an associated error, with 
 
 \begin{equation}
 y_{it} = f(\theta_{it}) + \epsilon_{it}
@@ -54,7 +54,7 @@ where
 \begin{equation}
 \epsilon_{it} = \phi \epsilon_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma).
 \end{equation}
-Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. The unspoken assumption, however, with two subjects from the same group is that $\theta_{it} = \theta_{jt}$ for all $i, j$. In other words, it was assumed that there was no variability in the mean structure between subjects in the same group. This is also evidenced in the original bdots algorithm: 
+Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It further assumes homogeneity of the mean structure, meaning that two subjects from the same group would have parameters $\theta_{it} = \theta_{jt}$ for all $i, j$. In other words, it was assumed that there was no variability in the mean structure between subjects in the same group. This is also evidenced in the original bdots algorithm: 
 
 \begin{singlespace}
 \begin{enumerate}
@@ -66,17 +66,17 @@ Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an
 \item[3.] Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap estimates across individuals
 
 \item[4.] Use the mean estimates to determine the predicted population level curve, which provides the average population response at each time point
+
+\item[.5] Perform steps (2)-(4) $B$ times (default is $B = 1,000$ to obtain estimates of the population curves. Use these to create estimates of the mean response and standard deviation at each of the time points. 
 \end{enumerate}
 \end{singlespace}
 
-The previous statement is demonstrated in step (2.), where each subject is included in each iteration of the bootstrap.
-
-Maybe here (to tie into the bottom) I could note that $\theta_i \sim N(\theta, V)$ except here $V = 0$
+This is demonstrated in step (2.), where each subject is included in each iteration of the bootstrap.
 
 
 \section{Proposed Methods}
 
-Here, we will describe in detail each of the proposed methods
+As is more typically the case, and especially in scenarios under which the v1 bootstrap was considered, subjects within a group exhibit draw their individual parameters from a group distribution with a group mean and some measure of variability. In such a case, there is no presumption that $\theta_i = \theta_j$, and accounting for the between-subject variability will be critical for obtaining a reasonable distribution of the population curves.
 
 \subsection{Modified Bootstrap}
 
@@ -99,45 +99,48 @@ In the course of collecting observed data on subject $i$, we may find that there
 \hat{\theta}_i \sim N(\theta_i, s_i^2).
 \end{equation}
 
-This is where I perhaps don't have my notation quite how I want it (what do i know about bayesian things or hierarchical models? besides, im a man, i derive my statistics from the gut). We also need to be clear on language. We have a few things here:
+When obtaining reasonable estimates of the population curve, it is necessary to estimate both the observed within-subject variability found in each of the $\{s_i^2\}$ terms, \textit{as well as} the between-subject variability present in $V_{\theta}$. For example, let $\theta^*_{ib}$ represent a bootstrapped sample for subject $i$, where
 
-\begin{singlespace}
-\begin{enumerate}
-\vspace{-2mm}
-\item It's not really a bootstrap when we sample $\theta^*_{ib} \sim N(\hat{\theta}_i, s_i^2)$. It's the $b$th estimate of $\theta_i$ following distributoin just given
-\item If we sample \textit{without} replacement and take the mean, we essentially have a sum of independent normals (start notation from efron/tibshirani maybe will use it maybe not)
+\begin{equation}\label{eq:sub_boot_dist}
+\theta^*_{ib} \sim N(\hat{\theta}_i, s_i^2),
+\end{equation}
+the distribution estimated by \xt{gnls}. If we were to sample \textit{without replacement}, we would obtain a bootstrapped group mean value $\theta^*_b$, where
+
 \begin{equation}\label{eq:wo_rep_boot}
-\theta^{*}_b = \frac1n \sum \theta^{*}_{ib}, \quad \theta^{*}_b  \sim N \left( \mu_{\theta}, \frac{1}{n^2} \sum s_i^2 \right)
+\theta^{*}_b = \frac1n \sum \theta^{*}_{ib}, \quad \theta^{*}_b  \sim N \left( \mu_{\theta}, \frac{1}{n^2} \sum s_i^2 \right).
 \end{equation}
-but note that this isn't \textit{really} a bootstrap of the $\theta_i$ values. I'm not really sure what you would call this. Maybe we shouldn't have the $b$ subscript but call it something else
-\item Alternatively if we sample \textit{with} replacement, we still have an individual draw for each bootstrapped subject, $\theta^*_{ib} \sim N(\hat{\theta}_i, s_i^2)$, but now the distribution of the for-real bootstrapped parameter is 
+
+Such an estimate captures the totality of the within-subject variability with each draw but fails the account for the variability in the group overall. Alternatively, we sample the subject \textit{with} replacement, where each $\theta_{ib}^*$ follows the distribution in Equation~\ref{eq:sub_boot_dist}, but the bootstrapped group mean now follows
+
 \begin{equation}\label{eq:w_rep_boot}
-\theta^{*}_b \sim N \left( \mu_{\theta}, \frac1n V_{\theta} + \frac{1}{n^2} \sum s_i^2 \right)
+\theta^{*}_b = \frac1n \sum \theta^{*}_{ib}, \quad \theta^{*}_b  \sim N \left( \mu_{\theta}, \frac1n V_{\theta} + \frac{1}{n^2} \sum s_i^2 \right).
 \end{equation}
-The mean value across all bootstraps will be the same as before, but now we are actually accounting for the variability that exits.
-\item As an aside, this sets us up for a useful callback -- when describing the mean structure of the simulations, we can say that they both follow $\theta \sim N(\mu_{\theta}, V_{\theta})$, but one has empirically determined $V_{\theta}$ and the other sets $V_{\theta} = 0$. We can then be like hey go look at Equations~\ref{eq:wo_rep_boot} and~\ref{eq:w_rep_boot} and see how the correct bootstrap can accommodate both cases but bad bootstrap cannot
-\item Last aside -- I have not simulated this yet, but Bob did make a comment about the TIE for the good bootstrap being too low, asking about sacrifice in power. While we haven't done power yet (as of this writing), I wonder how the good bootstrap would look if we disregarded the $s_i^2$ terms
-\end{enumerate}
-\end{singlespace}
 
----
-
-
-We also note (and verify in the simulations) that it is not always necessary to specify an AR(1) autocorrelation structure to the errors in the model. While failing to include it slightly inflates the TIE error when the data truly is autocorrelated, when the data is not it can lead to overly conservative estimates. As such, we make the propose the following changes to the original bootstrap algorithm:
+The estimated value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the v2 bootstrap, making the following changes to the original:
 
 \begin{singlespace}
 \begin{enumerate}
 \vspace{-2mm}
-\item[1.] In step (1.), the specification of AR(1) structure is \textit{optional} and can be modified with arguments to functions in \xt{bdots}
+\item[1.] In step (1.), the specification of AR(1) structure is \textit{optional} and can be modified with arguments to functions in \xt{bdots}. Our simulations show that while failing to include it slightly inflates the type I error in the v2 bootstrap when the data truly is autocorrelated, specifying an AR(1) structure can lead to overly conservative estimates when it is not.
 \item[2.] In step (2.), we sample subjects \textit{with replacement} and then for each drawn subject, randomly draw one bootstrap estimate for each of their model parameters based on the mean and standard errors derived from the \xt{gnls} estimate.
 \end{enumerate}
 \end{singlespace}
 
-A paired bootstrapping can be implemented by performing this same algorithm but ensuring that at each iteration of the bootstrap the same subjects are sampled with replacement in each group. This happened by default in the original implementation as each subject was retained in each iteration of the bootstrap.
+Just as with the v1 bootstrap, these bootstrap estimates are used to create test statistics $T_t$ at each time point, written
+
+\begin{equation}
+T_t = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2t}^2}},
+\end{equation}
+
+where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimates at each time point for groups $1$ and $2$, respectively. Finally, just as in Oleson 2017, one can use the autocorrelation of the $T$ statistics to create a modified $\alpha$ for controlling the FWER.
+
+
+[parenthetical] A paired bootstrapping can be implemented by performing this same algorithm but ensuring that at each iteration of the bootstrap the same subjects are sampled with replacement in each group. This happened by default in the original implementation as each subject was retained in each iteration of the bootstrap.
+
 
 \subsection{Permutation Testing}
 
-The permutation method proposed is analogous to a traditional permutation method, but with an added step mirroring that of the previous in capturing the within-subject variability. For a specified FWER of $\alpha$, the proposed permutation algorithm is as follows:
+In addition to the v2 bootstrap, we also introduce a permutation method for hypothesis testing. The permutation method proposed is analogous to a traditional permutation method, but with an added step mirroring that of the previous in capturing the within-subject variability. For a specified FWER of $\alpha$, the proposed permutation algorithm is as follows:
 
 \begin{singlespace}
 \begin{enumerate}
@@ -156,15 +159,14 @@ This will be our observed test statistic.
 
 Paired permutation testing is implemented with a minor adjustment to step (3). Instead of permuting all of the labels between groups, choose one group and randomly assign each subject to either retain their current group membership or to change groups. Make the corresponding reassignment to members in the second group. This ensures that each permuted group contains one observation from each subject.
 
+[Note sure where to put this -- ] When permutation testing is used  (and maybe I just explain this in bdots paper, not here) we still use modified bootstrap for computing confidence intervals which are given when plotted.
+
 
 
 \section{Type I Error Simulations}
 
-this section needs reorganized but it is as is for now
+When now go about comparing the type I error rate of the three methods just described. In doing so, we will establish several conditions under which the observed subject data may have been generated or fit. This includes two conditions for the mean structure, two conditions for the error structure, paired and unpaired data, and data fit with and without an AR(1) assumption. Considering each permutation of this arrangement results in sixteen different simulations. Each simulation will then be examined for type I error using each of the three methods described (I said that twice). 
 
-When now go about comparing the type I error rate of the three methods just described. In doing so, we will establish several conditions under which the observed subject data may have been generated or fit. This includes two conditions for the mean structure, two conditions for the error structure, paired and unpaired data, and data fit with and without an AR(1) assumption. Considering each permutation of this arrangement results in sixteen different simulations. Each simulation will then be examined for type I error using each of the three methods described ( I said that twice). 
-
-Each set of conditions generates two groups, with $n = 25$ subjects in each group, with $N = 100$ simulated trials for each subject. Each simulation was conducted 100 (1,000 running) times to determine the rate of type I error. And as this is an examination of the type I error rate, both of the two groups compared were constructed using the same distributions and manners described
 
 
 \subsection{Data Generation}
@@ -175,20 +177,22 @@ Data was generated according to three conditions: mean structure, error structur
 y_{it} = f_{\theta_i}(t) + \epsilon_{it}.
 \end{equation}
 
-We assume that each group drew subject-specific parameters from a normal distribution, 
+We further assume that each group drew subject-specific parameters from a normal distribution, 
 
-\begin{equation}
+\begin{equation}\label{eq:tie_dist}
 \theta_i \sim N(\mu_{\theta}, V_{\theta}).
 \end{equation}
 
-In all simulations, we set $\mu_{\theta} = (0,0.8, 0.002, 750)$ (it actually was not this, but I need to go look at what it was), corresponding to the baseline, peak, slope, and crossover parameters from Equation~\ref{eq:logistic}. In half of our simulations, we set $V_{\theta}$ was determined following an empirical distribution from (Timbell 2017), giving an estimate of the typical amount of variability observed among normal hearing subjects. In the remaining cases, we set $V_{\theta} = 0$, a silly idea, sure, but assuming that each of the subjects' observations is derived from the same mean structure, with differences only in the observed error. 
 
-The error structure was of the form
+\paragraph{Mean Structure} In all of the simulations presented, the distribution used in Equation~\ref{eq:tie_dist} was empirically determined from data on normal hearing subjects in the VWP (Farris-Trimble et  al., 2014 \cite{FarrisTrimble2014}). Parameters used were those fit to fixations on the Target, following the functional form of Equation~\ref{eq:logistic}. Under the assumption of between-subject homogeneity, we set $V_{\theta} = 0$, assuring that each of the subjects' observations is derived from the same mean structure, differing only in their observed error.
+
+
+\paragraph{Error Structure} The error structure was of the form
 
 \begin{equation}
 e_{it} = \phi e_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma)
 \end{equation}
-where the $w_{it}$ are iid with $\sigma = 0.025$ (it actually is something else that is variable depending on number of trials, but such that for 100 trials it is equal to this, same as Oleson 2017). $\phi$ corresponds to an autocorrelation parameter and is set to $\phi = 0.8$ when the generated data is to be autocorrelated and set to $\phi = 0$ when we assume the errors are all iid. 
+where the $w_{it}$ are iid with $\sigma = 0.025$. $\phi$ corresponds to an autocorrelation parameter and is set to $\phi = 0.8$ when the generated data is to be autocorrelated and set to $\phi = 0$ when we assume the errors are all independent and identically distributed. 
 
 \paragraph{Paired Data} Finally, we consider the paired data, which differs in creation according to the mean structure. In the case in which $V_{\theta} \not= 0$, we simply used the same value of $\theta_i$ for the $i$th subject in each group, allowing the only difference to be that corresponding to the error structure. In the case when $V_{\theta} = 0$, however, it was already the case that the set of parameters were the same between subjects in each group (and indeed for all subjects in both groups). As such, letting the observed data for subject $i$ in group $A$ be denoted $y_{iA}$, we set
 \begin{align*}
@@ -196,37 +200,28 @@ y_{iB} = y_{iA} + N(0, \sigma)
 \end{align*}
 so that the only difference between paired subjects was uncorrelated normal noise at each time point. (I get that this is questionable, but what is the alternative? Truly it would just be to half the degrees of freedom in the t-test, which isn't really comparing IRL paired data)
 
-%\subsection{extra/should i elaborate on this instead of the general summary above?}
-%
-%Not sure if this is worth discussing here or in some section detailing the actual construction of these estimates -- what is actually done is we for a subject with $N$ trials at each time point we have
-%
-%\begin{equation}
-%y_{it} \sim Bin(N, f_{\theta_t}(t))
-%\end{equation}
-%
-%This has the nice benefit of creating normally distributed errors with variances modulated by the number of trials. In the other case where it is added separately, we set $\sigma = (1-p)(p)/\sqrt{N}$ so that if we do change the number of observed trials, we are able to adjust the variability in both cases. Pretty slick, i know
-%
-%Actually, I had previously gone into this level of detail for both mean structure and error structure. Doing so kind of necessitated breaking these into longer, independent sections. As it is now, I kind of walk through all of it in a paragraph or two (above). I'm not really sure how much the detail/length trade off matters here as i imagine most people wont care about the particulars
 
-
+Each set of conditions generates two groups, with $n = 25$ subjects in each group, with $N = 100$ simulated trials for each subject. Columns in the tables indicate homogeneity assumption, whether or not an AR(1) error structure was used, and if correlation was specified in the fitting function. Paired and unpaired tests are in different tables. Each simulation was conducted 100 times to determine the rate of type I error. 
 
 
 \subsection{Results}
 
-The parameters used in the group distributions were empirically determined from (timball 2017) and set $b = 0.21$, $p = 0.90$, $s = 0.00165$ and $x = 725.03$ (how  many decimals, idk. Also won't include variability but I have that too). A four parameter logistic curve with these parameters has the following form:
-
-
-
+yeah, idk, here are the results by section. Updated permutation are in parentheticals. New batch of 100 running now but the hpc is physically incapable of handling more than one of these jobs at a time. No idea why. Probably because there is no god
 
 \subsubsection{FWER}
 
-Here are the results for type I FWER (I have put the new values for permutation in parenthetical, this is after accounting for the within-subject variance with the additional drawing step for coefficients. I only tested this on the first four in unpaired, the rest are not updated)
+Maybe I should replace TRUE/FALSE with Yes/No? Also having the paired/unpaired feels a little like a distraction , especially when there isn't all that much to say. I might consider moving those to appendix or something.
+
+
+Table~\ref{tab:fwer_unpaired} demonstrates the FWER across a number of scenarios. Note that the first two lines replicate the simulation found in Oleson 2017 (with different parameters), confirming that under the assumption of homogeneity and AR(1) error, failing to account for autocorrelation in the fitting function dramatically inflates the family-wise error rate. We see a similar phenomenon with the v2 bootstrap and permutation tests, though to a much smaller degree.
+
+Most notably here are the results under the assumption of homogeneity, where the FWER of the v1 bootstrap increases dramatically to the point of being unusable. We should consider how to best handle the fact that researchers have spent two years conducting studies in the VWP using this truly fucking awful method. Alternatively, the v2 bootstrap and permutation test perform as expected, with observed FWER below the nominal level.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{lllccc}
   \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation (updated) \\ 
+  Heterogeneity & AR(1) & AR(1) Specified &  V1 Bootstrap & V2 Bootstrap & Permutation (updated) \\ 
   \hline
 FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.21  (0.05) \\ 
   FALSE & TRUE & FALSE & 0.87 & 0.08 & 0.18  (0.11) \\ 
@@ -238,14 +233,17 @@ FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.21  (0.05) \\
   TRUE & FALSE & FALSE & 1.00 & 0.05 & 0.03 \\  
    \hline
 \end{tabular}
-\caption{TIE for realistic parameters (unpaired)}
+\caption{FWER for empirical parameters (unpaired)}
+\label{tab:fwer_unpaired}
 \end{table}
+
+Paired data is given in Table~\ref{tab:fwer_paired}. Matching the conclusions drawn from Table~\ref{tab:fwer_unpaired}, we only note here that both the v2 bootstrap and permutation test remain valid under the paired assumption.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{lllccc}
   \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation \\ 
+  Heterogeneity & AR(1) & AR(1) Specified &  V1 Bootstrap & V2 Bootstrap & Permutation\\  
   \hline
 FALSE & TRUE & TRUE & 0.12 & 0.02 & 0.03 \\ 
   FALSE & TRUE & FALSE & 0.86 & 0.08 & 0.03 \\ 
@@ -257,16 +255,19 @@ FALSE & TRUE & TRUE & 0.12 & 0.02 & 0.03 \\
   TRUE & FALSE & FALSE & 0.74 & 0.04 & 0.00 \\ 
    \hline
 \end{tabular}
-\caption{TIE for realistic parameters (paired)}
+\caption{FWER for empirical parameters (paired)}
+\label{tab:fwer_paired}
 \end{table}
 
 \subsubsection{Median per comparison error rate}
+
+We present also a table of the median per comparison error rate. Make of this what you will. There is also the collection of plots in Figure~\ref{fig:time_slice_histogram}, but as it doesn't really convey much, I might just delete it all together.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{lllrrr}
   \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation (updated) \\ 
+  Heterogeneity & AR(1) & AR(1) Specified &  V1 Bootstrap & V2 Bootstrap & Permutation (updated)\\ 
   \hline
 FALSE & TRUE & TRUE & 0.01 & 0.00 & 0.04  (0.00)\\ 
   FALSE & TRUE & FALSE & 0.31 & 0.00 & 0.04  (0.02)\\ 
@@ -281,11 +282,13 @@ FALSE & TRUE & TRUE & 0.01 & 0.00 & 0.04  (0.00)\\
 \caption{median per comparison error rate (unpaired)}
 \end{table}
 
+
+
 \begin{table}[H]
 \centering
 \begin{tabular}{lllrrr}
   \hline
-  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+  Heterogeneity & AR(1) & AR(1) Specified &  V1 Bootstrap & V2 Bootstrap & Permutation  \\ 
   \hline
 FALSE & TRUE & TRUE & 0.03 & 0.00 & 0.00 \\ 
   FALSE & TRUE & FALSE & 0.26 & 0.00 & 0.00 \\ 
@@ -304,13 +307,19 @@ FALSE & TRUE & TRUE & 0.03 & 0.00 & 0.00 \\
 \centering
 \includegraphics{TEMP_histogram.pdf}
 \caption{quick put together of what this might look like, frequency of TIE at each spot. Since there is no obvious trend here, though, I may just omit this entirely}
+\label{fig:time_slice_histogram}
 \end{figure}
+
+\subsection{FWER Discussion}
+
+The results here are pretty conclusive and speak for themselves. The v1 bootstrap performs as advertised in its original publication, but even then, not really any better than the two new methods proposed. And in the far more likely case of heterogeneous subject parameters, the v1 bootstrap is a trainwreck.
+
+Transition sentence to power simulations
 
 \section{Power Simulations}
 
 
-
-All this talk on the type I error rate sure is interesting, but what good is having a low type I rate if we are just trading it in for type II? In this hard hitting piece of investigative journalism, we set out to determine the empirical power of the proposed methods under a variety of conditions, similar to those above but excluding the case of paired observations. Inb4 comments like ``oh but power between paired cases is what we are interested in most!", well, maybe if there's time.
+All this talk on the type I error rate sure is interesting, but what good is having a low type I rate if we are just trading it in for type II? In this hard hitting piece of investigative journalism, we set out to determine the empirical power of the proposed methods under a variety of conditions, similar to those above but excluding the case of paired observations. Maybe if there's time.
 
 To determine power, two experimental groups were simulated with mean structures of the following form:
 
@@ -323,7 +332,7 @@ mx + b \quad &x \geq 0
 
 The first simulated group was ``No Effect", with intercept and slope parameters normally distributed and standard deviation $\sigma$. The second group, the ``Effect" group, was similarly distributed, but with the slope parameter having mean value of $\mu = 0.025$. Absolute values were taken to ensure that all of the parameters were positive, and simulations were run with group variability values of $\sigma = 0.005$ and $\sigma = 0.025$. The error structure was identical to that in the FWER simulations, with both an AR(1) error structure and independent noise included. Finally, we limited consideration to three possible scenarios: first, we assumed the conditions presented in Oleson 2017, assuming homogeneity between subject parameters and an AR(1) error structure, with the model fitting performed assuming autocorrelated errors. For the remaining scenarios, we assumed heterogeneity in the distribution of subject parameters, simulated with and without an AR(1) error structure. In both of these scenarios, we elected to \textit{not} fit the model assuming autocorrelated errors. This was for two reasons: first, simulations exploring the type I error rate suggested that models fit with the autocorrelation assumption tended to be conservative. Second, and given the results of the first, this makes setting the assumption of autocorrelation to FALSE in \xt{bdots} seem like a sensible default, and as such, it would be of interest to see how the model performs in these cases.
 
-For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group memebership and fit using \xt{bdots} on the interval (-0.1,1). Groups were then compared using each of the methods presented (names?). By including the interval (-0.1,0) where there is no true difference, we are able to mitigate the effects of over-zealous methods, and we present this information in the following way: any bootstrapped or permuted resulting identifying the region (-0.1, 0) as being significantly different was marked as having a type I error, regardless of other regions identified. The proportions of simulations for which this occurred in given in the column labeled $\alpha$. The next column, $\beta$, is the type II error rate, giving the proportion of simulations in which no differences were identified. And finally in the remaining greek letter column is   $1-\beta-\alpha$, a modified power metric giving the proportion of simulations in which only differences in the correct region were identified. The remaining columns given a partial summary of the earliest onset of detection. As the true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a base R plot of the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that this does not take into account the rate of type I errors which in all cases occur to the left of the red dashed line.
+For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group memebership and fit using \xt{bdots} on the interval (-0.1,1). Groups were then compared using each of the methods presented (names?). By including the interval (-0.1,0) where there is no true difference, we are able to mitigate the effects of over-zealous methods, and we present this information in the following way: any bootstrapped or permuted resulting identifying the region (-0.1, 0) as being significantly different was marked as having a type I error, regardless of other regions identified. The proportions of simulations for which this occurred in given in the column labeled $\alpha$ (maybe we could call this FWER?). The next column, $\beta$, is the type II error rate, giving the proportion of simulations in which no differences were identified. And finally in the remaining greek letter column is   $1-\beta-\alpha$, a modified power metric giving the proportion of simulations in which only differences in the correct region were identified. The remaining columns given a partial summary of the earliest onset of detection. As the true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a base R plot of the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that this does not take into account the rate of type I errors which in all cases occur to the left of the red dashed line.
 
 (I know I used too many colons)
 
@@ -332,21 +341,16 @@ For each subject, parameters for their mean structure given in Equation~\ref{eq:
 
 \subsection{Results}
 
-
-
-Presented in this section are the results of each of the aforementioned simulations. The first four columns indicate the parameters of the simulation: the mean structure, the error structure, the variability in the generating distributions and the effect size, or the slope. Note that as each of the simulations contained intervals where there was no difference in actuality, there is a column marked $\alpha$ indicating the observed type I error; similarly, the column labeled $\beta$ indicates the proportion of simulations in which no differences were detected. The remaining column, $1 - \beta - \alpha$, indicates the proportion of simulations in which differences were detected, but only in the regions in which they existed. Finally, the remaining columns offer a summary of when differences were detected. As the true value for this is 0, smaller numbers indicate greater ability to detect smaller effect sizes.
-
-I removed Min and Max because who cares, it was noise and took up space. I also removed m = 0.005 because it was pretty similar in all cases except for in the singlemeans case where basically the type II error rate was like 0.9 for everything including v1. It also effed up all my stats at the end. so let's just not do it. This makes my tables MUCH cleaner while conveying pretty much the same information. It's also worth noting (especially in the power plots) that there is nothing really all that more interesting when $\sigma = 0.025$ over $\sigma = 0.005$. Maybe I'll just place these all in supplementary materials, indicating that yes we looked at this but there is not enough new information in those simulations to justify including them in the main body of the paper when all they are doing is taking up space.
-
-
-
 \subsubsection{Bootstrap v1}
+
+We note a few things here. Considering the power results for the v1 bootstrap in Table~\ref{tab:bad_boot_pwr}, we first observe that under the assumption of heterogeneity, the v1 bootstrap has a type I error rate so poor as to not be worthy of further consideration. Even then, under the homogeneity assumption, the v1 bootstrap really performs no better than the v2 bootstrap or permutation test, with perhaps slightly greater power than the v2 bootstrap and overly conservative type I error rate compared to the permutation test. This is best illustrated in the first row of Figure~\ref{fig:time_power_plot}.
+
 
 \begin{table}[H]
 \centering
 \begin{tabular}{llcccccccc}
   \hline
-$V \not= 0$ & AR(1) & $\sigma$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$ & 1st Qu. & Median & 3rd Qu.  \\ 
+Heterogeneity & AR(1) & $\sigma$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$ & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
 FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\ 
   FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
@@ -362,11 +366,13 @@ FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\
 
 \subsubsection{Bootstrap v2}
 
+Performs comparably in homogeneous means. Low type I error, type I error hovering around 10\%-20\%
+
 \begin{table}[H]
 \centering
 \begin{tabular}{llcccccccccc}
   \hline
-$V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu. \\ 
+Heterogeneity & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
 FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\ 
   FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
@@ -382,11 +388,13 @@ FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\
 
 \subsection{Permutation}
 
+Comparable in homogeneous means case with closer to nominal type I error. This has most reasonable balance (it seems) of controlling type I error and achieving power. Cool
+
 \begin{table}[H]
 \centering
 \begin{tabular}{llcccccccccc}
   \hline
-$V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
+Heterogeneity & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
   \hline
 FALSE & TRUE & 0.005 & 0.05 & 0.00 & 0.95 & 0.259 & 0.299 & 0.332 \\ 
   FALSE & TRUE & 0.025 & 0.10 & 0.00 & 0.90 & 0.275 & 0.302 & 0.334 \\ 
@@ -419,26 +427,26 @@ Bootstrap V1 & 0.613 & 0.000 & 0.387 & 0.101 & 0.125 & 0.139 \\
 \label{tab:type_2_summary}
 \end{table}
 
-As we can see, the permutation method is the most canonical of the methods considered, with a type I error rate close to the nominal $\alpha = 0.05$ and a type II error rate of $\beta = 0.195$, corresponding to approximately 80\% power. The V2 bootstrap, alternatively, is rather conservative, trading a portion of its power for controlling the type I error rate close to zero. Finally, the V1 bootstrap is a poor contender for identifying differences in time series, with its utility limited to the strict assumptions under which it was originally presented.
+As we can see, the permutation method is the most canonical of the methods considered, with a type I error rate close to the nominal $\alpha = 0.05$ and a type II error rate of $\beta = 0.195$, corresponding to approximately 80\% power. The V2 bootstrap, alternatively, is rather conservative, trading a portion of its power for controlling the type I error rate close to zero. Finally, the V1 bootstrap is a poor contender for identifying differences in time series, with its utility limited to the strict assumptions under which it was originally presented. Even then, it performs generally no better than the other methods, but with substantially greater risk should the underlying assumptions not hold. I believe that this is conclusive enough evidence to make this not even an option in \xt{bdots}, even if somebody could find a limited case in which they knew for certain the assumptions held. But idk. Maybe it can be an easter egg. Or require the user to type a full paragraph acknowledging the risks before it will run. But really I think we should just remove it.
 
-Even then, it is worth considering these methods again in this limited context. Considering only the case with single means, an AR(1) error structure and an effect size of $m = 0.025$, the V1 bootstrap is able to first detect an effect only marginally sooner than the V2 bootstrap but with a greater type I error rate. Researchers should carefully consider whether or not this greater acquisition of power is worth the risk.
+%Even then, it is worth considering these methods again in this limited context. Considering only the case with single means, an AR(1) error structure and an effect size of $m = 0.025$, the V1 bootstrap is able to first detect an effect only marginally sooner than the V2 bootstrap but with a greater type I error rate. Researchers should carefully consider whether or not this greater acquisition of power is worth the risk.
 
 
-\begin{table}[H]
-\centering
-\begin{tabular}{lllcccccccc}
-  \hline
-Method & $V \not= 0$ & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
-  \hline
-V1 & FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\ 
-  V1 & FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
-  V2 & FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\ 
-  V2 & FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
-   \hline
-\end{tabular}
-\caption{Summary of bootstraps with $V \not=0$ and with AR(1) error structure}
-\label{tab:best_case}
-\end{table}
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllcccccccc}
+%  \hline
+%Method & Heterogeneity & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
+%  \hline
+%V1 & FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\ 
+%  V1 & FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
+%  V2 & FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\ 
+%  V2 & FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
+%   \hline
+%\end{tabular}
+%\caption{Summary of bootstraps with $V \not=0$ and with AR(1) error structure}
+%\label{tab:best_case}
+%\end{table}
 
 
 \begin{figure}[H]
@@ -451,13 +459,14 @@ V1 & FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\
 
 \section{Discussion and concluding remarks}
 
-Idk, discussion
+We set out to interrogate the validity of the v1 bootstrap assumptions and to propose two alternative methods that would be more robust under a greater variety of assumptions. In doing so, we demonstrated conclusively the utility of the v2 bootstrap and permutation tests while also highlighting a major shortcoming of the v1 bootstrap. It's worth noting, however, that the FWER adjustment proposed in \cite{Oleson2017} is still valid, if not slightly conservative, and with power similar to that of the permutation method, and this will remain an option in version 2.0 of \xt{bdots}.
 
-It's worth noting that the FWER adjustment proposed in \cite{Oleson2017} is still valid, if not slightly conservative, and with power similar to that of the permutation method.
 
-There are a few limitations to the current paper that are worthy of investigation. First, limited consideration was given to the effect of sample density on the observed type I error rate or power. As the fitting function in \xt{bdots} simply returns a set of parameters, one could conceivably perform any of the methods presented on any arbitrary collection of points, whether or not any data were observed there. This extends itself to the condition in which subjects were sampled at heterogeneous time points, as may be the case in many clinical settings. What impact this may have or how to best handle these cases remains investigated. The current implementation of \xt{bdots} takes the union of observed time points, though this runs the risk of extrapolating many subjects past what they were ever observed.
+There are a few limitations to the current paper that are worthy of investigation. First, limited consideration was given to the effect of sample density on the observed type I error rate or power. As the fitting function in \xt{bdots} simply returns a set of parameters, one could conceivably perform any of the methods presented on any arbitrary collection of points, whether or not any data were observed there. This extends itself to the condition in which subjects were sampled at heterogeneous time points, as may be the case in many clinical settings. What impact this may have or how to best handle these cases remains investigated. The current implementation of \xt{bdots} takes the union of observed time points, though this runs the risk of extrapolating many subjects past what they were ever observed. It would be of interest to know if either the permutation or v2 bootstrap perform better in these situations, and if both retain their validity under increasingly suspect conditions. Finally, in noting the rather conservative FWER estimates for both the v2 bootstrap and the permutation test, it would be worthwhile investigating if \textit{not} resampling subject-specific parameters from the distribution provided by \xt{gnls} would retain an acceptable FWER while increasing power.
 
-We conclude pretty much by noting that even in the best case presented in Oleson 2017, these other methods do an identical job, and in situations in which these assumptions are wrong, it is a veritable train wreck. It seems that the $1 - \beta - \alpha$ (whatever this is called) is nearly identical between the v2 bootstrap and permutation, whereas the type II error is much greater in the bootstrap. This seems justification enough for making the permutation method the new default in \xt{bdots} or, should i say PDOTS. It is conceivable that the assumptions presented in Oleson 2017 would have their place, say repeated observation from the same mechanism (i.e., not vwp data), in which case v1 bootstrap has optimal performance. Still, users of \xt{bdots} will need to go out of their way in order to do so, possibly with a warning. Because really, even in that case, it hardly does any better than permutation, perhaps with a bit smaller of a type I error
+We conclude pretty much by noting that even in the best case presented in Oleson 2017, these other methods do an identical job, and in situations in which these assumptions are wrong, it is a veritable train wreck. It seems that the $1 - \beta - \alpha$ (whatever this is called) is nearly identical between the v2 bootstrap and permutation, whereas the type II error is much greater in the bootstrap. This seems justification enough for making the permutation method the new default in \xt{bdots} or, should i say PDOTS. It is conceivable that the assumptions presented in Oleson 2017 would have their place, say repeated observation from the same mechanism (i.e., not vwp data), in which case v1 bootstrap has optimal performance. Still, users of \xt{bdots} will need to go out of their way in order to do so, possibly with a warning. Because really, even in that case, it hardly does any better than permutation, perhaps with a bit smaller of a type I error.
+
+The End.
 
 
 %There isn't really a lot to say in this paper: we pretty quickly identified the issue with the assumption that $V = 0$ for the assumptions in the data generation parameters. We showed pretty conclusively that the type I error is absolutely bonkers in even the mildest of deviations from this, removing any justification from this being the ``default" method in \xt{bdots}. With regards to fitting models assuming AR(1) error structure, there really wasn't any observed penalty in not doing so with the good bootstrap or permutation methods, and if anything it brought the observed TIE closer to 0.05, with some implications for power (though those simulations are still work in progress).

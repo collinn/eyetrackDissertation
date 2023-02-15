@@ -202,8 +202,12 @@ pp <- biasPlot(dg_fit_fix_no_delay,
                tit = "No Delay",
                xint = 0)
 
-pdf("../img/dg_no_delay_par_bias.pdf")
-grid.arrange(pp[[1]], pp[[2]])
+pdf("../img/dg_no_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
+
+pdf("../img/dg_no_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
 dev.off()
 
 
@@ -215,11 +219,14 @@ pp <- biasPlot(dg_fit_fix_uniform,
                tit = "Uniform Delay",
                xint = 0)
 
-grid.arrange(pp[[1]], pp[[2]])
-
-pdf("../img/dg_uniform_delay_par_bias.pdf")
-grid.arrange(pp[[1]], pp[[2]])
+pdf("../img/dg_uniform_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
 dev.off()
+
+pdf("../img/dg_uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
+
 
 
 ## Now with Weibull delay (lost about 10%)
@@ -229,11 +236,29 @@ pp <- biasPlot(dg_fit_fix_weibull,
                tit = "Weibull Delay",
                xint = 0)
 
-grid.arrange(pp[[1]], pp[[2]])
-
-pdf("../img/dg_weibull_delay_par_bias.pdf")
-grid.arrange(pp[[1]], pp[[2]])
+pdf("../img/dg_weibull_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
 dev.off()
+
+pdf("../img/dg_weibull_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
+
+
+pp <- biasPlot(dg_fit_fix_normal,
+               dg_fit_sac_normal,
+               dg_sim_uniform,
+               tit = "Normal Delay",
+               xint = 0)
+
+pdf("../img/dg_normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
+dev.off()
+
+pdf("../img/dg_uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
+
 
 
 

@@ -9,6 +9,7 @@ library(gridExtra)
 mouse <- fread("~/packages/rat_data_tumr/GJZ16-091.csv")
 
 head(mouse)
+tail(mouse)
 
 mouse_fit <- bdotsFit(data = mouse,
         subject = "ID",

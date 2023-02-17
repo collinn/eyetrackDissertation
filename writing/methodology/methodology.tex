@@ -15,6 +15,9 @@
 
 \usepackage{subfigure}
 \graphicspath{{img/}}
+\usepackage{color}
+\providecommand{\pb}[1]{\textcolor{red}{#1}}
+\providecommand{\cn}[1]{\textcolor{blue}{#1}}
 
 \usepackage{listings}
 
@@ -34,12 +37,20 @@ Something something high density time series collected to estimate group populat
 
 \section{Introduction}
 
-Note: I don't really want this to be all ``oh this is bdots and look at what it does and how it's used" because that is all covered in chapter 1. Instead, I am looking for laser sharp focus on the problem we identified and how we seek to resolve it. But since we live in a polite society I will go through the tedious endeavor of creating an introduction.
+\pb{What is the general problem you're addressing, no bdots or vwp at all}
+
+\pb{Johnson and Bubba had one idea; Gandalf and Einstein had a different idea.}
+
+\pb{More recently, Oleson2017 did blah blah blah.}
+
+\pb{This has problems.}
+
+\cn{Note: I don't really want this to be all ``oh this is bdots and look at what it does and how it's used" because that is all covered in chapter 1. Instead, I am looking for laser sharp focus on the problem we identified and how we seek to resolve it. But since we live in a polite society I will go through the tedious endeavor of creating an introduction.}
 
 
-The original bdots presented a method whereby the difference in time series between two groups could be analyzed using a FWER correction to the alpha based on the autocorrelation of the resulting t-statistics. While we can confirm that the published results do indeed hold for the case they presented, such a situation is likely atypical and not reflective of the typical case involving VWP data. bdots involved testing between two groups, yet assumed that all subjects within a group had identical mean structures -- that is, there was no between-subject variability to be accounted for.
+The original bdots presented a method whereby the difference in time series between two groups could be analyzed using a FWER correction to the alpha based on the autocorrelation of the resulting t-statistics. While we can confirm that the published results do indeed hold for the case they presented, such a situation is \cn{likely atypical and not reflective of the typical case involving VWP data} \pb{involves quite restrictive assumptions that are unlikely to be met in many, if not most, situations}. bdots involved testing between two groups, yet assumed that all subjects within a group had identical mean structures -- that is, there was no between-subject variability to be accounted for.
 
-More likely it is the case that in the comparison of two groups, each group has a typical distribution of parameters for its subjects. God its annoying a little bit how bad and out of order this is, but free write so its ok for now. As we show, when the initial (and restrictive) assumptions made in the original bdots doesn't hold, the resulting TIE is beyond what would be acceptable in most cases.
+More likely it is the case that in the comparison of two groups, each group has a typical distribution of parameters for its subjects. God its annoying a little bit how bad and out of order this is, but free write so its ok for now. As we show, when the initial (and restrictive) assumptions made in the original bdots doesn't hold, the resulting TIE is unacceptably high.
 
 What we present instead is two alternatives, accommodating flexibility in two of the assumptions made in the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the novel FWER adjustment method presented for autocorrelated errors. In addition to this, we offer a play on a standard permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the TIE rate across a number of experimental conditions, along with the results. Finally if there is time we consider a power analysis of the two resulting methods. I guess it's also fine to consider power in the case in which the original bdots does well. Naturally, the power is great, but then so what?
 
@@ -82,7 +93,7 @@ As is more typically the case, and especially in scenarios under which the v1 bo
 
 % https://en.wikipedia.org/wiki/Empirical_Bayes_method
 % https://stephens999.github.io/fiveMinuteStats/ebnm_normal.html
-A more likely case involving subjects in the VWP (or subjects within any group exhibiting between and within subject variability) is as such: suppose for example that we are considering a family of four parameter logistic curves, defined
+A more likely case involving subjects in the VWP (or subjects within any group exhibiting between and within subject variability) is as such: suppose for example that we are considering a family of four parameter logistic curves, defined \pb{move to next section; not actually relevant here}
 
 \begin{equation}\label{eq:logistic}
 f_{\theta}(t) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)} + b

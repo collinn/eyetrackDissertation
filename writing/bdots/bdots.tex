@@ -39,16 +39,15 @@ The Bootstrapped Differences of Timeseries (bdots) was first introduced by Oleso
 
 i hate introductions we will do this part last
 
-In 2017, Oleson et al. introduced a method for detecting time-specific differences between (group? idk rewrite this sentence) functions in time. This largely centered around bootstrapping and computing a series of highly correlated $t$-statistics and using estimates of the autocorrelation as an adjustment for the family-wise error rate, presented in the context of the Visual World Paradigm (VWP), an experimental paradigm combining eyetracking with an interactive environment to measure dynamics in language processing. In 2018, \xt{bdots} was introduced on CRAN to perform a limited version of the analysis proposed in Oleson. Here, we introduce \texttt{bdots} v2, an update to the CRAN package that broadly expands the capabilities of the original. 
+In 2017, Oleson et al. introduced a method for detecting time-specific differences in the trajectory of outcomes between experimental groups. Particularly in the case of a densely sampled time series, the construction of evaluating differences at each point in time results in a series of highly correlated test statistics expanding the family-wise error rate, accommodated with an adjustment to the nominal alpha based on this autocorrelation. This was followed up with in 2018 with the introduction of the \xt{bdots} package to CRAN \cite{seedorff2018bdots}. Here, we introduce the second version of \texttt{bdots}, an update to the package that broadly expands the capabilities of the original. 
 
-This paper is not intended to serve as a complete guide for using the \xt{bdots} package. Rather, the purpose is to showcase major changes and improvements to the package, with those seeking a more comprehensive treatment directed to the package vignettes. Updates to \xt{bdots} have been such that there is little resemblance to the original. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use:
+This manuscript is not intended to serve as a complete guide for using the \xt{bdots} package. Instead, the purpose is to showcase major changes and improvements, with those seeking a more comprehensive treatment directed to the package vignettes. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use:
 
 \begin{singlespace}
 \begin{enumerate}
-\item Major overhaul to underlying methodology 
+\item Major changes to underlying methodology with implications for prior users of the package
 \item Simplified user interface
-%\item Parameter and nonparametric functions (not going to be true)
-\item User defined curves
+\item Introduction of user defined curves
 \item Permit fitting for arbitrary number of groups
 \item Automatic detection of paired tests based on subject identifier
 \item Allows for non-homogeneous sampling of data across subjects and groups
@@ -57,30 +56,42 @@ This paper is not intended to serve as a complete guide for using the \xt{bdots}
 \end{enumerate}
 \end{singlespace}
 
+First, a quick review of framing the problem at hand.
+
+We start by clearly delineating the type of problem that \xt{bdots} has been created to solve.
+
 \paragraph{Bootstrapped differences in time series}
 
-The original motivation for \xt{bdots} came from the problem of identifying when, in time, differences in the distributions of curves from two groups were statistically different. A full review of the context in which it was introduced is available in Seedorff et. al., 2018 \cite{seedorff2018bdots}.
-
-Do I talk about how original bdots was strictly limited to assumption of homogeneity across means? Because that is going to be a big fucking deal when comparing the old bdots to the new.
-
-Where am I going to say hey, something like
+We begin by assuming two or more experimental groups in which a subject response is measured over time. This may include the growth of tumors in  mice or the change in the proportion of fixations over time in the context of the VWP. In either case, we assume that each of the subjects in the groups being considered has observed data of the following form:
 
 \begin{equation}
-y_{it} = f_{\theta_i}(t) + \epsilon_{it}
+y_{it} = f_{\theta_i}(t) + \epsilon_{it} 
 \end{equation}
-and then note that we have a bunch of different assumptions we can put on that. (The critical thing here is $\theta_i$ since each subject is different).
+OR (as was written in the original)
+\begin{equation}
+y_{it} = f(\theta_{it}) + \epsilon_{it} 
+\end{equation}
 
-My life will also be A LOT easier if I just  say up front that right now, period, bdots assumes parametric functions. It would be nice if there was non-parametric, and someday there will be AND the underlying theory does not \textit{necessarily} require it, but I won't have to tiptoe with language if I can just put my stake in the ground. Which I will. bdots is parametric, \textbf{period}.
+where $f$ represents a functional mean structure, while the error structure of $\epsilon_{it}$ is open to be either IID or possess an AR(1) structure. At present, \xt{bdots} requires that each of the subjects being compared have the same parametric function $f$, this is not strictly necessary and future directions of the package include accommodating non-parametric functions. While each of the subjects are required to be of the same parameteric form $f_{\theta}$, each differs in their instance of their own subject-specific parameters, $\theta_i$.
 
+The collection of subjects' $\theta$  within a group constitutes a group distribution -- bootstrapping parameters from this distribution and evaluating functions $f$ at these values gives us an estimate of the distribution of functions. As these functions are \textit{in time}, this in turn gives a representation of temporal changes in group characteristics. It is precisely the identification of how these temporal changes differ between groups that \xt{bdots} seeks to [do?]
 
-In summary, \texttt{bdots} has transitioned from a package focused exclusively on densely sampled time series assuming a limited number of functional forms to a {\color{red} robust} framework for identifying time windows of significant difference across blah blah blah
+This differs from the original iteration of \xt{bdots} (or Oleson 2017) in a critical way, however. Idk how to say this, really, but the original assumed that there was no variability between subject parameters (which I am calling the homogeneity of means assumption), in which $\theta_i = \theta_j$ for all $i,j$ in an experimental group. The primary consequence of this was the absence of any need to estimate the variability within a group, taking into consideration only subject-specific variability (don't want to go into a lot of details because I kind of treat this mathematically in the next section). Anyways, see Chapter 3 for all the deets on this. Finally, a full review of the context in which it was introduced is available in Seedorff et. al., 2018 \cite{seedorff2018bdots}.
+
+[transition paragraph]
+
+I really need to decide how much detail to go into here. I don't want to repeat everything from chapter 3, and even though this doesn't have to be a stand alone paper now, it will be and when it is this will be pretty damn important to convey, especially to those who used bdots previously.
+
+[also note: however we decide to deal with dissemination of this information, and while I think 2.0.0 should definitely be released with all of this, I almost htink we should address the fitcode awkwardness before this is presented to the public]
+
+Alrightly, on to taking a looksee at how bdots works
 
 
 \section{Methodology and Overview} 
 
 A standard analysis using \xt{bdots} consists of two steps: fitting the observed data to a specified parametric function, $f_\theta$, and then using the observed variability to construct estimates of the distributions of each groups' curves.  Here, we briefly detail how this is implemented in practice and introduce the new methodologies in \xt{bdots v2}. A more comprehensive treatment of these new methods, along with their justifications, is offered in Chapter 3. 
 
-Remember, I just need to physically be writing during this time. It can be trash. Trash can be edited, blank pages and regret cannot.
+
 
 \subsection{Establishing subject-level curves}
 
@@ -95,7 +106,7 @@ where $\epsilon_{it}$ can be specified to be either independent or have an AR(1)
 \hat{\theta}_i \sim N(\theta_i, s_i^2).
 \end{equation}
 
-\subsection{Estimating Group Distributions}
+\subsection{Estimating Group Distributions}\label{sec:group_dist}
 
 Once sampling distributions are created for each subject, we are prepared to begin estimating group distributions. We assume that the mean parameters for each subject come from a group level distribution, where for each subject $i$,
 
@@ -264,17 +275,17 @@ The number of columns will depend on the total number of groups specified, with 
 Several methods exist for this object, including \texttt{plot}, \texttt{summary}, and \texttt{coef}, returning a matrix of fitted coefficients obtained from \texttt{gnls}. 
 
 
-\paragraph{Fit Codes}
+\paragraph{Fit Codes}\label{sec:fitcode}
 
 The \xt{bdots} package was originally introduced to address a very narrow scope of problems, and the \xt{fitCode} designation is an artifact of this original intent. Specifically, it assumed that all of the observed data was of the form given in Equation~\ref{eq:mean_structure} where the observed time series was dense and the errors were autocorrelated. Autocorrelated errors can be specified in the \xt{gnls} package (used internally by \xt{bdots}) when generating subject fits, though there were times when the fitter would be incapable of converging on  a solution. In that instance, the autocorrelation assumption was dropped and constructing a fit was reattempted.
 
-$R^2$ proved a reliable metric for this kind of data, and preference was given to fits with an autocorrelated error structure over those without, and from this, the hierarchy given in Table~\ref{tab:fit_codes} was born. \xt{fitCode} is a numeric summary statistic ranked from 0 to 6 detailing information about the quality of the fitted curve, constructed with the following formula:
+$R^2$ proved a reliable metric for this kind of data, and preference was given to fits with an autocorrelated error structure over those without. From this, the hierarchy given in Table~\ref{tab:fit_codes} was born. \xt{fitCode} is a numeric summary statistic ranked from 0 to 6 detailing information about the quality of the fitted curve, constructed with the following pseudo-code:
 
 \begin{singlespace}
 \begin{figure}[H]
 \centering
 \begin{BVerbatim}
-  AR1 <- # boolean, determines if AR1 status of it
+  AR1 <- # boolean, determines AR1 status of fit
   fitCode <- 3L*(!AR1) + 1L*(R2 < 0.95)*(R2 > 0.8) + 2L*(R2 < 0.8)
 \end{BVerbatim}
 %\caption{Illustration of Mouse data}
@@ -307,6 +318,7 @@ subject's data.
 \label{tab:fit_codes}
 \end{table}
 \end{singlespace}
+
 
 \paragraph{Plots and summaries}
 
@@ -376,7 +388,7 @@ plot(mouse_fit[1:4, ])
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\textwidth]{img/mouse_fit.pdf}
+\includegraphics[width=0.9\textwidth]{img/mouse_fit.pdf}
 \caption{Plot of \xt{mouse\_fit}, using \xt{data.table} syntax to subset to only the first four observations}
 \label{fig:plot_fits}
 \end{figure}
@@ -389,20 +401,18 @@ Once fits have been made, we are ready to begin estimating the group distributio
 \begin{figure}[H]
 \centering
 \begin{BVerbatim}
-(singleMeans we should discuss)
-bboot(formula, bdObj, Niter, alpha, padj, permutation, singleMeans, cores, ...)
+bboot(formula, bdObj, alpha, permutation = TRUE, padj = "oleson", ...)
 \end{BVerbatim}
-%\caption{Illustration of Mouse data}
+\caption{should i caption this? It feels naked without and it feels too ritzy with}
 \end{figure}
 \end{singlespace}
 
-By default, the method for determining significance when comparing the difference of two time series is the permutation method, as this makes the fewest assumptions while maintaining an appropriate type I error rate and adequate power (see chapter 3). While \xt{permutation = TRUE}, the argument to \xt{padj} is ignored; otherwise, adjustments can be made to the specified \xt{alpha} to control FWER as was presented in the original \xt{bdots} package. Regardless of what method is used for determining significance, bootstrapping as detailed in Chapter 3 is still used for determining group distributions. Finally, in contrast to the previous \xt{bdots}, there is no longer a need to specify if the groups are paired; \xt{bboot} determines this automatically based on the subject identifiers in each of the groups.
+The \xt{formula} argument is new to version 2 of \xt{bdots} and will be discussed in the next section. As for the remaining arguments, \xt{bdObj} is simply the object returned from \xt{bfit} that we wish to investigate, and \xt{B} serves the dual role of indicating the number of bootstraps/permutations we wish to perform. \xt{alpha} is the rate at which we wish to control the FWER. \xt{permutation} and \xt{padj} work in contrast to one another; when \xt{permutation = TRUE} (the default?), the argument to \xt{padj} is ignored. Otherwise, \xt{padj} indicates the method to be used in adjusting the nominal \xt{alpha} to control the FWER. By default, \xt{padj = "oleson"}. Finally, as previously mentioned, there is no longer a need to specify if the groups are paired, and \xt{bboot} determines this automatically based on the subject identifiers in each of the groups.
 
-A key component of the bootstrapping function is specifying which groups in our dataset we are wishing to analyze and how. This is done with a formula syntax unique to \xt{bdots} explained in the next section.
 
-\subsubsection{Bootstrapping Formula}
+\subsubsection{Formula}
 
-As the \xt{bfit} function is now able to create fits for an arbitrary number of groups, we rely on a formula syntax in \xt{bboot} to specify precisely which groups differences we wish to compare. Let \xt{y} designate the outcome variable indicated in the \xt{bfit} function and let \xt{group} be one of the group column names to which our functions were fit. Further, let \xt{val1} and \xt{val2} be values of two of the groups in that same column. The general syntax for the \xt{bboot} function takes the following form:
+As the \xt{bfit} function is now able to create fits for an arbitrary number of groups at once, we rely on a formula syntax in \xt{bboot} to specify precisely which groups differences we wish to compare. Let\xt{y} designate the outcome variable indicated in the \xt{bfit} function and let \xt{group} be one of the group column names to which our functions were fit. Further, let \xt{val1} and \xt{val2} be values of two of the groups in that same column. The general syntax for the \xt{bboot} function takes the following form:
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -413,7 +423,8 @@ y ~ group(val1, val2)
 %\caption{Illustration of Mouse data}
 \end{figure}
 \end{singlespace}
-Note that this is an expression in R and is written without quotation marks used in a character vector. To give a more concrete example, suppose we wished to compare the difference in tumor growth curves for treatments A and B in our mouse data (see Figure~\ref{fig:mouse_head} for column names and values). We would do so with the following syntax:
+
+Note that this is an \textit{expression} in R and is written without quotation marks as in a character vector. To give a more concrete example, suppose we wished to compare the difference in tumor growth curves for A and B from the \xt{Treatment} column in our mouse data (Figure~\ref{fig:mouse_head}). We would do so with the following syntax:
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -425,9 +436,13 @@ Volume ~ Treatment(A, B)
 \end{figure}
 \end{singlespace}
 
-There are two special cases to consider when writing this syntax. The first is the situation that arises in the case of nested groups, the second when a difference of difference analysis is conducted. Details on both of these cases are handled in the appendix. 
+There are two special cases to consider when writing this syntax. The first is the situation that arises in the case of multiple or nested groups, the second when a difference of difference analysis is conducted. Details on both of these cases are handled in the appendix. 
 
-\subsection{Summary and Analysis}
+
+
+\subsubsection{Summary and Analysis}
+
+[what gets a paragraph, what gets a subsubsection?  compare this with \textit{\textbf{subsection}} for fitting]
 
 Let's begin first by running \xt{bboot} using bootstrapping to compare the difference in tumor growth between treatment groups A and E in our mouse data using permutations to test for regions of significant difference. 
 
@@ -454,7 +469,7 @@ bdotsBoot Summary
 
 Curve Type: expCurve 
 Formula: Volume ~ x0 * exp(Day * k) 
-Time Range: (0, 106) [31 points]
+Time Range: (0, 59) [21 points]
 
 Difference of difference: FALSE 
 Paired t-test: FALSE 
@@ -464,16 +479,15 @@ FWER adjust method: Permutation
 Alpha: 0.05 
 Significant Intervals:
      [,1] [,2]
-[1,]   15   46
+[1,]   15   32
 \end{BVerbatim}
 %\caption{Illustration of Mouse data}
 \end{figure}
 \end{singlespace}
 
+There are a few components of the summary that are worth identifying when reporting the results. In particular, note the time range provided, an indicator of if the test was paired, and which groups were being considered (noticing now it only has \xt{Treatment}, not \xt{A} or \xt{E}). The last section of the summary indicates the method used, an adjusted \xt{alphastar} if \xt{padj} was used, and then a matrix of regions identified as being significantly different. This matrix is \xt{NULL} is no differences were identified at the specified alpha; otherwise there is one row included for each disjointed region of significant difference.
 
-There are a few components of this worth identifying when reporting the results. First, included at the top is the name of the function used, its expression in R, and the range of time points considered. Below this is information related to the provided formula, namely: is this a difference of difference, are the elements of the groups paired, and what grouping was used in determining the differences. The final section includes information on the FWER, including the method used and the level at which significance was deteremined. When using one of the autocorrelated alpha-adjusted parameters, estimated of the autocorrelation and the adjusted alpha are also presented. Finally included is a matrix of significant intervals. This is NULL if no significant differences were found at the specified alpha; otherwise one row is included for each disjointed region of significance. 
-
-In addition to the provided summary output, plotting methods are available
+In addition to the provided summary output, a \xt{plot} method is available, with a list of additional options included in \xt{help(plot.bdotsBootObj)}.
 
 \begin{figure}[H]
 \centering
@@ -482,20 +496,20 @@ plot(mouse_boot)
 \end{BVerbatim}
 
 \includegraphics{img/mouse_boot_plot.pdf}
-\caption{These confidence intervals are based on the bootstrap (permutation only does significance testing). I will go through and investigate this more closely later, my guess is this is related to the fact that we are using the intersection of time points to fit curves while most data (maybe) only goes out to half way. will investigate later. Because obviously values of 100,000 are way the eff out of what is even remotely reasonable. UPDATE: I cheated and cut time to max out at 60 instead of 105. Can consider how else to resolve this. Also, NOTE: significant region did change somewhat considerably when cutting max time with less time being evaluating resulting in larger regions being significant}
+\caption{There are some obvious issues with time for non-homogenous samples, namely, what do we use for bootstrapping? It will be quick fix, whatever we decide, but I don't think ``union of all observed times" is going to work. Here, I artificially cut it back to only 0-60}
 \end{figure}
 
 Depending on user needs, these plots can be recreated both without confidence bands or without the additional difference curve
 
-\begin{figure}[h]
+\begin{figure}[H]
 \centering
 \begin{BVerbatim}
 plot(mouse_boot, ciBands = FALSE, plotDiffs = FALSE)
+
 \end{BVerbatim}
 
-
 \includegraphics{img/mouse_boot_plot_extra.pdf}
-\caption{obviously this has same issue with previous.}
+\caption{I think I'm going to actually not include this because who cares. I specified that they can find more options with the help function.}
 \end{figure}
 
 
@@ -503,52 +517,32 @@ plot(mouse_boot, ciBands = FALSE, plotDiffs = FALSE)
 
 Let's do a brief tour of some of the other additions to bdots that probably doesn't warrant its own section for use
 
-Do I mention non-homogenous sampling elsewhere? could also illustrate with saccades, idk
 
-\subsection{Non-homogenous sampling}
-
-[not sure if i need this section or if i should elaborate]
-
-The \texttt{bdots} package now has support for data with non-homogenous time sampling across subjects or trials. For example, here is data collected comparing tumor growth for 451LuBr cell line in mice with repeated measures and five treatment groups
-
-\begin{figure}
-\centering
-\texttt{with(tumrdata[subjects 1-4, ], plot(observations as points))}
-\includegraphics[scale=0.75]{img/mouse.png}
-\caption{mousey data}
-\end{figure}
-
-
-
-It is not a problem to fit these groups and perform our bootstrapping analysis either on the union of observed time, or some custom range in between
-
-\begin{center}
-\texttt{example?}
-\end{center}
-
-\texttt{bdots} also allows for repeated observations, as is the case with saccade data from the VWP. Here, an individual subject has 30 trials with saccades taken at the trial level. That is, rather than taking a sequence of observations for each subject, \texttt{bfit} allows for an unordered set with observations and associated time, $\mathcal{S}_i = \{(y_j, t_j)\}$ across $j$ observations. As this relates to the VWP, you can read more about his development in my dope ass other paper called chapter 2.
 
 
 \subsection{Refitting}
 
+[``Better intro; I have an idea" - Patrick Breheny 1/18/31, what does better intro mean?]
+
 There are sometimes situations in which the fitted function returned by \texttt{bfit} is a poor fit. This is largely a consequence of the sensitivity of the \xt{nlme::gnls} function used in \xt{bfit} for fitting the non-linear curves. Sensible starting parameters are computed as a part of the curve fitting functions (i.e., \xt{logistic()}, but see the vignettes for more details), though these can often be improved upon. The quality of the fit can be evidenced by the \texttt{fitCode} or via a visual inspection of the fitted functions against the observations for each subject.  When this occurs, there are several options available to the user, all of which are provided through the function \texttt{brefit} (previously \texttt{bdotsRefit}). \texttt{brefit} takes the following arguments:
-
-
 
 \begin{singlespace}
 \begin{figure}[H]
 \centering
 \begin{BVerbatim}
-brefit(bdObj, fitCode = 1L, quickRefit = FALSE, numRefits = 2L, paramDT = NULL)
+brefit(bdObj, fitCode = 1L, subset = NULL, quickRefit = FALSE, paramDT = NULL)
 \end{BVerbatim}
 %\caption{Illustration of Mouse data}
 \end{figure}
 \end{singlespace}
 
-The first of these arguments, outside of the object itself, is \texttt{fitCode}, indicating  the minimum fit code to be included in the refitting process. This is a convenient way to limit the refitting process to those of a particular quality. Given the sensitivity of \xt{nlme::gnls} to the starting parameters, one can often try automatically refitting all of the specified subject by simply jittering the previous set of parameters and comparing the updated fit to the original; this is done by setting \xt{quickRefit = TRUE}, with \xt{numRefits} indicating how many attempts the fitter should make in doing so.
+The first of these arguments outside of the \xt{bdObj} is \xt{fitCode}, indicating the minimum fit code to be included in the refitting process. As discussed in Section~\ref{sec:fitcode}, this can be sub-optimal. To add flexibility to which subjects are fit there is now the \xt{subset} argument taking either a logical expression or collection of indices that would be used to subset an object of class \xt{data.table} (am I explaining this clearly?) or a numeric vector with indices that the user wishes to refit.
 
+To assist with the refitting process is the argument \xt{quickRefit}. When set to \xt{TRUE}, \xt{brefit} will take the average coefficients of accepted fits within a group and use those as new starting parameters for poor fits. The new fits will be retained if they have a larger $R^2$ value by default (and really the only option and \textit{technically} this isn't actually true yet but will be). When set to \xt{FALSE}, the user will be guided through a set of prompts to refit each of the curves manually.
 
-Finally, \texttt{paramDT} allows for a \texttt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \texttt{data.table} requires the same format as that returned by \texttt{bdots::coefWriteout}. The use of this functionality is covered in more detail in the \xt{bdots} vignettes and is a useful way for reproducing a \xt{bdotsObj} from a plain text file. When \texttt{quickRefit = FALSE}, the user is put through a series of prompts whereby for each subject to be refit, in addition to being given a series of diagnostics:
+Finally, the \texttt{paramDT} argument allows for a \xt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \xt{data.table} requires the same format as that returned by \xt{bdots::coefWriteout}. The use of this functionality is covered in more detail in the \xt{bdots} vignettes and is a useful way for reproducing a \xt{bdotsObj} from a plain text file. 
+
+When \texttt{quickRefit = FALSE}, the user is put through a series of prompts along with a series of diagnostics for each of the subjects to be refit:
 
 
 \begin{singlespace}
@@ -580,14 +574,14 @@ Choose (1-6):
 \end{singlespace}
 
 
-
-Along with this is given a plot of the original fit, side-by-side with the suggested alternative. 
+Along with this is given a plot of the original fit, side-by-side with the suggested alternative, Figure~\ref{fig:refit_plot}. 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{img/mouse_refit_plot.pdf}
+\includegraphics{img/mouse_refit_plot.pdf}
 % new pars x0=50, k = 0.06
 \caption{before and after refit: man i am good at picking new parameters}
+\label{fig:refit_plot}
 \end{figure}
 
 As the menu item suggests, users have the ability to end the manually refitting process early and save where they had left off. To retain previously refit items and start again at a later time, pass the first refitted object back into the refitter as such:
@@ -605,44 +599,78 @@ refit <- brefit(refit, ...) # pass in the refitted object
 
 
 
-A final note should be said regarding the option to delete a subject. As \xt{bdots} now automatically determines if subjects are paired based on subject identifiers (necessary for  calculations in the significance testing step), it is critical that if a subject has a poor fit in one group and must be removed that he or she is also removed from all additional groups in order to retain paired status. This can be overwritten with a final prompt in the \texttt{brefit} function before they are removed. The removal of subjects can also be done with the ancillary function, \texttt{bdRemove}, useful for removing subjects without undergoing the entire refitting process. 
+A final note should be said regarding the option to delete a subject. As \xt{bdots} now automatically determines if subjects are paired based on subject identifiers (necessary for  calculations in significance testing), it is critical that if a subject has a poor fit in one group and must be removed that he or she is also removed from all additional groups in order to retain paired status. This can be overwritten with a final prompt in the \texttt{brefit} function before they are removed. The removal of subjects can also be done with the ancillary function, \texttt{bdRemove}, useful for removing subjects without undergoing the entire refitting process. See \xt{help(bdRemove)} for details.
 
 
 \subsection{User created curves}
 
-Continue to ponder if this worth elaborating on
+Continue to ponder if this worth elaborating on here or appendix (or at all)
 
 \subsection{Correlations}
 
-There are sometimes cases in which we are interested in determining the correlation of a fixed attribute with group outcome responses across time (what such a case may be, I have no idea). This can be done with the \texttt{bcorr} function (previously \texttt{bdotsCorr}), which takes as an argument an object of class \texttt{bdotsObj} as well as a character vector representing a column from the original dataset used in \texttt{bfit}
+There are sometimes cases in which we are interested in determining the correlation of a fixed attribute with group outcome responses across time . This can be done with the \texttt{bcorr} function (previously \texttt{bdotsCorr}), which takes as an argument an object of class \texttt{bdotsObj} as well as a character vector representing a column from the original dataset used in \texttt{bfit}
 
 \begin{center}
-\texttt{bcorr(fit, "value", ciBands, method = "pearson")} 
+\xt{bcorr(fit, "value", ciBands, method = "pearson")} 
 \end{center}
 
-This returns a thing that can be plotted. Idk, it really doesn't seem that important 
+And I can't give an example of this with the mouse data atm because it doesn't gracefully handle nonhomogenous time samples.
+
+This returns a thing that can be plotted. Idk, I'll see what bob wants me to say about this because truly im like so whatever
 
 \subsection{$\alpha$ Adjustment}
 
-Finally, we consider an extension to the \texttt{p.adjust} function, \texttt{p\_adjust}, identical to \texttt{p.adjust} except that it accepts method \texttt{"oleson"} and takes additional arguments \texttt{rho}, \texttt{df}, and \texttt{cores}. \texttt{rho} determines the autocorrelation estimate for the oleson adjustment while \texttt{df} returns the degrees of freedom used to compute the original vector of t-statistics. If an estimate of \texttt{rho} isn't available, one can be computed on a vector of t-statistics using the \texttt{ar1Solver} function:
+Finally, we consider an extension to the \texttt{p.adjust} function, \texttt{p\_adjust}, identical to \texttt{p.adjust} except that it accepts method \texttt{"oleson"} and takes additional arguments \texttt{rho}, \texttt{df}, and \texttt{cores}. \texttt{rho} determines the autocorrelation estimate for the oleson adjustment while \texttt{df} returns the degrees of freedom used to compute the original vector of t-statistics. If an estimate of \texttt{rho} isn't available, one can be computed on a vector of t-statistics using the \texttt{ar1Solver} function in \xt{bdots}:
 
-\begin{center}
-\texttt{t <- diffinv(rnorm(100))} \\
-\texttt{rho <- ar1Solver(t)} \\
-\texttt{unadj\_p <- pt(t, df = 10)} \\
-\texttt{adj\_p <- p\_adjust(unadj\_p, method = "oleson", df = 10, rho = rho)}
-\end{center}
+%\begin{center}
+%\texttt{t <- diffinv(rnorm(100))} \\
+%\texttt{rho <- ar1Solver(t)} \\
+%\texttt{unadj\_p <- pt(t, df = 10)} \\
+%\texttt{adj\_p <- p\_adjust(unadj\_p, method = "oleson", df = 10, rho = rho, alpha = 0.05)}
+%\end{center}
 
 
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+t       <- diffinv(rnorm(5))
+rho     <- ar1Solver(t)
+unadj_p <- pt(t, df = 10)
+adj_p   <- p_adjust(unadj_p, method = "oleson", 
+                    df = 10, rho = rho, alpha = 0.05)
+\end{BVerbatim}
+%\caption{Illustration of Mouse data}
+\end{figure}
+\end{singlespace}
 
+Doing so returns both adjusted p-values, which can be compared against the specified alpha (in this case, $0.05$). Alternatively the result will also print an alphastar, a nominal alpha at which one can compare the original p-values:
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+> unadjp
+[1] 0.5000000 0.0849965 0.0381715 0.1601033 0.0247453 0.0013016
+> adjp
+[1] 0.9201915 0.1564261 0.0702501 0.2946514 0.0455408 0.0023954
+attr(,"alphastar")
+[1] 0.027168
+\end{BVerbatim}
+%\caption{Illustration of Mouse data}
+\end{figure}
+\end{singlespace}
+
+Here, for example, we see that the last two positions of \xt{unadjp} have values less than \xt{alphastar}, identifying them as significant; alternatively, we see these same two indices in \xt{adjp} significant when compared to \xt{alpha = 0.05}
 
 \section{Discussion}
 
-First paragraph of conclusion. Maybe say things like here are the problems bdots has tried to solve, etc., idk it just needs to be reconciled with the last paragraph, which i kinda like.
+[short and sweet? I hate unnecessary words]
 
-While significant improvements have been made, there is of course room for further expansion, and it is this area that we are most excited about future directions. The most obvious of these is the need to include support for non-parametric functions, the utility of which cannot be overstated. Not only would this alleviate the need for the researcher to specify in advance a functional form for the data, it would implicitly accommodate more heterogeneity of functional forms within a group. Along with this, the current implementation is also limited in the quality-of-fit statistics used in the fitting steps to assess performance. $R^2$ and the presence of autocorrelation are relevant to only a subset of the types of data that can be fit, and allowing users more flexibility in specifying this metric is an active goal for future work. In all, future directions of this package will be primarily focused on user interface, non-parametric functions, and flexibility in fit metrics (this last sentence kind of sucks).
+The original implementation of \xt{bdots} set out to address a very narrow set of problems. Previous solutions beget new opportunities, however, and it is in this space that the second iteration of \xt{bdots} has sought to expand. Since then, the interface between user and application has been significantly revamped, creating a intuitive, reproducible workflow that is able to quickly and simply address a broader range of problems. The underlying methodology has also been improved and expanded upon, offering better control of the family-wise error rate.
 
-The original implementation of \xt{bdots} set out to address a very narrow set of problems which it succeeded in doing. Previous solutions beget new opportunities, however, and it is in this space that the second iteration of \xt{bdots} has sought to expand. Since then, the interface between user and application has been significantly revamped, creating a simple, reproducible workflow that is able to quickly and simply address a far broader range of problems. This includes not only introducing support for a far wider variety of types of data but also expanding the methods by which data can be analyzed through the introduction of user-specified parametric curves. Further, the implementation of the underlying methodology has been improved and expanded upon, offering far better coverage of the estimated distributions, as well as increasing the methods by which significance testing is conducted, accommodating a broader range of underlying assumptions. Finally, a full suite of ancillary functions have been added, ranging from simple quality of life additions (methods, refitting) to those that add (can't say expand again) (?) analytical questions (?) (correlation function, etc.,). Concluding sentence. The end.
+While significant improvements have been made, there is room for further expansion. The most obvious of these is the need to include support for non-parametric functions, the utility of which cannot be overstated. Not only would this alleviate the need for the researcher to specify in advance a functional form for the data, it would implicitly accommodate more heterogeneity of functional forms within a group. Along with this, the current implementation is also limited in the quality-of-fit statistics used in the fitting steps to assess performance. $R^2$ and the presence of autocorrelation are relevant to only a subset of the types of data that can be fit, and allowing users more flexibility in specifying this metric is an active goal for future work. In all, future directions of this package will be primarily focused on user interface, non-parametric functions, and greater flexibility in fit metrics (this last sentence kind of sucks).
+
 
 
 \appendix
@@ -783,6 +811,129 @@ To then investigate differences in outcome between a foreign red car and a domes
 \end{center}
 
 yeah not like sexy or anything but whatever it would work.
+
+
+\section{Appendix 2}
+
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+> logistic
+function (dat, y, time, params = NULL, ...) 
+{
+    logisticPars <- function(dat, y, time, ...) {
+        time <- dat[[time]]
+        y <- dat[[y]]
+        if (var(y) == 0) {
+            return(NULL)
+        }
+        mini <- min(y)
+        peak <- max(y)
+        r <- (peak - mini)
+        cross <- time[which.min(abs(0.5 * r - y))]
+        q75 <- 0.75 * r + mini
+        q25 <- 0.25 * r + mini
+        time75 <- time[which.min(abs(q75 - y))]
+        time25 <- time[which.min(abs(q25 - y))]
+        tr <- time75 - time25
+        tr <- ifelse(tr == 0, median(time), tr)
+        slope <- (q75 - q25)/tr
+        return(c(mini = mini, peak = peak, slope = slope, cross = cross))
+    }
+    if (is.null(params)) {
+        params <- logisticPars(dat, y, time)
+    }
+    else {
+        if (length(params) != 4) 
+            stop("logistic requires 4 parameters be specified for refitting")
+        if (!all(names(params) %in% c("mini", "peak", "slope", 
+            "cross"))) {
+            stop("logistic parameters for refitting must be correctly labeled")
+        }
+    }
+    if (is.null(params)) {
+        return(NULL)
+    }
+    y <- str2lang(y)
+    time <- str2lang(time)
+    ff <- bquote(.(y) ~ mini + (peak - mini)/(1 + exp(4 * slope * 
+        (cross - (.(time)))/(peak - mini))))
+    attr(ff, "parnames") <- names(params)
+    return(list(formula = ff, params = params))
+}
+<bytecode: 0x5591d0f862c0>
+<environment: namespace:bdots>
+\end{BVerbatim}
+%\caption{Illustration of Mouse data}
+\end{figure}
+\end{singlespace}
+
+
+
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+function (dat, y, time, params = NULL, startSamp = 8, ...) {
+    logisticPars <- function(dat, y, time, startSamp, ...) {
+        time <- dat[[time]]
+        y <- dat[[y]]
+        if (var(y) == 0) {
+            return(NULL)
+        }
+        spars <- data.table(param = c("mini", "peak", "slope", "cross"), 
+                    mean = c(0.115, 0.885, 0.0016, 765), 
+                    sd = c(0.12, 0.12, 0.00075, 85), 
+                    min = c(0, 0.5, 0.0009, 300), 
+                    max = c(0.3, 1, 0.01, 1100))
+        fn <- function(p, t) {
+            p[1] + (p[2] - p[1])/(1 + exp(4 * p[3] * ((p[4] - t)/(p[2] - p[1]))))
+        }
+        tryPars <- vector("list", length = startSamp)
+        for (i in seq_len(startSamp)) {
+            maxFix <- Inf
+            while (maxFix > 1 | maxFix < 0.6) {
+                tryPars[[i]] <- Inf
+                while (any(spars[, tryPars[[i]] <= min | tryPars[[i]] >= max])) {
+                  tryPars[[i]] <- spars[, rnorm(length(tryPars[[i]])) * sd + mean]
+                }
+                maxFix <- max(fn(tryPars[[i]], time))
+            }
+        }
+        r2 <- vector("numeric", length = startSamp)
+        for (i in seq_len(startSamp)) {
+            yhat <- fn(tryPars[[i]], time)
+            r2[i] <- mean((y - yhat)^2)
+        }
+        finalPars <- tryPars[[which.min(r2)]]
+        names(finalPars) <- c("mini", "peak", "slope", "cross")
+        return(finalPars)
+    }
+    if (is.null(params)) {
+        params <- logisticPars(dat, y, time, startSamp)
+    }
+    # Was var(y) == 0?
+    if (is.null(params)) {
+        return(NULL)
+    }
+    y <- str2lang(y)
+    time <- str2lang(time)
+    ff <- bquote(.(y) ~ mini + (peak - mini)/(1 + exp(4 * slope * 
+        (cross - (.(time)))/(peak - mini))))
+    attr(ff, "parnames") <- names(params)
+    return(list(formula = ff, params = params))
+}
+<bytecode: 0x5591d39da1f0>
+<environment: namespace:bdots>
+\end{BVerbatim}
+%\caption{Illustration of Mouse data}
+\end{figure}
+\end{singlespace}
+
+
 
 \end{document}
 

@@ -1,10 +1,11 @@
 
 ## This compute overall TIE across all time points
 getFWER <- function(y) {
-  tt <- readRDS(y)
-  sigs <- lapply(tt,  function(y) {
-    y <- lapply(y, `[[`, 1)
-  })
+  sigs <- readRDS(y)
+  ## Don't need this anymore bc no more paraemters!
+  # sigs <- lapply(tt,  function(y) {
+  #   y <- lapply(y, `[[`, 1)
+  # })
 
   sm <- sapply(sigs, function(x) !is.null(x[[1]])) |> mean()
   mm <- sapply(sigs, function(x) !is.null(x[[2]])) |> mean()
@@ -82,7 +83,7 @@ timetie <- function(mm) {
 #
 
 ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot", pattern = "rds", full.names = TRUE)
-
+ff <- list.files(path="~/dissertation/writing/methodology/scripts/argon/new_rds_files_100", full.names = TRUE)
 ## OH MY GOD WRONG ORDER
 ff <- ff[c(1, 9:16, 2:8)]
 
@@ -103,6 +104,7 @@ fwers <- split(fwer, by = "paired")
 tfwers <- split(tfwer, by = "paired")
 
 # rev(paired)
+library(xtable)
 fwers[[2]][, c(1,3:7)] |> xtable() |> print(include.rownames = FALSE)
 fwers[[1]][, c(1,3:7)] |> xtable() |> print(include.rownames = FALSE)
 

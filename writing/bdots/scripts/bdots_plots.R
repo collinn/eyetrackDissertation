@@ -11,13 +11,18 @@ mouse <- fread("~/packages/rat_data_tumr/GJZ16-091.csv")
 head(mouse)
 tail(mouse)
 
-mouse_fit <- bdotsFit(data = mouse,
+mousey <- copy(mouse)
+mousey$colm <- rnorm(nrow(mousey))
+
+mouse_fit <- bdotsFit(data = mousey,
         subject = "ID",
         time = "Day",
         y = "Volume",
         group = "Treatment",
         curveType = expCurve())
 
+
+tt <- bdotsCorr(mouse_fit, "colm")
 
 pdf("../img/mouse_fit.pdf", width = 6, height = 5)
 rr <- plot(mouse_fit[1:4, ])
@@ -35,13 +40,13 @@ mouse_refit <- bdotsRefit(mouse_fit)
 mouse_boot <- bdotsBoot(Volume ~ Treatment(A, E),
                          mouse_fit, permutation = TRUE)
 summary(mouse_boot)
-pdf("../img/mouse_boot_plot.pdf", width = 6, height = 5)
-plot(mouse_boot)
-dev.off()
+# pdf("../img/mouse_boot_plot.pdf", width = 6, height = 5)
+# plot(mouse_boot)
+# dev.off()
 
-pdf("../img/mouse_boot_plot_extra.pdf", width = 6, height = 5)
-plot(mouse_boot, ciBands = FALSE, plotDiffs = FALSE)
-dev.off()
+# pdf("../img/mouse_boot_plot_extra.pdf", width = 6, height = 5)
+# plot(mouse_boot, ciBands = FALSE, plotDiffs = FALSE)
+# dev.off()
 
 mft <- copy(mouse_fit)
 tt <- attr(mft, "time")
@@ -50,15 +55,17 @@ attributes(mft)$time <- tt
 
 mouse_boot_t <- bdotsBoot(Volume ~ Treatment(A, E),
                         mft, permutation = TRUE)
+mouse_boot_t2 <- bdotsBoot(Volume ~ Treatment(A, E),
+                        mft, permutation = FALSE)
 summary(mouse_boot_t)
 plot(mouse_boot_t)
 
 summary(mouse_boot)
-pdf("../img/mouse_boot_plot.pdf", width = 6, height = 5)
+pdf("../img/mouse_boot_plot.pdf", width = 6, height = 3.5)
 plot(mouse_boot_t)
 dev.off()
 
-pdf("../img/mouse_boot_plot_extra.pdf", width = 6, height = 5)
+pdf("../img/mouse_boot_plot_extra.pdf", width = 6, height = 3.5)
 plot(mouse_boot_t, ciBands = FALSE, plotDiffs = FALSE)
 dev.off()
 

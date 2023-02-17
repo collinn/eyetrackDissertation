@@ -31,28 +31,19 @@ Last compiled: \today \  at \currenttime
 %\input{main.tex}
 
 \begin{abstract}
-Basically there is the VWP and it is used as a proxy measure for word recognition. This use follows from Allopenna 1998, in which he showed the the proportion of fixations to different referents matches what would be expected with TRACE (after suitable transformation, of course). This resulted in over two decades of VWP use for such purposes. In 2021, McMurray asked if that curve really was what we thought it was. Through an analysis of generating hypotheses of increasing (but still relatively minimal) complexity via simulation, bob showed that even in cases of moderate complexity, we were not able to positively recover the generating curve responsible for eye movements. why was this, and what are the implications for understanding these curves? In this paper, we revisit the 2021 princess bride paper and offer an explanation for the demonstrated bias of the simulations. from this, we propose a new method for using VWP data to estimate underlying activation curves. We conclude by demonstrating consistency of the proposed method with existing continuous mapping models of word activation.
+In 1995 the Visual World Paradigm (VWP) was introduced blah blah (can I have citations in abstract or should it be more general?)
 \end{abstract}
 
-\section*{Notes:}
-
-\begin{singlespace}
-\begin{enumerate}
-\vspace{-3mm}
-\item Sections that are more ``narrative" are less fleshed out. This includes VWP, TRACE, general history, etc., Some of these sections I just said what I would say
-\item Citations are hard coded in here awaiting a bib to be created
-\end{enumerate}
-\end{singlespace}
 
 
 \section{Introduction}
 
-Spoken words create analog signals that are processed by the brain in real time. That is, as the spoken word unfolds, a cohort of possible resolutions are considered until the target word is recognized. The degree to which a particular candidate word is recognized is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
+Spoken words create analog signals that are processed by the brain in real time. That is, as spoken word unfolds, a collection of candidate words are considered until the target word is recognized. The degree to which a particular candidate word is considered is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
 %[don't like this next section]
 
 
-Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eye-tracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
+[start more broadly, there are a number of ways to do this, we use activation]Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eye-tracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
 
 
 This section needs work but it mostly covers the gist of what I am trying to convey, namely we are about to go from history $\rightarrow$ current state of the world $\rightarrow$ proposal and comparison $\rightarrow$ results.
@@ -83,7 +74,7 @@ An outline of the presentation (for internal use only):
 All of the paragraphs in this section are narrative and not mission critical. Need to be fleshed out
 
 
-\paragraph{VWP} To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. 
+\paragraph{VWP} To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. [WHY? (bob comment)] This is demonstrated by the ambiguous apple/towel example, i will elaborate on this section more
 
 \paragraph{Proportion of fixation born} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
 
@@ -102,7 +93,7 @@ While other linking hypotheses have been presented (Magnuson 2019) \cite{Magnuso
 
 
 
-\paragraph{Parametric Methods and Individual Curves} While there have most certainly been advancements to the use of the VWP for speech perception and recognition (and expanded into related domains, such as sentence processing and characterizing language disorders (according to Bob)), we  limit ourselves here to one in particular. In 2010, McMurray et al expanded the domain of the VWP by introducing emphasis on individual differences in participant activation curves. Two aspects of this paper are relevant here. First, although they were not the first to introduce non-linear functions to be fit to observed data, they did introduce a number of important parametric functions in use today, namely the four (or five) parameter logistic and the double-gauss (asymmetrical gauss), the primary benefit being that the parameters of these functions are interpretable, that is, they ``describe readily observable properties." Second, which I suppose was also introduced by Mirman (2008) to some degree (though I have not read it yet, just pulling from Bob) is specifying individual subject curves across participants. This has been critical in that:
+\paragraph{Parametric Methods and Individual Curves} While there have most certainly been advancements to the use of the VWP for speech perception and recognition (and expanded into related domains, such as sentence processing and characterizing language disorders (according to Bob)), we  limit ourselves here to one in particular. In 2010, McMurray et al expanded the domain of the VWP by introducing emphasis on individual differences in participant activation curves. Two aspects of this paper are relevant here. First, although they were not the first to introduce non-linear functions to be fit to observed data, they did introduce a number of important parametric functions in use today, namely the four (or five) parameter logistic and the double-gauss (asymmetrical gauss), the primary benefit being that the parameters of these functions are interpretable, that is, they ``describe readily observable properties." Second, which I suppose was also introduced by Mirman (2008) \cite{Mirman2008} to some degree (though I have not read it yet, just pulling from Bob) is specifying individual subject curves across participants. This has been critical in that:
 
 \begin{singlespace}
 \begin{enumerate}
@@ -138,6 +129,8 @@ There are three components of eye movements with which we are concerned. The fir
 \paragraph{Saccades and fixations:} Rather than acting in a continuous sweeping motion as our perceived vision might suggest, our eyes themselves move about in a series of short, ballistic movements, followed by brief periods of stagnation. These, respectively, are the saccades and fixations. 
 
 The short ballistic movements are known as saccades, periods of between 20ms-60ms (source? more accurate times?) in which they eye is in motion and during which time we are effectively blind. Once in motion, saccades have no ability to change their intended destination. Following the movement itself is a period of stillness known as a fixation, itself made up of a necessary refraction period from the saccade (time?) followed by a period of voluntary fixation; the typical duration of a fixation is (some length). Together, an initiating saccade and its subsequent fixation is known colloquially as a ``look". See Figure~\ref{fig:sac_fix_look}.
+
+Bob sli paper describes look the first time as psychophysical whatever, pg 11 hot damn
 
 \begin{figure}
 \centering
@@ -178,16 +171,16 @@ Then I can reference Figure~\ref{fig:logistic_definition}. Great, references est
 
 We now consider how the aforementioned mechanics relate to the VWP. In a typical instantiation of the VWP, a participant is asked to complete a series of trials, during each of which they are presented with a number of competing images on screen (typically four). A verbal cue is given, and the participants are asked to select the image corresponding to the spoken word.
 
-An individual trial of the VWP may be short, lasting anywhere from 1000ms to 2500ms before the correct image is selected. Prior to this, the participants eyes scan the environment, considering images as potential candidates to the spoken word. As this process unfolds, a snapshot of the eye is taken at a series of discrete steps (typically every 4ms) indicating where on the screen the participant is fixated. While there is evidence of cognition happening behind the scenes in a continuous fashion (Spivey, mouse trials), an individual trial of the VWP may contain no more than four to eight total ``looks" before the correct image is clicked, resulting in a paucity of data in any given trial.
+An individual trial of the VWP may be short, lasting anywhere from 1000ms to 2500ms before the correct image is selected. Prior to this, the participants eyes scan the environment, considering images as potential candidates to the spoken word. As this process unfolds, a snapshot of the eye is taken at a series of discrete steps (typically every 4ms) indicating where on the screen the participant is fixated. While there is evidence of cognition happening behind the scenes in a continuous fashion (Spivey, mouse trials), an individual trial of the VWP typically contains no more than four to eight total ``looks" before the correct image is clicked, resulting in a paucity of data in any given trial.
 
-To create a visual summary of this process aggregated over all of the trials, a la Allopena, a ``proportion of fixations" curve is created, aggregating at each discrete time point the average of indicators indicating that a participant is fixated on a particular image. A resulting curve is created for each of the competing categories (target, cohort, rhyme, unrelated), creating an empirical estimate of the activation curve, $f_{\theta}(t)$. See Figure~\ref{fig:bob_diagram_full}. Mathematically, it looks like this:
+To create a visual summary of this process aggregated over all of the trials, a la Allopena, a ``proportion of fixations" curve is created, aggregating at each discrete time point the average of indicators indicating that a participant is fixated on a particular image. A resulting curve is created for each of the competing categories (target, cohort, rhyme, unrelated), creating an empirical estimate of the activation curve, $f_{\theta}(t)$. See Figure~\ref{fig:bob_diagram_full}. Mathematically, it looks like this: [for an individual, specify this]
 
 \begin{equation}
-y_{t} = \frac1J \sum z_{jt}
+y_{it} = \frac1J \sum z_{ijt}
 \end{equation}
 where $z_{ijt}$ is an indicator $\{0, 1\}$ in trial $j$ at time $t$ and such that we have an empirical estimate of the activation curve,
 \begin{equation}
-f_{\theta}(t) \equiv y_t.
+f_{\theta_i}(t) \equiv y_{it}.
 \end{equation}
 
 
@@ -272,6 +265,8 @@ The simulations are performed in R, with the simulation code available on the au
 
 [I wonder if the parameter bias and representative curves should not all be included in a single figure (a)/(b)/(c)]
 
+[ive also included normal delay at the end for comparison -- i think the progression from no to normal to weibull is more dramatic, and normal is a pretty popular distribution, especially given how common the 200ms estimate is specifically. Of the normal, 965 were retained (oddly less than the rest)]
+
 \subsection{No Delay}
 
 
@@ -329,6 +324,25 @@ The simulations are performed in R, with the simulation code available on the au
 \label{fig:rep_curves_weibull_delay}
 \end{figure}
 
+\subsection{Normal Delay}
+
+\begin{figure}[H]
+\centering
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{normal_delay_par_bias_onset.pdf}} 
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{normal_delay_par_bias_proportion.pdf}} 
+\caption{Parameter bias for normal OM delay}
+\label{fig:par_bias_normal_delay}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{rep_curves_normal_delay.pdf}
+\caption{Representative curves for normal oculomotor delay}
+\label{fig:rep_curves_normal_delay}
+\end{figure}
+
+
+
 \subsection{Results}
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
@@ -347,13 +361,36 @@ Look Onset & No Delay & 0.01 & 0.17 & 0.33 & 0.43 & 0.55 & 6.57 \\
   Proportion & Weibull Delay & 3.37 & 18.91 & 28.48 & 32.57 & 41.73 & 133.16 \\ 
    \hline
 \end{tabular}
-\caption{Summary of MISE across simulations. I don't think I necessarily need (or want) all of those summary stats}
+\caption{Summary of MISE across simulations. I don't think I necessarily need (or want) all of those summary stats (min/max specifically)}
 \label{tab:mise_sims}
 \end{table}
 
+% latex table generated in R 4.2.2 by xtable 1.8-4 package
+% Fri Feb 17 10:12:56 2023
+\begin{table}[ht]
+\centering
+\begin{tabular}{llrrrrrr}
+  \hline
+Curve & Delay & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+  \hline
+Look Onset & No Delay & 0.01 & 0.17 & 0.32 & 0.45 & 0.56 & 11.73 \\ 
+  Look Onset & Uniform Delay & 0.02 & 0.49 & 0.91 & 1.26 & 1.68 & 8.23 \\ 
+  Look Onset & Weibull Delay & 0.05 & 1.05 & 2.16 & 3.17 & 4.23 & 26.31 \\ 
+  Look Onset & Normal Delay & 0.02 & 0.37 & 0.71 & 0.94 & 1.24 & 14.32 \\ 
+  Proportion & No Delay & 1.97 & 8.21 & 11.33 & 12.51 & 16.01 & 39.15 \\ 
+  Proportion & Uniform Delay & 2.42 & 20.38 & 28.74 & 30.99 & 38.93 & 94.06 \\ 
+  Proportion & Weibull Delay & 0.44 & 15.27 & 24.75 & 28.80 & 38.14 & 169.03 \\ 
+  Proportion & Normal Delay & 5.42 & 22.90 & 30.65 & 32.26 & 39.37 & 82.73 \\ 
+   \hline
+\end{tabular}
+\label{alltables}
+\end{table}
 
+some concluding remarks about how terrible the proportion of fixation method is
 
-\subsection{Discussion}
+\section{Discussion}
+
+This is now ``the" discussion
 
 This section needs to be tightened and I have said some things elsewhere. Instead, let this be a general collection of thoughts for now.
 

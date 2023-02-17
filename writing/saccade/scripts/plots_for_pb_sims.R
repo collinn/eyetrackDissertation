@@ -112,7 +112,7 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
   pp
 }
 
-makeStatTable <- function(fix, sac, sim, tit, r2=FALSE) {
+makeStatTable <- function(fix, sac, sim, tit, r2=FALSE, justres = FALSE) {
 
   mise <- function(fp, tp) {
     times <- 0:2000
@@ -162,6 +162,10 @@ makeStatTable <- function(fix, sac, sim, tit, r2=FALSE) {
     mm1 <- mise(fixp, truep)
     mm2 <- mise(sacp, truep)
   }
+
+  if (justres) {
+    return(list(true = mm1, sac = mm2))
+  }
   ss1 <- setnames(transpose(data.table(as.numeric(summary(mm1)))), names(summary(mm1)))
   ss2 <- setnames(transpose(data.table(as.numeric(summary(mm2)))), names(summary(mm2)))
   ss <- rbindlist(list(ss1, ss2))
@@ -174,9 +178,9 @@ makeStatTable <- function(fix, sac, sim, tit, r2=FALSE) {
 ############### END MAKING FUNCTIONS #################################
 
 # for testing
-# fix <- fit_fix_no_delay
-# sac <- fit_sac_no_delay
-# sim <- sim_no_delay
+fix <- fit_fix_no_delay
+sac <- fit_sac_no_delay
+sim <- sim_no_delay
 # tit <- ""
 ## Eh, not what we really are trying to go for here
 ndtabr <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
@@ -201,6 +205,36 @@ wbtabr <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
 
 ## Or with MISE
 ndtab <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
+                       sim_no_delay, tit = "No Delay", justres = TRUE)
+
+unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
+                        sim_uniform, tit = "Uniform Delay", justres= TRUE)
+
+wbtab <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
+                       sim_weibull, tit = "Weibull Delay", justres= TRUE)
+
+nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
+                       sim_normal, tit = "Normal Delay", justres= TRUE)
+
+alltab <- rbindlist(list(ndtab, unftab, wbtab, nmtab))[order(Curve), ]
+alltab
+print(xtable::xtable(alltab, label = "alltables"), include.rownames=FALSE)
+
+
+misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
+misetab
+print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
+#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
+
+misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
+misetab
+print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
+#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
+
+
+## How about neato histograms for this?
+## Or with MISE
+ndtab <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
                        sim_no_delay, tit = "No Delay", r2 = FALSE)
 
 unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
@@ -214,16 +248,6 @@ bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
 
 nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
                        sim_normal, tit = "Normal Delay", r2 = FALSE)
-
-misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
-misetab
-print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
-#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
-
-misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
-misetab
-print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
-#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
 
 
 
@@ -293,15 +317,26 @@ pp <- biasPlot(fit_fix_weibull,
                tit = "Weibull Delay",
                xint = 0)
 
-# pdf("../img/weibull_delay_par_bias.pdf")
-# grid.arrange(pp[[1]], pp[[2]])
-# dev.off()
-
 pdf("../img/weibull_delay_par_bias_proportion.pdf", width = 6, height = 3)
 pp[[1]]
 dev.off()
 
 pdf("../img/weibull_delay_par_bias_onset.pdf", width = 6, height = 3)
+pp[[2]]
+dev.off()
+
+## Now with normal delay (lost about 10%)
+pp <- biasPlot(fit_fix_normal,
+               fit_sac_normal,
+               sim_normal,
+               tit = "Normal Delay",
+               xint = 0)
+
+pdf("../img/normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pp[[1]]
+dev.off()
+
+pdf("../img/normal_delay_par_bias_onset.pdf", width = 6, height = 3)
 pp[[2]]
 dev.off()
 
@@ -337,6 +372,16 @@ pp3 <- sampleCurvePlot(fit_fix_weibull,
 pdf("../img/rep_curves_weibull_delay.pdf", width = 7, height = 4)
 pp3
 dev.off()
+
+
+pp4 <- sampleCurvePlot(fit_fix_normal,
+                       fit_sac_normal,
+                       sim_normal,
+                       tit = "Normal Delay")
+pdf("../img/rep_curves_normal_delay.pdf", width = 7, height = 4)
+pp4
+dev.off()
+
 #
 # grid.arrange(pp, pp3)
 #

@@ -17,6 +17,11 @@
 
 \bibliographystyle{plain}
 
+\usepackage{color}
+\providecommand{\pb}[1]{\textcolor{red}{#1}}
+\providecommand{\cn}[1]{\textcolor{blue}{#1}}
+
+
 
 
 \graphicspath{{img/}}
@@ -227,14 +232,14 @@ where $f_{\theta}(t)$ is assumed to be the activation curve. What to make, then,
 
 \begin{figure}[H]
     \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{sac1.png}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{sac2.png}} 
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{sac3.png}}
-    \caption{These illustrations can all be made larger (they were made for slides in an image editing program), but they illustrate the main point. \textbf{(a.)} here we see an example of a generating logistic function \textbf{(b.)} at some time, $t$, a saccade is launched (in the algorithm, a binomial is drawn with probability $Bin(f_{\theta}(t))$ \textbf{(c.)} at subsequent times, $t+1, \dots, t+n$, we are recording ``observed" data, adding to the proportion of fixations at each time but without having gathered any additional observed data at $f_{\theta}(t+1), \dots,f_{\theta}(t+n)$, thus inflating (or in the case of a monotonically increasing function like the logistic, deflating) the true probability. }
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{logistic_a.pdf}} 
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{logistic_b.pdf}} 
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{logistic_c.pdf}}
+    \caption{These illustrations can all be made larger (they were made for slides in an image editing program), but they illustrate the main point. \textbf{(a.)} here we see an example of a generating logistic function \textbf{(b.)} at some time, $t$, a saccade is launched (in the algorithm, a binomial is drawn with probability $Bin(f(t|\theta))$ \textbf{(c.)} at subsequent times, $t+1, \dots, t+n$, we are recording ``observed" data, adding to the proportion of fixations at each time but without having gathered any additional observed data at $f(t+1 | \theta), \dots,f(t+n | \theta)$, thus inflating (or in the case of a monotonically increasing function like the logistic, deflating) the true probability. }
 \label{fig:folly_of_fixation}
 \end{figure}
 
-The consequence of this is that the \textit{amount} of observed data is artificially inflated. And in the particular case of the four parameter logistic funciton, this acts to artificially \textit{deflate} the observed probability associated with the added observations. That is, as this function is monotonein time, it follows that $f_{\theta}(t) < f_{\theta}(t+n)$ for all $t$ and $n$. As such, a saccade observed at $t$ with some probability $f_{\theta}(t)$ will also function as an observation at time when the underlying activation is actually $f_{\theta}(t+n)$, thereby ``slowing" the rate of activation. As we will see in the simulations, the result is a delayed crossover parameter and a flatter slope. [comment of relationship of total variation with observed bias, tie back to double gauss]
+The consequence of this is that the \textit{amount} of observed data is artificially inflated. And in the particular case of the four parameter logistic funciton, this acts to artificially \textit{deflate} the observed probability associated with the added observations. That is, as this function is monotone in time, it follows that $f_{\theta}(t) < f_{\theta}(t+n)$ for all $t$ and $n$. As such, a saccade observed at $t$ with some probability $f_{\theta}(t)$ will also function as an observation at time when the underlying activation is actually $f_{\theta}(t+n)$, thereby ``slowing" the rate of activation. As we will see in the simulations, the result is a delayed crossover parameter and a flatter slope. [comment of relationship of total variation with observed bias, tie back to double gauss]
 
 Finally, a quick comment on the delayed observation bias. It is well established in the literature that it takes around 200ms to plan and launch a saccade meaning that a saccade launched at time $t$ was likely planned around 200ms earlier (Viviani 1990). This phenomenon, known as oculomotor delay, is typically accounted for by shifting the observed data 200ms back before performing any analysis. While this presents no issue when the oculmotor delay is always fixed at 200ms, it is worthwhile considering the impact of this delayed observation when the true delay has an associated variability.
 
@@ -259,13 +264,11 @@ Simulations were conducted to replicate the mechanics of a look combined with oc
 
 First, each subject randomly draws a set of parameters $\theta_i$ from an empirically determined distribution based on normal hearing participants in the VWP \cite{FarrisTrimble2014} to construct a subject specific generating curve, $f_{\theta_i}(t)$.   It is according to this function that the decision to initiate a look at time $t$ will subsequently direct itself to the Target with probability $f_{\theta_i}(t)$. We then go about simulating trials according to the following method: at some time $t_0$, a subject initiates a look. This look persists for at least a duration of $\gamma$, drawn from a gamma distribution with mean and standard deviation independent of time and previous fixations. At time $t_0+\gamma$, the subject determines the location of its next look, with the next look being directed towards the target with probability $f_{\theta_i}(t+\gamma)$. The decision to initiate a look is followed by a period of oculomotor delay, $\rho$, during which time the subject remains fixated in the current location. Finally, at time $t_0 + \gamma + \rho$, the subject ends the look initiated at $t_0$ and immediately begins its second look to the location determined at time $t_0 + \gamma$. For the look onset method, the only data recorded are the times of a look onset and their location: in this case, at times $t_0$ and $t_0 + \gamma + \rho$. By contrast, the proportion of fixation method records the object of fixation at 4ms intervals for the entire period of length $\gamma + \rho$. A single trial begins at $t = 0$ and continues constructing looks as described until the total duration of looks exceeds 2000ms. Each subject undergoes 300 trials, and 1,000 subjects are included in each simulation.
 
-Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ will be directed towards the target with probability $f_{\theta}(t)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We did this assigning $\rho$ to follow either a uniform or weibull distribution (or normal or beta, all done), each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the no delay, uniform delay, and weibull delay simulations, 981, 973, and 981 were retained, respectively.
+Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ will be directed towards the target with probability $f_{\theta}(t)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We did this assigning $\rho$ to follow either a uniform or weibull distribution (or normal or beta, all done), each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the no delay, normally distributed delay, and weibull delay simulations, 981, 973, and 981 were retained, respectively.
 
 The simulations are performed in R, with the simulation code available on the author's Github page (link?). Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
 
 [I wonder if the parameter bias and representative curves should not all be included in a single figure (a)/(b)/(c)]
-
-[ive also included normal delay at the end for comparison -- i think the progression from no to normal to weibull is more dramatic, and normal is a pretty popular distribution, especially given how common the 200ms estimate is specifically. Of the normal, 965 were retained (oddly less than the rest)]
 
 \subsection{No Delay}
 
@@ -286,43 +289,7 @@ The simulations are performed in R, with the simulation code available on the au
 \label{fig:rep_curves_no_delay}
 \end{figure}
 
-\subsection{Uniform Delay}
 
-
-
-\begin{figure}[H]
-\centering
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{uniform_delay_par_bias_onset.pdf}} 
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{uniform_delay_par_bias_proportion.pdf}} 
-\caption{Parameter bias for uniform OM delay.}
-\label{fig:par_bias_uniform_delay}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{rep_curves_uniform_delay.pdf}
-\caption{Representative curves for uniform oculmotor delay}
-\label{fig:rep_curves_uniform_delay}
-\end{figure}
-
-
-\subsection{Weibull Delay}
-
-
-\begin{figure}[H]
-\centering
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{weibull_delay_par_bias_onset.pdf}} 
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{weibull_delay_par_bias_proportion.pdf}} 
-\caption{Parameter bias for weibull OM delay}
-\label{fig:par_bias_weibull_delay}
-\end{figure}
-
-\begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{rep_curves_weibull_delay.pdf}
-\caption{Representative curves for weibull oculmotor delay}
-\label{fig:rep_curves_weibull_delay}
-\end{figure}
 
 \subsection{Normal Delay}
 
@@ -341,6 +308,27 @@ The simulations are performed in R, with the simulation code available on the au
 \label{fig:rep_curves_normal_delay}
 \end{figure}
 
+\subsection{Weibull Delay}
+
+
+\begin{figure}[H]
+\centering
+
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{weibull_delay_par_bias_onset.pdf}} 
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{weibull_delay_par_bias_proportion.pdf}} 
+\caption{Parameter bias for weibull OM delay}
+\label{fig:par_bias_weibull_delay}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{rep_curves_weibull_delay.pdf}
+\caption{Representative curves for weibull oculmotor delay}
+\label{fig:rep_curves_weibull_delay}
+\end{figure}
+
+
+
 
 
 \subsection{Results}
@@ -349,42 +337,23 @@ The simulations are performed in R, with the simulation code available on the au
 % Wed Feb  8 15:10:31 2023
 \begin{table}[H]
 \centering
-\begin{tabular}{llrrrrrr}
+\begin{tabular}{llrrr}
   \hline
-Curve & Delay & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+Curve & Delay & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Look Onset & No Delay & 0.01 & 0.17 & 0.33 & 0.43 & 0.55 & 6.57 \\ 
-  Look Onset & Uniform Delay & 0.02 & 0.49 & 0.93 & 1.32 & 1.74 & 8.93 \\ 
-  Look Onset & Weibull Delay & 0.01 & 0.90 & 1.78 & 2.35 & 3.08 & 17.56 \\ 
-  Proportion & No Delay & 1.43 & 8.39 & 11.49 & 12.44 & 15.57 & 38.68 \\ 
-  Proportion & Uniform Delay & 3.35 & 20.70 & 29.48 & 31.61 & 40.09 & 126.54 \\ 
-  Proportion & Weibull Delay & 3.37 & 18.91 & 28.48 & 32.57 & 41.73 & 133.16 \\ 
+Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\ 
+  Look Onset & Normal Delay & 0.37 & 0.71 & 1.24 \\ 
+  Look Onset & Weibull Delay & 1.05 & 2.16 & 4.23 \\ 
+  Proportion & No Delay & 8.21 & 11.33 & 16.01 \\ 
+  Proportion & Normal Delay & 22.90 & 30.65 & 39.37 \\ 
+  Proportion & Weibull Delay & 15.27 & 24.75 & 38.14 \\ 
    \hline
 \end{tabular}
-\caption{Summary of MISE across simulations. I don't think I necessarily need (or want) all of those summary stats (min/max specifically)}
+\caption{Summary of MISE across simulations. I don't think I necessarily need (or want) all of those summary stats (min/max specifically, cleaner without)}
 \label{tab:mise_sims}
 \end{table}
 
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Fri Feb 17 10:12:56 2023
-\begin{table}[ht]
-\centering
-\begin{tabular}{llrrrrrr}
-  \hline
-Curve & Delay & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
-  \hline
-Look Onset & No Delay & 0.01 & 0.17 & 0.32 & 0.45 & 0.56 & 11.73 \\ 
-  Look Onset & Uniform Delay & 0.02 & 0.49 & 0.91 & 1.26 & 1.68 & 8.23 \\ 
-  Look Onset & Weibull Delay & 0.05 & 1.05 & 2.16 & 3.17 & 4.23 & 26.31 \\ 
-  Look Onset & Normal Delay & 0.02 & 0.37 & 0.71 & 0.94 & 1.24 & 14.32 \\ 
-  Proportion & No Delay & 1.97 & 8.21 & 11.33 & 12.51 & 16.01 & 39.15 \\ 
-  Proportion & Uniform Delay & 2.42 & 20.38 & 28.74 & 30.99 & 38.93 & 94.06 \\ 
-  Proportion & Weibull Delay & 0.44 & 15.27 & 24.75 & 28.80 & 38.14 & 169.03 \\ 
-  Proportion & Normal Delay & 5.42 & 22.90 & 30.65 & 32.26 & 39.37 & 82.73 \\ 
-   \hline
-\end{tabular}
-\label{alltables}
-\end{table}
+Unexplored is \textit{where} the delay occurs also important
 
 some concluding remarks about how terrible the proportion of fixation method is
 
@@ -470,7 +439,7 @@ Here  I am just including more or less random sections that either do not have a
 
 %\input{trace_extra}
 
-%\input{dg_appendix}
+\input{dg_appendix}
 
 \bibliography{../bib/dissertation}
 

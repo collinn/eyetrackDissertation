@@ -3,23 +3,12 @@
 # need to look at representative curves
 # also look at average mise between each group
 
-# Maybe I'll try this again with FBS+T, the saccade clearly wins but by
-# less than it did previously
-
 library(bdots)
 library(ggplot2)
 library(gridExtra)
 library(eyetrackSim)
 
-#load("~/dissertation/writing/saccade/data/pb_data_sim.RData")
-#load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst.RData")
-#load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst.RData")
-# load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_no_start_par.RData")
-# load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst_no_start_par.RData")
-#
-# load("~/packages/eyetrackSim/analysis/pb_data_sim_fbst_normal.RData")
-load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst_normal.RData")
-load("~/packages/eyetrackSim/analysis/no_min_pb_data_sim_no_fbst_normal.RData")
+load("~/packages/eyetrackSim/analysis/pb_data.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -182,74 +171,40 @@ fix <- fit_fix_no_delay
 sac <- fit_sac_no_delay
 sim <- sim_no_delay
 # tit <- ""
-## Eh, not what we really are trying to go for here
-ndtabr <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
-                       sim_no_delay, tit = "No Delay", r2 = TRUE)
 
-unftabr <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
-                        sim_uniform, tit = "Uniform Delay", r2 = TRUE)
-
-wbtabr <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
-                       sim_weibull, tit = "Weibull Delay", r2 = TRUE)
-#
-# bbtabr <- makeStatTable(fit_fix_beta, fit_sac_beta,
-#                        sim_beta, tit = "Beta Delay", r2 = TRUE)
-#
-# nmtabr <- makeStatTable(fit_fix_normal, fit_sac_normal,
-#                        sim_normal, tit = "Normal Delay", r2 = TRUE)
-#
-# misetabr <- rbindlist(list(ndtabr, unftabr, wbtabr, bbtabr, nmtabr))[order(Curve), ]
-# misetabr
-
-#print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
 
 ## Or with MISE
 ndtab <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
-                       sim_no_delay, tit = "No Delay", justres = TRUE)
-
-unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
-                        sim_uniform, tit = "Uniform Delay", justres= TRUE)
+                       sim_no_delay, tit = "No Delay", justres = FALSE)
 
 wbtab <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
-                       sim_weibull, tit = "Weibull Delay", justres= TRUE)
+                       sim_weibull, tit = "Weibull Delay", justres= FALSE)
 
 nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
-                       sim_normal, tit = "Normal Delay", justres= TRUE)
+                       sim_normal, tit = "Normal Delay", justres= FALSE)
 
-alltab <- rbindlist(list(ndtab, unftab, wbtab, nmtab))[order(Curve), ]
-alltab
-print(xtable::xtable(alltab, label = "alltables"), include.rownames=FALSE)
-
-
-misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
-misetab
-print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
-#print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
 
 misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
 misetab
-print(xtable::xtable(misetab, label = "Summary of MISE across simulations"), include.rownames=FALSE)
+print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
 #print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], label = "Summary of MISE across simulations"), include.rownames=FALSE)
 
 
 ## How about neato histograms for this?
 ## Or with MISE
 ndtab <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
-                       sim_no_delay, tit = "No Delay", r2 = FALSE)
-
-unftab <- makeStatTable(fit_fix_uniform, fit_sac_uniform,
-                        sim_uniform, tit = "Uniform Delay", r2 = FALSE)
+                       sim_no_delay, tit = "No Delay", r2 = TRUE)
 
 wbtab <- makeStatTable(fit_fix_weibull, fit_sac_weibull,
-                       sim_weibull, tit = "Weibull Delay", r2 = FALSE)
+                       sim_weibull, tit = "Weibull Delay", r2 = TRUE)
 
-bbtab <- makeStatTable(fit_fix_beta, fit_sac_beta,
-                       sim_beta, tit = "Beta Delay", r2 = FALSE)
 
 nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
-                       sim_normal, tit = "Normal Delay", r2 = FALSE)
+                       sim_normal, tit = "Normal Delay", r2 = TRUE)
 
-
+misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
+misetab
+print(xtable::xtable(misetab[, c(1:2, 4:5, 7)], caption = "Summary of R2 across simulations"), include.rownames=FALSE)
 
 ########################################################################
 
@@ -261,9 +216,6 @@ pp <- biasPlot(fit_fix_no_delay,
                tit = "No Delay",
                xint = 0)
 
-# pdf("../img/no_delay_par_bias.pdf")
-# grid.arrange(pp[[1]], pp[[2]])
-# dev.off()
 
 pdf("../img/no_delay_par_bias_onset.pdf", width = 6, height = 3)
 pp[[2]]
@@ -273,42 +225,6 @@ pdf("../img/no_delay_par_bias_proportion.pdf", width = 6, height = 3)
 pp[[1]]
 dev.off()
 
-
-
-
-## Now with Uniform delay (lost about 10%)
-pp <- biasPlot(fit_fix_uniform,
-               fit_sac_uniform,
-               sim_uniform,
-               tit = "Uniform Delay",
-               xint = 0)
-
-# pdf("../img/uniform_delay_par_bias.pdf")
-# grid.arrange(pp[[1]], pp[[2]])
-# dev.off()
-
-pdf("../img/uniform_delay_par_bias_proportion.pdf", width = 6, height = 3)
-pp[[1]]
-dev.off()
-
-pdf("../img/uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
-pp[[2]]
-dev.off()
-
-## Normal
-pp <- biasPlot(fit_fix_normal,
-               fit_sac_normal,
-               sim_uniform,
-               tit = "Normal Delay",
-               xint = 0)
-
-pdf("../img/normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
-pp[[1]]
-dev.off()
-
-pdf("../img/uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
-pp[[2]]
-dev.off()
 
 ## Now with Weibull delay (lost about 10%)
 pp <- biasPlot(fit_fix_weibull,
@@ -324,6 +240,15 @@ dev.off()
 pdf("../img/weibull_delay_par_bias_onset.pdf", width = 6, height = 3)
 pp[[2]]
 dev.off()
+
+pp3 <- sampleCurvePlot(fit_fix_weibull,
+                       fit_sac_weibull,
+                       sim_weibull,
+                       tit = "Weibull Delay")
+pdf("../img/rep_curves_weibull_delay.pdf", width = 6, height = 4)
+pp3
+dev.off()
+
 
 ## Now with normal delay (lost about 10%)
 pp <- biasPlot(fit_fix_normal,
@@ -346,8 +271,6 @@ dev.off()
 ## Time for representative curves for each group ##
 ###################################################
 
-## NOTE: F < G < S fucks up ordering on the legend
-
 ## Starting with fixed
 pp1 <- sampleCurvePlot(fit_fix_no_delay,
                       fit_sac_no_delay,
@@ -355,14 +278,6 @@ pp1 <- sampleCurvePlot(fit_fix_no_delay,
                       tit = "No Delay")
 pdf("../img/rep_curves_no_delay.pdf", width = 7, height = 4)
 pp1
-dev.off()
-
-pp2 <- sampleCurvePlot(fit_fix_uniform,
-                      fit_sac_uniform,
-                      sim_uniform,
-                      tit = "Uniform Delay")
-pdf("../img/rep_curves_uniform_delay.pdf", width = 7, height = 4)
-pp2
 dev.off()
 
 pp3 <- sampleCurvePlot(fit_fix_weibull,
@@ -382,30 +297,3 @@ pdf("../img/rep_curves_normal_delay.pdf", width = 7, height = 4)
 pp4
 dev.off()
 
-#
-# grid.arrange(pp, pp3)
-#
-####### Let's make tables, yo
-
-
-
-
-## Why does weibull look better?
-unf <- function() abs(rnorm(1, 200, sd = 30)) #runif(1, min = 100, max = 300)
-makeActiveBinding("unf_rv", unf, .GlobalEnv)
-
-wb <- function() rweibull(1, shape = 1.8, scale = 224.9)
-makeActiveBinding("wb_rv", wb, .GlobalEnv)
-
-# dist of looks
-rfT <- function() rgamma(1, 334.02**2/184.70**2, scale = 184.7**2/334.02)
-
-x <- replicate(10e5, wb())
-z <- replicate(10e5, unf())
-y <- replicate(10e5, rfT())
-
-pdf("../img/dist_of_vars_example.pdf", width = 7, height = 4)
-par(mfrow = c(1,2))
-hist(y-z, main = "dist of fixations - length\nuniform")
-hist(y-x, main = "dist of fixation - length\nweibull")
-dev.off()

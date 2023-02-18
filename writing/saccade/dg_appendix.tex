@@ -6,13 +6,14 @@ Same results but for DG
 
 \subsection{No Delay}
 
-877 retained
+868 retained
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{dg_no_delay_par_bias.pdf}
-\caption{Parameter bias for no oculmotor delay}
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{dg_no_delay_par_bias_onset.pdf}} 
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{dg_no_delay_par_bias_proportion.pdf}} 
+\caption{Parameter bias for no oculmotor delay. }
 \label{fig:dg_par_bias_no_delay}
 \end{figure}
 
@@ -24,32 +25,34 @@ Same results but for DG
 \end{figure}
 
 
-\subsection{Uniform Delay}
+\subsection{Normal Delay}
 
-844 retained
-
+833
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{dg_uniform_delay_par_bias.pdf}
-\caption{Parameter bias for uniform OM delay}
-\label{fig:dg_par_bias_uniform_delay}
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{dg_normal_delay_par_bias_onset.pdf}} 
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{dg_normal_delay_par_bias_proportion.pdf}} 
+\caption{Parameter bias for normal OM delay}
+\label{fig:dg_par_bias_normal_delay}
 \end{figure}
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{dg_rep_curves_uniform_delay.pdf}
-\caption{Representative curves for uniform oculmotor delay}
-\label{fig:dg_rep_curves_uniform_delay}
+\includegraphics[width=0.9\textwidth]{dg_rep_curves_normal_delay.pdf}
+\caption{Representative curves for normal oculomotor delay}
+\label{fig:dg_rep_curves_normal_delay}
 \end{figure}
 
 \subsection{Weibull Delay}
 
-861 retained
+866 retained
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{dg_weibull_delay_par_bias.pdf}
+
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{dg_weibull_delay_par_bias_onset.pdf}} 
+    \subfigure[]{\includegraphics[width=0.9\textwidth]{dg_weibull_delay_par_bias_proportion.pdf}} 
 \caption{Parameter bias for weibull OM delay}
 \label{fig:dg_par_bias_weibull_delay}
 \end{figure}
@@ -60,21 +63,20 @@ Same results but for DG
 \caption{Representative curves for weibull oculmotor delay}
 \label{fig:dg_rep_curves_weibull_delay}
 \end{figure}
-
 \subsection{Results}
 
 \begin{table}[ht]
 \centering
-\begin{tabular}{llrrrrrr}
+\begin{tabular}{llrrr}
   \hline
-Curve & Delay & Min. & 1st Qu. & Median & Mean & 3rd Qu. & Max. \\ 
+Curve & Delay & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Look Onset & No Delay & 0.03 & 0.20 & 0.35 & 0.48 & 0.59 & 5.07 \\ 
-  Look Onset & Uniform Delay & 0.03 & 0.43 & 0.73 & 0.91 & 1.18 & 5.71 \\ 
-  Look Onset & Weibull Delay & 0.06 & 0.49 & 0.80 & 1.00 & 1.29 & 8.20 \\ 
-  Proportion & No Delay & 0.01 & 0.74 & 1.29 & 1.53 & 2.03 & 7.35 \\ 
-  Proportion & Uniform Delay & 0.05 & 1.27 & 2.25 & 2.73 & 3.69 & 12.26 \\ 
-  Proportion & Weibull Delay & 0.04 & 1.07 & 2.02 & 2.64 & 3.60 & 14.57 \\ 
+Look Onset & No Delay & 0.22 & 0.36 & 0.63 \\ 
+  Look Onset & Normal Delay & 0.38 & 0.70 & 1.15 \\ 
+  Look Onset & Weibull Delay & 0.52 & 0.84 & 1.39 \\ 
+  Proportion & No Delay & 0.75 & 1.29 & 2.08 \\ 
+  Proportion & Normal Delay & 1.38 & 2.44 & 3.96 \\ 
+  Proportion & Weibull Delay & 1.00 & 1.98 & 3.43 \\ 
    \hline
 \end{tabular}
 \caption{Figures not as striking as logistic, but keep in mind that the scale of this is significantly smaller, peaking at around 0.15 and being close to zero elsewhere. $R^2$ is another metric available that }
@@ -83,7 +85,7 @@ Look Onset & No Delay & 0.03 & 0.20 & 0.35 & 0.48 & 0.59 & 5.07 \\
 
 \section*{$R^2$ instead of MISE for logistic/doublegauss}'
 
-The ``minimum" for all of these is like -40 to -100, so mean is also not great for showing.
+
 
 \subsubsection{for logistic}
 
@@ -93,12 +95,12 @@ The ``minimum" for all of these is like -40 to -100, so mean is also not great f
   \hline
 Curve & Delay & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Look Onset & No Delay & 0.82 & 0.91 & 0.95 \\ 
-  Look Onset & Uniform Delay & 0.61 & 0.80 & 0.90 \\ 
-  Look Onset & Weibull Delay & 0.58 & 0.79 & 0.89 \\ 
-  Proportion & No Delay & 0.52 & 0.66 & 0.75 \\ 
-  Proportion & Uniform Delay & 0.11 & 0.40 & 0.58 \\ 
-  Proportion & Weibull Delay & 0.16 & 0.42 & 0.63 \\ 
+Look Onset & No Delay & 1.00 & 1.00 & 1.00 \\ 
+  Look Onset & Normal Delay & 0.99 & 1.00 & 1.00 \\ 
+  Look Onset & Weibull Delay & 0.98 & 0.99 & 0.99 \\ 
+  Proportion & No Delay & 0.92 & 0.94 & 0.95 \\ 
+  Proportion & Normal Delay & 0.80 & 0.83 & 0.86 \\ 
+  Proportion & Weibull Delay & 0.80 & 0.86 & 0.91 \\ 
    \hline
 \end{tabular}
 \caption{$R^2$ for logistic, not as clear a hierarchy}
@@ -113,12 +115,12 @@ Look Onset & No Delay & 0.82 & 0.91 & 0.95 \\
   \hline
 Curve & Delay & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Look Onset & No Delay & 0.82 & 0.91 & 0.95 \\ 
-  Look Onset & Uniform Delay & 0.61 & 0.80 & 0.90 \\ 
-  Look Onset & Weibull Delay & 0.58 & 0.79 & 0.89 \\ 
-  Proportion & No Delay & 0.52 & 0.66 & 0.75 \\ 
-  Proportion & Uniform Delay & 0.11 & 0.40 & 0.58 \\ 
-  Proportion & Weibull Delay & 0.16 & 0.42 & 0.63 \\ 
+Look Onset & No Delay & 0.80 & 0.91 & 0.95 \\ 
+  Look Onset & Normal Delay & 0.63 & 0.82 & 0.91 \\ 
+  Look Onset & Weibull Delay & 0.57 & 0.77 & 0.87 \\ 
+  Proportion & No Delay & 0.48 & 0.65 & 0.75 \\ 
+  Proportion & Normal Delay & 0.10 & 0.33 & 0.52 \\ 
+  Proportion & Weibull Delay & 0.20 & 0.46 & 0.64 \\ 
    \hline
 \end{tabular}
 \caption{$R^2$ for double gauss}

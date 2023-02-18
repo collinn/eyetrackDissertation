@@ -11,9 +11,7 @@ library(ggplot2)
 library(gridExtra)
 library(eyetrackSim)
 
-#load("~/dissertation/writing/saccade/data/pb_data_sim.RData")
-#load("~/packages/eyetrackSim/analysis/pb_data_sim_no_fbst.RData")
-load("~/packages/eyetrackSim/analysis/dg_pb_data_sim_no_fbst.RData")
+load("~/packages/eyetrackSim/analysis/dg_pb_data.RData")
 
 
 subsetSim <- function(ss, idx) {
@@ -172,12 +170,34 @@ makeMiseTable <- function(fix, sac, sim, tit, r2 = FALSE) {
 ndtab <- makeMiseTable(dg_fit_fix_no_delay,
                        dg_fit_sac_no_delay,
                        dg_sim_no_delay,
+                       tit = "No Delay", r2 = FALSE)
+
+nmtab <- makeMiseTable(dg_fit_fix_normal,
+                        dg_fit_sac_normal,
+                        dg_sim_normal,
+                        tit = "Normal Delay", r2 = FALSE)
+
+wbtab <- makeMiseTable(dg_fit_fix_weibull,
+                       dg_fit_sac_weibull,
+                       dg_sim_weibull,
+                       tit = "Weibull Delay", r2 = FALSE)
+
+
+misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
+misetab
+
+print(xtable::xtable(misetab), include.rownames=FALSE)
+print(xtable::xtable(misetab[, c(1:2, 4:5, 7)]), include.rownames=FALSE)
+
+ndtab <- makeMiseTable(dg_fit_fix_no_delay,
+                       dg_fit_sac_no_delay,
+                       dg_sim_no_delay,
                        tit = "No Delay", r2 = TRUE)
 
-unftab <- makeMiseTable(dg_fit_fix_uniform,
-                        dg_fit_sac_uniform,
-                        dg_sim_uniform,
-                        tit = "Uniform Delay", r2 = TRUE)
+nmtab <- makeMiseTable(dg_fit_fix_normal,
+                       dg_fit_sac_normal,
+                       dg_sim_normal,
+                       tit = "Normal Delay", r2 = TRUE)
 
 wbtab <- makeMiseTable(dg_fit_fix_weibull,
                        dg_fit_sac_weibull,
@@ -185,12 +205,11 @@ wbtab <- makeMiseTable(dg_fit_fix_weibull,
                        tit = "Weibull Delay", r2 = TRUE)
 
 
-misetab <- rbindlist(list(ndtab, unftab, wbtab))[order(Curve), ]
+misetab <- rbindlist(list(ndtab, nmtab, wbtab))[order(Curve), ]
 misetab
 
 print(xtable::xtable(misetab), include.rownames=FALSE)
 print(xtable::xtable(misetab[, c(1:2, 4:5, 7)]), include.rownames=FALSE)
-
 
 
 
@@ -213,17 +232,17 @@ dev.off()
 
 
 ## Now with Uniform delay (lost about 10%)
-pp <- biasPlot(dg_fit_fix_uniform,
-               dg_fit_sac_uniform,
-               dg_sim_uniform,
-               tit = "Uniform Delay",
+pp <- biasPlot(dg_fit_fix_normal,
+               dg_fit_sac_normal,
+               dg_sim_normal,
+               tit = "Normal Delay",
                xint = 0)
 
-pdf("../img/dg_uniform_delay_par_bias_proportion.pdf", width = 6, height = 3)
+pdf("../img/dg_normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
 pp[[1]]
 dev.off()
 
-pdf("../img/dg_uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
+pdf("../img/dg_normal_delay_par_bias_onset.pdf", width = 6, height = 3)
 pp[[2]]
 dev.off()
 
@@ -277,11 +296,11 @@ pdf("../img/dg_rep_curves_no_delay.pdf", width = 7, height = 4)
 pp1
 dev.off()
 
-pp2 <- sampleCurvePlot(dg_fit_fix_uniform,
-                      dg_fit_sac_uniform,
-                      dg_sim_uniform,
-                      tit = "Uniform Delay")
-pdf("../img/dg_rep_curves_uniform_delay.pdf", width = 7, height = 4)
+pp2 <- sampleCurvePlot(dg_fit_fix_normal,
+                      dg_fit_sac_normal,
+                      dg_sim_normal,
+                      tit = "Normal Delay")
+pdf("../img/dg_rep_curves_normal_delay.pdf", width = 7, height = 4)
 pp2
 dev.off()
 

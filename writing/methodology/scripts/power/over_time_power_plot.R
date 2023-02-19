@@ -14,8 +14,10 @@ simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
 ff <- list.files("1000_rds_files", full.names = TRUE)
 ff <- ff[c(1, 5:12, 2:4)]
 
-## We are dropping slope = 0.005
-ff <- ff[7:12]
+ff <- list.files("negative_one_to_one_rds", full.names = TRUE)
+
+## We are dropping slope = 0.005 and sigma = 0.005
+ff <- ff[10:12]
 
 #rr <- readRDS(ff[3])
 
@@ -23,7 +25,7 @@ ff <- ff[7:12]
 
 ## Given signifiance mat, need to return length 401 bool vector
 timetiePower <- function(mm) {
-  time <- seq(-0.1, 1, length.out = 401)
+  time <- seq(-1, 1, length.out = 401)
   vec <- vector("numeric", length = length(time))
 
   if (is.null(dim(mm))) {
@@ -56,11 +58,11 @@ getDiffSlices <- function(ff) {
   smm <- sapply(sm, timetiePower) |> rowSums()
   mmm <- sapply(mm, timetiePower) |> rowSums()
   pmm <- sapply(pm, timetiePower) |> rowSums()
-  time <- seq(-0.1, 1, length.out = 401)
+  time <- seq(-1, 1, length.out = 401)
   plot(time, smm, type = 'l', col = 'green', main = tit, ylim = c(0,100), ylab = "Power")
   lines(time, mmm, type = 'l', col = 'black')
   lines(time, pmm, type = 'l', col = 'blue')
-  lines(seq(-0.1, 0, 0.1), rep(5,2), col = 'red', lty = 2, lwd = 2)
+  lines(seq(-1, 0, 0.5), rep(5,3), col = 'red', lty = 2, lwd = 2)
   lines(c(0,0), c(5, 100), col = 'red', lty = 2, lwd = 2)
   legend("bottomright", legend = c("single", "many", "perm"),
          col = c("green", "black", "blue"), lty = 1, lwd = 1)
@@ -76,7 +78,7 @@ i <- i+1
 print(i)
 
 pdf("../../img/type_two_err_time_slice.pdf", width = 6, height = 8)
-par(mfrow = c(3, 2))
+par(mfrow = c(3, 1))
 getDiffSlices(ff[1])
 getDiffSlices(ff[4])
 getDiffSlices(ff[3])

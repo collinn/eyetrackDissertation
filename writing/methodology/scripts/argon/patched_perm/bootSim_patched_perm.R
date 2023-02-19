@@ -3,7 +3,18 @@ library(parallel)
 
 idx <- as.numeric(commandArgs(TRUE))
 
-ff <- paste0("rds_files/sim", idx, ".rds")
+ff <- list.files("../rds_files", full.names = TRUE)
+ff <- ff[c(1L, 3L, 4L, 5L, 7L, 8L, 9L, 11L, 12L, 13L, 15L, 16L)]
+
+simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
+                               paired = c(TRUE, FALSE),
+                               ar1 = c(TRUE, FALSE),
+                               bdotscor = c(TRUE, FALSE))
+simDataSettings <- simDataSettings[c(1L, 3L, 4L, 5L, 7L, 8L, 9L, 11L, 12L, 13L, 15L, 16L), ]
+
+ff <- ff[idx]
+sidx <- simDataSettings[idx, ]
+
 
 tt <- readRDS(ff)
 
@@ -11,6 +22,7 @@ tt <- readRDS(ff)
 bf <- lapply(tt,`[[`, 1)
 
 res <- vector("list", length = length(bf))
+attr(res, "settings") <- sidx
 
 nn <- paste0("boot", idx)
 sf <- paste0("patched_txt/", nn, ".txt")

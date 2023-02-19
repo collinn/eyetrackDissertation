@@ -2,32 +2,36 @@
 library(bdots)
 
 
-ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/patched_boot", pattern = "rds", full.names = TRUE)
+ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/patched_perm/patched_boot", pattern = "rds", full.names = TRUE)
 
 ## OH MY GOD WRONG ORDER
-ff <- ff[c(1, 9:16, 2:8)]
+#ff <- ff[c(1, 9:16, 2:8)]
+ff <- ff[c(1, 5:12, 2:4)]
 
 simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
                                paired = c(TRUE, FALSE),
                                ar1 = c(TRUE, FALSE),
                                bdotscor = c(TRUE, FALSE))
+simDataSettings <- simDataSettings[c(1L, 3L, 4L, 5L, 7L, 8L, 9L, 11L, 12L, 13L, 15L, 16L), ]
+simDataSettings <- as.data.table(simDataSettings)
 
-kpidx <- c(12, 16, 4, 8)
-
-#ff <- ff[kpidx]
-simDataSettings <- simDataSettings[kpidx, ]
 
 tt <- lapply(ff, readRDS)
-tt <- lapply(tt, function(y) {
+tie <- sapply(tt, function(y) {
   y <- lapply(y, `[[`, 1)
   y <- lapply(y, `[[`, 1)
   y <- sapply(y, function(z) !is.null(z)) |> mean()
 })
 
+simDataSettings$tie <- tie
+
+sds <- simDataSettings[order(ar1, decreasing = TRUE), ][order(manymeans)][order(paired),]
+
 sigs <- lapply(tt,  function(y) {
   y <- lapply(y, `[[`, 1)
 })
-sigs <- lapply(sigs, `[[`, 3)
+sigs <- lapply(sigs, `[[`, 1)
+sigs <- lapply(sigs, `[[`, 1)
 
 fwerhist <- function(y) {
   tt <- readRDS(y)

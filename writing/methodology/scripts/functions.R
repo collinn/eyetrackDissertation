@@ -22,7 +22,7 @@ getFWER <- function(y) {
 }
 
 ## This takes the list returned by getfwer
-timeSliceFwer <- function(y, f = mean) {
+timeSliceFwer <- function(y, f = median) {
   nn <- length(y)
   y <- lapply(y, `[[`, 2)
   y <- lapply(y, function(z) {
@@ -82,7 +82,7 @@ timetie <- function(mm) {
 #
 #
 
-ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot", pattern = "rds", full.names = TRUE)
+#ff <- list.files(path = "~/dissertation/writing/methodology/scripts/argon/rds_boot", pattern = "rds", full.names = TRUE)
 ff <- list.files(path="~/dissertation/writing/methodology/scripts/argon/new_rds_files_100", full.names = TRUE)
 ## OH MY GOD WRONG ORDER
 ff <- ff[c(1, 9:16, 2:8)]

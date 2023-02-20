@@ -19,6 +19,7 @@
 \providecommand{\pb}[1]{\textcolor{red}{#1}}
 \providecommand{\cn}[1]{\textcolor{blue}{#1}}
 
+
 \usepackage{listings}
 
 \begin{document}
@@ -342,15 +343,15 @@ For each subject, parameters for their mean structure given in Equation~\ref{eq:
   \hline
 Method & Heterogeneity & AR(1) & $\alpha$ & $\beta$ & 1 - $\alpha$ - $\beta$ & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.14 & 0.17 & 0.21 \\ 
-  Hom. Boot & Yes & No & 0.96 & 0.00 & 0.04 & 0.02 & 0.02 & 0.02 \\ 
-  Hom. Boot & Yes & Yes & 0.89 & 0.00 & 0.11 & 0.01 & 0.01 & 0.03 \\ 
-  Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.20 & 0.23 & 0.28 \\ 
-  Het. Boot & Yes & No & 0.00 & 0.13 & 0.87 & 0.38 & 0.46 & 0.56 \\ 
-  Het. Boot & Yes & Yes & 0.00 & 0.08 & 0.92 & 0.38 & 0.49 & 0.68 \\ 
-  Perm & No & Yes & 0.01 & 0.00 & 0.99 & 0.14 & 0.18 & 0.22 \\ 
-  Perm & Yes & No & 0.04 & 0.07 & 0.89 & 0.36 & 0.44 & 0.58 \\ 
-  Perm & Yes & Yes & 0.02 & 0.02 & 0.96 & 0.36 & 0.50 & 0.67 \\  
+Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
+  Hom. Boot & Yes & No & 0.97 & 0.00 & 0.03 & 0.012 & 0.015 & 0.016 \\ 
+  Hom. Boot & Yes & Yes & 0.91 & 0.00 & 0.09 & 0.023 & 0.032 & 0.037 \\ 
+  Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
+  Het. Boot & Yes & No & 0.01 & 0.17 & 0.82 & 0.423 & 0.555 & 0.734 \\ 
+  Het. Boot & Yes & Yes & 0.00 & 0.12 & 0.88 & 0.444 & 0.555 & 0.737 \\ 
+  Perm & No & Yes & 0.10 & 0.00 & 0.90 & 0.275 & 0.302 & 0.334 \\ 
+  Perm & Yes & No & 0.08 & 0.08 & 0.84 & 0.490 & 0.610 & 0.721 \\ 
+  Perm & Yes & Yes & 0.00 & 0.06 & 0.94 & 0.493 & 0.619 & 0.746 \\  
    \hline
 \end{tabular}
 \caption{Power for methods (possibly reorder?)} 
@@ -366,9 +367,9 @@ Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.14 & 0.17 & 0.21 \\
   \hline
 Method & Type I Error & Type II Error & Power & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Hom. Bootstrap & 0.617 & 0.000 & 0.383 & 0.056 & 0.070 & 0.085 \\ 
-  Het. Bootstrap & 0.000 & 0.070 & 0.930 & 0.321 & 0.395 & 0.503 \\ 
-  Permtuation & 0.023 & 0.030 & 0.947 & 0.287 & 0.373 & 0.491 \\ 
+Hom. Bootstrap & 0.627 & 0.000 & 0.373 & 0.100 & 0.124 & 0.133 \\ 
+  Het. Bootstrap & 0.003 & 0.097 & 0.900 & 0.394 & 0.491 & 0.622 \\ 
+  Permtuation & 0.060 & 0.047 & 0.893 & 0.419 & 0.510 & 0.600 \\ 
    \hline
 \end{tabular}
 \caption{Summary of methods for Type II error} 

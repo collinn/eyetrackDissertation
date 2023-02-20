@@ -78,10 +78,10 @@ An outline of the presentation (for internal use only):
 
 All of the paragraphs in this section are narrative and not mission critical. Need to be fleshed out
 
+\paragraph{Visual World Paradigm} The Visual World Paradigm (VWP) was first introduced in 1995, making the initial link between the mental processes associated with language comprehension and eye movements \cite{tanenhaus1995integration}. A typical experiment in the VWP involves situating a subject in front of a ``visual world", commonly a computer screen today, and asking them to identify and select an object corresponding to a spoken word. The initiation of eye movements and subsequent fixations are recorded as this process unfolds, with the location of the participants' eyes serving as a proxy for which words or images are being considered. This association was first demonstrated by comparing how the mean time to initiate an eye movement to the correct object was mediated by the presence of phonological competitors (``candy" and ``candle", sharing auditory signal at word onset) and situations containing syntactic ambiguity (``Put the apple on the towel in the box" and ``Put the apple \textit{that's} on the towel in the box" in ambiguous scenarios with one or more apples). It is by comparing the trajectory of these mechanics across trials in the presence of auditory or semantic competitors that researchers have used the VWP in their investigation of spoken word recognition.
 
-\paragraph{VWP} To briefly illustrate, the VWP is an experimental design in which participants undergo a series of trials to identify a spoken word. Typically, each trial has a single target word, along with multiple competitors. The target word is spoken, and participants are asked to identify and select an image on screen associated with the spoken word. Eye movements and fixations are recorded as this process unfolds, with the location of the participants' eyes serving as proxy for which words/images are being considered. [WHY? (bob comment)] This is demonstrated by the ambiguous apple/towel example, i will elaborate on this section more
 
-\paragraph{Proportion of fixation born} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
+\paragraph{Proportion of fixation} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
 
 \begin{singlespace}
 \begin{enumerate}
@@ -108,7 +108,7 @@ While other linking hypotheses have been presented (Magnuson 2019) \cite{Magnuso
 \end{enumerate}
 \end{singlespace}
 
-Though not stated directly (given it predates bdots by 8 years), this also served as the impetus for investigating group differences in word activation through the use of bootstrapped differences in time series (Oleson 2017) and the subsequent development of the \xt{bdots} software in R for analyzing such differences. (A history of exploring differences in group curves can be found in (Seedorff 2018)).
+Though not stated directly (given it predates bdots by 8 years), this also served as the impetus for investigating group differences in word activation through the use of bootstrapped differences in time series \cite{oleson2017detecting} and the subsequent development of the \xt{bdots} software in R for analyzing such differences. (A history of exploring differences in group curves can be found in \cite{seedorff2018bdots}).
 
 This brings us to the current day, where the state of things is such that TRACE-validated VWP data is widely used to measure word recognition by collecting data on individual subjects and fitting to them non-linear parametric curves with interpretable parameters. Context in hand, we are now able to introduce some of the main characters of our story, specifically how data in the VWP is understood and used. 
 
@@ -125,32 +125,36 @@ This brings us to the current day, where the state of things is such that TRACE-
 
 \section{Where we are now}
 
+The following section goes into more detail on the specifics
+
 This section includes the finer points of the VWP, eye tracking data, and how allopena's introduction ties in with bob's parametric proposition.
 
-\subsection{anatomy of eye  movements}
+\subsection{Anatomy of Eye Mechanics \cn{[this section needs new name]}}
 
-There are three components of eye movements with which we are concerned. The first two, saccades and fixations, are associated with physical mechanics of eye movements; the third, oculomotor delay, is a phenomenon related to the association between cognitive activation and physiological response. We will briefly introduce each of these topics. 
+In the context of eye tracking data and word recognition, there are a few mechanics with which we are concerned. The first of these is activation [which i need to learn a little bit more about first]. Even with the immediacy and (fullness? some word they use to describe dense time series here being better than yes/no response), what we observe with any eye movement is not a direct readout of the underlying activation.  Rather, there is a period of latency between the decision to launch an eye movement and the physiological response, a period known as oculomotor delay. And finally, there are they physical mechanics of the eye movements themselves, the saccade and the fixation which, together, make up a ``look". We will briefly address each of these in the reverse of the order in which they were introduced.
+
+
 
 \paragraph{Saccades and fixations:} Rather than acting in a continuous sweeping motion as our perceived vision might suggest, our eyes themselves move about in a series of short, ballistic movements, followed by brief periods of stagnation. These, respectively, are the saccades and fixations. 
 
-The short ballistic movements are known as saccades, periods of between 20ms-60ms (source? more accurate times?) in which they eye is in motion and during which time we are effectively blind. Once in motion, saccades have no ability to change their intended destination. Following the movement itself is a period of stillness known as a fixation, itself made up of a necessary refraction period from the saccade (time?) followed by a period of voluntary fixation; the typical duration of a fixation is (some length). Together, an initiating saccade and its subsequent fixation is known colloquially as a ``look". See Figure~\ref{fig:sac_fix_look}.
+Saccades are short, ballistic movements lasting between 20ms-60ms, during which time we are effectively blind. Once in motion, saccades are unable to change trajectory from their intended destination. Following this movement is a period known as a fixation, itself made up of a necessary refraction period (during which time the eye is incapable of movement) followed by a period of voluntary fixation which may include planning time for deciding the destination of the next eye movement; the duration of fixations are typically (some length). It will be convenient to follow previous convention and consider a saccade followed by its adjacent fixation as a single concept called a ``look" \cite{mcmurray2002look}. We take particular care here to note that the beginning of a look, or ``look onset", starts the instance that a previous look ends or, said another way, the instant an eye movement is launched. A visual description of these is provided in Figure~\ref{fig:sac_fix_look}.
 
-Bob sli paper describes look the first time as psychophysical whatever, pg 11 hot damn
 
-\begin{figure}
+
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{sac_fix_look.png}
-\caption{This image needs to be recreated for size. Illustrates saccade, fixation, and look}
+\caption{redo this image to match anataomy of look image, also for size}
 \label{fig:sac_fix_look}
 \end{figure}
 
-\paragraph{Oculomotor delay:} While the physiological responses are what we can measure, they are not themselves what we are interested in. Rather, we are interested in determining word activation, itself governing the cognitive mechanism facilitating the movements in the eyes. It's suspected/stated/known (source?) that upon finishing a particular saccade, the mind is already anticipating where it will move next. Length of about 200ms also thrown around a lot. What is relevant for our purpose here, however, is that the period of oculomotor delay is a (likely) random process, resulting in biased observations between what we are able to measure and what we are interested in discovering. How this phenomenon relates to saccades and fixations is demonstrated in Figure~\ref{fig:sac_fix_look_om}.
+\paragraph{Oculomotor delay:} While the physiological responses are what we can measure, they are not themselves what we are interested in. Rather, we are interested in determining word activation, itself governing the cognitive mechanism facilitating movements in the eye. Between the decision to launch an eye movement (a cognitive mechanism governed by the activation, next section) and the movement itself is a period known as oculmotor delay. It is typically estimated to take around 200ms to plan and launch an eye movement, and this is usually accounted for by subtracting 200ms from any observed behavior. \cite{viviani1990}. As oculomotor delay is only roughly estimated to be around 200ms, we suggest that accounting for randomness will be critical in correctly recovering the the cognitive mechanism of interest or at very least in identifying possible sources of bias. How this phenomenon relates to saccades and fixations is demonstrated in Figure~\ref{fig:sac_fix_look_om}.
 
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=0.25]{om_delay2.png}
-\caption{this also could probably be reformatted or made bigger}
+\caption{redo this image}
 \label{fig:sac_fix_look_om}
 \end{figure}
 
@@ -158,7 +162,7 @@ Bob sli paper describes look the first time as psychophysical whatever, pg 11 ho
 \begin{figure}
 \centering
 \includegraphics[scale=0.5]{labeled_full_diagram.png}
-\caption{This figure actually doesn't look too bad, but may be better when articulating how saccades measured and why (also includes info on $f(t)$, $\rho$, etc., so maybe we will present this later around the time of simulation. Mostly here now just to be present}
+\caption{This figure actually doesn't look too bad, but may be better when articulating how saccades measured and why (also includes info on $f(t)$, $\rho$, etc., so maybe we will present this later around the time of simulation. Mostly here now just to be present -- unfortunately its outdated}
 \label{fig:full_diagram_looks}
 \end{figure}
 
@@ -178,29 +182,33 @@ We now consider how the aforementioned mechanics relate to the VWP. In a typical
 
 An individual trial of the VWP may be short, lasting anywhere from 1000ms to 2500ms before the correct image is selected. Prior to this, the participants eyes scan the environment, considering images as potential candidates to the spoken word. As this process unfolds, a snapshot of the eye is taken at a series of discrete steps (typically every 4ms) indicating where on the screen the participant is fixated. While there is evidence of cognition happening behind the scenes in a continuous fashion (Spivey, mouse trials), an individual trial of the VWP typically contains no more than four to eight total ``looks" before the correct image is clicked, resulting in a paucity of data in any given trial.
 
-To create a visual summary of this process aggregated over all of the trials, a la Allopena, a ``proportion of fixations" curve is created, aggregating at each discrete time point the average of indicators indicating that a participant is fixated on a particular image. A resulting curve is created for each of the competing categories (target, cohort, rhyme, unrelated), creating an empirical estimate of the activation curve, $f_{\theta}(t)$. See Figure~\ref{fig:bob_diagram_full}. Mathematically, it looks like this: [for an individual, specify this]
+To create a visual summary of this process aggregated over all of the trials, a la Allopena, a ``proportion of fixations" curve is created, aggregating at each discrete time point the average of indicators indicating that a participant is fixated on a particular image. A resulting curve is created for each of the competing categories (target, cohort, rhyme, unrelated), creating an empirical estimate of the activation curve, $f(t|\theta)$. See Figure~\ref{fig:bob_diagram_full}. For any subject $i = 1, \dots, n$, across times $t = 0, \dots, T$ and trials $j = 1, \dots, J$, a construction  of this curves can be expressed as:
+
 
 \begin{equation}
 y_{it} = \frac1J \sum z_{ijt}
 \end{equation}
 where $z_{ijt}$ is an indicator $\{0, 1\}$ in trial $j$ at time $t$ and such that we have an empirical estimate of the activation curve,
 \begin{equation}
-f_{\theta_i}(t) \equiv y_{it}.
+f(t | \theta_i) \equiv y_{it}.
 \end{equation}
 
 
 \begin{figure}
 \centering
 \includegraphics[scale=0.45]{bob_vwp_full.png}
-\caption{Stole this from Bob, plan on making my own}
+\caption{Stole this from Bob (who apparently stole it from richard aslin), plan on making my own}
 \label{fig:bob_diagram_full}
 \end{figure}
+
+Bob sli paper describes look the first time as psychophysical whatever, pg 11 hot damn
+
 
 In other words, we see here that it is implicitly assumed that the trajectory of the eye follows the trajectory of activation, where the average proportion of fixations at a particular time is a direct estimate of activation. As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by \xt{bdots}, are then used to construct estimates of function parameters fitted to this curve.
 
 \section{Where are we going?} 
 
-Somewhere I need to be clear with my language in that typically a saccade is a period of movement lasting about 30ms, followed by a fixation lasting however much time. I will be talking specifically about saccade onset or fixation onset which is not associated with a duration but rather a specific instance in time.
+
 
 Having given due consideration to the state of things are they are, we find ourselves in a time of moral reflection, reexamining the underlying relationship between lexical activation, the mechanism of interest, and the physiological behavior we are able to observe (here, specifically eye-tracking, rather than discussion on other behavioral tasks, i.e., Spivey mouse tracking). This is referred to in the literature as the linking hypothesis. And while there are a number of competing hypothesis, they each share a collection of implicit assumptions relating what is observed to what is being studied.
 
@@ -257,7 +265,7 @@ Simulations were conducted to replicate the mechanics of a look combined with oc
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{anatomy_of_look.pdf}
-\caption{Anatomy of a look}
+\caption{Anatomy of a look -- a key thing to discuss somewhere is the OM delay, refractory period, and planning time. The latter two go in $\gamma$. Worth noting also that while we do need to be able to control for $\rho$, \textit{information} regarding strength of consideration will be in $\gamma$ - refractory period}
 \label{fig:anatomy_of_look}
 \end{figure}
 
@@ -268,7 +276,6 @@ Three total simulations were performed to investigate the biases identified in t
 
 The simulations are performed in R, with the simulation code available on the author's Github page (link?). Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
 
-[I wonder if the parameter bias and representative curves should not all be included in a single figure (a)/(b)/(c)]
 
 \subsection{No Delay}
 

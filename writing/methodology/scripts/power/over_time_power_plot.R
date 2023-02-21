@@ -16,6 +16,9 @@ ff <- ff[c(1, 5:12, 2:4)]
 
 ff <- list.files("negative_one_to_one_rds", full.names = TRUE)
 
+ff <- list.files("power/new_dist_rds_files/", full.names = )
+ff <- list.files("tue_new_dist_rds_files/", full.names = TRUE)
+
 ## We are dropping slope = 0.005 and sigma = 0.005
 ff <- ff[10:12]
 
@@ -44,12 +47,16 @@ timetiePower <- function(mm) {
   return(rr)
 }
 
-getDiffSlices <- function(ff) {
+getDiffSlices <- function(ff, ww) {
   rr <- readRDS(ff)
 
   tt <- attributes(rr) |> unlist()
 
-  tit <- paste0("Manymeans: ", as.logical(tt[1]), ",\n AR(1): ", as.logical(tt[2]), ", sigma: ", tt[[4]])
+  tit <- switch(ww,
+                "Homogenous Means, AR(1) Error",
+                "Heterogenous Means, AR(1) Error",
+                "Heterogeneous Means, No AR(1) Error")
+  #tit <- paste0("Manymeans: ", as.logical(tt[1]), ",\n AR(1): ", as.logical(tt[2]), ", sigma: ", tt[[4]])
 
   sm <- lapply(rr, `[[`, 1)
   mm <- lapply(rr, `[[`, 2)
@@ -64,24 +71,26 @@ getDiffSlices <- function(ff) {
   lines(time, pmm, type = 'l', col = 'blue')
   lines(seq(-1, 0, 0.5), rep(5,3), col = 'red', lty = 2, lwd = 2)
   lines(c(0,0), c(5, 100), col = 'red', lty = 2, lwd = 2)
-  legend("bottomright", legend = c("Hom. Bootstrap", "Het. Bootstrap", "Permutation"),
+  legend("bottomright", legend = c("Hom. Boot", "Het. Boot", "Permutation"),
          col = c("green", "black", "blue"), lty = 1, lwd = 1)
   #abline(v = 0, col = 'red', lty = 2,  lwd = 2, ylim = c(5, 100))
 }
 
 
 
+
 i <- 1
 
-getDiffSlices(ff[i])
+getDiffSlices(ff[i], i)
 i <- i+1
+
 print(i)
 
-pdf("../../img/type_two_err_time_slice.pdf", width = 6, height = 8)
+pdf("../../img/type_two_err_time_slice.pdf", width = 5, height = 7.5)
 par(mfrow = c(3, 1))
-getDiffSlices(ff[1])
-getDiffSlices(ff[2])
-getDiffSlices(ff[3])
+getDiffSlices(ff[1], 1)
+getDiffSlices(ff[2], 2)
+getDiffSlices(ff[3], 3)
 # getDiffSlices(ff[4])
 # getDiffSlices(ff[3])
 # getDiffSlices(ff[6])

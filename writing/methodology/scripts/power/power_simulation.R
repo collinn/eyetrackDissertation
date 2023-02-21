@@ -3,24 +3,17 @@ library(bdots)
 library(eyetrackSim)
 
 # Only doing power on these three things yay
-simDataSettings <- data.table(mm = c(F, T, T),
-                              ar = c(T, T, F),
-                              bcor = c(T, F, F))
-#simDataSettings <- rbind(simDataSettings, simDataSettings[2:3, ])
-#simDataSettings$paired <- c(FALSE, FALSE, FALSE, TRUE, TRUE)
-simDataSettings <- rbind(simDataSettings, simDataSettings)
-simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
-simDataSettings$slope <- 0.025
-
-
-simDataSettings <- rbind(simDataSettings, simDataSettings)
-simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
+sds <- data.table(mm = c(F, T, T),
+                  ar = c(T, T, F),
+                  bcor = c(T, F, F),
+                  sigVal = 0.05,
+                  slope = 0.25)
 
 idx <- as.numeric(commandArgs(TRUE))
 
-sidx <- simDataSettings[idx, ]
+sidx <- sds[idx, ]
 
-createFits <- function(sidx, nit = 500) {
+createFits <- function(sidx, nit = 1000) {
 
   slp <- sidx$slope
   ppars <- c(0, slp)
@@ -30,7 +23,8 @@ createFits <- function(sidx, nit = 500) {
                          ar1 = sidx$ar,
                          distSig = sidx$sigVal,
                          paired = FALSE,
-                         pars = ppars)
+                         pars = ppars,
+                         TIME = seq(-1, 1, length.out = 401))
 
   fit <- bdotsFit(data = dat,
                   y = "fixations",
@@ -54,19 +48,19 @@ createFits <- function(sidx, nit = 500) {
        permutation = pm)
 }
 
-N <- 100
+N <- 50
 sims <- vector("list", length = N)
 attr(sims, "simsettings") <- sidx
-nn <- paste0("sim", idx)
+nn <- paste0("2_sim", idx)
 sf <- paste0("prog_txt/", nn, ".txt")
-rf <- paste0("rds_files/", nn, ".rds")
+rf <- paste0("tue_new_dist_rds_files/", nn, ".rds")
 
 
 sink(file = sf)
 print(paste0("starting index: ", idx))
 for (i in seq_len(N)) {
   sims[[i]] <- createFits(sidx)
-  if (i %% 10 == 0) {
+  if (i %% 20 == 0) {
     msg <- paste0("index: ", idx, ", iteration: ", i)
     print(msg)
   }

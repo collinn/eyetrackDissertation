@@ -177,6 +177,13 @@ f_{\theta}(t) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)}
 where $\theta = (p, b, s, x)$, the peak, baseline, slope, and crossover parameters, respectively.
 
 
+\begin{figure}
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{logistic_distribution.pdf}} 
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{piecewise_distribution.pdf}}
+    \caption{Distributions of various group with the mean curve in bold (a.) 50 samples from the generating distribution of the four-parameter logistic in Equation~\ref{eq:logistic} used for testing FWER. (b.) 50 samples from the generating distributions of each group in Equation~\ref{eq:piecewise_form}. The legend makes size weird, might just explain what they are here. Also need to see if I can change size of the mean lines}
+\label{fig:distribution}
+\end{figure}
 
 
 
@@ -197,7 +204,7 @@ where the $w_{it}$ are iid with $\sigma = 0.025$. $\phi$ corresponds to an autoc
 \paragraph{Paired Data} Finally we considered paired data, though this is only a sensible condition under the assumption of heterogeneous means. In order to construct paired data, we simply used the same parameter estimates for each subject between groups, with the observed data between subjects differing only in the observed error.
 
 
-Each set of conditions generates two groups, with $n = 25$ subjects in each group, with timepoints $t = 0, 4, 8, \dots, 1600$ in each trial and with $100$ simulated trials for each subject. Columns in the tables indicate homogeneity of means assumption, whether or not an AR(1) error structure was used in constructing the data, and if autocorrelation was specified in the fitting function. The last conditions helps assess the impact of correctly identifying the type of error when conducting an analysis in \xt{bdots}. Each simulation was conducted 100 times to determine the rate of type I error. 
+Each set of conditions generates two groups, with $n = 25$ subjects in each group, with timepoints $t = 0, 4, 8, \dots, 1600$ in each trial and with $100$ simulated trials for each subject. Columns in the tables indicate homogeneity of means assumption, whether or not an AR(1) error structure was used in constructing the data, and if autocorrelation was specified in the fitting function. The last conditions helps assess the impact of correctly identifying the type of error when conducting an analysis in \xt{bdots}. Each simulation was conducted 100 times to determine the rate of type I error (time intensive and will launch 1000 for final dissertation). 
 
 
 \subsection{Results}
@@ -211,7 +218,7 @@ Complimenting the FWER estimate is an estimate of the median per-comparison rate
 
 
 
-There are a few things of immediate note when considering the results of Table~\ref{tab:fwer_unpaired}. First, we see from the first two settings of the unpaired simulations that the type I error rates for the homogenous bootstrap are consistent with those presented in \cite{oleson2017detecting}, confirming the importance of specifying the existence of autocorrelation in the \xt{bdots} fitting function when autocorrelated error is present. By contrast, this is far less of a concern when using the heterogeneous bootstrap or permutation testing, both of which maintain a FWER near the nominal alpha, regardless of whether or not the error structure was correctly identified. This continuous to be true under the homogenous mean assumption when the true error structure is not autocorrelated. Interestingly, the performance of the homogeneous bootstrap falters here despite theoretical consistency with the simulation settings. \cn{I am rerunning this condition again now to make sure there wasn't an error.}
+There are a few things of immediate note when considering the results of Table~\ref{tab:fwer_unpaired}. First, we see from the first two settings of the unpaired simulations that the type I error rates for the homogenous bootstrap are consistent with those presented in \cite{oleson2017detecting}, confirming the importance of specifying the existence of autocorrelation in the \xt{bdots} fitting function when autocorrelated error is present. By contrast, this is far less of a concern when using the heterogeneous bootstrap or permutation testing, both of which maintain a FWER near the nominal alpha, regardless of whether or not the error structure was correctly identified. This continues to be true under the homogenous mean assumption when the true error structure is not autocorrelated. Interestingly, the performance of the homogeneous bootstrap falters here despite theoretical consistency with the simulation settings. \cn{I am rerunning this condition again now to make sure there wasn't an error.}
 
 The most striking results of this, however, appear when the data generation assumes a heterogeneous mean structure. While both the heterogeneous bootstrap and the permutation test maintain a FWER near the nominal alpha, the homogeneous bootstrap fails entirely, with a FWER $> 0.9$ in all cases.
 
@@ -302,16 +309,12 @@ No & Yes & Yes & 0.01 & 0.00 & 0.04  \\
 
 \subsection{Discussion}
 
-
-
-...
+Table~\ref{tab:fwer_unpaired} and Table~\ref{tab:fwer_paired} demonstrate that under a variety of settings, both the heterogeneous bootstrap and permutation offer a FWER near the nominal alpha, making their performance similar to that of the homogeneous bootstrap in the best of cases. This includes less restrictive assumptions in which they continue to perform well while the homogenous bootstrap maintains an unacceptably high FWER. 
 
 Transition sentence to power simulations
 
 \section{Power Simulations}
 
-
-Transition to power simulation
 
 To determine power, two experimental groups were simulated with mean structures of the following form:
 
@@ -322,19 +325,17 @@ mx + b \quad &x \geq 0
 \end{cases}
 \end{equation}
 
-The first simulated group was ``No Effect", with intercept and slope parameters normally distributed and standard deviation $\sigma$. The second group, the ``Effect" group, was similarly distributed, but with the slope parameter having mean value of $\mu = 0.025$. Absolute values were taken to ensure that all of the parameters were positive, and simulations were run with group variability values of $\sigma = 0.005$ and $\sigma = 0.025$. The error structure was identical to that in the FWER simulations, with both an AR(1) error structure and independent noise included. Finally, we limited consideration to three possible scenarios: first, we assumed the conditions presented in Oleson 2017, assuming homogeneity between subject parameters and an AR(1) error structure, with the model fitting performed assuming autocorrelated errors. For the remaining scenarios, we assumed heterogeneity in the distribution of subject parameters, simulated with and without an AR(1) error structure. In both of these scenarios, we elected to \textit{not} fit the model assuming autocorrelated errors. This was for two reasons: first, simulations exploring the type I error rate suggested that models fit with the autocorrelation assumption tended to be conservative. Second, and given the results of the first, this makes setting the assumption of autocorrelation to FALSE in \xt{bdots} seem like a sensible default, and as such, it would be of interest to see how the model performs in these cases.
+The first simulated group was ``No Effect", with intercept and slope parameters normally distributed and standard deviation $\sigma = 0.05$. The second group, the ``Effect" group, was similarly distributed, but with the slope parameter having mean value of $\mu = 0.25$. The error structure was identical to that in the FWER simulations, with both an AR(1) error structure and independent noise included. 100 simulations were conducted for each scenario. 
 
-For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group memebership and fit using \xt{bdots} on the interval (-0.1,1). Groups were then compared using each of the methods presented (names?). By including the interval (-0.1,0) where there is no Yes difference, we are able to mitigate the effects of over-zealous methods, and we present this information in the following way: any bootstrapped or permuted resulting identifying the region (-0.1, 0) as being significantly different was marked as having a type I error, regardless of other regions identified. The proportions of simulations for which this occurred in given in the column labeled $\alpha$ (maybe we could call this FWER?). The next column, $\beta$, is the type II error rate, giving the proportion of simulations in which no differences were identified. And finally in the remaining greek letter column is   $1-\beta-\alpha$, a modified power metric giving the proportion of simulations in which only differences in the correct region were identified. The remaining columns given a partial summary of the earliest onset of detection. As the true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a base R plot of the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that this does not take into account the rate of type I errors which in all cases occur to the left of the red dashed line.
+We limited consideration to three possible scenarios: first, we assumed the conditions presented in Oleson 2017, assuming homogeneity between subject parameters and an AR(1) error structure, with the model fitting performed assuming autocorrelated errors. For the remaining scenarios, we assumed heterogeneity in the distribution of subject parameters, simulated with and without an AR(1) error structure. In both of these last two scenarios, we elected to \textit{not} fit the model assuming autocorrelated errors. This was for two reasons: first, simulations exploring the type I error rate suggested that models fit with the autocorrelation assumption tended to be conservative. Second, and given the results of the first, this makes setting the assumption of autocorrelation to FALSE in \xt{bdots} seem like a sensible default, and as such, it would be of interest to see how the model performs in cases in which their is autocorrelated error that is not accounted for.
 
-(I know I used too many colons)
+For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group membership and fit using \xt{bdots} on the interval (-1,1). Time windows in which the groups differed were identified using each the homogenous bootstrap, heterogeneous bootstrap, and permutation testing. By including the interval (-1,0) in which the null hypothesis was true, we are able to mitigate the effects of over-zealous methods in determining power, and we present the results in the following way: any tests in which a difference was detected in (-1,0) was marked as having a type I error, and the proportion of simulations in which this occurred for each method is reported as the FWER in the column labeled $\alpha$. The next column, $\beta$, is the type II error rate, indicating the proportion of trials in which no differences were identified over the entire region. The last Greek-letter column is $1 - \beta - \alpha$, a modified power statistic indicating the proportion of tests in which a difference was correctly identified. The remaining columns relate to this modified power columns, giving a partial summary of the earliest onset of detection. As a true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a (currently base-R) plot giving the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that it does not take into account the rate at which these regions were identified in conjunction with a type I error rate.
 
-100 simulations were conducted for each scenario. Here are the results.
 
 
 \subsection{Results}
 
-% latex table generated in R 4.2.2 by xtable 1.8-4 package
-% Sat Feb 18 14:03:05 2023
+
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
 % Sat Feb 18 14:03:58 2023
 \begin{table}[H]
@@ -343,15 +344,15 @@ For each subject, parameters for their mean structure given in Equation~\ref{eq:
   \hline
 Method & Heterogeneity & AR(1) & $\alpha$ & $\beta$ & 1 - $\alpha$ - $\beta$ & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
-  Hom. Boot & Yes & No & 0.97 & 0.00 & 0.03 & 0.012 & 0.015 & 0.016 \\ 
-  Hom. Boot & Yes & Yes & 0.91 & 0.00 & 0.09 & 0.023 & 0.032 & 0.037 \\ 
-  Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
-  Het. Boot & Yes & No & 0.01 & 0.17 & 0.82 & 0.423 & 0.555 & 0.734 \\ 
-  Het. Boot & Yes & Yes & 0.00 & 0.12 & 0.88 & 0.444 & 0.555 & 0.737 \\ 
-  Perm & No & Yes & 0.10 & 0.00 & 0.90 & 0.275 & 0.302 & 0.334 \\ 
-  Perm & Yes & No & 0.08 & 0.08 & 0.84 & 0.490 & 0.610 & 0.721 \\ 
-  Perm & Yes & Yes & 0.00 & 0.06 & 0.94 & 0.493 & 0.619 & 0.746 \\  
+Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.025 & 0.030 & 0.035 \\ 
+  Hom. Boot & Yes & No & 0.96 & 0.00 & 0.04 & 0.005 & 0.008 & 0.010 \\ 
+  Hom. Boot & Yes & Yes & 0.97 & 0.00 & 0.03 & 0.008 & 0.010 & 0.010 \\ 
+  Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.035 & 0.040 & 0.045 \\ 
+  Het. Boot & Yes & No & 0.00 & 0.10 & 0.90 & 0.403 & 0.513 & 0.690 \\ 
+  Het. Boot & Yes & Yes & 0.01 & 0.10 & 0.89 & 0.420 & 0.525 & 0.690 \\ 
+  Perm & No & Yes & 0.03 & 0.00 & 0.97 & 0.015 & 0.025 & 0.025 \\ 
+  Perm & Yes & No & 0.03 & 0.05 & 0.92 & 0.378 & 0.515 & 0.681 \\ 
+  Perm & Yes & Yes & 0.08 & 0.03 & 0.89 & 0.360 & 0.540 & 0.705 \\ 
    \hline
 \end{tabular}
 \caption{Power for methods (possibly reorder?)} 
@@ -367,101 +368,20 @@ Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\
   \hline
 Method & Type I Error & Type II Error & Power & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Hom. Bootstrap & 0.627 & 0.000 & 0.373 & 0.100 & 0.124 & 0.133 \\ 
-  Het. Bootstrap & 0.003 & 0.097 & 0.900 & 0.394 & 0.491 & 0.622 \\ 
-  Permtuation & 0.060 & 0.047 & 0.893 & 0.419 & 0.510 & 0.600 \\ 
+Hom. Bootstrap & 0.643 & 0.000 & 0.357 & 0.013 & 0.016 & 0.018 \\ 
+  Het. Bootstrap & 0.003 & 0.067 & 0.930 & 0.286 & 0.359 & 0.475 \\ 
+  Permtuation & 0.047 & 0.027 & 0.927 & 0.251 & 0.360 & 0.470 \\ 
    \hline
 \end{tabular}
 \caption{Summary of methods for Type II error} 
 \label{tab:type_2_summary}
 \end{table}
-
-
-\subsubsection{Bootstrap v1}
-
-We note a few things here. Considering the power results for the v1 bootstrap in Table~\ref{tab:bad_boot_pwr}, we first observe that under the assumption of heterogeneity, the v1 bootstrap has a type I error rate so poor as to not be worthy of further consideration. Even then, under the homogeneity assumption, the v1 bootstrap really performs no better than the v2 bootstrap or permutation test, with perhaps slightly greater power than the v2 bootstrap and overly conservative type I error rate compared to the permutation test. This is best illustrated in the first row of Figure~\ref{fig:time_power_plot}.
-
-
-%\begin{table}[H]
-%\centering
-%\begin{tabular}{llcccccccc}
-%  \hline
-%Heterogeneity & AR(1) & $\sigma$ & $\alpha$ & $\beta$ & $1 - \beta - \alpha$ & 1st Qu. & Median & 3rd Qu.  \\ 
-%  \hline
-%FALSE & TRUE & 0.005 & 0.01 & 0.00 & 0.99 & 0.247 & 0.303 & 0.339 \\ 
-%  FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.265 & 0.324 & 0.347 \\ 
-%  TRUE & FALSE & 0.005 & 0.90 & 0.00 & 0.10 & 0.008 & 0.017 & 0.030 \\ 
-%  TRUE & FALSE & 0.025 & 0.97 & 0.00 & 0.03 & 0.012 & 0.015 & 0.016 \\ 
-%  TRUE & TRUE & 0.005 & 0.89 & 0.00 & 0.11 & 0.048 & 0.059 & 0.066 \\ 
-%  TRUE & TRUE & 0.025 & 0.91 & 0.00 & 0.09 & 0.023 & 0.032 & 0.037 \\ 
-%   \hline
-%\end{tabular}
-%\caption{Power for v1 bootstrap} 
-%\label{tab:bad_boot_pwr}
-%\end{table}
-
-\subsubsection{Bootstrap v2}
-
-Performs comparably in homogeneous means. Low type I error, type I error hovering around 10\%-20\%
-%
-%\begin{table}[H]
-%\centering
-%\begin{tabular}{llcccccccccc}
-%  \hline
-%Heterogeneity & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu. \\ 
-%  \hline
-%FALSE & TRUE & 0.005 & 0.00 & 0.00 & 1.00 & 0.296 & 0.346 & 0.392 \\ 
-%  FALSE & TRUE & 0.025 & 0.00 & 0.00 & 1.00 & 0.316 & 0.364 & 0.395 \\ 
-%  TRUE & FALSE & 0.005 & 0.00 & 0.12 & 0.88 & 0.373 & 0.576 & 0.756 \\ 
-%  TRUE & FALSE & 0.025 & 0.01 & 0.17 & 0.82 & 0.423 & 0.555 & 0.734 \\ 
-%  TRUE & TRUE & 0.005 & 0.01 & 0.20 & 0.79 & 0.357 & 0.522 & 0.691 \\ 
-%  TRUE & TRUE & 0.025 & 0.00 & 0.12 & 0.88 & 0.444 & 0.555 & 0.737 \\ 
-%   \hline
-%\end{tabular}
-%\caption{Power for v2 bootstrap} 
-%\label{tab:good_boot_pwr}
-%\end{table}
-
-\subsection{Permutation}
-
-Comparable in homogeneous means case with closer to nominal type I error. This has most reasonable balance (it seems) of controlling type I error and achieving power. Cool
-
-%\begin{table}[H]
-%\centering
-%\begin{tabular}{llcccccccccc}
-%  \hline
-%Heterogeneity & AR(1) & $\sigma$  & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
-%  \hline
-%FALSE & TRUE & 0.005 & 0.05 & 0.00 & 0.95 & 0.259 & 0.299 & 0.332 \\ 
-%  FALSE & TRUE & 0.025 & 0.10 & 0.00 & 0.90 & 0.275 & 0.302 & 0.334 \\ 
-%  TRUE & FALSE & 0.005 & 0.03 & 0.05 & 0.92 & 0.454 & 0.609 & 0.748 \\ 
-%  TRUE & FALSE & 0.025 & 0.08 & 0.08 & 0.84 & 0.490 & 0.610 & 0.721 \\ 
-%  TRUE & TRUE & 0.005 & 0.08 & 0.12 & 0.80 & 0.418 & 0.578 & 0.743 \\ 
-%  TRUE & TRUE & 0.025 & 0.00 & 0.06 & 0.94 & 0.493 & 0.619 & 0.746 \\ 
-%   \hline
-%\end{tabular}
-%\caption{Power for permutation} 
-%\label{tab:perm_pwr}
-%\end{table}
 
 \subsubsection{Summary of methods}
 
 A general estimate of how well each of these methods does in a variety of conditions can be seen by taking the mean of the summary statistics across each of the trials, given in Table~\ref{tab:type_2_summary}.
 
-\begin{table}[H]
-\centering
-\begin{tabular}{lcccccccc}
-  \hline
-Method & $\alpha$ & $\beta$ & $1 - \beta - \alpha$  & 1st Qu. & Median & 3rd Qu.  \\ 
-  \hline
-Bootstrap V1 & 0.613 & 0.000 & 0.387 & 0.101 & 0.125 & 0.139 \\ 
-  Bootstrap V2 & 0.003 & 0.102 & 0.895 & 0.368 & 0.486 & 0.617 \\ 
-  Permtuation & 0.057 & 0.052 & 0.892 & 0.398 & 0.503 & 0.604 \\ 
-   \hline
-\end{tabular}
-\caption{Summary of methods for Type II error} 
-\label{tab:type_2_summary}
-\end{table}
+
 
 As we can see, the permutation method is the most canonical of the methods considered, with a type I error rate close to the nominal $\alpha = 0.05$ and a type II error rate of $\beta = 0.195$, corresponding to approximately 80\% power. The V2 bootstrap, alternatively, is rather conservative, trading a portion of its power for controlling the type I error rate close to zero. Finally, the V1 bootstrap is a poor contender for identifying differences in time series, with its utility limited to the strict assumptions under which it was originally presented. Even then, it performs generally no better than the other methods, but with substantially greater risk should the underlying assumptions not hold. I believe that this is conclusive enough evidence to make this not even an option in \xt{bdots}, even if somebody could find a limited case in which they knew for certain the assumptions held. 
 
@@ -470,8 +390,8 @@ As we can see, the permutation method is the most canonical of the methods consi
 
 \begin{figure}[H]
 \centering.
-\includegraphics[width=\textwidth]{type_two_err_time_slice.pdf}
-\caption{check out this badass plot in base R. Note that the bump in type I error before flattening out around 0.1 is a consequence of simulations in which the no effect group, on average, has a larger intercept than the effect group. When this occurs, the lines ``cross" in the 0 to 0.2 range, making it seem like there is no effect there}
+\includegraphics{type_two_err_time_slice.pdf}
+\caption{Observed power of each of the methods at each time in (-1,1)}
 \label{fig:time_power_plot}
 \end{figure}
 

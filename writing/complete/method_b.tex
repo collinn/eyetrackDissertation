@@ -1,38 +1,8 @@
-\documentclass{article}
-\title{With great power comes greater responsibility}
-\date{}
-
-\usepackage{setspace}
-\doublespacing
-
-\usepackage[margin=1in]{geometry}
-\usepackage{amsmath}
-\usepackage{graphicx}
-\usepackage{datetime}
-\usepackage{float}
-\newcommand{\xt}{\texttt}
-
-\usepackage{subfigure}
-\graphicspath{{img/}}
-\usepackage{color}
-\providecommand{\pb}[1]{\textcolor{red}{#1}}
-\providecommand{\cn}[1]{\textcolor{blue}{#1}}
-
-
-\usepackage{listings}
-
-\begin{document}
-
-%https://www.namsu.de/Extra/klassen/latex-article-template.html
-
-\maketitle
-
-Last compiled: \today \  at \currenttime
 
 %\input{main.tex}
 
 \begin{abstract}
-Something something high density time series collected to estimate group population curves and compare those for temporal differences while controlling FWER. The original iteration \xt{bdots} made strict assumptions which are likely to not hold in general, resulting in unacceptable type I error rates. We modify the original 2017 algorithm to introduce an alternative bootstrapping scheme along with a permutation test to examine temporal differences between groups. Our results demonstrate comparable control of FWER and power under the original assumptions while also proving far more robust to divergences in both the mean and error structures of the observed data.
+Something something high density time series collected to estimate group population curves and compare those for temporal differences while controlling FWER. Original \xt{bdots} made strict assumptions which are likely to not hold in general, resulting in truly disastrous type I error rates. My modify the original 2017 algorithm to introduce an alternative bootstrapping scheme, along with a modified permutation test to examine differences between groups. Our results demonstrate comparable control of FWER and power under the original assumptions while also proving far more robust to divergences in both the mean and error structures of the observed data.
 \end{abstract}
 
 \section{Introduction}
@@ -308,7 +278,7 @@ No & Yes & Yes & 0.01 & 0.00 & 0.04  \\
 
 \subsection{Discussion}
 
-Table~\ref{tab:fwer_unpaired} and Table~\ref{tab:fwer_paired} demonstrate that under a variety of settings, both the heterogeneous bootstrap and permutation offer a FWER near the nominal alpha, making their performance similar to that of the homogeneous bootstrap in the best of cases. This includes less restrictive assumptions in which they continue to perform well while the homogeneous bootstrap maintains an unacceptably high FWER. 
+Table~\ref{tab:fwer_unpaired} and Table~\ref{tab:fwer_paired} demonstrate that under a variety of settings, both the heterogeneous bootstrap and permutation offer a FWER near the nominal alpha, making their performance similar to that of the homogeneous bootstrap in the best of cases. This includes less restrictive assumptions in which they continue to perform well while the homogenous bootstrap maintains an unacceptably high FWER. 
 
 Transition sentence to power simulations
 
@@ -334,9 +304,7 @@ For each subject, parameters for their mean structure given in Equation~\ref{eq:
 
 \subsection{Results}
 
-The results of the power simulation are presented in Table~\ref{tab:power_methods}. We begin by considering the case in which we assumed a homogeneous mean structure with autocorrelated errors (the first three rows), matching the conditions in which the homogeneous bootstrap was first presented. Notably, we find that the permutation method demonstrates the greater power, with the median onset time just under that of the homogeneous bootstrap. This is at the expense of a larger FWER, though still below the nominal level. Alternatively, the heterogeneous bootstrap maintains a similar FWER as the homogeneous bootstrap at the cost of power.
 
-The remaining settings tell a similar story with the exception of the homogeneous bootstrap which continues to demonstrate unacceptable FWER under the heterogeneous means assumption. We also seem some effect of not correctly specifying an AR(1) error structure when comparing the last two settings, as the failure to specify resulted in a slightly higher FWER and lower power, although not significantly (it may be worth it to include setting with AR(1) error correctly specified to see how it compares). 
 
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
@@ -348,23 +316,20 @@ The remaining settings tell a similar story with the exception of the homogeneou
 Method & Heterogeneity & AR(1) & $\alpha$ & $\beta$ & 1 - $\alpha$ - $\beta$ & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
 Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.025 & 0.030 & 0.035 \\ 
-  Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.035 & 0.040 & 0.045 \\ 
-  Perm & No & Yes & 0.03 & 0.00 & 0.97 & 0.015 & 0.025 & 0.025 \\ 
-  \hline
   Hom. Boot & Yes & No & 0.96 & 0.00 & 0.04 & 0.005 & 0.008 & 0.010 \\ 
-  Het. Boot & Yes & No & 0.00 & 0.10 & 0.90 & 0.403 & 0.513 & 0.690 \\ 
-  Perm & Yes & No & 0.03 & 0.05 & 0.92 & 0.378 & 0.515 & 0.681 \\ 
-  \hline
   Hom. Boot & Yes & Yes & 0.97 & 0.00 & 0.03 & 0.008 & 0.010 & 0.010 \\ 
+  Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.035 & 0.040 & 0.045 \\ 
+  Het. Boot & Yes & No & 0.00 & 0.10 & 0.90 & 0.403 & 0.513 & 0.690 \\ 
   Het. Boot & Yes & Yes & 0.01 & 0.10 & 0.89 & 0.420 & 0.525 & 0.690 \\ 
+  Perm & No & Yes & 0.03 & 0.00 & 0.97 & 0.015 & 0.025 & 0.025 \\ 
+  Perm & Yes & No & 0.03 & 0.05 & 0.92 & 0.378 & 0.515 & 0.681 \\ 
   Perm & Yes & Yes & 0.08 & 0.03 & 0.89 & 0.360 & 0.540 & 0.705 \\ 
    \hline
 \end{tabular}
-\caption{Power for methods (possibly include AR(1) error and AR(1) specification to compare to last setting)} 
+\caption{Power for methods (possibly reorder?)} 
 \label{tab:power_methods}
 \end{table}
 
-The results in Table~\ref{tab:type_2_summary} are a summary of all of the methods found by taking the mean of each of the results presented. This is intended to interrogate the performance of each of these methods when underlying assumptions are unknown or unspecified. We find a robust performance for each of the new methods presented, maintaining a reasonable relationship between FWER and power. The metrics associated with homogeneous bootstrap are perhaps a bit misleading here as they appear to demonstrate exceptional power, though at the cost of unacceptable type I error.
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
 % Sat Feb 18 14:11:04 2023
@@ -372,7 +337,7 @@ The results in Table~\ref{tab:type_2_summary} are a summary of all of the method
 \centering
 \begin{tabular}{lcccccc}
   \hline
-Method & $\alpha$ & $\beta$ & $1 - \alpha - \beta$ & 1st Qu. & Median & 3rd Qu. \\ 
+Method & Type I Error & Type II Error & Power & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
 Hom. Bootstrap & 0.643 & 0.000 & 0.357 & 0.013 & 0.016 & 0.018 \\ 
   Het. Bootstrap & 0.003 & 0.067 & 0.930 & 0.286 & 0.359 & 0.475 \\ 
@@ -390,25 +355,85 @@ Hom. Bootstrap & 0.643 & 0.000 & 0.357 & 0.013 & 0.016 & 0.018 \\
 \begin{figure}[H]
 \centering.
 \includegraphics{type_two_err_time_slice.pdf}
-\caption{Observed power of each of the methods at each time in (-1,1). Might also be better to include this with subplots instead of single plot (also in ggplot2)}
+\caption{Observed power of each of the methods at each time in (-1,1)}
 \label{fig:time_power_plot}
 \end{figure}
 
 
 \section{Discussion and concluding remarks}
 
-We set out both to interrogate the validity of the homogenous bootstrap assumptions and to propose two alternative methods that would be more robust under a greater variety of assumptions. In doing so, we demonstrated conclusively the utility of the heterogeneous bootstrap and permutation tests while also highlighting a major shortcoming of the original. It's worth noting, however, that the FWER adjustment proposed in \cite{oleson2017detecting} is still valid, if not slightly conservative, and with power similar to that of the permutation method. 
-
-In light of the results presented, one issue of concern is addressing the fact that a version of \xt{bdots} with the homogeneous mean assumption was presented in 2018 and remained accessible on CRAN until the end of 2022. This has implications for the number of papers in which \xt{bdots} may have demonstrated significance between groups when the underlying assumptions of homogeneous mean structure did not hold, as is likely the case in all instances related to the VWP. Concurrent with this issue is the issue of identifying current users of \xt{bdots} of this change, as results found only a month ago will be profoundly different than what is seen today. At present, I am not sure the best way to address either of these. In either case, however, it will be prudent to remove this option from the \xt{bdots} package all together, as there appears to be no obvious advantage to the homogeneous bootstrap over the others in terms of either controlling the FWER or obtaining power, even when the homogeneous mean structure assumption is met.
-
-There are several limitations of the current paper that are worthy of further investigation. First, First, limited consideration was given to the effect of sample density on the observed type I error rate or power. As the fitting function in \xt{bdots} simply returns a set of parameters, one could conceivably perform any of the methods presented on any arbitrary collection of points, whether or not any data were observed there. This extends itself to the condition in which subjects were sampled at heterogeneous time points, as may be the case in many clinical settings. What impact this may have or how to best handle these cases remains open for exploration. It is also worth investigating in greater detail what impact the re-drawing of subject specific parameters from their respective distributions has on both the FWER and power, as in several of the simulations the observed FWER was much lower than the nominal level. Particularly in the case of the permutation method which is \textit{not} seeking to estimate the group distributions, it may be worthwhile to see if a favorable trade can be made to increase the resulting power.
-
-We conclude by noting that \xt{bdots} is now equipped with two methods to effectively control the FWER when assessing the differences in time series under a greater set of underlying assumptions, including those involving the presence of highly correlated test statistics. Further, both methods presented are robust to misspecification of the error structure while maintaining an acceptable FWER and adequate power. 
+We set out to interrogate the validity of the v1 bootstrap assumptions and to propose two alternative methods that would be more robust under a greater variety of assumptions. In doing so, we demonstrated conclusively the utility of the v2 bootstrap and permutation tests while also highlighting a major shortcoming of the v1 bootstrap. It's worth noting, however, that the FWER adjustment proposed in \cite{oleson2017detecting} is still valid, if not slightly conservative, and with power similar to that of the permutation method, and this will remain an option in version 2.0 of \xt{bdots}.
 
 
-\end{document}
+There are a few limitations to the current paper that are worthy of investigation. First, limited consideration was given to the effect of sample density on the observed type I error rate or power. As the fitting function in \xt{bdots} simply returns a set of parameters, one could conceivably perform any of the methods presented on any arbitrary collection of points, whether or not any data were observed there. This extends itself to the condition in which subjects were sampled at heterogeneous time points, as may be the case in many clinical settings. What impact this may have or how to best handle these cases remains investigated. The current implementation of \xt{bdots} takes the union of observed time points, though this runs the risk of extrapolating many subjects past what they were ever observed. It would be of interest to know if either the permutation or v2 bootstrap perform better in these situations, and if both retain their validity under increasingly suspect conditions. Finally, in noting the rather conservative FWER estimates for both the v2 bootstrap and the permutation test, it would be worthwhile investigating if \textit{not} resampling subject-specific parameters from the distribution provided by \xt{gnls} would retain an acceptable FWER while increasing power.
+
+We conclude pretty much by noting that even in the best case presented in Oleson 2017, these other methods do an identical job, and in situations in which these assumptions are wrong, it is a veritable train wreck. It seems that the $1 - \beta - \alpha$ (whatever this is called) is nearly identical between the v2 bootstrap and permutation, whereas the type II error is much greater in the bootstrap. This seems justification enough for making the permutation method the new default in \xt{bdots} or, should i say PDOTS. It is conceivable that the assumptions presented in Oleson 2017 would have their place, say repeated observation from the same mechanism (i.e., not vwp data), in which case v1 bootstrap has optimal performance. Still, users of \xt{bdots} will need to go out of their way in order to do so, possibly with a warning. Because really, even in that case, it hardly does any better than permutation, perhaps with a bit smaller of a type I error.
 
 
+%There isn't really a lot to say in this paper: we pretty quickly identified the issue with the assumption that $V = 0$ for the assumptions in the data generation parameters. We showed pretty conclusively that the type I error is absolutely bonkers in even the mildest of deviations from this, removing any justification from this being the ``default" method in \xt{bdots}. With regards to fitting models assuming AR(1) error structure, there really wasn't any observed penalty in not doing so with the good bootstrap or permutation methods, and if anything it brought the observed TIE closer to 0.05, with some implications for power (though those simulations are still work in progress).
+
+%And speaking of power, here is the only case, really, where bad bootstrap can make any argument -- it (naturally) detects a difference far beyond any of the other cases, though as we should discuss, this (so far) is because I have sort have cheated in how I created the data. Judging by the type I error rate, there may be only one case in which it's worth doing a power analysis at all. As to a comparison of the other two, preliminary results on the simulations I think are correct seem to ever so slightly favor permutations, which is neat, I kind of favor them. This is pending a further investigation in what sort of simulation here is really appropriate as far as data generation is concerned.
+
+%And that's pretty much it. Not a lot to discuss. There is an open question on the impact of time points (both quantity and range) on where and what we consider significant. Inflating the observed data with huge swaths of obviously different functions might be cheating. We may look at a few things in passing, but likely not enough to make any hard and fast conclusions. It's an interesting question, though, and especially when we consider comparing data with non-homogenous ranges, which we also didn't look it (i.e., mousey tumor data). 
+
+
+
+%\section{Conclusion}
+
+%Life is a distrupting burst of consciousness, bookended by eternal blackness and despair. Why are we even here? Why do we try at all?
+
+\section*{Appendix}
+
+Could include oleson 2017 parameters just to say we did it and verifying the two results that they had previously found (i.e., we have implemented this correctly). Commented out for now
+
+%
+%\section*{Appendix A - Oleson 2017 parameters}
+%
+%Not sure if this worth including since it basically matches the other. Just demonstrates that we did run with original parameter, verifying the two results that they had previously found (i.e., we have implemented this correctly)
+%
+%In evaluating the logistic function in the original bdots paper, they examined a time period from 0 to 1600, sampled at 4ms intervals. The logistic curve they used had parameters: baseline = 0, peak = 0.75, slope = 0.0025, and crossover point = 200
+%
+%First up we have the type I error rate
+%
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllccc}
+%  \hline
+%  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.06 & 0.01 & 0.03 \\ 
+%  FALSE & TRUE & FALSE & 0.76 & 0.01 & 0.01 \\ 
+%  FALSE & FALSE & TRUE & 0.06 & 0.01 & 0.05 \\ 
+%  FALSE & FALSE & FALSE & 0.05 & 0.02 & 0.11 \\ 
+%  TRUE & TRUE & TRUE & 0.97 & 0.04 & 0.02 \\ 
+%  TRUE & TRUE & FALSE & 1.00 & 0.03 & 0.00 \\ 
+%  TRUE & FALSE & TRUE & 0.99 & 0.02 & 0.01 \\ 
+%  TRUE & FALSE & FALSE & 1.00 & 0.02 & 0.01 \\ 
+%   \hline
+%\end{tabular}
+%\caption{type 1 error rate using Oleson parameters}
+%\end{table}
+%
+%Then we have median per comparison error rate. So looking at error rate of each time slice
+%
+%\begin{table}[H]
+%\centering
+%\begin{tabular}{lllccc}
+%  \hline
+%  manymeans & ar1 & bdotscor &  Bad Bootstrap & Good Bootstrap & Permutation  \\ 
+%  \hline
+%FALSE & TRUE & TRUE & 0.01 & 0.01 & 0.02 \\ 
+%  FALSE & TRUE & FALSE & 0.32 & 0.00 & 0.00 \\ 
+%  FALSE & FALSE & TRUE & 0.01 & 0.00 & 0.00 \\ 
+%  FALSE & FALSE & FALSE & 0.01 & 0.00 & 0.02 \\ 
+%  TRUE & TRUE & TRUE & 0.82 & 0.02 & 0.00 \\ 
+%  TRUE & TRUE & FALSE & 0.92 & 0.02 & 0.00 \\ 
+%  TRUE & FALSE & TRUE & 0.88 & 0.01 & 0.00 \\ 
+%  TRUE & FALSE & FALSE & 0.91 & 0.00 & 0.00 \\ 
+%\hline
+%\end{tabular}
+%\caption{median per comparison error rate (why is this something considered?)}
+%\end{table}
 
 
 

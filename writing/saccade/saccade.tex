@@ -36,31 +36,42 @@ Last compiled: \today \  at \currenttime
 %\input{main.tex}
 
 \begin{abstract}
-In 1995 the Visual World Paradigm (VWP) was introduced blah blah (can I have citations in abstract or should it be more general?)
+In 1995 the Visual World Paradigm (VWP) was introduced 
 \end{abstract}
 
 
 
 \section{Introduction}
 
+[or, you know what, create a new introduction here and let what follows be the first part of next body sentence]
+
 Spoken words create analog signals that are processed by the brain in real time. That is, as spoken word unfolds, a collection of candidate words are considered until the target word is recognized. The degree to which a particular candidate word is being considered is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
 %[don't like this next section]
 
 
-[start more broadly, there are a number of ways to do this, we use activation]Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eye-tracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
+[start more broadly, there are a number of ways to do this, we use activation]
+
+Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with physiological behavior. And though there are a number of relevant indices (Spivey mouse trials), we concern ourselves here with eye tracking data collected in the context of the Visual World Paradigm (VWP) \cite{tanenhaus1995integration}, an experimental model in which a participant's eye movements are tracked as the respond to spoken language. In a typical VWP experiment, participants are placed in the presence of visual objects (typically presented on a computer screen) and asked to select one in response to spoken language. The location of fixations are measured in real time, with the proportion of fixations towards any potential targeted aggregated across trials
+
+The location of fixations is recorded in real time and aggregated across a series of trials
+
+
+
+
+
+
+
+In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
 
 
 This section needs work but it mostly covers the gist of what I am trying to convey, namely we are about to go from history $\rightarrow$ current state of the world $\rightarrow$ proposal and comparison $\rightarrow$ results.
 
 \section{A brief history}
-We begin with a brief history to give context to later discussion. In particular, we will consider one of the leading theoretical models in speech perception, TRACE, followed by the introduction of the leading experimental paradigm, the VWP. We examine empirical evidence for the relation between these, and relevant theoretical advancements that have been made. Topics here are presented only briefly and limited to those directly relevant to the present work. For a fuller discussion of the history and uses of VWP, use google. (Or Huettig 2011b?)
+We begin with a brief history to give context to later discussion. In particular, we will consider one of the leading theoretical models in speech perception, TRACE, followed by the introduction of the leading experimental paradigm, the VWP. We examine empirical evidence for the relation between these, and relevant theoretical advancements that have been made. Topics here are presented only briefly and limited to those directly relevant to the present work. For a fuller discussion of the history and uses of VWP. (Or Huettig 2011b?)
 
-An outline of the presentation (for internal use only):
 
-\begin{singlespace}
 \begin{enumerate}
-\vspace{-2mm}
 \item VWP by Tannenhaus 1995 \cite{tanenhaus1995integration}
 \item VWP + TRACE, Allopenna 1996 (trace aspect no longer relevant, just an aside) \cite{allopenna1998tracking}
 \item As far as I can tell, it's Bob's 2010 paper that was among first to \cite{mcmurray2010individual}
@@ -69,9 +80,8 @@ An outline of the presentation (for internal use only):
 \item Introduce parametric forms to be fit to the data (the assumption we continue to run with), or at very least, introduce ones that are interpretable
 \end{enumerate}
 \end{enumerate}
-\end{singlespace}
 
-All of the paragraphs in this section are narrative and not mission critical. Need to be fleshed out
+
 
 \paragraph{Visual World Paradigm} The Visual World Paradigm (VWP) was first introduced in 1995, making the initial link between the mental processes associated with language comprehension and eye movements \cite{tanenhaus1995integration}. A typical experiment in the VWP involves situating a subject in front of a ``visual world", commonly a computer screen today, and asking them to identify and select an object corresponding to a spoken word. The initiation of eye movements and subsequent fixations are recorded as this process unfolds, with the location of the participants' eyes serving as a proxy for which words or images are being considered. This association was first demonstrated by comparing how the mean time to initiate an eye movement to the correct object was mediated by the presence of phonological competitors (``candy" and ``candle", sharing auditory signal at word onset) and situations containing syntactic ambiguity (``Put the apple on the towel in the box" and ``Put the apple \textit{that's} on the towel in the box" in ambiguous scenarios with one or more apples). It is by comparing the trajectory of these mechanics across trials in the presence of auditory or semantic competitors that researchers have used the VWP in their investigation of spoken word recognition.
 

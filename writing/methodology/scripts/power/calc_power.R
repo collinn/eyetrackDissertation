@@ -57,12 +57,12 @@ getPowerTab <- function(ff) {
 }
 
 # original
-ff <- list.files("negative_one_to_one_rds", full.names = TRUE)
-ff <- list.files("1000_rds_files", full.names = TRUE)
-ff <- ff[c(1, 5:12, 2:4)]
-ff <- ff[10:12] # Getting rid of slope = 0.005, sig = 0.005
-
-ff <- list.files("new_dist_rds_files", full.names = TRUE)
+# ff <- list.files("negative_one_to_one_rds", full.names = TRUE)
+# ff <- list.files("1000_rds_files", full.names = TRUE)
+# ff <- ff[c(1, 5:12, 2:4)]
+# ff <- ff[10:12] # Getting rid of slope = 0.005, sig = 0.005
+#
+# ff <- list.files("new_dist_rds_files", full.names = TRUE)
 ff <- list.files("tue_new_dist_rds_files", full.names = TRUE)
 
 res <- lapply(ff, getPowerTab)
@@ -103,6 +103,8 @@ res_pm <- cbind(data.table(Method = "Perm"), res_pm)
 tab <- rbind(res_sm, res_mm, res_pm)
 tab$manymeans <- ifelse(tab$manymeans, "Yes", "No")
 tab$ar1 <- ifelse(tab$ar1, "Yes", "No")
+
+tab <- tab[order(manymeans, ar1)]
 
 digs <- c(1,1,1,1,2,2,2,3,3,3)
 xtable(tab, caption = "Power for methods", align = c("llllcccccc"),

@@ -37,7 +37,7 @@ Something something high density time series collected to estimate group populat
 
 \section{Introduction}
 
-A standard problem in psycholinguistics, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. Particularly in the case of comparing a process between experimental groups in time, techniques appropriate for demonstrating showing that differences \textit{exist} offer little towards the goal of identifying \textit{when} they exist when the time windows are not specified in advance, with the area under a curve (AUC) representing an example of this. One may consider instead testing two time series at each point in time, using a method such a cluster based permutation testing \cite{Maris2007} in which test-statistics are computed at each time, with adjacent significant tests being combined into single clusters. This is in an effort to address the problem of multiple comparisons and, by extension, control for the family wise error rate: by reducing adjacent test statistics into a single cluster, researchers work to control the FWER by simply reducing the number of tests. More recently has been the bootstrapped differences of time series (BDOTS) \cite{oleson2017detecting}, using bootstrapped fits of subject-level curves in conjunction with a modified Bonferroni correction to the significance level to control the family wise error rate in the presence of highly correlated test statistics. A version of this was introduced in the R package \xt{bdots} in 2018 \cite{seedorff2018bdots}.
+A standard problem in psycholinguistics, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. Particularly in the case of comparing a process between experimental groups in time, techniques appropriate for demonstrating showing that differences \textit{exist} offer little towards the goal of identifying \textit{when} they exist when the time windows are not specified in advance, with the area under a curve (AUC) representing an example of this. One may consider instead testing two time series at each point in time, using a method such a cluster based permutation testing \cite{Maris2007} in which test-statistics are computed at each time, with adjacent significant tests being combined into single clusters. This is in an effort to address the problem of multiple comparisons and, by extension, control for the family wise error rate (FWER): by reducing adjacent test statistics into a single cluster, researchers work to control the FWER by simply reducing the number of tests. More recently has been the bootstrapped differences of time series (BDOTS) \cite{oleson2017detecting}, using bootstrapped fits of subject-level curves in conjunction with a modified Bonferroni correction to the significance level to control the family wise error rate in the presence of highly correlated test statistics. A version of this was introduced in the R package \xt{bdots} in 2018 \cite{seedorff2018bdots}.
 
 A closer look at the specific conditions under which the original iteration of \xt{bdots} was presented raises concerns, however, involving quite restrictive assumptions that are unlikely to be met in many, if not most, situations. This includes data typically collected in the Visual World Paradigm (VWP), context in which the underlying methodology was first proposed. Specifically, it assumed a homogeneous mean structure within each of the groups being compared, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to show that such an assumption is unlikely to be true, with the resulting type I error rate being unacceptably high.
 
@@ -72,7 +72,7 @@ Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an
 \end{enumerate}
 %\end{singlespace}
 
-Population means and standard deviations at each time point for each of the groups were used to construct a series of (correlated) test statistics, where the family wise error rate was controlled by using the modified Bonferonni correction introduced in Oleson et. al.,  2017 to test for significance.
+Population means and standard deviations at each time point for each of the groups were used to construct a series of (correlated) test statistics, where the family wise error rate was controlled by using the modified Bonferonni correction introduced in \cite{oleson2017detecting} to test for significance.
 
 
 \section{Proposed Methods}
@@ -114,13 +114,13 @@ Such an estimate captures the totality of the within-subject variability with ea
 
 The estimated mean value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the \textit{heterogeneous bootstrap}, making the following changes to the original: \cn{make equations for this}
 
-\begin{singlespace}
+%\begin{singlespace}
 \begin{enumerate}
-\vspace{-2mm}
+%.\vspace{-2mm}
 \item[1.] In step (1.), the specification of AR(1) structure is \textit{optional} and can be modified with arguments to functions in \xt{bdots}. Our simulations show that while failing to include it slightly inflates the type I error in the v2 bootstrap when the data truly is autocorrelated, specifying an AR(1) structure can lead to overly conservative estimates when it is not.
 \item[2.] In step (2.), we sample subjects \textit{with replacement} and then for each drawn subject, randomly draw one bootstrap estimate for each of their model parameters based on the mean and standard errors derived from the \xt{gnls} estimate.
 \end{enumerate}
-\end{singlespace}
+%\end{singlespace}
 
 Just as with the homogeneous bootstrap, these bootstrap estimates are used to create test statistics $T_t$ at each time point, written
 

@@ -1,37 +1,53 @@
-\documentclass{article}
-%\documentclass{report}
-\title{bdots}
-\date{}
+\documentclass[12pt]{report}
 
+%% Thesis style file
+\usepackage{uithesis}
 
-\usepackage{blindtext}
-\usepackage{chngcntr}
-\counterwithin*{section}{part}
-
-\usepackage{setspace}
-\doublespacing
-
-\usepackage[margin=1in]{geometry}
+%% Other packages
+%% These are optional, depending on what is in your thesis.
+%% However, assuming that you have equations, figures, and tables,
+%% I would recommend including all of them.
+%% This may require installation of missing packages
 \usepackage{amsmath}
-\usepackage{multirow}
-\usepackage{hhline}
+\usepackage{amssymb}
+\usepackage{amsthm}
 \usepackage{graphicx}
+\graphicspath{{fig/}}
+\usepackage{natbib}
+\usepackage{floatrow}
+\usepackage{caption}
+
+
+
+%\documentclass{article}
+%\documentclass{report}
+
+
+%
+%\usepackage{setspace}
+%\doublespacing
+
+%\usepackage[margin=1in]{geometry}
+%\usepackage{amsmath}
+%\usepackage{multirow}
+%\usepackage{hhline}
+%\usepackage{graphicx}
 \usepackage{fancyvrb}
 \usepackage{float}
-\usepackage[table]{xcolor}
-\usepackage{xcolor}
-\usepackage{datetime}
-
-\usepackage{color}
+%\usepackage[table]{xcolor}
+%\usepackage{xcolor}
+%\usepackage{datetime}
+%
+%\usepackage{color}
 %\providecommand{\pb}[1]{\textcolor{red}{#1}}
 %\providecommand{\cn}[1]{\textcolor{blue}{#1}}
 
 \providecommand{\pb}[1]{}
 \providecommand{\cn}[1]{}
 
-\usepackage{setspace}
-\doublespacing
-
+%\usepackage{setspace}
+%\doublespacing
+%
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
@@ -52,41 +68,32 @@
 
 %\maketitle
 
-Last compiled: \today \  at \currenttime
+\input{front.tex}
 
 %\input{main.tex}
 
-\section{Introduction}
+\Chapter{Introduction}
 
-This dissertation is made up of three chapters, each addressing some aspect of eye tracking in the Visual World Paradigm (VWP) or \xt{bdots}, the R software created to accompany the analysis. And though they are presented necessarily in a linear fashion, they can be read in any order.
+\input{introduction.tex}
 
-The first chapter is bdots and address major changes in the \xt{bdots} package, including user interface, functionality, and general quality-of-life improvements. Included also is an use-case example performing an analysis with non-VWP data, an analysis of tumor growth in mice across a number of experimental treatment groups. This chapter also includes important changes to the underlying methodology, including a change to the way the original bootstrapping algorithm is constructed, as well as the introduction of a permutation test to control the family wise error rate. These methods are included both for completeness for new users and to demonstrate important changes for existing users. Justification for these changes is provided in Chapter 3. 
+\newpage
 
-The second chapter address data in the VWP itself. It begins with a general review of the VWP, eye tracking, and how these are used in relation to one another to assess lexical activation in time. This chapter examines critical issues in the current ``proportion of fixation" method, presents a more comprehensive model for describing the underlying cognitive mechanisms of interest with the observed physiological behavior, and introduces a novel ``look onset" method for using data in the VWP. We justify this both with a theoretical argument as to why this method would be superior for the recovery of the underlying cognitive mechanisms and verify the veracity of our claims with a number of simulations. We conclude this chapter by suggesting a number of ways this new method can be incorporated into current theories of lexical activation.
+%%
+\Chapter{bdots}
 
-Finally, the third chapter of this dissertation addresses the underlying methodology presented in the original 2017 bootstrapping differences of time series paper. In particular, it identifies a critical issue in the underlying assumptions as they relate to empirically observed data and the impacts on the family-wise error rate when these assumptions do not hold. Presented in this chapter is a modification of the original bootstrapping algorithm that still uses the modified Bonferonni correction based on the autocorrelation of the test statistics in time, as well as the introduction of a permutation test. We demonstrate that both the modified bootstrap and the permutation test maintain a FWER close to the nominal rate across a number of differing assumptions and conclude with a comparison of power for each of the methods discussed. The results of Chapter 3 provide justification for the underlying changes in Chapter 1. 
+\input{bdots_b.tex}
 
-Though parts of this dissertation are still in progress, the primary arguments being made in each chapter are complete and prepared to stand on their own. There are several places where information may be repeated or areas that transition rather abruptly from one section to the next. Some images have become slightly outdated as the arguments being made materialized (particularly in Chapter 2), though these are being actively addressed each day. Given the computational intensity of some of the simulations, there are a few that have only run 100 times (for example, in Chapter 3), though as we increase the iterations we have little expectation of the results fundamentally changing. Lastly, there are a few places where a number of questions have been asked with only the relevant results presented. This includes a number of settings for the simulations in Chapter 3, a more in depth treatment of user-specified curves in Chapter 1, or the relating of the look onset method to TRACE data to demonstrate theoretical consistency in Chapter 2. To ensure that you have the most up to date version, you can compare the time stamp at the top of this section with that on the version hosted online.
+\newpage
 
-Finally, I would like to thank you in advance the time and attentiveness that you give to reading this manuscript, your patience in the portions that are less refined, and for the feedback that you are able to provide. 
+\Chapter{look onset method}
+\input{onset_b.tex}
 
+\newpage
 
+\Chapter{With great power comes greater responsibility}
+\input{method_b.tex}
 
-%\part{bdots}
-%
-%\input{bdots_b.tex}
-%
-%\newpage
-%
-%\part{What, me saccade?}
-%\input{onset_b.tex}
-%
-%\newpage
-%
-%\part{With great power comes greater responsibility}
-%\input{method_b.tex}
-%
-%\bibliography{../bib/dissertation}
+\bibliography{../bib/dissertation}
 
 \end{document}
 

@@ -1,0 +1,78 @@
+\begin{thebibliography}{10}
+
+\bibitem{allopenna1998tracking}
+Paul~D Allopenna, James~S Magnuson, and Michael~K Tanenhaus.
+\newblock Tracking the time course of spoken word recognition using eye
+  movements: Evidence for continuous mapping models.
+\newblock {\em Journal of memory and language}, 38(4):419--439, 1998.
+
+\bibitem{FarrisTrimble2014}
+Ashley Farris-Trimble, Bob McMurray, Nicole Cigrand, and J.~Bruce Tomblin.
+\newblock The process of spoken word recognition in the face of signal
+  degradation.
+\newblock {\em Journal of Experimental Psychology: Human Perception and
+  Performance}, 40(1):308--327, feb 2014.
+
+\bibitem{Magnuson2019}
+James~S. Magnuson.
+\newblock Fixations in the visual world paradigm: where, when, why?
+\newblock {\em Journal of Cultural Cognitive Science}, 3(2):113--139, sep 2019.
+
+\bibitem{Maris2007}
+Eric Maris and Robert Oostenveld.
+\newblock Nonparametric statistical testing of {EEG}- and {MEG}-data.
+\newblock {\em Journal of Neuroscience Methods}, 164(1):177--190, aug 2007.
+
+\bibitem{mcmurray2022m}
+Bob McMurray.
+\newblock I’m not sure that curve means what you think it means: Toward a
+  [more] realistic understanding of the role of eye-movement generation in the
+  visual world paradigm.
+\newblock {\em Psychonomic Bulletin \& Review}, pages 1--45, 2022.
+
+\bibitem{mcmurray2010individual}
+Bob McMurray, Vicki~M Samelson, Sung~Hee Lee, and J~Bruce Tomblin.
+\newblock Individual differences in online spoken word recognition:
+  Implications for sli.
+\newblock {\em Cognitive psychology}, 60(1):1--39, 2010.
+
+\bibitem{mcmurray2002look}
+Bob McMurray, Michael~K. Tanenhaus, and Richard~N. Aslin.
+\newblock Gradient effects of within-category phonetic variation on lexical
+  access.
+\newblock {\em Cognition}, 86(2):B33--B42, dec 2002.
+
+\bibitem{Mirman2008}
+Daniel Mirman, James~A. Dixon, and James~S. Magnuson.
+\newblock Statistical and computational models of the visual world paradigm:
+  Growth curves and individual differences.
+\newblock {\em Journal of Memory and Language}, 59(4):475--494, nov 2008.
+
+\bibitem{oleson2017detecting}
+Jacob~J Oleson, Joseph~E Cavanaugh, Bob McMurray, and Grant Brown.
+\newblock Detecting time-specific differences between temporal nonlinear
+  curves: Analyzing data from the visual world paradigm.
+\newblock {\em Statistical methods in medical research}, 26(6):2708--2725,
+  2017.
+
+\bibitem{seedorff2018bdots}
+Michael Seedorff, Jacob Oleson, and Bob McMurray.
+\newblock Detecting when timeseries differ: Using the bootstrapped differences
+  of timeseries (bdots) to analyze visual world paradigm data (and more).
+\newblock {\em Journal of memory and language}, 102:55--67, 2018.
+
+\bibitem{tanenhaus1995integration}
+Michael~K Tanenhaus, Michael~J Spivey-Knowlton, Kathleen~M Eberhard, and
+  Julie~C Sedivy.
+\newblock Integration of visual and linguistic information in spoken language
+  comprehension.
+\newblock {\em Science}, 268(5217):1632--1634, 1995.
+
+\bibitem{viviani1990time}
+P.~Viviani.
+\newblock Eye movements in visual search: cognitive, perceptual and motor
+  control aspects.
+\newblock {\em Eye movements and their role in visual and cognitive processes},
+  pages 353--393, 1990.
+
+\end{thebibliography}

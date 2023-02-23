@@ -1,43 +1,38 @@
 
-%\input{main.tex}
-
-\begin{abstract}
-In 1995 the Visual World Paradigm (VWP) was introduced blah blah (can I have citations in abstract or should it be more general?)
-\end{abstract}
-
-
-
 \section{Introduction}
+
+\cn{[or, you know what, create a new introduction here and let what follows be the first part of next body sentence]}
 
 Spoken words create analog signals that are processed by the brain in real time. That is, as spoken word unfolds, a collection of candidate words are considered until the target word is recognized. The degree to which a particular candidate word is being considered is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
 %[don't like this next section]
 
 
-[start more broadly, there are a number of ways to do this, we use activation]Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with eye-tracking data, collected in the context of the Visual World Paradigm (VWP) (Tannenhaus 1995)\cite{tanenhaus1995integration}. In the last few years, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
+\cn{[start more broadly, there are a number of ways to do this, we use activation]}
+
+Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with physiological behavior. And though there are a number of relevant indices (Spivey mouse trials), we concern ourselves here with eye tracking data collected in the context of the Visual World Paradigm (VWP) \cite{tanenhaus1995integration}, an experimental model in which a participant's eye movements are tracked as the respond to spoken language. In a typical VWP experiment, participants are placed in the presence of visual objects (typically presented on a computer screen) and asked to select one in response to spoken language. The location of fixations are measured in real time, with the proportion of fixations towards any potential targeted aggregated across trials
+
+[...]
+
+Recently, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
 
 
 This section needs work but it mostly covers the gist of what I am trying to convey, namely we are about to go from history $\rightarrow$ current state of the world $\rightarrow$ proposal and comparison $\rightarrow$ results.
 
 \section{A brief history}
-We begin with a brief history to give context to later discussion. In particular, we will consider one of the leading theoretical models in speech perception, TRACE, followed by the introduction of the leading experimental paradigm, the VWP. We examine empirical evidence for the relation between these, and relevant theoretical advancements that have been made. Topics here are presented only briefly and limited to those directly relevant to the present work. For a fuller discussion of the history and uses of VWP, use google. (Or Huettig 2011b?)
+We begin with a brief history to give context to later discussion.  Topics here are presented only briefly and limited to those directly relevant to the present work.
 
-An outline of the presentation (for internal use only):
-
-\begin{singlespace}
 \begin{enumerate}
-\vspace{-2mm}
 \item VWP by Tannenhaus 1995 \cite{tanenhaus1995integration}
-\item VWP + TRACE, Allopenna 1996 (trace aspect no longer relevant, just an aside) \cite{allopenna1998tracking}
+\item VWP and proportion of fixation method, Allopenna 1996 (trace aspect no longer relevant, just an aside) \cite{allopenna1998tracking}
 \item As far as I can tell, it's Bob's 2010 paper that was among first to \cite{mcmurray2010individual}
 \begin{enumerate}
-\item Look at individual differences in word recognition (not counting the ortho polynomial fits) (also relevant for the ``group distribution of curves" hypothesis) and
+\item Look at individual differences in word recognition (not counting the orthogonal polynomial fits) (also relevant for the ``group distribution of curves" hypothesis) and
 \item Introduce parametric forms to be fit to the data (the assumption we continue to run with), or at very least, introduce ones that are interpretable
 \end{enumerate}
 \end{enumerate}
-\end{singlespace}
 
-All of the paragraphs in this section are narrative and not mission critical. Need to be fleshed out
+
 
 \paragraph{Visual World Paradigm} The Visual World Paradigm (VWP) was first introduced in 1995, making the initial link between the mental processes associated with language comprehension and eye movements \cite{tanenhaus1995integration}. A typical experiment in the VWP involves situating a subject in front of a ``visual world", commonly a computer screen today, and asking them to identify and select an object corresponding to a spoken word. The initiation of eye movements and subsequent fixations are recorded as this process unfolds, with the location of the participants' eyes serving as a proxy for which words or images are being considered. This association was first demonstrated by comparing how the mean time to initiate an eye movement to the correct object was mediated by the presence of phonological competitors (``candy" and ``candle", sharing auditory signal at word onset) and situations containing syntactic ambiguity (``Put the apple on the towel in the box" and ``Put the apple \textit{that's} on the towel in the box" in ambiguous scenarios with one or more apples). It is by comparing the trajectory of these mechanics across trials in the presence of auditory or semantic competitors that researchers have used the VWP in their investigation of spoken word recognition.
 
@@ -46,15 +41,14 @@ All of the paragraphs in this section are narrative and not mission critical. Ne
 
 \paragraph{Proportion of fixation} It was against simulated TRACE data that Allopenna (1998) found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
 
-\begin{singlespace}
+
 \begin{enumerate}
-\vspace{-3mm}
 \item No assumption that scanning patterns in and of themselves reveal underlying cognitive processes
 \item No assumption that the fixation location at time $t$ necessarily reveals where attention is directed (only probabilistically related to attention)
 \end{enumerate}
-\end{singlespace}
 
-Other assumptions included here include that language processing proceeds independent of vision (Magnuson 2019), and that visual objects are not automatically activated. Or, more succinctly, it assumes that fixation proportions over time provide an essentially direct index of lexical activation, whereby the probability of fixating an object increases as the likelihood that it has been referred to increases.
+
+Other assumptions included here include that language processing proceeds independent of vision, and that visual objects are not automatically activated. Or, more succinctly, it assumes that fixation proportions over time provide an essentially direct index of lexical activation, whereby the probability of fixating an object increases as the likelihood that it has been referred to increases.
 
 
 While other linking hypotheses have been presented (Magnuson 2019) \cite{Magnuson2019}, that there is \textit{some} link between the function of fixation proportions and activation has guided the last 25 years of VWP research.
@@ -86,11 +80,10 @@ This brings us to the current day, where the state of things is such that TRACE-
 
 
 
-\section{Where we are now}
+\section{Where we are now (new section name)}
 
 The following section goes into more detail on the specifics
 
-This section includes the finer points of the VWP, eye tracking data, and how allopena's introduction ties in with bob's parametric proposition.
 
 \subsection{Anatomy of Eye Mechanics \cn{[this section needs new name]}}
 
@@ -98,7 +91,7 @@ In the context of eye tracking data and word recognition, there are a few mechan
 
 
 
-\paragraph{Saccades and fixations:} Rather than acting in a continuous sweeping motion as our perceived vision might suggest, our eyes themselves move about in a series of short, ballistic movements, followed by brief periods of stagnation. These, respectively, are the saccades and fixations. 
+\paragraph{Saccades and fixations:} Rather than acting in a continuous sweeping motion as our perceived vision might suggest, our eyes themselves move about in a series of short, ballistic movements, followed by brief periods of stagnation. These periods of movement and stagnation, respectively, are the saccades and fixations. 
 
 Saccades are short, ballistic movements lasting between 20ms-60ms, during which time we are effectively blind. Once in motion, saccades are unable to change trajectory from their intended destination. Following this movement is a period known as a fixation, itself made up of a necessary refraction period (during which time the eye is incapable of movement) followed by a period of voluntary fixation which may include planning time for deciding the destination of the next eye movement; the duration of fixations are typically (some length). It will be convenient to follow previous convention and consider a saccade followed by its adjacent fixation as a single concept called a ``look" \cite{mcmurray2002look}. We take particular care here to note that the beginning of a look, or ``look onset", starts the instance that a previous look ends or, said another way, the instant an eye movement is launched. A visual description of these is provided in Figure~\ref{fig:sac_fix_look}.
 
@@ -111,7 +104,7 @@ Saccades are short, ballistic movements lasting between 20ms-60ms, during which 
 \label{fig:sac_fix_look}
 \end{figure}
 
-\paragraph{Oculomotor delay:} While the physiological responses are what we can measure, they are not themselves what we are interested in. Rather, we are interested in determining word activation, itself governing the cognitive mechanism facilitating movements in the eye. Between the decision to launch an eye movement (a cognitive mechanism governed by the activation, next section) and the movement itself is a period known as oculmotor delay. It is typically estimated to take around 200ms to plan and launch an eye movement, and this is usually accounted for by subtracting 200ms from any observed behavior. \cite{viviani1990time}. As oculomotor delay is only roughly estimated to be around 200ms, we suggest that accounting for randomness will be critical in correctly recovering the the cognitive mechanism of interest or at very least in identifying possible sources of bias. How this phenomenon relates to saccades and fixations is demonstrated in Figure~\ref{fig:sac_fix_look_om}.
+\paragraph{Oculomotor delay:} While the physiological responses are what we can measure, they are not themselves what we are interested in. Rather, we are interested in determining word activation, itself governing the cognitive mechanism facilitating movements in the eye. Between the decision to launch an eye movement (a cognitive mechanism governed by the activation, next section) and the movement itself is a period known as oculmotor delay. It is typically estimated to take around 200ms to plan and launch an eye movement, and this is usually accounted for by subtracting 200ms from any observed behavior. \cite{viviani1990time}. As oculomotor delay is only roughly estimated to be around 200ms, we suggest that accounting for randomness will be critical in correctly recovering the the cognitive mechanism of interest or at very least in identifying possible sources of bias or error. How this phenomenon relates to saccades and fixations is demonstrated in Figure~\ref{fig:sac_fix_look_om}.
 
 
 \begin{figure}[H]
@@ -135,7 +128,7 @@ Here tie in idea of activation, though need to be more concise about what we mea
 
 While a number of experimental methods are used as real-time indices of lexical access (Spivey mouse trials), we concern ourselves here with the use of eyetracking as it relates to activation as first suggested by \cite{allopenna1998tracking}. Whereas the initial treatment of eyetracking data made no attempt identify or model subject-specific trends, more recent work has made strides in making subject analysis more tractable. Specifically, we adopt the idea that each participant's results can be fit to non-linear functions who's parameters describe clinically relevant properties \cite{mcmurray2010individual}. We will denote this activation function $f$ with parameters $\theta$ as a function in time, giving $f(t|\theta)$
 
-For example, the four parameter logistic function in Figure~\ref{fig:logistic_definition} is often used to model fixations to the target object in the VWP with functional form
+For example, the four parameter logistic function in Figure~\ref{fig:logistic_definition} is often used to model fixations to the Target object in the VWP with functional form
 
 \begin{equation} \label{eq:logistic}
 f(t|\theta) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)} + b.
@@ -152,7 +145,7 @@ f(t|\theta) = \begin{cases}
 
 (I didn't make a nice graph/label for this). 
 
-While both functions are commonly used in the VWP for modeling eye fixations, for simplicity we will limit the primary focus of our discussion, though ultimately our argument is agnostic to the modeling function used, parametric or otherwise. Discussion related to the asymmetric Gauss is treated in the appendix.
+While both functions are commonly used in the VWP for modeling eye fixations, for simplicity we will limit the primary focus of our discussion to fixations to the Target with the four parameter logistic, though ultimately our argument is agnostic to the modeling function used, parametric or otherwise. Discussion related to the asymmetric Gauss is treated in the appendix.
 
 
 \subsection{VWP data}
@@ -171,7 +164,7 @@ To create a visual summary of this process aggregated over all of the trials, a 
 \begin{equation}\label{eq:sum_proportions}
 y_{it} = \frac1J \sum z_{ijt}
 \end{equation}
-where $z_{ijt}$ is an indicator $\{0, 1\}$ in trial $j$ at time $t$ and such that we have an empirical estimate of the activation curve,
+where $z_{ijt}$ is an indicator $\{0, 1\}$  towards a particular object in trial $j$ at time $t$ and such that we have an empirical estimate of the activation curve,
 \begin{equation}\label{eq:empir_to_activation}
 f(t | \theta_i) \equiv y_{it}.
 \end{equation}
@@ -189,14 +182,14 @@ For our discussions here, we will call this the proportion of fixation method.
 \end{figure}
 
 
-As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by \xt{bdots}, are then used to construct estimates of function parameters fitted to this curve.
+As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by \xt{bdots}, are then used to construct estimates of function parameters fitted to this curve. Figure~\ref{fig:bob_diagram_full} provides an illustration.
 
 \section{Where are we going?} 
 
 
-Having given due consideration to the state of things are they are, we find ourselves in a time of moral reflection, reexamining the underlying relationship between lexical activation (the mechanism of interest) and the physiological behavior we are able to observe (here, specifically eye-tracking. This is referred to in the literature as the linking hypothesis. And while there are a number of competing hypothesis, they each share a collection of implicit assumptions relating what is observed to what is being studied \cite{Magnuson2019}.
+Having given due consideration to the state of things are they are, we find ourselves in a time of moral reflection, reexamining the underlying relationship between lexical activation (the mechanism of interest) and the physiological behavior we are able to observe (here, specifically eye-tracking). This is referred to in the literature as the linking hypothesis. And while there are a number of competing hypothesis, they each share a collection of implicit assumptions relating what is observed to what is being studied \cite{Magnuson2019}.
 
-The simplest version of a linking hypothesis in the context of the VWP is the ``general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activations of other potential targets (i.e., the other visible objects" \cite{allopenna1998tracking}. It is from this assumption that we justify the relation in Equation~\ref{eq:empir_to_activation}. To a degree, this assumption is shared by most linking hypothesis in that the probabilistic nature of the proportions of fixations is assumed to be related in time to the strength of the underlying activation. Primary differences in linking hypotheses tend to revolve around the particulars of the mechanics involved, including the duration of fixations, eye scanning behavior, the impacts of priming, or the relation between visual  processing acting in conjunction with lexical activation.
+The simplest version of a linking hypothesis in the context of the VWP is the ``general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activations of other potential targets (i.e., the other visible objects)" \cite{allopenna1998tracking}. It is from this assumption that we justify the relation in Equation~\ref{eq:empir_to_activation}. To a degree, this assumption is shared by most linking hypothesis in that the probabilistic nature of the proportions of fixations is assumed to be related in time to the strength of the underlying activation. Primary differences in linking hypotheses tend to revolve around the particulars of the mechanics involved, including the duration of fixations, eye scanning behavior, the impacts of priming, or the relation between visual  processing acting in conjunction with lexical activation.
 
 We consider a particular meta contribution to this debate presented by McMurray in which he probed the relationship between the observed dynamics in the fixations and the underlying dynamics of activation under a variety of assumptions \cite{mcmurray2022m}. In short, he showed that curves reconstructed using the standard proportion of fixations analysis in the VWP were poor estimates of the underlying system, with the magnitude of bias increasing on the complexity of the mechanisms involved. Though this made no specific claims as to what the underlying mechanics may be, it did demonstrate the inherent difficulty in relating observable behavior to the underlying cognitive process.
 
@@ -204,17 +197,16 @@ An important contribution made there, however, and one that we adopt here is an 
 
 From this assumption we propose an alternative model of the relation between the underlying activation and the observed behavior, with a careful delineation of the psycho-physical components of a look in conjunction with its generating behavior. In particular, we consider the cognitive mechanism associated with initiating an eye movement, which is probabilistically associated with lexical activation, the delay between this and the onset of its associated look, and finally how the different components of the look are related to fundamentally different mechanisms. From this and what we ultimately argue is that observed bias in the recovery of the activation curve under the proportion of fixations method can be partitioned into two distinct components:
 
-[i would like to maybe go into more detail here or have a picture idk]
+[i would like to maybe go into more detail here or have a picture]
 
 %\begin{singlespace}
 \begin{enumerate}
-\vspace{-3mm}
-\item The first source of bias, which is the primary emphasis of my proposal, is what I call the ``added observation" bias. This involves the fact that in  a standard analysis of VWP data is, the entire duration of a fixation is indicated with a $\{0,1\}$  at any time, $t$, without having observed any behavior associated with the initiation of an eye movement at that time.
-\item The second source of bias is ``delayed observation bias". This bias arises from the fact that an eye movement launched at some time $t$ was planned at some time prior. This is primarily a consequence of the  delay
+\item The first source of bias, which is the primary emphasis of my proposal, is what I call the ``added observation" bias. This involves the fact that in  a standard analysis of VWP data, the entire duration of a fixation is indicated with a $\{0,1\}$  at any time, $t$, without having observed any behavior associated with the initiation of an eye movement at that time [unpack this a bit more here].
+\item The second source of bias is ``delayed observation bias". This bias arises from the fact that an eye movement launched at some time $t$ was planned at some time prior. This is primarily a consequence of the oculomotor delay
 \end{enumerate}
 %\end{singlespace}
 
-The first source of bias, the ``added observation" bias, arises singularly from the fact that the destination of a look, which is observed at look onset, has a fundamentally \textit{different} generating mechanism than what determines the duration of a look, never minding such mechanics as the duration of a saccade or the refractory period of a fixation. Nonetheless, a standard analysis of VWP data does not differentiate between the initial onset and the period of subsequent fixation; both are recorded as either $0$ or $1$ according to it's location. A look onset at time $t$ is probabilistically determined by by its lexical activation $f(t|\theta)$ whereas the period of fixation is governed by a separate mechanism altogether. Treating the subsequent fixation as indistinguishable as the effect of not only ``adding" observations to the data, but adding observations that necessarily biased. The result is a distorted estimation of the underlying activation. A depiction of this phenomenon is given in Figure~\ref{fig:folly_of_fixation}. 
+The first source of bias, the ``added observation" bias, arises singularly from the fact that the destination of a look, which is observed at look onset, has a fundamentally \textit{different} generating mechanism than what determines the duration of a look, never minding such mechanics as the duration of a saccade or the refractory period of a fixation. Nonetheless, a standard analysis of VWP data does not differentiate between the initial onset and the period of subsequent fixation: both are recorded as either $0$ or $1$ according to it's location. A look onset at time $t$ is probabilistically determined by by its lexical activation $f(t|\theta)$ whereas the period of fixation is governed by a separate mechanism altogether. Treating the subsequent fixation as indistinguishable has the effect of not only ``adding" observations to the data, but adding observations that necessarily biased. The result is a distorted estimation of the underlying activation. A depiction of this phenomenon is given in Figure~\ref{fig:folly_of_fixation}. 
 
 
 \begin{figure}[H]
@@ -226,13 +218,13 @@ The first source of bias, the ``added observation" bias, arises singularly from 
 \label{fig:folly_of_fixation}
 \end{figure}
 
-The second source of bias is the ``delayed observation" bias. It is well established in the literature that the time it takes to plan and launch a saccade is around 200ms \cite{viviani1990time}, which is typically accounted for by subtracting 200ms off of the observed data. There are two aspects of this that are worth considering further. First, if the mean duration of this oculomotor delay is not 200ms, bias will be observed as the difference between the true time and the 200ms adjustment. And although not bias in the technical sense, there has been no accounting for what effect randomness in this delay has on the recovery of the underlying activation. It will be worthwhile in investigating this as the potential magnitude will determine if this delay is worth considering in any more detail in future research.
+The second source of bias is the ``delayed observation" bias. It is well established in the literature that the time it takes to plan and launch a saccade is around 200ms \cite{viviani1990time}, which is typically accounted for by subtracting 200ms from the observed data. There are two aspects of this that are worth considering further. First, if the mean duration of this oculomotor delay is not 200ms, bias will be observed as the difference between the true time and the 200ms adjustment. And although not bias in the technical sense, there has been no accounting for what effect randomness in this delay has on the error in the recovery of the underlying activation. It will be worthwhile in investigating this as the potential magnitude will determine if this delay is worth considering in any more detail in future research.
 
 ---
 
 While we present no immediate solution to the effects of randomness in the delayed observation bias, we argue that the added observation bias can be rectified by using \textit{only} the times observed with look onset in the recovery of the underlying dynamics. We call this the the ``look onset" method, which we explain in more detail.
 
-
+We argue that the added observation bias can be rectified by using \textit{only} the times observed with the look onset in the recovery of the underlying dynamics. We call this the ``look onset" method in contrast to the ``proportion of fixation" method. And while we do not present an immediate solution to the problem of the delayed observation bias, we do demonstrate the effects on estimation error in the presence of oculomotor delay even when the correct mean is accounted for.
 
 
 \paragraph{Look Onset Method:} The look onset method differ in the proportion of fixation method only in determining which observed data should be considered relevant in the estimation of lexical activation. A particularly compelling argument to made in favor of the look onset method, a corollary of the added observation bias, is that it has a readily defensible mathematical description description. A saccade launched at time $t$ (marking the onset of a look) is assumed to be probabilistically determined by its lexical activation (relative to competitors) at time $t$, giving us
@@ -243,9 +235,9 @@ s_t \sim Bin(f(t| \theta))
 
 (it may be that $l_t$ for look onset is better notation, but my concern is that it doesn't capture the ``onset" nature that we are concerned with and may instead suggest the entire saccade + fixation).
 
-The utility of this is evident when tasked with stating the distribution of $y_t$ in Equation~\ref{eq:sum_proportions} as it relates to $f(t|\theta)$, where given the overlap of fixations within a particular trial, it is unclear what relation $y_t$ may have to $y_{t+1}$. 
+The utility of this is evident when tasked with stating the distribution of $y_t$ in Equation~\ref{eq:sum_proportions} as it relates to $f(t|\theta)$. And where given the overlap of fixations within a particular trial, it is unclear what relation $y_t$ may have to $y_{t+1}$. 
 
-Two further comments are made about this method here. First, in anticipation of the observation that the look onset method discards relevant information regarding the strength of activation (VOT studies, others from Magnuson review), we acknowledge this and reserve further comment for the discussion. Second given the difference in structure of the observed data, we confirm that the current iteration of \xt{bdots} is capable of fitting nonlinear curves to data both under the proportion of fixation and look onset methods.
+Two further comments are made about this method here. First, in anticipation of the observation that the look onset method discards relevant information regarding the strength of activation by not implicitly including the length of a fixation (source), we acknowledge this and reserve further comment for the discussion. Second, given the difference in structure of the observed data, we confirm that the current iteration of \xt{bdots} is capable of fitting nonlinear curves to data both under the proportion of fixation and look onset methods.
 
 
 
@@ -256,14 +248,14 @@ Simulations were conducted to replicate the mechanics of a look combined with oc
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{anatomy_of_look.pdf}
-\caption{Anatomy of a look -- a key thing to discuss somewhere is the OM delay, refractory period, and planning time. The latter two go in $\gamma$. Worth noting also that while we do need to be able to control for $\rho$, \textit{information} regarding strength of consideration will be in $\gamma$ - refractory period}
+\caption{Anatomy of a look -- a key thing to discuss somewhere is the OM delay, refractory period, and planning time. The latter two go in $\gamma$. Worth noting also that while we do need to be able to control for $\rho$, \textit{information} regarding strength of consideration will be in $\gamma$ less the refractory period}
 \label{fig:anatomy_of_look}
 \end{figure}
 
 
-First, each subject randomly draws a set of parameters $\theta_i$ from an empirically determined distribution based on normal hearing participants in the VWP \cite{FarrisTrimble2014} to construct a subject specific generating curve, $f(t | \theta_i)$.   It is according to this function that the decision to initiate a look at time $t$ will subsequently direct itself to the Target with probability $f(t|\theta_i)$. We then go about simulating trials according to the following method: at some time $t_0$, a subject initiates a look. This look persists for at least a duration of $\gamma$, drawn from a gamma distribution with mean and standard deviation independent of time and previous fixations. At time $t_0+\gamma$, the subject determines the location of its next look, with the next look being directed towards the target with probability $f(t+\gamma | \theta_i)$. The decision to initiate a look is followed by a period of oculomotor delay, $\rho$, during which time the subject remains fixated in the current location. Finally, at time $t_0 + \gamma + \rho$, the subject ends the look initiated at $t_0$ and immediately begins its second look to the location determined at time $t_0 + \gamma$. For the look onset method, the only data recorded are the times of a look onset and their location: in this case, at times $t_0$ and $t_0 + \gamma + \rho$. By contrast, the proportion of fixation method records the object of fixation at 4ms intervals for the entire period of length $\gamma + \rho$. A single trial begins at $t = 0$ and continues constructing looks as described until the total duration of looks exceeds 2000ms. Each subject undergoes 300 trials, and 1,000 subjects are included in each simulation.
+First, each subject randomly draws a set of parameters $\theta_i$ from an empirically determined distribution based on normal hearing participants in the VWP \cite{FarrisTrimble2014} to construct a subject specific generating curve, $f(t | \theta_i)$.   It is according to this function that the decision to initiate a look at time $t$ will subsequently direct itself to the Target with probability $f(t|\theta_i)$. We then go about simulating trials according to the following method: At some time $t_0$, a subject initiates a look. This look persists for at least a duration of $\gamma$, drawn from a gamma distribution with mean and standard deviation independent of time and previous fixations. At time $t_0+\gamma$, the subject determines the location of its next look, with the next look being directed towards the target with probability $f(t+\gamma | \theta_i)$. The decision to initiate a look is followed by a period of oculomotor delay, $\rho$, during which time the subject remains fixated in the current location. Finally, at time $t_0 + \gamma + \rho$, the subject ends the look initiated at $t_0$ and immediately begins its second look to the location determined at time $t_0 + \gamma$. For the look onset method, the only data recorded are the times of a look onset and their location: in this case, at times $t_0$ and $t_0 + \gamma + \rho$. By contrast, the proportion of fixation method records the object of fixation at 4ms intervals for the entire period of length $\gamma + \rho$. A single trial begins at $t = 0$ and continues constructing looks as described until the total duration of looks exceeds 2000ms. Each subject undergoes 300 trials, and 1,000 subjects are included in each simulation.
 
-Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ by subject $i$ will be directed towards the target with probability $f(t|\theta_i)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of randomness in oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We did this assigning $\rho$ to follow either a normal or Weibull distribution, each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. Note that a consequence of this is that in these simulations, the bias itself is accurately accounted for by subtracting the correct mean, with the resulting error in the curve fitting process the result of the inherent variability. This does not detract from the argument being made, however, and any true bias in the mean of the oculomotor delay would asymptotically result in a horizontal shift of the observed data according to the direction and magnitude of the bias.
+Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ by subject $i$ will be directed towards the target with probability $f(t|\theta_i)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of randomness in oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We do this assigning $\rho$ to follow either a normal or Weibull distribution, each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. Note that a consequence of this is that in these simulations, the bias itself is accurately accounted for by subtracting the correct mean, with the resulting error in the curve fitting process the result of the inherent variability. This does not detract from the argument being made, however, and any true bias in the mean of the oculomotor delay would asymptotically result in a horizontal shift of the observed data according to the direction and magnitude of the bias.
 
 As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the settings in which there was no delay, normally distributed delay, or Weibull distributed delay, 981, 973, and 981 subjects were retained, respectively.
 
@@ -271,7 +263,6 @@ The simulations are performed in R, with the simulation code available on the au
 
 
 \subsection{No Delay}
-
 
 
 \begin{figure}[H]
@@ -333,13 +324,21 @@ The simulations are performed in R, with the simulation code available on the au
 
 \subsection{Results}
 
+[I will go back and comment on results in each of the scenarios with broader discussion of implications in each, though normal and Weibull will be similar]
+
+In addition to the visual summaries, we present in Table~\ref{tab:mise_sims} a summary of the mean integrated squared error (MISE) between the recovered curves using each of the methods along with the true activation curve.
+
+We begin by considering the  magnitude of difference between the look onset method and the proportion of fixation method in the case of $\rho = 0$, or No Delay, demonstrating the amount of bias introduced in the proportion method. This alone demonstrates how critical of an issue the added observation bias is in the recovery of the underlying activation.
+
+To assess the effects of randomness in the oculomotor delay, it seems prudent to limit the comparisons within each method. Considering first the look onset method, we see that as the degree of variability increases, so does the difficulty in correctly recovering the underlying curve. It is important to note that these magnitudes are meant to be relative rather than absolute: as we will bring up in the discussion, the particular values observed are a function of the relationship between the generating $\gamma$ distribution and that of $\rho$. Nonetheless, this does suggest a need to further investigate ways to control for the added uncertainty. To quickly comment on the apparently ``flipped" MISE for the proportion of fixation method as it relates to the normal and Weibull distributed oculomotor delay, it would seem as if the skew of the Weibull distribution acted in such a way as to actually offset some of the observed added observation bias and seems more an artifact of the simulation conditions rather than an inherent statement relating OM bias to the proportion of fixation method in general.
+
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
 % Wed Feb  8 15:10:31 2023
 \begin{table}[H]
 \centering
 \begin{tabular}{llrrr}
   \hline
-Curve & Delay & 1st Qu. & Median & 3rd Qu. \\ 
+Method & Delay & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
 Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\ 
   Look Onset & Normal Delay & 0.37 & 0.71 & 1.24 \\ 
@@ -353,99 +352,66 @@ Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\
 \label{tab:mise_sims}
 \end{table}
 
-Unexplored is \textit{where} the delay occurs also important
-
-some concluding remarks about how terrible the proportion of fixation method is
+\cn{\textit{where} the delay occurs also interesting, describe this later}
 
 \section{Discussion}
 
-This is now ``the" discussion
+This section needs to be tightened quite a bit.
 
-This section needs to be tightened and I have said some things elsewhere. Instead, let this be a general collection of thoughts for now.
+Through our investigation, we have presented a physiologically appropriate model relating eye tracking data to underlying lexical access by placing emphasis singularly on the first instance of a look, discarding information on the rest of the look entirely. Of course, we know that longer fixations are relevant to the strength of consideration.
+
+One of the primary benefits of the proportion method is that it indirectly captures the duration of fixations, with longer times being associated with stronger activation. This also becomes important when differentiating fixations associated with searching patterns (i.e., what images exist on screen?) against those associated with consideration (is this the image I've just heard?). However, implicit in the proportion of fixations method is a crucially overlooked assumption of a linear relationship between the fixation length and the activation. That is, insofar as the construction of the fixation curve is considered, a fixation persisting at 20ms after look onset (and well within the refraction period in which no new information regarding the congitive mechanism or voluntary fixation could be obtained) is considered identical to a fixation persisting at 500ms after onset: both are undifferentiated in being recorded as either a $0$ or $1$. More likely it seems this would be more of an exponential relationship, with longer fixations offering increasingly more evidence of lexical activation. By separating the moment of onset from the look itself, we free ourselves to construct far more nuanced models. Put more succinctly, it is not that the look onset method considers the length of fixation irrelevant; rather, it makes no statement about it at all. How these mechanisms could be combined should be the focus of future research.
+
+Another utility that comes to mind when considering the look onset method is how much sparser of a dataset is created. Consider, for example, fitting a mixed model to the four parameter logistic modeling individual trial data for each subject all together. Such models with proportion of fixation data typically infeasible with cumbersome autocorrelative structures found within a trial (from Bob's comment, need to find source). The present method, being a much sparser dataset, may be far more computationally tractable. 
 
 
+The arguments presented here has hoped to satisfy two goals, agnostic to the linking hypothesis or functions ultimately decided upon. Foremost is the recognition that the mechanisms governing a look onset and the looks themselves follow separate mechanisms, and treating them as such requires fewer assumptions while still retaining the utility in fitting the same nonlinear curves to the observed data.
 
-I would like to speak a little bit more on the concept of ``information gathering behavior". One of the primary benefits of the proportion method is that it indirectly captures the duration of fixations, with longer times being associated with stronger activation. This also becomes important when differentiating fixations associated with searching patterns (i.e., what images exist on screen?) against those associated with consideration (is this the image I've just heard?). There seems to be a general consensus also that longer fixations correspond to a stronger degree of activation, but a crucially overlooked aspect of this is the implicit assumption that fixation length and activation share a linear relationship. Specifically, insofar as the construction of the fixation curves is considered, a fixation persisting at 20ms after onset (and well within the refraction period) is considered identical to a fixation persisting at 400ms. More likely it seems this would be more of an exponential relationship, with longer fixations offering increasingly more evidence of lexical activation. By separating saccades and fixations at the mathematical level, we are able to construct far more nuanced models (one proposal, for example, might be weighting the saccades by the length of their subsequent fixation, or perhaps constructing a modified activation curve $f_{\theta(t)}(t)$ whereby the parameters themselves can accelerate based on previous information. But this is neither here nor there).
+Second to this, we have put a name to two important sources of potential bias in the recovering of activation curves, generalizable beyond the particulars of the presented simulations. The first is the added observation bias, speaking again to the utility in separating the relevant mechanisms making up a look. And second is the delayed observation bias, bringing into focus the importance of reevaluating how we address bias and variability in the oculomotor delay.
 
-Speaking to the mathematical treatment, there is a wonderful simplicity in letting the saccades themselves follow a specific distribution, namely
 
-\begin{equation} \label{eq:saccade_dist}
-s_t \sim Bin(f_{\theta}(t))
-\end{equation}
-or, with random oculomotor delay $\rho(t)$ (which I haven't really elaborated on as a separate mechanism), 
-\begin{equation} \label{eq:saccade_dist_rho}
-s_t \sim Bin(f_{\theta}(t-\rho(t)))
-\end{equation}
-This is in contrast to the fixation method, where the proportion of fixation curves can be described
-\begin{equation} \label{eq:single_fix_measure}
-y_t = \frac{1}{J} \sum z_{jt}.
-\end{equation}
-Here, is there a clear distribution for what $y_t$ follows? Under independence it may be the sum of binomials, but then what can be said about the relation of $y_t$ to $y_{t+1}$, given that they may or may not share overlapping fixations from different trials? This is addressed to some degree in Oleson 2017, but this seems more of an ad hoc adjustment to account for this in retrospect. In contrast, the proposed saccade method makes no assumption of trial-level relationship and instead considers all saccades over all trials as binomial samples from the same generating curve in time.
+In short, what we have hoped to accomplish here is not to drastically change the original assumptions presented in Allopenna (1996, but rather to qualify them in statistically sound ways. And really, that is pretty much it. Concluding sentence.
 
-This of course does ignore trial/word/speaker variability, but then perhaps it is time that we shift our language to speaking about a distribution of generating curves for a subject rather than a particular level of activation (note too that this utility is also reflected in the conversation regarding p-values against confidence intervals). 
 
-The arguments presented here has hoped to satisfy two goals, agnostic to the linking hypothesis or functions ultimately decided upon. Foremost is the recognition that saccades and fixations are governed by separate mechanisms, and treating them as such allows for fewer assumptions. For example, reconsider again the quote from Allopenna 1996:
+As a not really conclusion, I am sometimes left to wonder to what degree the proportion of fixation method was a  ``local minimum" in the pursuit of utilizing eye-tracking data. The proportion of fixations created an ostensible curve, prompting McMurray to establish theoretically grounded non-linear functions to model them. These, in turn, where shown to be suitable functions with which to model saccade data over a period of trials. Had saccades lent themselves so naturally to visualization as the proportion of fixations, perhaps that is where we may have started.
 
- ``We made the general assumption that the probability of initiating an eye movement ot fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of the other potential targets."
- 
-Under the saccade method, we omit the entirety of ``and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of the other potential targets" while still retaining the entirety of the utility in fitting \textit{the same non-linear curves} to less of the data. This decoupling allows the typical time-course utility of the VWP to be used in conjunction with other  methods treating aspects of the fixations separately.
-
-Second to this, we have put a name to two important sources of potential bias in recovering generating curves in such a way as to be generalizable beyond the specifics of the assumptions of the simulation (both here and in McMurray 2022). The first, of course, addresses what was just discussed in the decoupling of saccade and fixation data. The utility of the second comes in that it makes no assumptions as to the source of the delayed observation, removing (possibly) unnecessary specifications between oculomotor delay and general mechanics when the goal is to simply recover the generating function. This may be less relevant when the goal of a study is to specifically address the mechanics of decision making (which itself seems to be difficult to pin down).
-
-In short, what we have hoped to accomplish here is not to drastically change the original assumptions presented in Allopenna (1996) and elaborated upon in Magnuson (2019), but rather to qualify them in statistically sound ways. And really, that is pretty much it. Saccade method is neat, works the same way as the proportion of fixation method, has a more justifiable model while reducing assumptions and allowing room for others.
-
-As a not really conclusion, I am sometimes left to wonder to what degree the proportion of fixation method was a  ``local minimum" is the pursuit of utilizing eye-tracking data. The proportion of fixations created an ostensible curve, prompting McMurray to establish theoretically grounded non-linear functions to model them. These, in turn, where shown to be suitable functions with which to model saccade data over a period of trials. Had saccades lent themselves so naturally to visualizing as the proportion of fixations, perhaps that is where we may have started.
-
-\section{Discussion}
-
-what have we learned?
-
-No new contributions were added to the linking hypothesis, but introduced novel technique for identifying components of look in VWP and making a standard analysis more consistent with the original
-
-Here are really the main takeaways.
-
-\begin{singlespace}
-\begin{enumerate}
-\vspace{-2mm}
-\item We are all revisiting question of linking hypothesis
-\item In the process of doing so, Bob identified some critical issues, revealing two distinct sources of bias
-\item By introducing saccade method, we remove one source of bias and clearly delineate two separate but likely correlated mechanisms
-\item This effectively keeps the assumptions from Allopenna and all of the benefits of constructing a function in time for activation, but also allowing room now for fixations to be used separately in a number of ways (length of fixation, latency to look, total fixations, etc.,)
-\end{enumerate}
-\end{singlespace}
+%\section{Discussion}
+%
+%what have we learned?
+%
+%No new contributions were added to the linking hypothesis, but introduced novel technique for identifying components of look in VWP and making a standard analysis more consistent with the original
+%
+%Here are really the main takeaways.
+%
+%
+%\begin{enumerate}
+%\item We are all revisiting question of linking hypothesis
+%\item In the process of doing so, Bob identified some critical issues, revealing two distinct sources of bias
+%\item By introducing saccade method, we remove one source of bias and clearly delineate two separate but likely correlated mechanisms
+%\item This effectively keeps the assumptions from Allopenna and all of the benefits of constructing a function in time for activation, but also allowing room now for fixations to be used separately in a number of ways (length of fixation, latency to look, total fixations, etc.,)
+%\end{enumerate}
+%
 
 
 
+%
+%\section{limitations}
+%probably good idea to keep running list of these all in one place
+%
+%\begin{enumerate}
+%\item linking hypothesis/cognition curve
+%\item adding parametric form (necessity for saccade method)
+%\item Specific results consequence of values chosen and relationship of $\gamma$ to $\rho$ (in size, they are already uncorrelated)
+%\end{enumerate}
+%
 
-\section{limitations}
+\section{Appendices}
 
-probably good idea to keep running list of these all in one place
-
-\begin{singlespace}
-\begin{enumerate}
-\item linking hypothesis/cognition curve
-\item adding parametric form (necessity for saccade method)
-\item oculomotor delay, where to discuss
-\item Specific results consequence of values chosen and relationship of $\gamma$ to $\rho$ (in size, they are already uncorrelated)
-\end{enumerate}
-\end{singlespace}
-
-%\bibliographystyle{plain} % We choose the "plain" reference style
-%\bibliography{../bib/dissertation} % Entries are in the refs.bib file
-
-\section{appendices}
-
-Here  I am just including more or less random sections that either do not have a definite place yet in the main body of the paper, are part of what might be considered future work, or truly are things that belong in the appendix. Presented in no particular order (commented out, input from other tex files)
-
-
-%\input{trace_extra}
-
-%\input{dg_appendix}
+Omitting relation of this method to TRACE as it seems mostly unnecessary to the present argument 
 
 
 
-
-
+\input{dg_appendix}
 
 
 

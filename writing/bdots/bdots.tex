@@ -511,7 +511,20 @@ brefit(bdObj, fitCode = 1L, subset = NULL, quickRefit = FALSE, paramDT = NULL)
 \end{figure}
 \end{singlespace}
 
-The first of these arguments outside of the \xt{bdObj} is \xt{fitCode}, indicating the minimum fit code to be included in the refitting process. As discussed in Section~\ref{sec:fitcode}, this can be sub-optimal. To add flexibility to which subjects are fit there is now the \xt{subset} argument taking either a logical expression or collection of indices that would be used to subset an object of class \xt{data.table} (am I explaining this clearly?) or a numeric vector with indices that the user wishes to refit.
+The first of these arguments outside of the \xt{bdObj} is \xt{fitCode}, indicating the minimum fit code to be included in the refitting process. As discussed in Section~\ref{sec:fitcode}, this can be sub-optimal. To add flexibility to which subjects are fit there is now the \xt{subset} argument taking either a logical expression or collection of indices that would be used to subset an object of class \xt{data.table} or a numeric vector with indices that the user wishes to refit. For example, we could elect to refit only the first 10 subjects or refit subjects with $R^2 < 0.9$:
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+refit <- brefit(fit, subset = 1:10) # refit the first 10 subjects
+refit <- brefit(fit, subset = R2 < 0.9) # refit subjects with R2 < 0.9
+\end{BVerbatim}
+%\caption{Illustration of Mouse data}
+\end{figure}
+\end{singlespace}
+
+When an argument is passed to subset, the \xt{fitCode} is completely ignored.
 
 To assist with the refitting process is the argument \xt{quickRefit}. When set to \xt{TRUE}, \xt{brefit} will take the average coefficients of accepted fits within a group and use those as new starting parameters for poor fits. The new fits will be retained if they have a larger $R^2$ value by default. When set to \xt{quickRefit = FALSE}, the user will be guided through a set of prompts to refit each of the curves manually. 
 

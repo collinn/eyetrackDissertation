@@ -31,9 +31,9 @@ Last compiled: \today \  at \currenttime
 
 %\input{main.tex}
 
-\begin{abstract}
-Something something high density time series collected to estimate group population curves and compare those for temporal differences while controlling FWER. The original iteration \xt{bdots} made strict assumptions which are likely to not hold in general, resulting in unacceptable type I error rates. We modify the original 2017 algorithm to introduce an alternative bootstrapping scheme along with a permutation test to examine temporal differences between groups. Our results demonstrate comparable control of FWER and power under the original assumptions while also proving far more robust to divergences in both the mean and error structures of the observed data.
-\end{abstract}
+%\begin{abstract}
+%Something something high density time series collected to estimate group population curves and compare those for temporal differences while controlling FWER. The original iteration \xt{bdots} made strict assumptions which are likely to not hold in general, resulting in unacceptable type I error rates. We modify the original 2017 algorithm to introduce an alternative bootstrapping scheme along with a permutation test to examine temporal differences between groups. Our results demonstrate comparable control of FWER and power under the original assumptions while also proving far more robust to divergences in both the mean and error structures of the observed data.
+%\end{abstract}
 
 \section{Introduction}
 
@@ -122,7 +122,7 @@ The estimated mean value remains unchanged, but the variability is now fully acc
 \end{enumerate}
 %\end{singlespace}
 
-Just as with the homogeneous bootstrap, these bootstrap estimates are used to create test statistics $T_t^{(b)}$ at each time point, written
+Just as with the homogeneous bootstrap, these bootstrap estimates are used to create test statistics $T_t$ at each time point, written
 
 \begin{equation}
 T_t^{(b)} = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2t}^2}},

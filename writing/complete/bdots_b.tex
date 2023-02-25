@@ -1,4 +1,3 @@
-
 \section{Introduction}
 
 
@@ -44,30 +43,31 @@ Bootstrapping parameters to estimate this distribution and evaluating the functi
 
 \paragraph{Homogeneous Means Assumption}
 
-The assumption presented in Equation~\ref{eq:group_dist} differs from the original iteration of \xt{bdots} in a critical way. In \cite{oleson2017detecting}, there was no assumption of variability between subject parameters, leading to the implicit assumption that $\theta_i = \theta_j$ for all subjects $i, j$ within an experimental group. The most relevant consequence of the homogeneous means assumption is that only within-subject variability is estimated, inflating the type I error when this assumption did not hold. We investigate this in detail in Chapter 3. For now, we will give a methodological overview of the process used by \xt{bdots} along with a presentation of an updated bootstrapping process and the introduction of a permutation test.
+The assumption presented in Equation~\ref{eq:group_dist} differs from the original iteration of \xt{bdots} in a critical way. In \cite{oleson2017detecting}, there was no assumption of variability between subject parameters, congruent the assumption that $\theta_i = \theta_j$ for all subjects $i, j$ within an experimental group. The most relevant consequence of the homogeneous means assumption is that only within-subject variability is estimated, inflating the type I error when this assumption does not hold (see Chapter 3 for a discussion). For now, we will give a methodological overview of the process used by \xt{bdots} along with a presentation of an updated bootstrapping process and the introduction of a permutation test.
 
 
 
 
 \section{Methodology and Overview} 
 
-A standard analysis using \xt{bdots} consists of two steps: fitting the observed data to a specified parametric function, $f(\cdot|\theta)$, and then using the observed variability to construct estimates of the distributions of each groups' curves.  Here, we briefly detail how this is implemented in practice and introduce the new methodologies in \xt{bdots}. A more comprehensive treatment of these new methods, along with their justifications, is offered in Chapter 3. 
+A standard analysis using \xt{bdots} consists of two steps: fitting the observed data to a specified parametric function, $f(\cdot|\theta)$, and then using the observed variability to construct estimates of the distributions of groups whose differences we wish to investigate.  Here, we briefly detail how this is implemented in practice and introduce the new methodologies in \xt{bdots}. A more comprehensive treatment of these new methods, along with their justifications, is offered in Chapter 3. 
 
 
 
 \subsection{Establishing subject-level curves \cn{not sure if these should be subsections or paragraphs}}
 
-We begin with the assumption that for subject $i$ in group $g$, we have collected observed data of the form given in Equation~\ref{eq:mean_structure}, with the subject specific parameter $\theta_i$ following the distribution in Equation~\ref{eq:group_dist}. Each subject is then fit in \xt{bdots} via the nonlinear curve fitting function \xt{nlme::gnls}, returning for each set of observed data an estimated set of parameters $\hat{\theta}_i$ and their associated standard errors. Assuming large sample normality, we are able to construct a sampling distribution for each subject, accounting for within-subject variability. This gives us for each subject a distribution
+We begin with the assumption that for subject $i$ in group $g$, we have collected observed data of the form given in Equation~\ref{eq:mean_structure}, with the subject specific parameter $\theta_i$ following the distribution in Equation~\ref{eq:group_dist}. Each subject is then fit in \xt{bdots} via the nonlinear curve fitting function \xt{nlme::gnls}, returning for each set of observed data an estimated set of parameters $\hat{\theta}_i$ and their associated standard errors. Assuming large sample normality, we are able to construct a sampling distribution for each subject:
 
 \begin{equation}\label{eq:sub_dist}
 \hat{\theta}_i \sim N(\theta_i, s_i^2).
 \end{equation}
 
+This provides us with an estimate of within-subject variability of the observed parameters. 
 
 
 \subsection{Estimating Group Distributions}\label{sec:group_dist}
 
-Once sampling distributions are created for each subject, we are prepared to begin estimating group distributions. We assume that the mean parameters for each subject come from a group level distribution given in Equation~\ref{eq:group_dist}. Accordingly, we offer the following algorithm for creating bootstrapped estimates of the group distributions:
+Once sampling distributions are created for each subject, we are prepared to begin estimating group distributions given in Equation~\ref{eq:group_dist}. We then propose the following algorithm for creating bootstrapped estimates of the group distributions:
 
 
 \begin{enumerate}
@@ -94,19 +94,19 @@ We now turn our attention to the primary goal of an analysis in \xt{bdots}, the 
 
 \subsubsection{$\alpha$ Adjustment}
 
-Just as in the original iteration of \xt{bdots}, we are able to construct test statistics from the bootstrapped estimates described in the previous section. These test statistics $T_t^{(b)}$ can be written as 
+Just as in the original iteration of \xt{bdots}, we are able to construct test statistics from the bootstrapped estimates described in the previous section. These bootstrapped test statistics $T_t^{(b)}$ can be written as 
 
 \begin{equation}\label{eq:test_statistic}
 T_t^{(b)} = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2t}^2}},
 \end{equation}
-where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimates at each time point for groups $1$ and $2$, respectively. As was demonstrated in \cite{oleson2017detecting}, these test statistics can be highly autocorrelated in the presence of densely sampled test statics, leading to an inflated type I error in the case of multiple testing. The FWER in this case can be controlled with the Oleson adjustment proposed in original bootstrap paper. In addition to this, adjustments to the nominal alpha can also be made using all of the adjustments present in \xt{p.adjust} from the R \xt{stats} package.
+where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimates at each time point $t$ and for groups $1$ and $2$, respectively. As was demonstrated in \cite{oleson2017detecting}, these test statistics can be highly correlated in the presence of densely sampled test statics, leading to an inflated type I error. The FWER in this case can be controlled with the Oleson adjustment proposed in original bootstrap paper. In addition to this, adjustments to the nominal alpha can also be made using all of the adjustments present in \xt{p.adjust} from the R \xt{stats} package.
 
 
 \subsubsection{Permutation testing}
 
 In addition to modified correction based on the bootstrapped test statistics, \xt{bdots} provides a permutation test for controlling the FWER without any additional assumptions of autocorrelation. 
 
-In doing so, we begin by creating an observed test statistic in the following way: first, taking each subject's estimated parameter $\hat{\theta}_i$, we find the subject's corresponding parametric curve $f(t|\hat{\theta}_i)$. Within each group, we use \textit{these} curves to create estimates of the mean population curves and associated standard errors at each each point. Note that this differs from the bootstrapped test statistic in which the mean of the subjects' parameters was used to fit a population curve. Letting $p_{gt}$ and $s_{gt}^2$ represent the mean population curve and standard error for group $g$ at time $t$, we define our observed permutation test statistic, 
+In doing so, we begin by creating an observed test statistic in the following way: first, taking each subject's estimated parameter $\hat{\theta}_i$, we find the subject's corresponding parametric curve $f(t|\hat{\theta}_i)$. Within each group, we use \textit{these} curves to create estimates of the mean population curves and associated standard errors at each each point\footnote{This differs from the bootstrapped test statistic in which the mean of the subjects' parameters was used to fit a population curve, i.e., $\frac1n \sum f(t|\theta_i)$ compared with $f \left( t | \frac1n \sum \theta_i \right)$. The implications of this have not been investigated any further}. Letting $p_{gt}$ and $s_{gt}^2$ represent the mean population curve and standard error for group $g$ at time $t$, we define our observed permutation test statistic, 
 
 \begin{equation}\label{eq:perm_stat}
 T_t^{(p)} = \frac{|\overline{p}_{1t} - \overline{p}_{2t}|}{\sqrt{s_{1t}^2 + s_{2t}^2}}.
@@ -201,7 +201,7 @@ mouse_fit <- bfit(data = mouse, subject = "ID", time = "Day",
 \paragraph{Return object and generics}
 
 
-The function \texttt{bfit} returns an object of class \texttt{bdotsObj}, inheriting from class \texttt{data.table}. As such, each row uniquely identifies one permutation of subject and group values. Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested \xt{gnls} object. Inheriting from \xt{data.table}. also permits us to use \xt{data.table} syntax to subset the object as in Figure~\ref{fig:plot_fits}, for example, where we elect to only plot the first four subjects.
+The function \texttt{bfit} returns an object of class \texttt{bdotsObj}, inheriting from class \texttt{data.table}. As such, each row uniquely identifies one permutation of subject and group values. Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested \xt{gnls} object. Inheriting from \xt{data.table} also permits us to use \xt{data.table} syntax to subset the object as in Figure~\ref{fig:plot_fits}, for example, where we elect to only plot the first four subjects.
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -260,21 +260,21 @@ subject's data.
 \xt{fitCode} & AR(1) & $R^2$ \\
 \hline
 0 & TRUE & $R^2 > 0.95$ \\
-1 & TRUE & $0.8 < R2 < 0.95$ \\
+1 & TRUE & $0.8 < R^2 < 0.95$ \\
 2 & TRUE & $ R^2 <0.8$ \\
 3 & FALSE & $R^2 >0.95$ \\
-4 & FALSE & $0.8 < R2 < 0.95$ \\
+4 & FALSE & $0.8 < R^2 < 0.95$ \\
 5 & FALSE &$ R^2 <0.8$  \\
 6 & NA & NA \\
 \hline
 \end{tabular}
-\caption{fit codes}
+\caption{Description of the \xt{fitCode} statistic}
 \label{tab:fit_codes}
 \end{table}
 \end{singlespace}
 
 
-\paragraph{Plots and summaries}
+\paragraph{Summaries and Plots}
 
 Users are able to quickly summarize the quality of the fits with the \xt{summary} method now provided. 
 
@@ -343,13 +343,13 @@ plot(mouse_fit[1:4, ])
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{img/mouse_fit.pdf}
-\caption{Plot of \xt{mouse\_fit}, using \xt{data.table} syntax to subset to only the first four observations}
+\caption{Plot of \xt{mouse\_fit}, using  \xt{ggplot2} (default) and \xt{data.table} syntax to subset to only the first four observations}
 \label{fig:plot_fits}
 \end{figure}
 
 \subsection{Bootstrapping}
 
-Once fits have been made, we are ready to begin estimating the group distributions and investigating temporal differences. This is done with the bootstrapping (and now permutation) function, \xt{bboot}. The number of options included in the \xt{bboot} function have expanded to include a new formula syntax for specifying the analysis of interest as well as to include options for permutation testing. A call to \xt{bboot} takes the following form
+Once fits have been made, we are ready to begin estimating the group distributions and investigating temporal differences. This is done with the bootstrapping function, \xt{bboot}. The number of options included in the \xt{bboot} function have expanded to include a new formula syntax for specifying the analysis of interest as well as to include options for permutation testing. A call to \xt{bboot} takes the following form:
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -361,7 +361,7 @@ bboot(formula, bdObj, B, alpha, permutation = TRUE, padj = "oleson", ...)
 \end{figure}
 \end{singlespace}
 
-The \xt{formula} argument is new to  \xt{bdots} and will be discussed in the next section. As for the remaining arguments, \xt{bdObj} is simply the object returned from \xt{bfit} that we wish to investigate, and \xt{B} serves the dual role of indicating the number of bootstraps/permutations we wish to perform. \xt{alpha} is the rate at which we wish to control the FWER. \xt{permutation} and \xt{padj} work in contrast to one another: when \xt{permutation = TRUE} (the default?), the argument to \xt{padj} is ignored. Otherwise, \xt{padj} indicates the method to be used in adjusting the nominal \xt{alpha} to control the FWER. By default, \xt{padj = "oleson"}. Finally, as previously mentioned, there is no longer a need to specify if the groups are paired, and \xt{bboot} determines this automatically based on the subject identifiers in each of the groups.
+The \xt{formula} argument is new to  \xt{bdots} and will be discussed in the next section. As for the remaining arguments, \xt{bdObj} is simply the object returned from \xt{bfit} that we wish to investigate, and \xt{B} serves the dual role of indicating the number of bootstraps/permutations we wish to perform; \xt{alpha} is the rate at which we wish to control the FWER. \xt{permutation} and \xt{padj} work in contrast to one another: when \xt{permutation = TRUE}, the argument to \xt{padj} is ignored. Otherwise, \xt{padj} indicates the method to be used in adjusting the nominal \xt{alpha} to control the FWER. By default, \xt{padj = "oleson"}. Finally, as previously mentioned, there is no longer a need to specify if the groups are paired, and \xt{bboot} determines this automatically based on the subject identifiers in each of the groups.
 
 
 \paragraph{Formula} \label{sec:formula}
@@ -709,4 +709,7 @@ The formula syntax was originally contrived to make comparisons within groups or
 %\end{center}
 %
 %yeah not like sexy or anything but whatever it would work.
+
+
+
 

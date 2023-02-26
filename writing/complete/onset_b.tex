@@ -109,7 +109,16 @@ Saccades are short, ballistic movements lasting between 20ms-60ms, during which 
 \label{fig:full_diagram_looks}
 \end{figure}
 
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{what_is_a_look.pdf}
+\label{fig:whats_in_a_look}
+\caption{Alternative to Figure~\ref{fig:full_diagram_looks} with diagram of saccade/fixation more consistent with Figure~\ref{fig:anatomy_of_look}. There may be a bit more than is needed here, especially with the pink and blue (and maybe even subsequent CM). Although I don't discuss their use in detail, the pink/blue/second CM highlight the fact that \textit{even when} we argue that using proportion of fixation method indirectly captures strength of activation via length of duration, the assumption of linearity is incorrect. For the sake of argument, assuming that the refractory period is exactly 100ms and the length of oculomotor delay is 200ms, a fixation of length 500ms may seem to be 25\% larger than a fixation lasting 400ms, but in terms of the \textit{intentional} fixation period, it is twice as large. This serves both to demonstrate another issue with the proportion method while also paving the way for incorporating fixation length in the future. Still, this may not all be necessary here, or presented in a cleaner way} 
+\end{figure}
+
 \subsection{Activation}
+
+The concept of activation, as it relates to the discussion here, arises from the metaphor in which word perception is made up of a network made up of hierarchical levels (letter, phoneme, word, etc.,) acting as an interactive process unfolding in time \cite{McClelland1981}. Under this \textit{interactive activation model}, greater activation is associated with a greater excitatory action for a network node (specifically here, a word) resulting from consistency with the received auditory signal. The interactive activation model allows for both excitatory and inhibiting activations, resulting in the ``competing" activation curves being modeled in the VWP. [maybe also address happens continuously, hence the continuous mapping model of lexical activation]
 
 Here tie in idea of activation, though need to be more concise about what we mean. \cn{Good source for framework being (McClelland and Rumelhard 1981? Rumelhart and McClelland 81 and 82, and mcclelland/elman 86 with trace). They seem to all mention the ``interactive activation framework" which may be worthwhile to elaborate on further. For now, assume that we have adequately stated \textit{what it is}.}
 
@@ -145,6 +154,8 @@ An individual trial of the VWP may be short, lasting anywhere from 1000ms to 250
 [relevant quote][``We find that eye movements to objects in the workspace are closely time-locked to referring expression s in the unfolding speech stream, providing a sensitive and nondistruptive measure of spoken language comprehension during continuous speech" \cite{allopenna1998tracking}]
 
 To be clear, eye trackers themselves only record $x$ and $y$ coordinates of the eye at any given time, and it is only after the fact that ``psychophysical" attributes are mapped onto the data (saccades, fixations, blinks, etc.,). We adopt the strategy of prior work in discussing eye tracking data in terms of their physiological mapping, as this will be crucial in constructing a physiologically relevant understanding of the problem at hand \cite{mcmurray2002look}.
+
+[``Default interpretation is that greater fixation proportions indicate greater activation in the underlying processing system" \cite{Magnuson2019}]
 
 
 To create a visual summary of this process aggregated over all of the trials, a la Allopena, a ``proportion of fixations" curve is created, aggregating at each discrete time point the average of indicators of whether or not a participant is fixated on a particular image. A resulting curve is created for each of the competing categories (target, cohort, rhyme, unrelated), creating an empirical estimate of the activation curve, $f(t|\theta)$. See Figure~\ref{fig:bob_diagram_full}. For any subject $i = 1, \dots, n$, across times $t = 0, \dots, T$ and trials $j = 1, \dots, J$, a construction  of this curves can be expressed as:

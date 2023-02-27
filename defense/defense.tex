@@ -35,6 +35,7 @@
     filecolor=magenta,      
     urlcolor=cyan,
 }
+\usepackage{subfigure}
 
 \newcommand{\code}[1]{\texttt{#1}}
 \graphicspath{{img/}}
@@ -52,6 +53,10 @@
     bidirected/.style={Latex-Latex,dashed},
     el/.style = {inner sep=2pt, align=left, sloped}
 }
+
+\usepackage{color}
+\providecommand{\pb}[1]{\textcolor{red}{#1}}
+\providecommand{\cn}[1]{\textcolor{blue}{#1}}
 
 \usepackage{listings}
 \lstdefinestyle{rstyle}{
@@ -161,6 +166,7 @@ We are going to limit our focus today to single word recognition
 \begin{frame}{How does this evolve in time?} \large
 Continuous mapping models of word recognition account for variety of observed phenomenon  \vp
 
+\cn{things like immediacy (hypothesis formed from earliest input), parallelism (multiple items activated, i.e., priming), graded activation (not all-or-nothing)} \vp
 
 In particular, connectionist models of lexical access (such as TRACE):
 \begin{itemize}
@@ -208,6 +214,9 @@ Fortunately there is expertly written software to help accomplish this
 
 \begin{columns}
 \begin{column}{0.45\textwidth}
+
+\cn{maybe make picture larger and remove all words?}
+
 Cognitive activation is not something that can be measured directly \vspace{4mm}
 
 Our eyes reveal a terrifying amount of information about what we are considering \vspace{4mm}
@@ -250,7 +259,7 @@ Eyetracking software in conjunction with spoken sentence \vp
 
 How do we go from this to word recognition? \vp
 
-talk about differential eye tracking with ambiguity, etc (maybe use that image instead)
+\cn{talk about differential eye tracking with ambiguity, etc (maybe use that image instead)}
 %\includegraphics[scale=0.45]{img/tumr_fit.png}
 
 \end{column}
@@ -260,6 +269,14 @@ talk about differential eye tracking with ambiguity, etc (maybe use that image i
 \end{center}
 \end{column}
 \end{columns}
+\end{frame}
+
+\begin{frame}{alt image for vwp}
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{apple_combine.pdf}
+\caption{Differential eye response based on context and ambiguity}
+\end{figure}
 \end{frame}
 
 
@@ -345,26 +362,26 @@ There are primarily two sources of biases inherent in this method which hitherto
 
 \begin{frame}{Delayed observation bias}
 
-too many words \vp
+\cn{too many words} \vp
 
 Delayed observation bias arises from the oculomotor delay between the cognitive process (of interest) and the first physiological response \vp
 
 It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
 
-Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness \vp
+\cn{Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness} \vp
 
 We show that varying degrees of randomness in this process and drastically impact error in recovery
 \end{frame}
 
 \begin{frame}{Added Observation Bias}
 
-too many words \vp
+\cn{too many words} \vp
 
 Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation\vp
 
-We are interested in the process that probabilistically determines the \textit{location} of a fixation \vp
+\cn{We are interested in the process that probabilistically determines the \textit{location} of a fixation} \vp
 
-At some time $t$, a saccade is launched, and we know from length of saccade until \textit{at least} refractory period for fixation, it is impossible for our eyes to go anywhere else \vp
+\cn{At some time $t$, a saccade is launched, and we know from length of saccade until \textit{at least} refractory period for fixation, it is impossible for our eyes to go anywhere else} \vp
 
 By including the entire length of the fixation as ``observed" data relating to this process, we are both inflating the amount of data we have with data that is necessarily biased
 \end{frame}
@@ -396,7 +413,7 @@ By including the entire length of the fixation as ``observed" data relating to t
 
 
 \begin{frame}{Look Onset Method}
-As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data \vp
+\cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
 
 Under the look onset method, only the initial moment of look onset, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
 
@@ -413,22 +430,24 @@ Fortunately, we are able to use nearly an identical procedure as before,
 \end{frame}
 
 \begin{frame}{bdots}
- Should i talk about bdots somewhere? I don't think it needs its own slide. Mention bdots earlier then on previous slide be like oh yeah it can handle data from look onset as well
+\cn{Should i talk about bdots somewhere? I don't think it needs its own slide. Mention bdots earlier then on previous slide be like oh yeah it can handle data from look onset as well}
 \end{frame}
 
 \begin{frame}{Simulation}
-Assume activation can be modeled $f(t|\theta)$, with subject-specific $\theta_i$ \vp
 
-Introduce mechanics for fixation and oculomotor delay to demonstrate both added and delayed observation bias \vp
+Create simulated VWP trials with eye mechanics with goal of recovering activation curve, $f(t|\theta)$ \vp
 
-Each subject will perform 300 simulations of a VWP trial, with 1,000 total subjects \vp
+Each subject draws individual $\theta_i$ \cn{from empirically determined distribution} and will perform 300 trials. 1,000 total subjects
+
 
 Metric for efficacy is MISE between generating function and recovered curve using \xt{bdots}
 \end{frame}
 
 
 \begin{frame}{Simulation -- Single Trial}\large
-Will need to fill in with exposition, don't want dense text on slide
+\cn{Will need to fill in with exposition, don't want dense text on slide}
+
+\cn{Alternatively, I could just skip a slide like this all together and just explain in picture}
 
 \begin{enumerate}
 \item[1.] Look initiated at $t_0$, persisting for at least duration $\gamma$
@@ -441,6 +460,8 @@ Will need to fill in with exposition, don't want dense text on slide
 
 A trial begins at $t = 0$ and continues until the cumulative duration of looks within trial exceeds 2000ms
 
+\cn{would also say here or next slide we run three types with various distributions of $\rho$}
+
 \end{frame}
 
 \begin{frame}{Simulation (explain in words, could have less detail here)}
@@ -452,38 +473,83 @@ A trial begins at $t = 0$ and continues until the cumulative duration of looks w
 \end{figure}
 \end{frame}
 
+\begin{frame}{notes on results section}
+[all meta commentary here, will delete slide] \vp
 
+Probably not necessary to include all simulations, I'll just choose two \vp
 
-\begin{frame}{Simulation (N = 300)}
-\begin{center}
-\includegraphics[scale=0.4]{img/sac_agg.png}
-\end{center}
-\vspace{-2mm}
-{\scriptsize
-\begin{table}[H]
-\captionsetup{font=scriptsize}
-\centering
-\begin{tabular}{rccc}
-  \hline
- & Aggregate & Saccade  & Underlying \\ 
-  \hline
-MISE & 5.04 & 1.77 & 0.00 \\ 
-   \hline
-\end{tabular}
-\end{table}
-}
+I can make the proportion curves look as good or bad as I want by modifying  the $\gamma$ parameter. I don't think that's necessary here as I can comment as to why small changes make a large difference in subsequent analysis \vp
+
+For weibull delay, im only going to compare par bias for onset method against no delay since after the first sim there is really no reason to look at proportion method again
 \end{frame}
 
 
+\begin{frame}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{rep_curves_no_delay.pdf}
+\caption{Representative curves with no oculomotor delay}
+\label{fig:rep_curves_no_delay}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\begin{figure}[H]
+\centering
+    \subfigure{\includegraphics[width=0.6\textwidth]{no_delay_par_bias_onset.pdf}} 
+    \subfigure{\includegraphics[width=0.6\textwidth]{no_delay_par_bias_proportion.pdf}} 
+\caption{Parameter bias with no oculomotor delay}
+\label{fig:par_bias_no_delay}
+\end{figure}
+\end{frame}
+
+
+
+\begin{frame}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{rep_curves_weibull_delay.pdf}
+\caption{Representative curves with no oculomotor delay}
+\label{fig:rep_curves_no_delay}
+\end{figure}
+\end{frame}
+
+
+\begin{frame}
+\begin{figure}[H]
+\centering
+    \subfigure{\includegraphics[width=0.6\textwidth]{no_delay_par_bias_onset.pdf}} 
+    \subfigure{\includegraphics[width=0.6\textwidth]{weibull_delay_par_bias_onset.pdf}} 
+\caption{Parameter bias with no oculomotor delay}
+\label{fig:par_bias_no_delay}
+\end{figure}
+\end{frame}
+
+\begin{frame}{MISE}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llrrr}
+  \hline
+Method & Delay & 1st Qu. & Median & 3rd Qu. \\ 
+  \hline
+Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\ 
+  Look Onset & Weibull Delay & 1.05 & 2.16 & 4.23 \\ 
+  Proportion & No Delay & 8.21 & 11.33 & 16.01 \\ 
+  Proportion & Weibull Delay & 15.27 & 24.75 & 38.14 \\ 
+   \hline
+\end{tabular}
+\caption{Summary of mean integrated squared error across simulations}
+\label{tab:mise_sims}
+\end{table}
+
+\end{frame}
+
 %% End with list of other things that I will be doing going forward
 \begin{frame}{Ok, so where from here?}
-%
-%\begin{itemize}
-%\item bdots
-%\item work on simulation for eye tracking/physiology
-%\item using other parts of the data in larger model (number of saccades, search patterns, length of fixations, response time for whatever)
-%\item Main one to talk about here -- oculomotor delay
-%\end{itemize}
+
+\cn{maybe elaborate on bdots \textit{here}, what it can do, how it changed, etc.,. I also like the idea of talking a bit more about oculmotor delay (and I left that slide comparing curves after this), but its mostly theoretical time filler since I didn't actually do anything to address it}
 
 \begin{itemize}
 \item bdots
@@ -492,39 +558,39 @@ MISE & 5.04 & 1.77 & 0.00 \\
 \item Oculomotor delay
 \end{itemize}
 \end{frame}
-
-% talk about oculomotor delay
-\begin{frame}{Oculomotor delay}
-Though we talk about saccades and fixations, what we are \textit{actually} interested in is this latent cognitive mechanism
-
-It happens in our head first and then our eyes move. This delay, typically around 200ms, is random, and can bias our estimates \\
-
-We will call the length of an  oculomotor delay $\rho(t)$
-
-\begin{center}
-\includegraphics[scale=0.25]{img/om_delay2.png}
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Oculomotor delay, cont.}
-A saccade observed at time $t_j$ is likely a sample from the activation curve $f_{\theta}$ at some point prior to $t_j$. We might then consider our saccades to be
-\begin{align*}
-s_j \sim Bern[f_{\theta}(t_j - \rho(t_j)],
-\end{align*}
-where $\rho(t)$ represents our oculomotor delay. It may be the case that:
-
-\begin{itemize}
-\item[1.] $\rho(t)$ is a constant function (including 0)
-\item[2.] $\rho(t)$ is a random variable, independent on the value of $t$
-\item[3.] $\rho(t)$ is a random variable, dependent on $t$ and possibly other aspects of the trial
-\end{itemize}
-
-For clarity, then, we might call $f_{\theta}(t)$ the (latent) activation curve, with $g_{\theta}(t) = f_{\theta}(t - \rho(t))$ our (observed) saccade curve
-
-\end{frame}
-
-
+%
+%% talk about oculomotor delay
+%\begin{frame}{Oculomotor delay}
+%Though we talk about saccades and fixations, what we are \textit{actually} interested in is this latent cognitive mechanism
+%
+%It happens in our head first and then our eyes move. This delay, typically around 200ms, is random, and can bias our estimates \\
+%
+%We will call the length of an  oculomotor delay $\rho(t)$
+%
+%\begin{center}
+%\includegraphics[scale=0.25]{img/om_delay2.png}
+%\end{center}
+%
+%\end{frame}
+%
+%\begin{frame}{Oculomotor delay, cont.}
+%A saccade observed at time $t_j$ is likely a sample from the activation curve $f_{\theta}$ at some point prior to $t_j$. We might then consider our saccades to be
+%\begin{align*}
+%s_j \sim Bern[f_{\theta}(t_j - \rho(t_j)],
+%\end{align*}
+%where $\rho(t)$ represents our oculomotor delay. It may be the case that:
+%
+%\begin{itemize}
+%\item[1.] $\rho(t)$ is a constant function (including 0)
+%\item[2.] $\rho(t)$ is a random variable, independent on the value of $t$
+%\item[3.] $\rho(t)$ is a random variable, dependent on $t$ and possibly other aspects of the trial
+%\end{itemize}
+%
+%For clarity, then, we might call $f_{\theta}(t)$ the (latent) activation curve, with $g_{\theta}(t) = f_{\theta}(t - \rho(t))$ our (observed) saccade curve
+%
+%\end{frame}
+%
+%
 \begin{frame}{Impact of random delay}
 \begin{center}
 % code for doing this in dissertation folder
@@ -536,72 +602,36 @@ For clarity, then, we might call $f_{\theta}(t)$ the (latent) activation curve, 
 \begin{frame}{Bootstrapped differences in time series -- \texttt{bdots}}
 \vspace{-1mm}
 \begin{center}
-\includegraphics[scale=0.47]{img/bdots_plots.png}
+\includegraphics{bdots_examples.pdf}
 \end{center}
 \end{frame}
+
+
 
 
 \begin{frame}{Concluding remarks}
 What can we take away from this:
 \begin{itemize}
 \item VWP used to collect eye tracking data as proxy for word recognition
-\item  Saccade method results in less bias in estimating generating curve
+\item  Look onset method results in less bias in estimating generating curve
 \item Software and methodology to investigate these
 \end{itemize}
 And where are we going from here?
 \begin{itemize}
 \item Oculomotor delay
-\item Simulating eyetracking data (linking hypothesis)
+\item Simulating eye tracking data (linking hypothesis)
 \item Expanding domain of \texttt{bdots}
 \end{itemize}
 \end{frame}
 
 %%------------------------------------END
-% bonus
-
-
-%% Could include some slides at the end showing bdots work for bonus
-%
-%\begin{frame}[fragile]{Non-vwp data - TEST SLIDE FOR R CODE}
-%Data for 451LuBR cell line (metastatic melanoma) growth with repeated measures in mice with five treatment groups \newline \\
-%
-%\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
-%\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,}]
-%## Using custom curve for fitting data
-%fit <- bdotsFit(data = dat, 
-%                subject = "ID", 
-%                time = "Day", 
-%                y = "Volume", 
-%                group = "Treatment", 
-%                curveType = expCurve())
-%\end{lstlisting}
-%\end{frame}
-%
-%\begin{frame}{Plots- TEST SLIDE FOR COLUMNS}
-%Representative curves for individual mice, as well as comparisons between two treatments with bootstrapped curves
-%\begin{columns}
-%\begin{column}{0.45\textwidth}
-%\begin{center}
-%4
-%%\includegraphics[scale=0.45]{img/tumr_fit.png}
-%\end{center}
-%\end{column}
-%\begin{column}{0.5\textwidth}  %%<--- here
-%\begin{center}
-%4
-%%\includegraphics[scale=0.3]{img/tumr_boot.png}
-%\end{center}
-%\end{column}
-%\end{columns}
-%\end{frame}
 
 
 
-
-\begin{frame}{References}
+\begin{frame}{References}\small
 Magnuson, James S. \textbf{Fixations in the visual world paradigm: where, when, why?} 2019-09 \textit{Journal of Cultural Cognitive Science}, Vol. 3, No. 2 Springer  Science and Business Media LLC p. 113-139 \newline \\
 
-McMurray, Bob \textbf{Fixation Curves in the Visual World Paradigm} 2020(?) \newline \\
+McMurray, Bob \textbf{I'm not sure that curve means what you think it means: Towards a [more] realistic understanding of the role of eye-movement generation in the visual world paradigm} 2022 \textit{Psychonomic Bulletin \& Review} p 1-45 \newline \\
 
 Oleson, Jacob J; Cavanaugh, Joseph E, McMurray, Bob; Brown, Grant \textbf{Detecting time-specific differences between temporal nonlinear curves: Analyzing data from the visual world paradigm} 2017 \textit{Statistical Methods in Medical Research}, Vol. 26, No. 6 p 2708-2725 \newline \\
 

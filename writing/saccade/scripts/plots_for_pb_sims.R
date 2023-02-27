@@ -34,7 +34,7 @@ getRmvIdx <- function(ff) {
   idx
 }
 
-biasPlot <- function(fix, sac, sim, tit, xint = 0) {
+biasPlot <- function(fix, sac, sim, tit, xint = 0, trim = 0) {
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
   idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))
@@ -47,6 +47,18 @@ biasPlot <- function(fix, sac, sim, tit, xint = 0) {
 
   bb <- getParBias(fsim, ff)
   bb2 <- getParBias(fsim, ss)
+
+  ## If trim is not 0, we keep that quantile
+  if (trim) {
+    bb <- lapply(split(bb, by = "variable"), function(x) {
+      qq <- quantile(x$value, probs = c(1-trim, trim))
+      x <- x[value > qq[1] & value < qq[2], ]
+    }) |> rbindlist()
+    bb2 <- lapply(split(bb2, by = "variable"), function(x) {
+      qq <- quantile(x$value, probs = c(1-trim, trim))
+      x <- x[value > qq[1] & value < qq[2], ]
+    }) |> rbindlist()
+  }
 
   p1 <- ggplot(bb, aes(x = value)) + geom_histogram(bins=40) +
     geom_vline(xintercept = xint, color = 'red') +

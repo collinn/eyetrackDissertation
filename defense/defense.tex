@@ -1,0 +1,616 @@
+\documentclass{beamer}
+%
+% Choose how your presentation looks.
+%
+% For more themes, color themes and font themes, see:
+% http://deic.uab.es/~iblanes/beamer_gallery/index_by_theme.html
+%
+\mode<presentation>
+{
+  \usetheme{Madrid}      % or try Darmstadt, Madrid, Warsaw, ...
+  \usecolortheme{crane} % or try albatross, beaver, crane, ...
+  \usefonttheme{default}  % or try serif, structurebold, ...
+  \setbeamertemplate{navigation symbols}{}
+  \setbeamertemplate{caption}[numbered]
+  
+} 
+
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{courier}
+\usepackage{dsfont}
+\usepackage{verbatim} 
+\usepackage{tikz}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{venndiagram}
+\usepackage{xcolor}
+\usepackage[shortlabels]{enumitem}
+\usepackage{listings}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
+\newcommand{\code}[1]{\texttt{#1}}
+\graphicspath{{img/}}
+
+\DeclareMathOperator*{\argmax}{arg\!\max}
+\DeclareMathOperator*{\argmin}{arg\!\min}
+\newcommand{\vp}{\vspace{2mm}}
+\newcommand{\xt}{\texttt}
+
+\usetikzlibrary{shapes,decorations,arrows,calc,arrows.meta,fit,positioning}
+\tikzset{
+    -Latex,auto,node distance =1 cm and 1 cm,semithick,
+    state/.style ={ellipse, draw, minimum width = 0.7 cm},
+    point/.style = {circle, draw, inner sep=0.04cm,fill,node contents={}},
+    bidirected/.style={Latex-Latex,dashed},
+    el/.style = {inner sep=2pt, align=left, sloped}
+}
+
+\usepackage{listings}
+\lstdefinestyle{rstyle}{
+	language=R,
+    %stringstyle=\color{green},
+    %otherkeywords={0,1,2,3,4,5,6,7,8,9},
+    %morekeywords={TRUE,FALSE},
+    %deletekeywords={data,frame,length,as,character}
+    %keywordstyle=\color{blue},
+    %commentstyle=\color{cyan},
+}
+
+\setitemize{label=\usebeamerfont*{itemize item}%
+  \usebeamercolor[fg]{itemize item}
+  \usebeamertemplate{itemize item}}
+
+\newcommand{\Mypm}{\mathbin{\tikz [x=1.4ex,y=1.4ex,line width=.1ex] \draw (0.0,0) -- (1.0,0) (0.5,0.08) -- (0.5,0.92) (0.0,0.5) -- (1.0,0.5);}}%
+
+\title[Public Defense]{What You See is What You Get}
+\subtitle{A Closer Look at Bias in the Visual World Paradigm}
+\author{Collin Nolte}
+\date{March 8, 2023}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.35]{img/wizard_lizard_whistle_pencil.png}
+\end{center}
+\end{frame}
+
+%\begin{frame}{img (delete slide)}
+%here just have a picture of a vwp trial w/o context. While the picture is up, ask some questions: 
+%
+%\begin{itemize}
+%\item what are some images on screen? any obvious relations? (rhymes, begin same)
+%\item If I told you to look at the wizard, how might i be able to tell when you understand exactly what I meant? (hopefully they answer eyes)
+%\item what are some things i should be aware of when considering eyes (scanning, back and forth, etc)
+%\end{itemize}
+%\end{frame}
+
+\begin{frame}{Outline}\large
+What is this talk going to be about?
+
+\begin{itemize}
+	\item Cognition/Activation 
+	\item Eyetracking and the VWP
+	\item Methodology and Bias
+	\item Future Directions
+\end{itemize}
+
+\end{frame}
+
+% language and cognition
+\begin{frame}{Language and Cognition}
+The field is itself exceptionally broad, ranging from sentence processing, priming, reading, and word formation:
+
+\begin{center}
+``trink" $\Rightarrow$ ``trank" or ``trinked"? \vp
+\end{center}
+
+Particularly troublesome when we commit too early:
+
+\begin{center}
+``The horse raced past the barn fell"  \vp
+\end{center}
+
+Often can not be observed directly  \vp
+
+We are going to limit our focus today to single word recognition
+
+
+
+%This is such a seriously huge topic ranging from word recognition to sentence comprehension \\
+%This also extends to thinks like reading \\
+%Here, we are going to limit our consideration to single word recogntion \\
+%It all starts with an audio signal that is interpreted by our brains in real time
+\end{frame}
+
+% cohort illustration
+
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.3]{img/ele_1.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.3]{img/ele_2.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.3]{img/ele_3.png}
+\end{center}
+\end{frame}
+
+
+
+\begin{frame}{How does this evolve in time?} \large
+Continuous mapping models of word recognition account for variety of observed phenomenon  \vp
+
+
+In particular, connectionist models of lexical access (such as TRACE):
+\begin{itemize}
+\item Network structure
+\item Processes in real time
+\item Nodes, activation, and signal
+\end{itemize}
+\end{frame}
+
+
+
+% what does trace look like
+\begin{frame}
+\begin{center}
+\includegraphics[scale=0.4]{img/trace_competition.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{img/trace_plot.png}
+\caption{gave up on reordering the legend}
+\end{figure}
+\end{frame}
+
+
+
+% why is this important?
+\begin{frame}{Why do we care?}
+
+Typically interested in comparing activation between groups or conditions \vspace{2mm}
+
+\begin{itemize}
+\item Normal Hearing (NH) vs Cochlear Implants (CI) \vspace{2mm}
+\item Differentiating cognitive, specific, and non-specific impairments \vspace{2mm}
+\item Phonological perceptions \vspace{2mm}
+\end{itemize}
+
+Fortunately there is expertly written software to help accomplish this
+
+\end{frame}
+
+\begin{frame}{Ok, so how do we get access?}
+
+\begin{columns}
+\begin{column}{0.45\textwidth}
+Cognitive activation is not something that can be measured directly \vspace{4mm}
+
+Our eyes reveal a terrifying amount of information about what we are considering \vspace{4mm}
+
+This has been empirically tested and confirmed in countless experiments
+\end{column}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\includegraphics[scale=0.45]{img/car_eye.jpg}
+{\tiny Cohen 1983}
+\end{center}
+\end{column}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}{Visualizing Eye Mechanics}
+\vspace{-1mm}
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{img/what_is_a_look.pdf}
+\caption{just describe this with words, mention 200ms delay, etc)}
+\end{figure}
+\end{frame}
+
+
+
+
+% Enter vwp
+\begin{frame}{Visual World Paradigm}
+\begin{columns}
+\begin{column}{0.45\textwidth}
+
+Visual World Paradigm introduced in 1995 \vp
+
+Eyetracking software in conjunction with spoken sentence \vp
+
+``The boy will move the cake" \vp
+
+How do we go from this to word recognition? \vp
+
+talk about differential eye tracking with ambiguity, etc (maybe use that image instead)
+%\includegraphics[scale=0.45]{img/tumr_fit.png}
+
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{center}
+\includegraphics[scale=.9]{img/vwp_classic.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+
+\begin{frame}{VWP Trials}
+\begin{center}
+\includegraphics[scale=0.4]{img/bob_vwp_full.png}
+\end{center}
+\end{frame}
+
+% just image from allopenna, magnuson and tanenhaus 
+\begin{frame}{Original study}
+\begin{center}
+% screenshot from paper
+\includegraphics[scale=0.45]{img/allopenna_trace_compare.png}
+\end{center}
+\end{frame}
+
+
+% how related to vwp
+\begin{frame}{So how does this relate to VWP}
+
+\begin{columns}
+\begin{column}{0.45\textwidth}
+To make the problem more tractable, curves given a (usually) parametric form, $f_{\theta}(t)$ or $f(t| \theta)$ \\ \vspace{2mm}
+
+Letting $z_{ijt}$ represent fixation at time $t$ for trial $j$, we have empirical curve
+\begin{align*}
+y_{it} = \sum_j z_{ijt}
+\end{align*}
+and find
+\begin{align*}
+\hat{\theta} = \argmin_{\theta} \mathcal{L}(f_{\theta}, y)
+\end{align*}
+
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{center}
+\includegraphics[scale=0.5]{img/bob_aggregate.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+
+\begin{frame}{Parametric Function}
+
+\vspace{-5mm}
+
+\begin{columns}
+\begin{column}{0.45\textwidth}
+Here, for example, is a four-parameter logistic function, typically used for the referent: \vspace{5mm}
+\begin{align*}
+f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
+\end{align*}
+%\includegraphics[scale=0.45]{img/tumr_fit.png}
+\end{column}
+\begin{column}{0.5\textwidth}  %%<--- here
+\begin{center}
+\includegraphics[scale=0.3]{img/logistic_label.png}
+\end{center}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Issues}
+We are predominately interested in the recovery of a lexical activation function, though given visual similarities between the proportion of fixations and activation, we have the ostensible equivalence, 
+
+\begin{equation}
+y_{it} \equiv f(t | \theta_i)
+\end{equation}
+
+There are primarily two sources of biases inherent in this method which hitherto have been left unexamined:
+
+\begin{itemize}
+\item[1.] Delayed observation bias/error
+\item[2.] Added observation bias
+\end{itemize}
+
+(in reverse order because easier to explain plus its mostly an aside)
+\end{frame}
+
+
+\begin{frame}{Delayed observation bias}
+
+too many words \vp
+
+Delayed observation bias arises from the oculomotor delay between the cognitive process (of interest) and the first physiological response \vp
+
+It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
+
+Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness \vp
+
+We show that varying degrees of randomness in this process and drastically impact error in recovery
+\end{frame}
+
+\begin{frame}{Added Observation Bias}
+
+too many words \vp
+
+Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation\vp
+
+We are interested in the process that probabilistically determines the \textit{location} of a fixation \vp
+
+At some time $t$, a saccade is launched, and we know from length of saccade until \textit{at least} refractory period for fixation, it is impossible for our eyes to go anywhere else \vp
+
+By including the entire length of the fixation as ``observed" data relating to this process, we are both inflating the amount of data we have with data that is necessarily biased
+\end{frame}
+
+
+\begin{frame}{Activation curve}
+\vspace{-5mm}
+\begin{center}
+\includegraphics[scale=0.4]{img/logistic_a.pdf}
+\end{center}
+
+
+\end{frame}
+
+\begin{frame}{Onset of look}
+\vspace{-5mm}
+\begin{center}
+\includegraphics[scale=0.4]{img/logistic_b.pdf}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{...followed by fixation}
+\vspace{-5mm}
+\begin{center}
+\includegraphics[scale=0.4]{img/logistic_c.pdf}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Look Onset Method}
+As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data \vp
+
+Under the look onset method, only the initial moment of look onset, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
+
+\begin{align*}
+s_j \sim Bern(f_{\theta}(t_j))
+\end{align*}
+
+This gives us instead a set of ordered pairs, $\mathcal{S} = \{(s_j, t_j)\}$ rather than a time ordered vector of proportions \\ \vp
+
+Fortunately, we are able to use nearly an identical procedure as before, 
+\begin{align*}
+\hat{\theta} = \argmin_{\theta} \mathcal{L}(f_{\theta}, \mathcal{S})
+\end{align*}
+\end{frame}
+
+\begin{frame}{bdots}
+ Should i talk about bdots somewhere? I don't think it needs its own slide. Mention bdots earlier then on previous slide be like oh yeah it can handle data from look onset as well
+\end{frame}
+
+\begin{frame}{Simulation}
+Assume activation can be modeled $f(t|\theta)$, with subject-specific $\theta_i$ \vp
+
+Introduce mechanics for fixation and oculomotor delay to demonstrate both added and delayed observation bias \vp
+
+Each subject will perform 300 simulations of a VWP trial, with 1,000 total subjects \vp
+
+Metric for efficacy is MISE between generating function and recovered curve using \xt{bdots}
+\end{frame}
+
+
+\begin{frame}{Simulation -- Single Trial}\large
+Will need to fill in with exposition, don't want dense text on slide
+
+\begin{enumerate}
+\item[1.] Look initiated at $t_0$, persisting for at least duration $\gamma$
+\item[2.] At $t_0 + \gamma$, look towards target with probability $f(t_0 + \gamma|\theta)$
+\item[3.] This is followed by oculomotor delay, $\rho$
+\item[4.] At $t_0 + \gamma + \rho$, current look ends and next is immediately initiated
+\end{enumerate}
+
+\vspace{5mm}
+
+A trial begins at $t = 0$ and continues until the cumulative duration of looks within trial exceeds 2000ms
+
+\end{frame}
+
+\begin{frame}{Simulation (explain in words, could have less detail here)}
+
+\vspace{-2.5mm}
+\begin{figure}
+\centering
+\includegraphics[scale=0.4]{look_comp.pdf}
+\end{figure}
+\end{frame}
+
+
+
+\begin{frame}{Simulation (N = 300)}
+\begin{center}
+\includegraphics[scale=0.4]{img/sac_agg.png}
+\end{center}
+\vspace{-2mm}
+{\scriptsize
+\begin{table}[H]
+\captionsetup{font=scriptsize}
+\centering
+\begin{tabular}{rccc}
+  \hline
+ & Aggregate & Saccade  & Underlying \\ 
+  \hline
+MISE & 5.04 & 1.77 & 0.00 \\ 
+   \hline
+\end{tabular}
+\end{table}
+}
+\end{frame}
+
+
+%% End with list of other things that I will be doing going forward
+\begin{frame}{Ok, so where from here?}
+%
+%\begin{itemize}
+%\item bdots
+%\item work on simulation for eye tracking/physiology
+%\item using other parts of the data in larger model (number of saccades, search patterns, length of fixations, response time for whatever)
+%\item Main one to talk about here -- oculomotor delay
+%\end{itemize}
+
+\begin{itemize}
+\item bdots
+\item Simulation for eyetracking/physiology
+\item Extending the model (number of saccades, search patterns, etc.,)
+\item Oculomotor delay
+\end{itemize}
+\end{frame}
+
+% talk about oculomotor delay
+\begin{frame}{Oculomotor delay}
+Though we talk about saccades and fixations, what we are \textit{actually} interested in is this latent cognitive mechanism
+
+It happens in our head first and then our eyes move. This delay, typically around 200ms, is random, and can bias our estimates \\
+
+We will call the length of an  oculomotor delay $\rho(t)$
+
+\begin{center}
+\includegraphics[scale=0.25]{img/om_delay2.png}
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Oculomotor delay, cont.}
+A saccade observed at time $t_j$ is likely a sample from the activation curve $f_{\theta}$ at some point prior to $t_j$. We might then consider our saccades to be
+\begin{align*}
+s_j \sim Bern[f_{\theta}(t_j - \rho(t_j)],
+\end{align*}
+where $\rho(t)$ represents our oculomotor delay. It may be the case that:
+
+\begin{itemize}
+\item[1.] $\rho(t)$ is a constant function (including 0)
+\item[2.] $\rho(t)$ is a random variable, independent on the value of $t$
+\item[3.] $\rho(t)$ is a random variable, dependent on $t$ and possibly other aspects of the trial
+\end{itemize}
+
+For clarity, then, we might call $f_{\theta}(t)$ the (latent) activation curve, with $g_{\theta}(t) = f_{\theta}(t - \rho(t))$ our (observed) saccade curve
+
+\end{frame}
+
+
+\begin{frame}{Impact of random delay}
+\begin{center}
+% code for doing this in dissertation folder
+\includegraphics[scale=0.35]{img/full_delay_plot.png}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Bootstrapped differences in time series -- \texttt{bdots}}
+\vspace{-1mm}
+\begin{center}
+\includegraphics[scale=0.47]{img/bdots_plots.png}
+\end{center}
+\end{frame}
+
+
+\begin{frame}{Concluding remarks}
+What can we take away from this:
+\begin{itemize}
+\item VWP used to collect eye tracking data as proxy for word recognition
+\item  Saccade method results in less bias in estimating generating curve
+\item Software and methodology to investigate these
+\end{itemize}
+And where are we going from here?
+\begin{itemize}
+\item Oculomotor delay
+\item Simulating eyetracking data (linking hypothesis)
+\item Expanding domain of \texttt{bdots}
+\end{itemize}
+\end{frame}
+
+%%------------------------------------END
+% bonus
+
+
+%% Could include some slides at the end showing bdots work for bonus
+%
+%\begin{frame}[fragile]{Non-vwp data - TEST SLIDE FOR R CODE}
+%Data for 451LuBR cell line (metastatic melanoma) growth with repeated measures in mice with five treatment groups \newline \\
+%
+%\lstset{basicstyle=\footnotesize\ttfamily, style = rstyle}
+%\begin{lstlisting}[language=R, showstringspaces=false,deletekeywords={data,col,time,c,}]
+%## Using custom curve for fitting data
+%fit <- bdotsFit(data = dat, 
+%                subject = "ID", 
+%                time = "Day", 
+%                y = "Volume", 
+%                group = "Treatment", 
+%                curveType = expCurve())
+%\end{lstlisting}
+%\end{frame}
+%
+%\begin{frame}{Plots- TEST SLIDE FOR COLUMNS}
+%Representative curves for individual mice, as well as comparisons between two treatments with bootstrapped curves
+%\begin{columns}
+%\begin{column}{0.45\textwidth}
+%\begin{center}
+%4
+%%\includegraphics[scale=0.45]{img/tumr_fit.png}
+%\end{center}
+%\end{column}
+%\begin{column}{0.5\textwidth}  %%<--- here
+%\begin{center}
+%4
+%%\includegraphics[scale=0.3]{img/tumr_boot.png}
+%\end{center}
+%\end{column}
+%\end{columns}
+%\end{frame}
+
+
+
+
+\begin{frame}{References}
+Magnuson, James S. \textbf{Fixations in the visual world paradigm: where, when, why?} 2019-09 \textit{Journal of Cultural Cognitive Science}, Vol. 3, No. 2 Springer  Science and Business Media LLC p. 113-139 \newline \\
+
+McMurray, Bob \textbf{Fixation Curves in the Visual World Paradigm} 2020(?) \newline \\
+
+Oleson, Jacob J; Cavanaugh, Joseph E, McMurray, Bob; Brown, Grant \textbf{Detecting time-specific differences between temporal nonlinear curves: Analyzing data from the visual world paradigm} 2017 \textit{Statistical Methods in Medical Research}, Vol. 26, No. 6 p 2708-2725 \newline \\
+
+Paul D. Allopenna, James S. Magnuson, Michael K. Tanenhaus
+\textbf{Tracking the Time Course of Spoken Word Recognition Using Eye Movements: Evidence for Continuous Mapping Models} 1998 \textit{Journal of Memory and Language}, Vol. 38, Issue 4 p 419-439
+
+
+\end{frame}
+
+
+
+\end{document}

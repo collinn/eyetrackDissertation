@@ -76,7 +76,42 @@ getDiffSlices <- function(ff, ww) {
   #abline(v = 0, col = 'red', lty = 2,  lwd = 2, ylim = c(5, 100))
 }
 
+getDiffSlicesgg <- function(ff, ww, ll = FALSE) {
+  rr <- readRDS(ff)
 
+  tt <- attributes(rr) |> unlist()
+
+  tit <- switch(ww,
+                "Homogenous Means, AR(1) Error",
+                "Heterogenous Means, AR(1) Error",
+                "Heterogeneous Means, No AR(1) Error")
+  sm <- lapply(rr, `[[`, 1)
+  mm <- lapply(rr, `[[`, 2)
+  pm <- lapply(rr, `[[`, 3)
+
+  smm <- sapply(sm, timetiePower) |> rowSums()
+  mmm <- sapply(mm, timetiePower) |> rowSums()
+  pmm <- sapply(pm, timetiePower) |> rowSums()
+  time <- seq(-1, 1, length.out = 401)
+
+  dat <- data.table(Method = rep(c("Hom. Boot",
+                            "Het. Boot",
+                            "Permutation"), each = 401),
+             Power = c(smm, mmm, pmm),
+             Time = rep(time, 3))
+
+  pp <- ggplot(dat, aes(Time, Power, color = Method)) + theme_bw() + ggtitle(tit) +
+    geom_line(linewidth=1) + #geom_abline(slope = 0, intercept = 5, color = 'red', linetype = "dotted")
+    geom_function(fun = Vectorize(function(x) {
+      ifelse(x < 0, 5, NA)
+    }), color = 'red', linetype = "dashed", linewidth = 1.25) +
+    geom_abline(slope = 1e5, intercept = 0, color = 'red', linetype = 'dashed',
+                linewidth = 1.25) +
+    scale_color_manual(values = c("#00BFC4", "#7CAE00", "#C77CFF")) + theme(legend.position = "bottom")
+
+  if (!ll) pp <- pp + theme(legend.position = "none")
+  return(pp)
+}
 
 
 i <- 1
@@ -96,4 +131,24 @@ getDiffSlices(ff[3], 3)
 # getDiffSlices(ff[6])
 # getDiffSlices(ff[2])
 # getDiffSlices(ff[5])
+dev.off()
+
+## Now with gg yo
+pdf("~/dissertation/writing/methodology/img/type_two_error_time_a.pdf", width = 5, height = 2.5)
+getDiffSlicesgg(ff[1], 1, F)
+dev.off()
+pdf("~/dissertation/writing/methodology/img/type_two_error_time_b.pdf", width = 5, height = 2.5)
+getDiffSlicesgg(ff[2], 2, F)
+dev.off()
+pdf("~/dissertation/writing/methodology/img/type_two_error_time_c.pdf", width = 5, height = 2.5)
+getDiffSlicesgg(ff[3], 3, ll = TRUE)
+dev.off()
+
+
+a <- getDiffSlicesgg(ff[1], 1)
+b <- getDiffSlicesgg(ff[2], 2)
+cc <- getDiffSlicesgg(ff[3], 3, ll = TRUE)
+
+pdf("~/dissertation/writing/methodology/img/typeII_time.pdf", width = 5.5, height = 7.5)
+gridExtra::grid.arrange(a,b,cc, nrow = 3)
 dev.off()

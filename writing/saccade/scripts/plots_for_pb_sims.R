@@ -226,7 +226,7 @@ pp <- biasPlot(fit_fix_no_delay,
                fit_sac_no_delay,
                sim_no_delay,
                tit = "No Delay",
-               xint = 0)
+               xint = 0, trim = 0.985)
 
 
 pdf("../img/no_delay_par_bias_onset.pdf", width = 6, height = 3)
@@ -243,7 +243,7 @@ pp <- biasPlot(fit_fix_weibull,
                fit_sac_weibull,
                sim_weibull,
                tit = "Weibull Delay",
-               xint = 0)
+               xint = 0, trim = 0.99)
 
 pdf("../img/weibull_delay_par_bias_proportion.pdf", width = 6, height = 3)
 pp[[1]]
@@ -267,7 +267,7 @@ pp <- biasPlot(fit_fix_normal,
                fit_sac_normal,
                sim_normal,
                tit = "Normal Delay",
-               xint = 0)
+               xint = 0, trim = 0.99)
 
 pdf("../img/normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
 pp[[1]]

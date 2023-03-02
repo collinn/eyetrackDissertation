@@ -152,3 +152,11 @@ cc <- getDiffSlicesgg(ff[3], 3, ll = TRUE)
 pdf("~/dissertation/writing/methodology/img/typeII_time.pdf", width = 5.5, height = 7.5)
 gridExtra::grid.arrange(a,b,cc, nrow = 3)
 dev.off()
+
+
+
+## Delete this
+
+pdf("~/test.pdf", width = 6, height = 5)
+plot(1:10)
+dev.off()

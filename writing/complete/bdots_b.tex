@@ -723,6 +723,283 @@ The formula syntax was originally contrived to make comparisons within groups or
 %
 %yeah not like sexy or anything but whatever it would work.
 
+\section{Writing Custom Curve Functions}
+
+One of the most significant changes in the newest version of \xt{bdots} is the ability to specify the parametric curve independently of the fitting function. Not only does this simply a typical analysis, reducing all fitting operations to the single function \xt{bfit}, it also provides users with a way to modify this function to meet their own needs. In this section we will detail how the curve function is used in \xt{bdots} and how users can write their own. Finally, we will conclude with an example of how this was used in Chapter 2 to create adequate fits with the  look onset method when the typical method for constructing estimated starting parameters based on the proportion of fixation method failed.
+
+To begin, it is important to understand a little of how \xt{bdots} works internally. In the curve fitting steps using \xt{bfit}, the data is split by subject and group, creating a list whereby each element is the set of all observations for a single subject and a single group (i.e., in a paired setting, an individual subject would have two separate elements in this list). Ultimately, the data in each element will be used to construct a set of estimated parameters and standard errors for each subject provided by the function \xt{lmer::gnls}. Doing so requires both (1) a formula to which  we fit the data and (2) starting parameter estimates. Proving the both of these is the role of the curve function. Figure~\ref{fig:curve_split} provides an illustration of this process.
+
+
+
+\begin{figure}
+\centering
+\includegraphics{img/curve_split.pdf}
+\caption{A call to the function \xt{bfit} with data \xt{X} and outcome and time variables \xt{"y"} and \xt{"time"}. \xt{bfit} splits the dataset \xt{X} by subject/group and passes each individual \xt{data.frame} into the curve function \xt{f()}, along with time and outcome character vectors as well as any other arguments passed into \xt{...}. In particular, the \xt{...} argument allows the user to specify characteristics of the curve function that apply to all instances, as would be the case, for example, if \xt{curveFun = polynomial(degree = 5)}. Finally, each instance of \xt{f(...)} returns both a formula for \xt{lmer::gnls} as well as subject-specific starting parameters.}
+\label{fig:curve_split}
+\end{figure}
+
+We turn our attention now to the curve function itself, using as an example a curve function for sitting a straight line to the observed data, given in Figure~\ref{fig:fun_layout}. In describing the purpose for each, we also include enough detail so that this may be used as a template in constructing a new one all together. We do this in an enumerated list, each item corresponding to the numbered portion in Figure~\ref{fig:fun_layout}.
+
+\begin{figure}[H]
+\centering
+\includegraphics{img/fun_layout.pdf}
+\caption{An example curve function with its constituent parts}
+\label{fig:fun_layout}
+\end{figure}
+
+\begin{enumerate}
+\item The first part of the curve function is the collection of arguments to be passed, also known as formals. Each curve function should have an argument \xt{dat}, which takes a \xt{data.frame} as described in Figure~\ref{fig:curve_split}, as well as arguments \xt{y} and \xt{time} which will take character strings indicating which columns of \xt{dat} represent the outcome and time variables, respectively. Following this is the prespecified argument \xt{params = NULL}, which is used by \xt{bdots} during the refitting process, where the estimated starting parameters for the function are retrieved from outside the curve fitting function. During the initial fitting process, however, these arguments are generally constructed from the observed data. The only exception to this would be if the user decided to specify the initial starting parameters for \textit{all} subjects when calling \xt{bfit}, as in the call
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+fit <- bfit(dat, "y", "time", curveFun = linear(intercept = 0, slope = 1),
+\end{BVerbatim}
+%\caption{Illustration of Mouse data}
+\end{figure}
+\end{singlespace}
+however this should not be common. Following the \xt{params} argument, any other arguments specific to the curve function could be included. Although there are none for \xt{linear}, an example of when they might be used would be for \xt{polynomial}, in which the degree of the polynomial to be fit would be included. Finally, there is the \xt{...} argument, which is needed to accommodate the passing of any additional arguments from \xt{bfit} that are not a part of the curve function. Generally, this is not needed by the users but should be included nonetheless. 
+
+\item Also included in a curve function is a second function to estimate starting parameters from the observed data. While not strictly necessary that it be included \textit{within} the curve function, it is useful for keeping the curve function self contained; parameter estimating functions defined outside of the curve function will otherwise still be used if they exist in the users calling environment. For estimating starting parameters for a linear function we see here the function \xt{linearPars}, taking as  its arguments \xt{dat}, \xt{y}, and \xt{time}. In this example, we check in case \xt{var(y) == 0}, which causes issues for \xt{lmer::gnls}, though in general it is a good idea to check for any other potential issues when estimating starting parameters (negative values for a logistic, for example). Importantly, this function returns a named vector, with the names of the parameters needing to match the parameter names in the formula given in (5). 
+\item As detailed in (1), with the argument \xt{params = NULL}, the curve function should begin by estimating starting parameters. When different parameters are passed into \xt{params}, this is skipped
+\item This is a quick check on the result from (3). Had \xt{linearPars} returned a \xt{NULL} object, the curve function itself should return a \xt{NULL} object so that it is not passed to the fitter
+\item Finally, we have the most intricate part of the curve function, which is the construction of the formula object to be used by \xt{lmer::gnls}. The first two lines of this use the base R function \xt{str2lang} which turns a character string into an R language object (specifically, an unevaluated expression), making the names of the outcome and time variable suitable for a formula. The next line using the base R function \xt{bquote}. The function \xt{quote} returns its argument exactly as it was passed as an unevaluated expression; \xt{bquote} does the same but first substituting any of its elements wrapped in \xt{.()}. As it is written here, this will return a formula object using \xt{slope} and \xt{intercept} as is, but while replacing \xt{.(y)} and \xt{.(time)} with the appropriate names based on the columns of \xt{dat}. Finally, the names of the parameters are included as attributes to the formula object and the curve function concludes by returning a named list including both the formula object, as well as the named vector of parameters.
+\end{enumerate}
+
+The object returned by the curve function is not limited to just providing starting parameters for observed data; the formula itself is converted by \xt{bdots} into a function proper, capable of evaluating and bootstrapping values from that function in \xt{bboot}. And so long as a user is able to recreate the steps provided, they should be able to construct any sort of nonlinear function to be fit to their data, even if it is not included in \xt{bdots}.
+
+While there is obvious utility in being able to specify \textit{new} curves for \xt{bdots} to fit, we describe a case here in which the flexibility of the curve function was used to recreate the \xt{doubleGauss()} function for use with our simulated data. In short, Chapter 2 details a proposed method for fitting data in the Visual World Paradigm relying \textit{not} on a densely sampled function in time, but rather as a collection of unordered binary observations. When the \xt{doubleGauss} function was originally introduced to \xt{bdots}, the empirically observed data was a relatively close match for its parametric form:
+
+\begin{equation}
+f(t|\theta) = \begin{cases}
+\exp \left( \frac{(t - \mu)^2}{-2\sigma_1^2} \right) (p - b_1) + b_1 \quad \text{if } t \leq \mu \\
+\exp \left( \frac{(t - \mu)^2}{-2\sigma_2^2} \right) (p - b_2) + b_2 \quad \text{if } t > \mu
+\end{cases}
+\end{equation}
+
+An example of how the observed data matched the proposed functional form is taken from an example given in Figure~\ref{fig:bdots_log}.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{img/bdots_logistic.pdf}
+\caption{Example data for a four parameter logistic}
+\label{fig:bdots_log}
+\end{figure}
+
+Accordingly, an appropriate function for estimating the starting parameters took the form given in Figure~\ref{fig:gauss_form}.
+
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+dGaussPars <- function (dat, y, time) {
+    time <- dat[[time]]
+    y <- dat[[y]]
+    if (var(y) == 0) {
+        return(NULL)
+    }
+    mu <- time[which.max(y)]
+    ht <- max(y)
+    base1 <- min(y[time < mu])
+    base2 <- min(y[time > mu])
+    y1 <- y - base1
+    y1 <- rev(y1[time <= mu])
+    time1 <- rev(time[time <= mu])
+    totalY1 <- sum(y1)
+    sigma1 <- mu - time1[which.min(abs((pnorm(1) - pnorm(-1)) * 
+        totalY1 - cumsum(y1)))]
+    y2 <- y - base2
+    y2 <- y2[time >= mu]
+    time2 <- time[time >= mu]
+    totalY2 <- sum(y2)
+    sigma2 <- time2[which.min(abs((pnorm(1) - pnorm(-1)) * totalY2 - 
+        cumsum(y2)))] - mu
+    return(c(mu = mu, ht = ht, sig1 = sigma1, sig2 = sigma2, 
+        base1 = base1, base2 = base2))
+}
+\end{BVerbatim}
+\caption{Estimate starting parameters for empirical asymmetric Gaussian}
+\label{fig:gauss_form}
+\end{figure}
+\end{singlespace}
+
+This is appropriate, for example, when considering that the \xt{mu} parameter is estimated by finding \textit{when} the observed data is at its peak, while the \xt{ht} parameter is found to be the peak itself. In the case of the look onset method, however, data consists of non-ordered binary observations $\{0,1\}$ in time, making estimates for even these two parameters completely unreliable. An immediate consequence of this was that in a simulation of 1,000 subjects fit with asymmetric Gaussian data was conducted, less than half were able to return adequate fits from \xt{bdots}, proving problematic for any kind of systematic analysis in assessing the proposed method.
+
+The solution, of course, was to provide a new curve function utilizing a different interval function for estimating starting parameters. The particular interest in presenting this here is how broad of a solution this may be to any number of problems: rather than attempting to construct parameters directly from the data (which may be misbehaved), we provide a reasonable distribution of starting parameters, drawing any number of samples from it, and retaining those which best fit the observed data:
+
+\begin{singlespace}
+\begin{figure}[H]
+\centering
+\begin{BVerbatim}
+dgaussPars_dist <- function(dat, y, time, startSamp = 8) {
+        time <- dat[[time]]
+        y <- dat[[y]]
+        
+        if (var(y) == 0) {
+            return(NULL)
+        }
+        
+        spars <- data.table(param = c("mu", "ht", "sig1", "sig2", "base1", "base2"),
+                            mean = c(630, 0.18, 130, 250, 0.05, 0.05), 
+                            sd = c(77, 0.05, 30, 120, 0.015, 0.015), 
+                            min = c(300, 0.05, 50, 50, 0, 0), 
+                            max = c(1300, 0.35, 250, 400, 0.15, 0.15))
+        
+        fn <- function(p, t) {
+            lhs <- (t < p[1]) * ((p[2] - p[5]) * 
+                      exp((t - p[1])^2/(-2 * p[3]^2)) + p[5])
+            rhs <- (t >= p[1]) * ((p[2] - p[6]) * 
+                      exp((t - p[1])^2/(-2 * p[4]^2)) + p[6])
+            lhs + rhs
+        }
+        npars <- vector("list", length = startSamp)
+        for (i in seq_len(startSamp)) {
+            maxFix <- Inf
+            while (maxFix > 1) {
+                npars[[i]] <- Inf
+                while (any(spars[, npars[[i]] <= min | npars[[i]] >= max])) {
+                  npars[[i]] <- spars[, rnorm(length(npars[[i]])) * sd + mean]
+                }
+                maxFix <- max(fn(npars[[i]], time))
+            }
+        }
+        r2 <- vector("numeric", length = startSamp)
+        for (i in seq_len(startSamp)) {
+            yhat <- fn(npars[[i]], time)
+            r2[i] <- mean((y - yhat)^2)
+        }
+        finalPars <- npars[[which.min(r2)]]
+        names(finalPars) <- c("mu", "ht", "sig1", "sig2", "base1", "base2")
+        return(finalPars)
+    }
+\end{BVerbatim}
+\caption{Using random distribution to estimate starting parameters}
+\label{fig:gauss_form_dist}
+\end{figure}
+\end{singlespace}
+
+By utilizing an existing fitting function while substituting the method by which the starting parameters are estimated, we were able to go from recovering less than half of the simulated starting parameters successfully to well over 85\%.
+
+%%% Commented out stuff for the logistic function
+
+%\begin{singlespace}
+%\begin{figure}[H]
+%\centering
+%\begin{BVerbatim}
+%logistic <- function(dat, y, time, params = NULL, ...) {
+%    
+%    ## Function to estimate starting pars based on subject data
+%    logisticPars <- function(dat, y, time, ...) {
+%        time <- dat[[time]]
+%        y <- dat[[y]]
+%        if (var(y) == 0) {
+%            return(NULL)
+%        }
+%        mini <- min(y)
+%        peak <- max(y)
+%        r <- (peak - mini)
+%        cross <- time[which.min(abs(0.5 * r - y))]
+%        q75 <- 0.75 * r + mini
+%        q25 <- 0.25 * r + mini
+%        time75 <- time[which.min(abs(q75 - y))]
+%        time25 <- time[which.min(abs(q25 - y))]
+%        tr <- time75 - time25
+%        tr <- ifelse(tr == 0, median(time), tr)
+%        slope <- (q75 - q25)/tr
+%        return(c(mini = mini, peak = peak, slope = slope, cross = cross))
+%    }
+%    if (is.null(params)) {
+%        params <- logisticPars(dat, y, time)
+%    }
+%    
+%    if (is.null(params)) {
+%        return(NULL)
+%    }
+%    y <- str2lang(y)
+%    time <- str2lang(time)
+%    ff <- bquote(.(y) ~ mini + (peak - mini)/(1 + exp(4 * slope * 
+%        (cross - (.(time)))/(peak - mini))))
+%    attr(ff, "parnames") <- names(params)
+%    return(list(formula = ff, params = params))
+%}
+%\end{BVerbatim}
+%\caption{Original curve fun, might find way to make it simpler}
+%\end{figure}
+%\end{singlespace}
+%
+%
+%
+%
+%\begin{singlespace}
+%\begin{figure}
+%\begin{BVerbatim}
+%logisticPars_dist <- function(dat, y, time, startSamp = 8, ...) {
+%    time <- dat[[time]]
+%    y <- dat[[y]]
+%    if (var(y) == 0) return(NULL)
+%    spars <- data.frame(param = c("mini", "peak", "slope", "cross"),
+%                        mean = c(0.115, 0.885, 0.0016, 765),
+%                        sd = c(0.12, 0.12, 0.00075, 85),
+%                        min = c(0, 0.5, 0.0009, 300), 
+%                        max = c(0.3, 1, 0.01, 1100))
+%    # logistic function
+%    fn <- function(p, t) {
+%        p[1] + (p[2] - p[1])/(1 + exp(4 * p[3] * ((p[4] - t)/(p[2] -p[1]))))
+%    }
+%    rpars <- vector("list", length = startSamp)
+%    for (i in seq_len(startSamp)) {
+%        maxFix <- Inf
+%        while (maxFix > 1 | maxFix < 0.6) {
+%            tryPars[[i]] <- Inf
+%            while (any(spars[, rpars[[i]] <= min | rpars[[i]] >= max])) {
+%                rpars[[i]] <- spars[, rnorm(length(rpars[[i]])) * sd + mean]
+%            }
+%            maxFix <- max(fn(rpars[[i]], time))
+%        }
+%    }
+%    r2 <- vector("numeric", length = startSamp)
+%    for (i in seq_len(startSamp)) {
+%        yhat <- fn(rpars[[i]], time)
+%        r2[i] <- mean((y - yhat)^2)
+%    }
+%    finalPars <- rpars[[which.min(r2)]]
+%    names(finalPars) <- c("mini", "peak", "slope", "cross")
+%    return(finalPars)
+%}
+%\end{BVerbatim}
+%\caption{proposed alternative using distribution for start pars}
+%\end{figure}
+%\end{singlespace}
+%
+%
+%
+%\begin{singlespace}
+%\begin{figure}
+%\begin{BVerbatim}
+%logistic_dist <- function(dat, y, time, startSamp, params = NULL, ...) {
+%    
+%    ## Function to estimate starting pars based on subject data
+%    logisticPars_dist <- (...)
+%    
+%    if (is.null(params)) {
+%        params <- logisticPars_dist(dat, y, time, startSamp)
+%    }
+%    if (is.null(params)) {
+%        return(NULL)
+%    }
+%    y <- str2lang(y)
+%    time <- str2lang(time)
+%    ff <- bquote(.(y) ~ mini + (peak - mini)/(1 + exp(4 * slope * 
+%        (cross - (.(time)))/(peak - mini))))
+%    attr(ff, "parnames") <- names(params)
+%    return(list(formula = ff, params = params))
+%}
+%\end{BVerbatim}
+%\caption{proposed alternative for finding parameters}
+%\end{figure}
+%\end{singlespace}
 
 
 

@@ -75,7 +75,7 @@
 
 \newcommand{\Mypm}{\mathbin{\tikz [x=1.4ex,y=1.4ex,line width=.1ex] \draw (0.0,0) -- (1.0,0) (0.5,0.08) -- (0.5,0.92) (0.0,0.5) -- (1.0,0.5);}}%
 
-\title[Public Defense]{What You See is What You Get}
+\title[Public Defense]{What You See is What You Get:}
 \subtitle{A Closer Look at Bias in the Visual World Paradigm}
 \author{Collin Nolte}
 \date{March 8, 2023}
@@ -103,7 +103,7 @@
 %\end{itemize}
 %\end{frame}
 
-\begin{frame}{Outline}\large
+\begin{frame}{Outline}\Large
 What is this talk going to be about?
 
 \begin{itemize}
@@ -116,7 +116,7 @@ What is this talk going to be about?
 \end{frame}
 
 % language and cognition
-\begin{frame}{Language and Cognition}
+\begin{frame}{Language and Cognition}\large
 The field is itself exceptionally broad, ranging from sentence processing, priming, reading, and word formation:
 
 \begin{center}
@@ -131,7 +131,7 @@ Particularly troublesome when we commit too early:
 
 Often can not be observed directly  \vp
 
-We are going to limit our focus today to single word recognition
+Limit focus to single word recognition \cn{start by introducing cohort model as an idea}
 
 
 
@@ -170,9 +170,9 @@ Continuous mapping models of word recognition account for variety of observed ph
 
 In particular, connectionist models of lexical access (such as TRACE):
 \begin{itemize}
-\item Network structure
-\item Processes in real time
-\item Nodes, activation, and signal
+\item Network structure \cn{relies on information between levels, i.e., phonemes, words, etc.)}
+\item Processes in real time \cn{along with network structure, accommodates competition}
+\item Nodes, activation, and signal \cn{metaphors that motivate language used to describe it}
 \end{itemize}
 \end{frame}
 
@@ -193,6 +193,13 @@ In particular, connectionist models of lexical access (such as TRACE):
 \end{figure}
 \end{frame}
 
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics[scale=0.5]{img/trace_plot_reg.png}
+\caption{gave up on reordering the legend}
+\end{figure}
+\end{frame}
 
 
 % why is this important?
@@ -208,9 +215,11 @@ Typically interested in comparing activation between groups or conditions \vspac
 
 Fortunately there is expertly written software to help accomplish this
 
+\cn{comment that we will discuss bdots in  more detail at end}
+
 \end{frame}
 
-\begin{frame}{Ok, so how do we get access?}
+\begin{frame}{What's in a look?}
 
 \begin{columns}
 \begin{column}{0.45\textwidth}
@@ -225,13 +234,24 @@ This has been empirically tested and confirmed in countless experiments
 \end{column}
 \begin{column}{0.5\textwidth}
 \begin{center}
-\includegraphics[scale=0.45]{img/car_eye.jpg}
+%\includegraphics[scale=0.45]{img/car_eye.jpg}
+\includegraphics[scale=0.95]{img/edit_car_eye.pdf}
 {\tiny Cohen 1983}
 \end{center}
 \end{column}
 \end{columns}
 
 \end{frame}
+
+\begin{frame}{What's in a look?}
+\vspace{-1mm}
+\begin{figure}
+\centering
+\includegraphics[scale=0.95]{img/edit_car_eye.pdf}
+\caption{ what it would look like without words}
+\end{figure}
+\end{frame}
+
 
 
 \begin{frame}{Visualizing Eye Mechanics}
@@ -253,7 +273,7 @@ This has been empirically tested and confirmed in countless experiments
 
 Visual World Paradigm introduced in 1995 \vp
 
-Eyetracking software in conjunction with spoken sentence \vp
+Eye-tracking in conjunction with spoken sentence \vp
 
 ``The boy will move the cake" \vp
 
@@ -275,6 +295,7 @@ How do we go from this to word recognition? \vp
 \begin{figure}
 \centering
 \includegraphics[width=\textwidth]{apple_combine.pdf}
+%\includegraphics[scale = 1.1]{apple_combine.pdf}
 \caption{Differential eye response based on context and ambiguity}
 \end{figure}
 \end{frame}
@@ -321,21 +342,6 @@ and find
 \end{columns}
 \end{frame}
 
-\begin{frame}{Linking hypothesis}
-\cn{this slide should exist} \vp
-
-\cn{``The default interpretation is greater fixation proportions indicate greater activation in the underlying processing system" (Magnuson 2019)} \vp
-
-Have used $f(t|\theta)$ as functional form for proportion of fixations, but relation to activation still implicit/undefined \vp
-
-Our primary proposal is that it is the underlying activation that should be stated explicitly as $f(t|\theta)$, using our observed data to recover it (rather than fitting function to observed data) \vp
-
-Under this proposal, there are major issues with proportion of fixation method
-
-
-
-\end{frame}
-
 
 \begin{frame}{Parametric Function}
 
@@ -357,36 +363,65 @@ f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
 \end{columns}
 \end{frame}
 
+\begin{frame}{Linking hypothesis}\Large
+
+Have used $f(t|\theta)$ as functional form for proportion of fixations, but relation to activation still implicit/undefined \vp
+
+\cn{``The default interpretation is greater fixation proportions indicate greater activation in the underlying processing system" (Magnuson 2019)} \vp
+
+
+Our primary proposal is that it is the underlying activation, rather than observed data, that should be modeled explicitly as $f(t|\theta)$ \vp
+
+%Under this proposal, there are major issues with proportion of fixation method
+
+\end{frame}
+
 \begin{frame}{Issues}
-We are predominately interested in the recovery of a lexical activation function, though given visual similarities between the proportion of fixations and activation, we have the ostensible equivalence, 
 
-\begin{equation}
+\cn{Actually, let's move delay observation bias until \textit{after} look onset introduced since its unrelated, but relevant for sim}
+
+\cn{maybe move illustration of saccade/OM/fixation to immediately after this slide?}
+
+\cn{in light of this...} Despite visual similarities between the proportion of fixations and activation, there is an issue with the equivalence
+
+\begin{align*}
 y_{it} \equiv f(t | \theta_i)
-\end{equation}
+\end{align*}
 
-There are primarily two sources of biases inherent in this method which hitherto have been left unexamined:
+Eye mechanics made up of distinct mechanisms that are differentially related to activation \vp
 
-\begin{itemize}
-\item[1.] Delayed observation bias/error
-\item[2.] Added observation bias
-\end{itemize}
+\cn{maybe don't specifically say anything here, save discussion for next slide then move on to added observation bias}
 
-(in reverse order because easier to explain plus its mostly an aside)
+\end{frame}
+
+\begin{frame}{Visualizing Eye Mechanics}
+\vspace{-1mm}
+\begin{figure}
+\centering
+\includegraphics[scale=0.45]{img/what_is_a_look.pdf}
+\caption{just describe this with words, mention 200ms delay, etc)}
+\end{figure}
 \end{frame}
 
 
-\begin{frame}{Delayed observation bias}
+%
+%\begin{frame}{Issues (another attempt)}
+%We are predominately interested in the recovery of a lexical activation function, though given visual similarities between the proportion of fixations and activation, we have the ostensible equivalence, 
+%
+%\begin{equation}
+%y_{it} \equiv f(t | \theta_i)
+%\end{equation}
+%
+%There are primarily two sources of biases inherent in this method which hitherto have been left unexamined:
+%
+%\begin{itemize}
+%\item[1.] Delayed observation bias/error
+%\item[2.] Added observation bias
+%\end{itemize}
+%
+%\cn{(in reverse order because easier to explain plus its mostly an aside)}
+%\end{frame}
 
-\cn{too many words} \vp
-
-Delayed observation bias arises from the oculomotor delay between the cognitive process (of interest) and the first physiological response \vp
-
-It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
-
-\cn{Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness} \vp
-
-We show that varying degrees of randomness in this process and drastically impact error in recovery
-\end{frame}
 
 \begin{frame}{Added Observation Bias}
 
@@ -426,14 +461,19 @@ By including the entire length of the fixation as ``observed" data relating to t
 \end{center}
 \end{frame}
 
-
 \begin{frame}{Look Onset Method}
 \cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
 
-Under the look onset method, only the initial moment of look onset, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
+\cn{We propose look onset method}
+
+Only the initial moment of look onset, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
+\vspace{-2mm}
+%\begin{equation}
+%s_j \sim Bern \left[f(t_j | \theta)\right]
+%\end{equation}
 
 \begin{align*}
-s_j \sim Bern(f_{\theta}(t_j))
+s_j \sim Bern \left[f(t_j | \theta)\right]
 \end{align*}
 
 This gives us instead a set of ordered pairs, $\mathcal{S} = \{(s_j, t_j)\}$ rather than a time ordered vector of proportions \\ \vp
@@ -442,18 +482,63 @@ Fortunately, we are able to use nearly an identical procedure as before,
 \begin{align*}
 \hat{\theta} = \argmin_{\theta} \mathcal{L}(f_{\theta}, \mathcal{S})
 \end{align*}
+
 \end{frame}
 
-\begin{frame}{bdots}
-\cn{Should i talk about bdots somewhere? I don't think it needs its own slide. Mention bdots earlier then on previous slide be like oh yeah it can handle data from look onset as well}
+%\begin{frame}{Look Onset Method}
+%\cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
+%
+%Under the look onset method, only the initial moment of look onset, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
+%
+%\begin{align*}
+%s_j \sim Bern(f_{\theta}(t_j))
+%\end{align*}
+%
+%This gives us instead a set of ordered pairs, $\mathcal{S} = \{(s_j, t_j)\}$ rather than a time ordered vector of proportions \\ \vp
+%
+%Fortunately, we are able to use nearly an identical procedure as before, 
+%\begin{align*}
+%\hat{\theta} = \argmin_{\theta} \mathcal{L}(f_{\theta}, \mathcal{S})
+%\end{align*}
+%\end{frame}
+
+
+\begin{frame}{Delayed Observation}\large
+
+Between the cognitive mechanism \cn{probabilistically related to activation} and the initiation of look onset is a period of oculomotor delay, $\rho$ \vp
+
+This gives distribution of look onset,
+\vspace{-1mm}
+\begin{align*}
+s_j \sim Bern \left[f(t_j - \rho) | \theta)\right]
+\end{align*}
+
+It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
+
+\cn{Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness} \vp
+
+We show that varying degrees of randomness in this process and drastically impact error in recovery
+
 \end{frame}
+%
+%\begin{frame}{Delayed Observation}\large
+%
+%\cn{too many words} \vp
+%
+%Delayed observation bias arises from the oculomotor delay between the cognitive process (of interest) and the first physiological response, denote $\rho$ \vp
+%
+%It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
+%
+%\cn{Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness} \vp
+%
+%We show that varying degrees of randomness in this process and drastically impact error in recovery
+%\end{frame}
 
-\begin{frame}{Simulation}
+\begin{frame}{Simulation}\Large
 
-Create simulated VWP trials with eye mechanics with goal of recovering activation curve, $f(t|\theta)$ \vp
+Create simulated VWP trials with eye mechanics with goal of recovering activation curve, $f(t|\theta)$ \vp \vp
 
-Each subject draws individual $\theta_i$ \cn{from empirically determined distribution} and will perform 300 trials. 1,000 total subjects
-
+Each subject draws individual $\theta_i$ \cn{from empirically determined distribution} and will perform 300 trials. 1,000 total subjects \vp \vp
 
 Metric for efficacy is MISE between generating function and recovered curve using \xt{bdots}
 \end{frame}
@@ -562,15 +647,15 @@ Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\
 \end{frame}
 
 %% End with list of other things that I will be doing going forward
-\begin{frame}{Ok, so where from here?}
+\begin{frame}{Where from here?}
 
 \cn{maybe elaborate on bdots \textit{here}, what it can do, how it changed, etc.,. I also like the idea of talking a bit more about oculmotor delay (and I left that slide comparing curves after this), but its mostly theoretical time filler since I didn't actually do anything to address it}
 
 \begin{itemize}
-\item bdots
+\item Oculomotor delay
+\item \xt{bdots}
 \item Simulation for eyetracking/physiology
 \item Extending the model (number of saccades, search patterns, etc.,)
-\item Oculomotor delay
 \end{itemize}
 \end{frame}
 %

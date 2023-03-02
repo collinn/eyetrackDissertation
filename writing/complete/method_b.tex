@@ -134,7 +134,7 @@ We now go about comparing the type I error rate of the three methods just descri
 Data was generated according to Equation~\ref{eq:mean_structure}, with the parametric function $f(t|\theta)$ belonging to the family of four-parameter logistic curves defined:
 
 \begin{equation}\label{eq:logistic}
-f_{\theta}(t) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)} + b
+f(t | \theta) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)} + b
 \end{equation}
 where $\theta = (p, b, s, x)$, the peak, baseline, slope, and crossover parameters, respectively.
 
@@ -352,11 +352,19 @@ Hom. Bootstrap & 0.643 & 0.000 & 0.357 & 0.013 & 0.016 & 0.018 \\
 
 \begin{figure}[H]
 \centering.
-\includegraphics{type_two_err_time_slice.pdf}
-\caption{Observed power of each of the methods at each time in (-1,1). Might also be better to include this with subplots instead of single plot (also in ggplot2)}
+\includegraphics{typeII_time.pdf}
+\caption{Observed power of each of the methods at each time in (-1,1) (not sure if better as subplots?)}
 \label{fig:time_power_plot}
 \end{figure}
 
+%\begin{figure}[H]
+%\centering
+%    \subfigure[]{\includegraphics{type_two_error_time_a.pdf}}
+%    \subfigure[]{\includegraphics{type_two_error_time_b.pdf}}
+%        \subfigure[]{\includegraphics{type_two_error_time_c.pdf}}
+%\caption{Observed power of each of the methods at each time in (-1,1)}
+%\label{fig:time_power_plot}
+%\end{figure}
 
 \section{Discussion and concluding remarks}
 

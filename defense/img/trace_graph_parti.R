@@ -24,3 +24,16 @@ ggplot(dat2, aes(cycle, value, color = Word)) +
   ggtitle("TRACE Word Activation") +
   scale_fill_manual(labels = bb)
 dev.off()
+
+dat <- copy(dat2)
+dat$Word <- as.character(dat$Word)
+dat$Word <- ifelse(dat$Word == "parti", "party", dat$Word)
+dat$Word <- ifelse(dat$Word == "pik", "peek", dat$Word)
+dat$Word <- ifelse(dat$Word == "parS^l", "partial", dat$Word)
+
+png("trace_plot_reg.png", width = 624)
+ggplot(dat, aes(cycle, value, color = Word)) +
+  geom_line(size = 1) + ylab("Activation") + theme_bw(base_size=22) +
+  ggtitle("TRACE Word Activation: 'party'") +
+  scale_fill_manual(labels = bb)
+dev.off()

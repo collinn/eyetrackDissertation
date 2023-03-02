@@ -820,7 +820,7 @@ f(t|\theta) = \begin{cases}
 
 An example of how the observed data matched the proposed functional form is taken from an example given in Figure~\ref{fig:bdots_log}.
 
-\begin{figure}
+\begin{figure}[H]
 \centering
 \includegraphics[scale=1]{img/bdots_logistic.pdf}
 \caption{Example data for a four parameter logistic}
@@ -876,6 +876,7 @@ The solution, of course, was to provide a new curve function utilizing a differe
 dgaussPars_dist <- function(dat, y, time, startSamp = 8) {
         time <- dat[[time]]
         y <- dat[[y]]
+        
         if (var(y) == 0) {
             return(NULL)
         }
@@ -887,8 +888,10 @@ dgaussPars_dist <- function(dat, y, time, startSamp = 8) {
                             max = c(1300, 0.35, 250, 400, 0.15, 0.15))
         
         fn <- function(p, t) {
-            lhs <- (t < p[1]) * ((p[2] - p[5]) * exp((t - p[1])^2/(-2 * p[3]^2)) + p[5])
-            rhs <- (t >= p[1]) * ((p[2] - p[6]) * exp((t - p[1])^2/(-2 * p[4]^2)) + p[6])
+            lhs <- (t < p[1]) * ((p[2] - p[5]) * 
+                      exp((t - p[1])^2/(-2 * p[3]^2)) + p[5])
+            rhs <- (t >= p[1]) * ((p[2] - p[6]) * 
+                      exp((t - p[1])^2/(-2 * p[4]^2)) + p[6])
             lhs + rhs
         }
         npars <- vector("list", length = startSamp)
@@ -908,8 +911,7 @@ dgaussPars_dist <- function(dat, y, time, startSamp = 8) {
             r2[i] <- mean((y - yhat)^2)
         }
         finalPars <- npars[[which.min(r2)]]
-        names(finalPars) <- c("mu", "ht", "sig1", "sig2", "base1", 
-            "base2")
+        names(finalPars) <- c("mu", "ht", "sig1", "sig2", "base1", "base2")
         return(finalPars)
     }
 \end{BVerbatim}

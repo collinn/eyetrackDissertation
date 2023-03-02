@@ -29,6 +29,8 @@
 
 Last compiled: \today \  at \currenttime
 
+\pb{USE NATBIB; it is essential that you can run \xt{citet} and \xt{citep}}
+
 %\input{main.tex}
 
 %\begin{abstract}
@@ -37,50 +39,56 @@ Last compiled: \today \  at \currenttime
 
 \section{Introduction}
 
-A standard problem in psycholinguistics, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. Particularly in the case of comparing a process between experimental groups in time, techniques appropriate for demonstrating showing that differences \textit{exist} offer little towards the goal of identifying \textit{when} they exist when the time windows are not specified in advance, with the area under a curve (AUC) representing an example of this. One may consider instead testing two time series at each point in time, using a method such a cluster based permutation testing \cite{Maris2007} in which test-statistics are computed at each time, with adjacent significant tests being combined into single clusters. This is in an effort to address the problem of multiple comparisons and, by extension, control for the family wise error rate (FWER): by reducing adjacent test statistics into a single cluster, researchers work to control the FWER by simply reducing the number of tests. More recently has been the bootstrapped differences of time series (BDOTS) \cite{oleson2017detecting}, using bootstrapped fits of subject-level curves in conjunction with a modified Bonferroni correction to the significance level to control the family wise error rate in the presence of highly correlated test statistics. A version of this was introduced in the R package \xt{bdots} in 2018 \cite{seedorff2018bdots}.
+A standard problem in psycholinguistics\pb{not really limited to psychology...processes unfolding in time are pretty ubiquitous throughout science}, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. Particularly in the case of comparing a process between experimental groups in time, while there are many appropriate techniques for demonstrating that differences \textit{exist}, such as comparing the area under the curve (AUC) of the two processes or testing for differences in the underlying parameters (if the process is being modeled in a parametric manner). However, these offer little insight with respect to identifying \textit{when} these processes are significantly different, which is often the more relevant scientific question. Testing for time differences is complicated by the fact that there are effectively an infinite number of time points that could be compared, with the test results at nearby time points highly correlated. Both of these factors complicate efforts to correct for multiple comparisons.
+
+Various approaches have been proposed, such as using cluster based permutation testing \cite{Maris2007}. Here, test-statistics are computed at each time, with adjacent significant tests being combined into clusters. This controls for the family wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of tests. More recently, \cite{oleson2017detecting} used bootstrapped fits of subject-level curves and estimated the correlation structure of the test statistics in order to modify the Bonferroni correction of the significance level to control FWER. This approach, which they named bootstrapped differences of time series, was introduced in the R package \xt{bdots} \cite{seedorff2018bdots}.
 
 A closer look at the specific conditions under which the original iteration of \xt{bdots} was presented raises concerns, however, involving quite restrictive assumptions that are unlikely to be met in many, if not most, situations. This includes data typically collected in the Visual World Paradigm (VWP), context in which the underlying methodology was first proposed. Specifically, it assumed a homogeneous mean structure within each of the groups being compared, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to show that such an assumption is unlikely to be true, with the resulting type I error rate being unacceptably high.
 
-What we present instead is two alternatives, accommodating flexibility in two of the assumptions made in the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the FWER adjustment method presented for autocorrelated errors. In addition, we offer a permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the type I error rate across a number of experimental conditions, and finally we conclude with a demonstration of power in the competing methods.
+Here, we present two alternatives that accommodate flexibility in the assumptions made by the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the FWER adjustment method presented for autocorrelated errors. In addition, we offer a permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the type I error rate across a number of experimental conditions, and finally we conclude with a demonstration of power in the competing methods.
 
+\section{Methods}
 
-\section{Detail on the original}
+\pb{Define data notation here. we observe $y_{it}$ for subjects $i=1, \ldots, n$ over times $t=1, \ldots, T$. typically fall into separate groups and we want to compare those groups}
 
-Most generally the original bdots algorithm, which we will call the \textit{homogeneous bootstrap}, proposed that we have empirically observed data in time resulting from a parametric function $f$ with an associated error: 
+\subsection{Homogeneous bootstrap}
+
+\pb{revise this in light of above} Most generally the original bdots algorithm, which we will call the \textit{homogeneous bootstrap}, proposed that we have empirically observed data in time resulting from a parametric function $f$ with an associated error: 
 
 \begin{equation}\label{eq:mean_structure}
-y_{t} = f(t|\theta) + \epsilon_{it}
+y_{it} = f(t|\theta) + \epsilon_{it}
 \end{equation}
 where 
 \begin{equation}
 \epsilon_{it} = \phi \epsilon_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma).
 \end{equation}
-Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It further assumes homogeneity of the mean structure, meaning that two subjects from the same group would have parameters $\theta_{it} = \theta_{jt}$ for all $i, j$. In other words, it was assumed that there was no variability in the mean structure between subjects in the same group. \cn{This is also evidenced in the original bdots algorithm: }
+Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It further assumes homogeneity of the mean structure, meaning that if subjects $i$ and $j$ are from the same group, we have \pb{this kind of thing does not work at all -- you define $\theta$ above. it has no subscripts. You can't just refer to $\theta_{it}$ all of a sudden -- it's never been defined. Also, $\theta$ doesn't depend on $t$ at all, in any scenario. $\theta_{it} = \theta_{jt}$}. In other words, there is no variability in the mean structure between subjects, only between groups. \cn{This is also evidenced in the original bdots algorithm: }
 
 %\begin{singlespace}
+\pb{why are you manually numbering?}
 \begin{enumerate}
 \vspace{-3mm}
-\item[1.] For each subject, fit the nonlinear function, specifying AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a normal distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error
+\item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \cite{oleson2017detecting} recommended specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a normal distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error.
 
-\item[2.] Using the approximate sampling distributions in (1.), randomly draw one bootstrap estimate for each of the model parameters on every subject
+\item Using the approximate sampling distributions in (1.), randomly draw one bootstrap estimate for each of the model parameters on every subject \pb{MATH: $\hat{\theta}_i^{(b)} \sim ()$ or so}.
 
-\item[3.] Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap estimates across individuals
+\item Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap estimates across individuals  \pb{MATH}.
 
-\item[4.] Use the mean estimates to determine the predicted population level curve, which provides the average population response at each time point
+\item Use the mean estimates to determine the predicted population level curve, which provides the average population response at each time point.   \pb{MATH}
 
-\item[5.] Perform steps (2)-(4) 1000 times to obtain estimates of the population curves. Use these to create estimates of the mean response and standard deviation at each of the time points. 
+\item Perform steps (2)-(4) 1000 times to obtain estimates of the population curves. Use these to create estimates of the mean response and standard deviation at each of the time points.  \pb{MATH}.
 \end{enumerate}
 %\end{singlespace}
 
-Population means and standard deviations at each time point for each of the groups were used to construct a series of (correlated) test statistics, where the family wise error rate was controlled by using the modified Bonferonni correction introduced in \cite{oleson2017detecting} to test for significance.
+Population means and standard deviations at each time point for each of the groups were used to construct a series of (correlated) test statistics, where the family wise error rate was controlled by using the modified Bonferonni correction introduced in \cite{oleson2017detecting} to test for significance. \pb{This modified correction seems kind of important (among other things, hetboot uses it too), I think you should say more about it}
 
+\subsection{Heterogeneous Bootstrap}
 
-\section{Proposed Methods}
+Typically, subjects within a group demonstrate considerable variability in their mean parameter estimates. In this case, we should avoid the presumption that $\theta_i = \theta_j$, since accounting for between-subject variability within a group will be critical for obtaining a reasonable distribution of the population curves.
 
-As is more typically the case, subjects within a group demonstrate considerable variability in their mean parameter estimates. In such a case, there is no presumption that $\theta_i = \theta_j$, and accounting for between-subject variability within a group will be critical for obtaining a reasonable distribution of the population curves.
+Instead of \eqref{}
 
-\subsection{Modified Bootstrap}
-
+\label{eq:mean_structure}
 \cn{A more likely case involving subjects in the VWP (or subjects within any group exhibiting between and within subject variability) is as such: }
 
 The distribution of parameters for subjects $i = 1, \dots, n_g$ in group $g = 1, \dots, G$ follows the distribution

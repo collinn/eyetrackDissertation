@@ -313,9 +313,8 @@ As all of the data could not be individually inspected prior to being included i
 
 \begin{figure}[H]
 \centering
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{no_delay_par_bias_onset.pdf}} 
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{no_delay_par_bias_proportion.pdf}} 
-\caption{Parameter bias for with oculomotor delay}
+\includegraphics[scale=1]{no_delay_bar_plot.pdf}
+\caption{Parameter bias with no oculomotor delay}
 \label{fig:par_bias_no_delay}
 \end{figure}
 
@@ -332,8 +331,7 @@ As all of the data could not be individually inspected prior to being included i
 
 \begin{figure}[H]
 \centering
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{normal_delay_par_bias_onset.pdf}} 
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{normal_delay_par_bias_proportion.pdf}} 
+\includegraphics[scale=1]{normal_delay_bar_plot.pdf}
 \caption{Parameter bias with normal oculomotor delay}
 \label{fig:par_bias_normal_delay}
 \end{figure}
@@ -348,11 +346,10 @@ As all of the data could not be individually inspected prior to being included i
 \subsection{Weibull Delay}
 
 
+
 \begin{figure}[H]
 \centering
-
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{weibull_delay_par_bias_onset.pdf}} 
-    \subfigure[]{\includegraphics[width=0.9\textwidth]{weibull_delay_par_bias_proportion.pdf}} 
+\includegraphics[scale=1]{weibull_delay_bar_plot.pdf}
 \caption{Parameter bias with Weibull oculomotor delay}
 \label{fig:par_bias_weibull_delay}
 \end{figure}
@@ -400,20 +397,6 @@ Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\
 
 The proportion of fixation method seems no longer tenable in the recovery the underlying lexical activation, given both the magnitude of differences presented in Table~\ref{tab:mise_sims} as well as the theoretical arguments made and illustrated in Figure~\ref{fig:folly_of_fixation}. And given that data collected via the look onset method can be adequately fit in the newest version of the \xt{bdots} software, there appears to be little to argue against its adoption.
 
-[this next part maybe belongs elsewhere, mainly exists to demonstrate that despite appearances, OM delay still worth further investigation]
-
-Outside of a demonstration of its existence and potential consequence, little more has been said about addressing the delayed observation bias. Further, the consequences of the delayed observation (under the assumption that the mean value is correctly accounted for) seem almost trivial in comparison to the differences between it and the added observation bias. That being said, we believe there are still critical reasons for considering its significance.
-
-As mentioned earlier, the particular values observed in these simulations are both a function of the relationship between the distribution generating $\gamma$ and that of $\rho$. However, they are also a function of the generating function itself. In particular, we draw attention to the degree of total variation $f$ over the interval $[a,b]$, defined as 
-
-\begin{equation}
-V(f) = \underset{\mathcal{P}}{\sup} \sum_{i=0}^{n_p-1} \left|f(t_{i+1} - f(t_i) \right|,
-\end{equation}
-
-where $\mathcal{P} = \{P = \{t_0, \dots, t_{n_p}\} \}$ is the set of all possible partitions of $[a,b]$. Despite appearances, this is a relatively straightforward metric in the case of monotone functions such as the logistic, where the total variation is simply $|f(b) - f(a)|$. To illustrate the relevance of this, consider a hypothetical situation in which the underlying activation we are wishing to recover is a constant function, $f(t) = c$, where the probability of fixating on a target is independent of time. In such a situation, a delayed observation would be of no issue; despite changes in time $t$, the probability $c$ remains unchanged. In contrast, consider a second hypothetical situation in which activation is defined exponentially, $f(t) = \exp(t)$. In this case, the impact of delayed observation depends drastically on time, when the delay in observation in the range of small values of $t$ have a drastically smaller impact than delayed observations when $t$ is large ($\exp(1) - \exp(0) = 1.7183$ while $\exp(11) - \exp(10) = 37848$, despite both cases having $\Delta t = 1$).
-
-In short, these hypothetical situations detail how the magnitude of total variation can have differential effects on the delay in observation. Now consider again the logistic function in Figure~\ref{fig:logistic_definition} and imagine its domain partitioned into three equally sized portions. Both the first and third, near the asymptotes, have relatively low total variation, resulting in a relatively benign effect from oculomotor delay. In contrast, the middle third contains nearly all of the variation of the function, indicating the delayed observation here will have a disproportionate impact on the successful recovery of the function. Given the clinical relevance of the both the slope and crossover parameters, as well as acknowledging the impact that these have on the overall shape of the function, we demonstrate a need in a accounting for this delay precisely where it will impact function recovery the most. This, of course, is not unique to the logistic, with the effects of the delayed observation bias compounded in the asymmetric Gaussian functions (appendix) which has a more complicated variation structure and, accordingly, more difficulty in recovering the generating curves.
-
 
 \section{Discussion}
 
@@ -437,9 +420,26 @@ In short, what we have hoped to accomplish here is not to drastically change the
 As a not really conclusion, I am sometimes left to wonder to what degree the proportion of fixation method was a  ``local minimum" in the pursuit of utilizing eye-tracking data. The proportion of fixations created an ostensible curve, prompting McMurray to establish theoretically grounded non-linear functions to model them. These, in turn, where shown to be suitable functions with which to model saccade data over a period of trials. Had saccades lent themselves so naturally to visualization as the proportion of fixations, perhaps that is where we may have started.
 
 
-\section{Appendices}
+\section*{Appendices}
 
 Omitting relation of this method to TRACE as it seems mostly unnecessary to the present argument 
+
+\section{Misc OM Discussion}
+
+[mainly exists to demonstrate that despite appearances, OM delay still worth further investigation]
+
+Outside of a demonstration of its existence and potential consequence, little more has been said about addressing the delayed observation bias. Further, the consequences of the delayed observation (under the assumption that the mean value is correctly accounted for) seem almost trivial in comparison to the differences between it and the added observation bias. That being said, we believe there are still critical reasons for considering its significance.
+
+As mentioned earlier, the particular values observed in these simulations are both a function of the relationship between the distribution generating $\gamma$ and that of $\rho$. However, they are also a function of the generating function itself. In particular, we draw attention to the degree of total variation $f$ over the interval $[a,b]$, defined as 
+
+\begin{equation}
+V(f) = \underset{\mathcal{P}}{\sup} \sum_{i=0}^{n_p-1} \left|f(t_{i+1} - f(t_i) \right|,
+\end{equation}
+
+where $\mathcal{P} = \{P = \{t_0, \dots, t_{n_p}\} \}$ is the set of all possible partitions of $[a,b]$. Despite appearances, this is a relatively straightforward metric in the case of monotone functions such as the logistic, where the total variation is simply $|f(b) - f(a)|$. To illustrate the relevance of this, consider a hypothetical situation in which the underlying activation we are wishing to recover is a constant function, $f(t) = c$, where the probability of fixating on a target is independent of time. In such a situation, a delayed observation would be of no issue; despite changes in time $t$, the probability $c$ remains unchanged. In contrast, consider a second hypothetical situation in which activation is defined exponentially, $f(t) = \exp(t)$. In this case, the impact of delayed observation depends drastically on time, when the delay in observation in the range of small values of $t$ have a drastically smaller impact than delayed observations when $t$ is large ($\exp(1) - \exp(0) = 1.7183$ while $\exp(11) - \exp(10) = 37848$, despite both cases having $\Delta t = 1$).
+
+In short, these hypothetical situations detail how the magnitude of total variation can have differential effects on the delay in observation. Now consider again the logistic function in Figure~\ref{fig:logistic_definition} and imagine its domain partitioned into three equally sized portions. Both the first and third, near the asymptotes, have relatively low total variation, resulting in a relatively benign effect from oculomotor delay. In contrast, the middle third contains nearly all of the variation of the function, indicating the delayed observation here will have a disproportionate impact on the successful recovery of the function. Given the clinical relevance of the both the slope and crossover parameters, as well as acknowledging the impact that these have on the overall shape of the function, we demonstrate a need in a accounting for this delay precisely where it will impact function recovery the most. This, of course, is not unique to the logistic, with the effects of the delayed observation bias compounded in the asymmetric Gaussian functions (appendix) which has a more complicated variation structure and, accordingly, more difficulty in recovering the generating curves.
+
 
 
 %\input{trace_extra}

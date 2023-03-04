@@ -33,7 +33,7 @@ getParBias <- function(ss, ff) {
 
 getRmvIdx <- function(ff) {
   rr <- coef(ff)
-  idx <- which(rr[,3] < 10 | rr[,4] < 10 )
+  idx <- which(rr[,3] < 10 | rr[,4] < 10 | rr[,2] < rr[,5] | rr[,2] < rr[,6])
   idx
 }
 
@@ -72,7 +72,7 @@ biasPlot <- function(fix, sac, sim, tit, xint = 0) {
 sampleCurvePlot <- function(fix, sac, sim, tit) {
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
-  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[11:20]
+  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[1:10]
   # get pars
   truep <- subsetSim(sim, idx)$subPars$pars[, 2:7] |> as.matrix()
   fixp <- coef(fix[idx, ])
@@ -96,7 +96,7 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
   pp <- ggplot(plotty, aes(time, curve, color = Curve, linetype = Curve)) +
     geom_line(linewidth = 1) +
     scale_linetype_manual(values = c("solid", "solid", "twodash")) +
-    scale_color_manual(values = c("steelblue", "tomato", "black")) +
+    scale_color_manual(values = c("#619CFF", "#00BA38", "black")) +
     facet_wrap(~id, nrow = 2) + theme_bw() + labs(y = "Activation", x = "Time") +
     ggtitle(paste0("Representative Curves, ", tit)) +
     suppressWarnings(scale_x_discrete(limits = c(0, 750, 1500))) + theme(legend.position = "bottom")
@@ -164,7 +164,68 @@ makeMiseTable <- function(fix, sac, sim, tit, r2 = FALSE) {
   cbind(nn, ss)
 }
 
+
+
+biasBarPlot <- function(fix, sac, sim, tit, trim = 0) {
+  idx1 <- getRmvIdx(fix)
+  idx2 <- getRmvIdx(sac)
+  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))
+
+  print(length(idx) / nrow(fix))
+
+  fsim <- subsetSim(sim, idx)
+  ff <- fix[idx, ]
+  ss <- sac[idx, ]
+
+  bb <- getParBias(fsim, ff)
+  bb2 <- getParBias(fsim, ss)
+
+  ## If trim is not 0, we keep that quantile
+  if (trim) {
+    bb <- lapply(split(bb, by = "variable"), function(x) {
+      qq <- quantile(x$value, probs = c(1-trim, trim))
+      x <- x[value > qq[1] & value < qq[2], ]
+    }) |> rbindlist()
+    bb2 <- lapply(split(bb2, by = "variable"), function(x) {
+      qq <- quantile(x$value, probs = c(1-trim, trim))
+      x <- x[value > qq[1] & value < qq[2], ]
+    }) |> rbindlist()
+  }
+
+
+  bb$Method <- "Proportion"
+  bb2$Method <- "Look Onset"
+  dat <- rbind(bb2, bb)
+  dat$Bias <- dat$value
+  dat[, variable := stringr::str_to_title(variable)]
+  dat$variable <- ifelse(dat$variable == "Ht", "Height", dat$variable)
+  dat$variable <- ifelse(dat$variable == "Sig1", "Sigma1", dat$variable)
+  dat$variable <- ifelse(dat$variable == "Sig2", "Sigma2", dat$variable)
+  #dat$nvar <- factor(dat$variable, levels = c("Mini", "Peak", "Slope", "Crossover"))
+  #dat$Method <- factor(dat$Method, levels = c("Look Onset", "Proportion"))
+  dat$Method <- factor(dat$Method, levels = c("Proportion", "Look Onset"))
+
+  ggplot(dat, aes(x = Bias, y = Method, fill = Method)) +
+    geom_boxplot() +
+    geom_vline(xintercept = 0, color = 'red', linetype = 'dashed') +
+    facet_wrap(~variable, scales = "free") + theme_bw() +
+    scale_fill_manual(values = c("#619CFF", "#00BA38"),
+                      breaks = c("Look Onset", "Proportion")) +
+    ggtitle(tit)
+  #scale_fill_manual(values = c("#C77CFF", "#00BFC4"))
+}
+
+
+
+
 ############### END MAKING FUNCTIONS #################################
+# for testing
+fix <- dg_fit_fix_no_delay
+sac <- dg_fit_sac_no_delay
+sim <- dg_sim_no_delay
+tit <- ""
+
+
 ####### Let's make tables, yo
 
 ndtab <- makeMiseTable(dg_fit_fix_no_delay,
@@ -215,69 +276,30 @@ print(xtable::xtable(misetab[, c(1:2, 4:5, 7)]), include.rownames=FALSE)
 
 
 ## No delay
-pp <- biasPlot(dg_fit_fix_no_delay,
-               dg_fit_sac_no_delay,
-               dg_sim_no_delay,
-               tit = "No Delay",
-               xint = 0)
-
-pdf("../img/dg_no_delay_par_bias_onset.pdf", width = 6, height = 3)
-pp[[2]]
+pdf("../img/dg_no_delay_bar_plot.pdf", width = 7, height = 4)
+biasBarPlot(dg_fit_fix_no_delay,
+            dg_fit_sac_no_delay,
+            dg_sim_no_delay,
+            tit = "No Delay",
+            trim = 0.99)
 dev.off()
 
-pdf("../img/dg_no_delay_par_bias_proportion.pdf", width = 6, height = 3)
-pp[[1]]
+## Normal delay
+pdf("../img/dg_normal_delay_bar_plot.pdf", width = 7, height = 4)
+biasBarPlot(dg_fit_fix_normal,
+            dg_fit_sac_normal,
+            dg_sim_normal,
+            tit = "Normal Delay",
+            trim = 0.99)
 dev.off()
 
-
-
-## Now with Uniform delay (lost about 10%)
-pp <- biasPlot(dg_fit_fix_normal,
-               dg_fit_sac_normal,
-               dg_sim_normal,
-               tit = "Normal Delay",
-               xint = 0)
-
-pdf("../img/dg_normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
-pp[[1]]
+pdf("../img/dg_weibull_delay_bar_plot.pdf", width = 7, height = 4)
+biasBarPlot(dg_fit_fix_weibull,
+            dg_fit_sac_weibull,
+            dg_sim_weibull,
+            tit = "Weibull Delay",
+            trim = 0.99)
 dev.off()
-
-pdf("../img/dg_normal_delay_par_bias_onset.pdf", width = 6, height = 3)
-pp[[2]]
-dev.off()
-
-
-
-## Now with Weibull delay (lost about 10%)
-pp <- biasPlot(dg_fit_fix_weibull,
-               dg_fit_sac_weibull,
-               dg_sim_weibull,
-               tit = "Weibull Delay",
-               xint = 0)
-
-pdf("../img/dg_weibull_delay_par_bias_proportion.pdf", width = 6, height = 3)
-pp[[1]]
-dev.off()
-
-pdf("../img/dg_weibull_delay_par_bias_onset.pdf", width = 6, height = 3)
-pp[[2]]
-dev.off()
-
-
-pp <- biasPlot(dg_fit_fix_normal,
-               dg_fit_sac_normal,
-               dg_sim_uniform,
-               tit = "Normal Delay",
-               xint = 0)
-
-pdf("../img/dg_normal_delay_par_bias_proportion.pdf", width = 6, height = 3)
-pp[[1]]
-dev.off()
-
-pdf("../img/dg_uniform_delay_par_bias_onset.pdf", width = 6, height = 3)
-pp[[2]]
-dev.off()
-
 
 
 

@@ -682,7 +682,8 @@ Similar as to the case before, if we wanted to limit this difference of differen
 \tt diffs(y, Class(car, truck)) $\sim$ Color(red, blue) + Origin(domestic).
 \end{center}
 
-The formula syntax was originally contrived to make comparisons within groups or within nested groups. Conceivably, however, one could be interested in making the comparison between domestic red trucks and foreign blue cars, for example. Doing so requires a bit of a work around, which we detail in the next section.
+As before, this can be further subset with an arbitrary number of nested groups.
+
 %
 %\subsection{Comparing non-nested groups}
 %
@@ -880,7 +881,7 @@ dgaussPars_dist <- function(dat, y, time, startSamp = 8) {
 \end{figure}
 \end{singlespace}
 
-By utilizing an existing fitting function while substituting the method by which the starting parameters are estimated, we were able to go from recovering less than half of the simulated starting parameters successfully to well over 85\%.
+By utilizing an existing fitting function while substituting the method by which the starting parameters are estimated, we were able to go from recovering less than half of the simulated starting parameters successfully to well over 80\%.
 
 %%% Commented out stuff for the logistic function
 

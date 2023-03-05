@@ -115,7 +115,7 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
   pp
 }
 
-biasBarPlot <- function(fix, sac, sim, tit, trim = 0,  legend = NULL, nn = 10) {
+biasBarPlot <- function(fix, sac, sim, tit, trim = 0,  legend = "yes", nn = 10) {
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
   idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))
@@ -360,9 +360,41 @@ dat <- unique(dat)
 pdf("../../../defense/img/mise_bar.pdf", width = 4.5, height = 3.5)
 ggplot(dat, aes(x = Method, y = Median, fill = Method)) +
   geom_bar(stat = "identity") + facet_wrap(~Delay) + theme_bw() +
-  theme(legend.position = "bottom") + ylab("MISE") + #ggtitle("Median MISE by Method") +
-  scale_fill_manual(values =  c("#619CFF", "#00BA38"))
+  theme(legend.position = "none") + ylab("MISE") + #ggtitle("Median MISE by Method") +
+  scale_fill_manual(values =  c("#619CFF", "#00BA38")) + xlab("")
 dev.off()
+
+
+## Try that with normal?
+ndtab <- makeStatTable(fit_fix_no_delay, fit_sac_no_delay,
+                       sim_no_delay, tit = "No Delay", r2 = FALSE, justres = TRUE)
+
+dt <- data.table(Method = rep(c("Look Onset", "Proportion"), each = 993),
+                 MISE = c(ndtab$sac, ndtab$fix))
+
+nmtab <- makeStatTable(fit_fix_normal, fit_sac_normal,
+                       sim_normal, tit = "Weibull Delay", r2 = FALSE, justres = TRUE)
+dt2 <- data.table(Method = rep(c("Look Onset", "Proportion"), each = length(nmtab$sac)),
+                  MISE = c(nmtab$sac, nmtab$fix))
+
+
+dt$Delay <- "No Delay"
+dt2$Delay <- "Normal Delay"
+
+dat <- rbind(dt, dt2)
+
+dat[, Median := median(MISE), by = .(Method, Delay)]
+
+dat <- dat[, .(Method, Delay, Median)]
+dat <- unique(dat)
+
+pdf("../../../defense/img/normal_mise_bar.pdf", width = 4.5, height = 3.5)
+ggplot(dat, aes(x = Method, y = Median, fill = Method)) +
+  geom_bar(stat = "identity") + facet_wrap(~Delay) + theme_bw() +
+  theme(legend.position = "none") + ylab("MISE") + #ggtitle("Median MISE by Method") +
+  scale_fill_manual(values =  c("#619CFF", "#00BA38")) + xlab("")
+dev.off()
+################################################################################
 
 ## Also for defense
 ## No delay

@@ -258,26 +258,34 @@ Visual World Paradigm introduced in 1995 \vp
 
 Eye-tracking in conjunction with spoken sentence \vp
 
-``The boy will move the cake" \vp
+``Put the apple on the towel in the box" 
 
-How do we go from this to word recognition? \vp
 
-\cn{talk about differential eye tracking with ambiguity, etc (maybe use that image instead)}
 %\includegraphics[scale=0.45]{img/tumr_fit.png}
 
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
 \begin{center}
-\includegraphics[scale=.9]{img/vwp_classic.png}
+\includegraphics[scale=.9]{img/towel_apple_box.pdf}
 \end{center}
 \end{column}
 \end{columns}
 \end{frame}
 
-\begin{frame}{alt image for vwp}
+%\begin{frame}{alt image for vwp}
+%\vspace{-3mm}
+%\begin{figure}
+%\centering
+%\includegraphics[width=\textwidth]{apple_combine.pdf}
+%%\includegraphics[scale = 1.1]{apple_combine.pdf}
+%\caption{Differential eye response based on context and ambiguity}
+%\end{figure}
+%\end{frame}
+
+\begin{frame}%{alt image for vwp}
 \begin{figure}
 \centering
-\includegraphics[width=\textwidth]{apple_combine.pdf}
+\includegraphics[width=\textwidth]{apple_combine_half.pdf}
 %\includegraphics[scale = 1.1]{apple_combine.pdf}
 \caption{Differential eye response based on context and ambiguity}
 \end{figure}
@@ -367,6 +375,14 @@ f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
 \end{center}
 \end{frame}
 
+\begin{frame}
+\begin{center}
+%\centering
+\includegraphics[scale=1]{other_boat_meme.pdf}
+\end{center}
+\end{frame}
+
+
 \begin{frame}{Linking hypothesis}\Large
 
 Have used $f(t|\theta)$ as functional form for proportion of fixations, but relation to activation still implicit/undefined \vp
@@ -403,7 +419,6 @@ Eye mechanics made up of distinct mechanisms that are differentially related to 
 \begin{figure}
 \centering
 \includegraphics[scale=0.45]{img/what_is_a_look.pdf}
-\caption{just describe this with words, mention 200ms delay, etc)}
 \end{figure}
 \end{frame}
 
@@ -429,7 +444,6 @@ Eye mechanics made up of distinct mechanisms that are differentially related to 
 
 \begin{frame}{Added Observation Bias}
 
-\cn{too many words} \vp
 
 Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation\vp
 
@@ -518,7 +532,7 @@ s_j \sim Bern \left[f(t_j - \rho) | \theta)\right]
 
 It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
 
-\cn{Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness} \vp
+
 
 We show that varying degrees of randomness in this process and drastically impact error in recovery
 
@@ -537,7 +551,7 @@ We show that varying degrees of randomness in this process and drastically impac
 %We show that varying degrees of randomness in this process and drastically impact error in recovery
 %\end{frame}
 
-\begin{frame}{Simulation}\Large
+\begin{frame}{Simulation}\large
 
 Create simulated VWP trials with eye mechanics with goal of recovering activation curve, $f(t|\theta)$ \vp \vp
 
@@ -590,9 +604,8 @@ For weibull delay, im only going to compare par bias for onset method against no
 \begin{frame}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{rep_curves_no_delay.pdf}
+\includegraphics[width=0.95\textwidth]{rep_curves_no_delay.pdf}
 \caption{Representative curves with no oculomotor delay}
-\label{fig:rep_curves_no_delay}
 \end{figure}
 \end{frame}
 
@@ -601,7 +614,6 @@ For weibull delay, im only going to compare par bias for onset method against no
 \begin{figure}[H]
 \centering
 \includegraphics{no_delay_bar_plot.pdf}
-\label{fig:par_bias_no_delay}
 \end{figure}
 \end{frame}
 
@@ -610,8 +622,7 @@ For weibull delay, im only going to compare par bias for onset method against no
 \begin{frame}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{rep_curves_weibull_delay.pdf}
-\label{fig:rep_curves_no_delay}
+\includegraphics[width=0.95\textwidth]{rep_curves_weibull_delay.pdf}
 \end{figure}
 \end{frame}
 
@@ -622,7 +633,6 @@ For weibull delay, im only going to compare par bias for onset method against no
 \begin{figure}[H]
 \centering
 \includegraphics{compare_bar_plot.pdf}
-\label{fig:par_bias_no_delay}
 \end{figure}
 \end{frame}
 
@@ -630,7 +640,6 @@ For weibull delay, im only going to compare par bias for onset method against no
 \begin{figure}[H]
 \centering
 \includegraphics{compare_bar_plot2.pdf}
-\label{fig:par_bias_no_delay}
 \end{figure}
 \end{frame}
 
@@ -658,9 +667,11 @@ For weibull delay, im only going to compare par bias for onset method against no
 \begin{frame}
 \begin{figure}
 \centering
-\includegraphics[scale=1]{mise_bar.pdf}
+\includegraphics{mise_bar.pdf}
 \end{figure}
 \end{frame}
+
+
 
 %% End with list of other things that I will be doing going forward
 \begin{frame}{What else?}
@@ -695,7 +706,6 @@ Oleson, Jacob J; Cavanaugh, Joseph E, McMurray, Bob; Brown, Grant \textbf{Detect
 
 Paul D. Allopenna, James S. Magnuson, Michael K. Tanenhaus
 \textbf{Tracking the Time Course of Spoken Word Recognition Using Eye Movements: Evidence for Continuous Mapping Models} 1998 \textit{Journal of Memory and Language}, Vol. 38, Issue 4 p 419-439
-
 
 \end{frame}
 

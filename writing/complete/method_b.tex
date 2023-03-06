@@ -297,15 +297,16 @@ The first simulated group was ``No Effect", with intercept and slope parameters 
 
 We limited consideration to three possible scenarios: first, we assumed the conditions presented in Oleson 2017, assuming homogeneity between subject parameters and an AR(1) error structure, with the model fitting performed assuming autocorrelated errors. For the remaining scenarios, we assumed heterogeneity in the distribution of subject parameters, simulated with and without an AR(1) error structure. In both of these last two scenarios, we elected to \textit{not} fit the model assuming autocorrelated errors. This was for two reasons: first, simulations exploring the type I error rate suggested that models fit with the autocorrelation assumption tended to be conservative. Second, and given the results of the first, this makes setting the assumption of autocorrelation to FALSE in \xt{bdots} seem like a sensible default, and as such, it would be of interest to see how the model performs in cases in which their is autocorrelated error that is not accounted for.
 
-For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group membership and fit using \xt{bdots} on the interval (-1,1). Time windows in which the groups differed were identified using each the homogenous bootstrap, heterogeneous bootstrap, and permutation testing. By including the interval (-1,0) in which the null hypothesis was true, we are able to mitigate the effects of over-zealous methods in determining power, and we present the results in the following way: any tests in which a difference was detected in (-1,0) was marked as having a type I error, and the proportion of simulations in which this occurred for each method is reported as the FWER in the column labeled $\alpha$. The next column, $\beta$, is the type II error rate, indicating the proportion of trials in which no differences were identified over the entire region. The last Greek-letter column is $1 - \beta - \alpha$, a modified power statistic indicating the proportion of tests in which a difference was correctly identified. The remaining columns relate to this modified power columns, giving a partial summary of the earliest onset of detection. As a true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a (currently base-R) plot giving the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that it does not take into account the rate at which these regions were identified in conjunction with a type I error rate.
-
+For each subject, parameters for their mean structure given in Equation~\ref{eq:piecewise_form} were drawn according to their group membership and fit using \xt{bdots} on the interval (-1,1). Time windows in which the groups differed were identified using each the homogenous bootstrap, heterogeneous bootstrap, and permutation testing. By including the interval (-1,0) in which the null hypothesis was true, we are able to mitigate the effects of over-zealous methods in determining power, and we present the results in the following way: any tests in which a difference was detected in (-1,0) was marked as having a type I error, and the proportion of simulations in which this occurred for each method is reported as the FWER in the column labeled $\alpha$. The next column, $\beta$, is the type II error rate, indicating the proportion of trials in which no differences were identified over the entire region. The last Greek-letter column is $1 - \beta - \alpha$, a modified power statistic indicating the proportion of tests in which a difference was correctly identified. The remaining columns relate to this modified power columns, giving a partial summary of the earliest onset of detection. As a true difference occurs on the interval $t > 0$, smaller values indicate greater power in detecting differences. Finally, a plot giving the power at each time point is given in Figure~\ref{fig:time_power_plot}. This plot represents the true power, though note that it does not take into account the rate at which these regions were identified in conjunction with a type I error rate.
 
 
 \subsection{Results}
 
+[tables up until this point had \textit{actually} been run with incorrect slope (0.025 instead of 0.25). Presented here now (3/5) are the correct tables. None of the results changed materially, though the type II error is much lower (given the corrected larger effect). Additionally, the current results only include 200 simulations. For completeness, I am running the full suite of simulations with both $m = 0.025$ and $m = 0.25$, though the only difference, again, will be in type II error and onset of detection]
+
 The results of the power simulation are presented in Table~\ref{tab:power_methods}. We begin by considering the case in which we assumed a homogeneous mean structure with autocorrelated errors (the first three rows), matching the conditions in which the homogeneous bootstrap was first presented. Notably, we find that the permutation method demonstrates the greater power, with the median onset time just under that of the homogeneous bootstrap. This is at the expense of a larger FWER, though still below the nominal level. Alternatively, the heterogeneous bootstrap maintains a similar FWER as the homogeneous bootstrap at the cost of power.
 
-The remaining settings tell a similar story with the exception of the homogeneous bootstrap which continues to demonstrate unacceptable FWER under the heterogeneous means assumption. We also seem some effect of not correctly specifying an AR(1) error structure when comparing the last two settings, as the failure to specify resulted in a slightly higher FWER and lower power, although not significantly (it may be worth it to include setting with AR(1) error correctly specified to see how it compares). 
+The remaining settings tell a similar story with the exception of the homogeneous bootstrap which continues to demonstrate unacceptable FWER under the heterogeneous means assumption. We also seem some effect of not correctly specifying an AR(1) error structure when comparing the last two settings, as the failure to specify resulted in a slightly higher FWER and lower power, although not significantly (see Appendix for tables and figures of remaining situations). 
 
 
 % latex table generated in R 4.2.2 by xtable 1.8-4 package
@@ -318,18 +319,18 @@ Method & Heterogeneity & AR(1) & $\alpha$ & $\beta$ & 1 - $\alpha$ - $\beta$ & 1
   \hline
 Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.025 & 0.030 & 0.035 \\ 
   Het. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.035 & 0.040 & 0.045 \\ 
-  Perm & No & Yes & 0.03 & 0.00 & 0.97 & 0.015 & 0.025 & 0.025 \\ 
+  Perm & No & Yes & 0.03 & 0.00 & 0.97 & 0.020 & 0.025 & 0.030 \\
   \hline
-  Hom. Boot & Yes & No & 0.96 & 0.00 & 0.04 & 0.005 & 0.008 & 0.010 \\ 
-  Het. Boot & Yes & No & 0.00 & 0.10 & 0.90 & 0.403 & 0.513 & 0.690 \\ 
-  Perm & Yes & No & 0.03 & 0.05 & 0.92 & 0.378 & 0.515 & 0.681 \\ 
+  Hom. Boot & Yes & No & 0.95 & 0.00 & 0.05 & 0.005 & 0.008 & 0.010 \\ 
+  Het. Boot & Yes & No & 0.00 & 0.01 & 0.98 & 0.260 & 0.330 & 0.480 \\ 
+  Perm & Yes & No & 0.04 & 0.00 & 0.95 & 0.245 & 0.325 & 0.452 \\
   \hline
-  Hom. Boot & Yes & Yes & 0.97 & 0.00 & 0.03 & 0.008 & 0.010 & 0.010 \\ 
-  Het. Boot & Yes & Yes & 0.01 & 0.10 & 0.89 & 0.420 & 0.525 & 0.690 \\ 
-  Perm & Yes & Yes & 0.08 & 0.03 & 0.89 & 0.360 & 0.540 & 0.705 \\ 
+  Hom. Boot & Yes & Yes & 0.94 & 0.00 & 0.06 & 0.005 & 0.013 & 0.015 \\ 
+  Het. Boot & Yes & Yes & 0.01 & 0.01 & 0.98 & 0.270 & 0.370 & 0.465 \\ 
+  Perm & Yes & Yes & 0.04 & 0.00 & 0.96 & 0.245 & 0.365 & 0.440 \\ 
    \hline
 \end{tabular}
-\caption{Power for methods (possibly include AR(1) error and AR(1) specification to compare to last setting)} 
+\caption{Power for methods, updated (3/5). Note that with the slope being 0.25, nearly all methods detect difference within interval. A better estimate of type II error is given when slope = 0.025 } 
 \label{tab:power_methods}
 \end{table}
 
@@ -343,9 +344,9 @@ The results in Table~\ref{tab:type_2_summary} are a summary of all of the method
   \hline
 Method & $\alpha$ & $\beta$ & $1 - \alpha - \beta$ & 1st Qu. & Median & 3rd Qu. \\ 
   \hline
-Hom. Bootstrap & 0.643 & 0.000 & 0.357 & 0.013 & 0.016 & 0.018 \\ 
-  Het. Bootstrap & 0.003 & 0.067 & 0.930 & 0.286 & 0.359 & 0.475 \\ 
-  Permtuation & 0.047 & 0.027 & 0.927 & 0.251 & 0.360 & 0.470 \\ 
+Hom. Bootstrap & 0.630 & 0.000 & 0.370 & 0.012 & 0.017 & 0.020 \\ 
+  Het. Bootstrap & 0.002 & 0.008 & 0.990 & 0.188 & 0.247 & 0.330 \\ 
+  Permtuation & 0.035 & 0.000 & 0.965 & 0.170 & 0.238 & 0.307 \\ 
    \hline
 \end{tabular}
 \caption{Summary of methods for Type II error} 
@@ -374,7 +375,7 @@ Hom. Bootstrap & 0.643 & 0.000 & 0.357 & 0.013 & 0.016 & 0.018 \\
 
 \section{Discussion and concluding remarks}
 
-We set out both to interrogate the validity of the homogenous bootstrap assumptions and to propose two alternative methods that would be more robust under a greater variety of assumptions. In doing so, we demonstrated conclusively the utility of the heterogeneous bootstrap and permutation tests while also highlighting a major shortcoming of the original. It's worth noting, however, that the FWER adjustment proposed in \cite{oleson2017detecting} is still valid, if not slightly conservative, and with power similar to that of the permutation method. 
+We set out both to interrogate the validity of the homogeneous bootstrap assumptions and to propose two alternative methods that would be more robust under a greater variety of assumptions. In doing so, we demonstrated conclusively the utility of the heterogeneous bootstrap and permutation tests while also highlighting a major shortcoming of the original. It's worth noting, however, that the FWER adjustment proposed in \cite{oleson2017detecting} is still valid, if not slightly conservative, and with power similar to that of the permutation method. 
 
 In light of the results presented, one issue of concern is addressing the fact that a version of \xt{bdots} with the homogeneous mean assumption was presented in 2018 and remained accessible on CRAN until the end of 2022. This has implications for the number of papers in which \xt{bdots} may have demonstrated significance between groups when the underlying assumptions of homogeneous mean structure did not hold, as is likely the case in all instances related to the VWP. Concurrent with this issue is the issue of identifying current users of \xt{bdots} of this change, as results found only a month ago will be profoundly different than what is seen today. At present, I am not sure the best way to address either of these. In either case, however, it will be prudent to remove this option from the \xt{bdots} package all together, as there appears to be no obvious advantage to the homogeneous bootstrap over the others in terms of either controlling the FWER or obtaining power, even when the homogeneous mean structure assumption is met.
 
@@ -382,4 +383,48 @@ There are several limitations of the current paper that are worthy of further in
 
 We conclude by noting that \xt{bdots} is now equipped with two methods to effectively control the FWER when assessing the differences in time series under a greater set of underlying assumptions, including those involving the presence of highly correlated test statistics. Further, both methods presented are robust to misspecification of the error structure while maintaining an acceptable FWER and adequate power. 
 
+\section{Appendix -- Full Power Simulations}
+
+Here we present the full collection of power sims, which, in addition to those given in Table~\ref{tab:power_methods} includes cases for heterogeneous means where autocorrelation is specified when fitting with \xt{bdots}. This is indicated in the ``AR(1) Specified" column. Additionally, plots giving the power at each time are presented in Figure~\ref{fig:time_power_plot_full}.
+
+Notably from this table, we see that in the case in which the true errors are IID, there is no measurable effect on power when an autocorrelated structure is incorrectly specified.  This is similar to the opposite situation, in which the true error does have an AR(1) structure. In this case, we observe a marginal benefit to correctly specifying an AR(1) structure. This may in fact make retaining the AR(1) assumption a reasonable default in the \xt{bdots} package.
+
+We conclude by noting that of all of the methods investigated, that using permutation testing seems to have the preferable balance between controlling the FWER and power. 
+
+
+\begin{figure}
+\centering
+\includegraphics[scale=1]{full_power_25.pdf}
+\caption{Power plots in time for each of the simulation settings. Note that in the heterogeneous means case, there is little difference when AR(1) is incorrectly specified}
+\label{fig:time_power_plot_full}
+\end{figure}
+
+\begin{landscape}
+\begin{table}[ht]
+\centering
+\begin{tabular}{llllcccccc}
+  \hline
+Method & Heterogeneity & AR(1) Error & AR(1) Specified & $\alpha$ & $\beta$ & 1 - $\alpha$ - $\beta$ & 1st Qu. & Median & 3rd Qu.  \\ 
+  \hline
+Hom. Boot & No & Yes & Yes & 0.00 & 0.00 & 1.00 & 0.025 & 0.030 & 0.035 \\ 
+  Het. Boot & No & Yes & Yes & 0.00 & 0.00 & 1.00 & 0.035 & 0.040 & 0.045 \\ 
+  Perm & No & Yes & Yes & 0.03 & 0.00 & 0.97 & 0.020 & 0.025 & 0.030 \\ \hline
+  Hom. Boot & Yes & No & No & 0.95 & 0.00 & 0.05 & 0.005 & 0.008 & 0.010 \\ 
+  Het. Boot & Yes & No & No & 0.00 & 0.01 & 0.98 & 0.260 & 0.330 & 0.480 \\ 
+  Perm & Yes & No & No & 0.04 & 0.00 & 0.95 & 0.245 & 0.325 & 0.452 \\ \hline
+  Hom. Boot & Yes & No & Yes & 0.98 & 0.00 & 0.02 & 0.005 & 0.008 & 0.010 \\ 
+  Het. Boot & Yes & No & Yes & 0.00 & 0.01 & 0.99 & 0.261 & 0.350 & 0.475 \\ 
+  Perm & Yes & No & Yes & 0.04 & 0.00 & 0.96 & 0.225 & 0.335 & 0.440 \\ \hline
+  Hom. Boot & Yes & Yes & No & 0.94 & 0.00 & 0.06 & 0.005 & 0.013 & 0.015 \\ 
+  Het. Boot & Yes & Yes & No & 0.01 & 0.01 & 0.98 & 0.270 & 0.370 & 0.465 \\ 
+  Perm & Yes & Yes & No & 0.04 & 0.00 & 0.96 & 0.245 & 0.365 & 0.440 \\ \hline
+  Hom. Boot & Yes & Yes & Yes & 0.83 & 0.00 & 0.17 & 0.021 & 0.032 & 0.040 \\ 
+  Het. Boot & Yes & Yes & Yes & 0.00 & 0.01 & 0.98 & 0.250 & 0.330 & 0.450 \\ 
+  Perm & Yes & Yes & Yes & 0.03 & 0.00 & 0.97 & 0.223 & 0.335 & 0.428 \\ 
+   \hline
+\end{tabular}
+\caption{Power for methods} 
+\label{tab:power_methods_full}
+\end{table}
+\end{landscape}
 

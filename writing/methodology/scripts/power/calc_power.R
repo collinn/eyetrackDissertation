@@ -34,8 +34,6 @@ getPowerTab <- function(ff) {
     }
   }
 
-
-
   smt <- vapply(sm, powerdetector, 1) #|> table()
   mmt <- vapply(mm, powerdetector, 1) #|> table()
   pmt <- vapply(pm, powerdetector, 1) #|> table()
@@ -57,13 +55,11 @@ getPowerTab <- function(ff) {
 }
 
 # original
-# ff <- list.files("negative_one_to_one_rds", full.names = TRUE)
-# ff <- list.files("1000_rds_files", full.names = TRUE)
-# ff <- ff[c(1, 5:12, 2:4)]
-# ff <- ff[10:12] # Getting rid of slope = 0.005, sig = 0.005
-#
-# ff <- list.files("new_dist_rds_files", full.names = TRUE)
-ff <- list.files("tue_new_dist_rds_files", full.names = TRUE)
+ff <- list.files("negative_one_to_one_rds", full.names = TRUE)
+ff <- ff[c(1, 3:10, 2)]
+
+## For now, only doing slope = 0.25
+ff <- ff[6:10]
 
 res <- lapply(ff, getPowerTab)
 
@@ -73,41 +69,37 @@ res_pm <- lapply(res, function(z) setDT(as.list(z[[3]]))) |> rbindlist()
 
 
 # Only doing power on these three things yay
-simDataSettings <- data.table(mm = c(F, T, T),
-                              ar = c(T, T, F))
-#simDataSettings <- rbind(simDataSettings, simDataSettings)
-#simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
-#simDataSettings <- rbind(simDataSettings, simDataSettings)
-#simDataSettings$slope <- rep(c(0.005, 0.025), each = 6)
-#names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma", "m")
-names(simDataSettings) <- c("manymeans", "ar1")
+sds <- data.table(mm = rep(c(F, T, T, T, T), 1),
+                  ar = rep(c(T, T, T, F, F), 1),
+                  bcor = rep(c(T, T, F, T, F), 1))#,
+                  #sigVal = 0.05,
+                  #slope = rep(c(0.025, 0.25), each = 5))
 
+res_sm <- cbind(sds, res_sm)[order(mm, ar), ]
+res_mm <- cbind(sds, res_mm)[order(mm, ar), ]
+res_pm <- cbind(sds, res_pm)[order(mm, ar), ]
 
-res_sm <- cbind(simDataSettings, res_sm)[order(manymeans, ar1), ]
-res_mm <- cbind(simDataSettings, res_mm)[order(manymeans, ar1), ]
-res_pm <- cbind(simDataSettings, res_pm)[order(manymeans, ar1), ]
+res_sm <- res_sm[, c(1:6, 8:10)]
+res_mm <- res_mm[, c(1:6, 8:10)]
+res_pm <- res_pm[, c(1:6, 8:10)]
 
-
-res_sm[,3:10] <- round(res_sm[,3:10], 3)
-res_mm[,3:10] <- round(res_mm[,3:10], 3)
-res_pm[,3:10] <- round(res_pm[,3:10], 3)
-
-res_sm <- res_sm[, c(1:5, 7:9)]
-res_mm <- res_mm[, c(1:5, 7:9)]
-res_pm <- res_pm[, c(1:5, 7:9)]
+res_sm[, 4:9] <- round(res_sm[, 4:9], 3)
+res_mm[, 4:9] <- round(res_mm[, 4:9], 3)
+res_pm[, 4:9] <- round(res_pm[, 4:9], 3)
 
 res_sm <- cbind(data.table(Method = "Hom. Boot"), res_sm)
 res_mm <- cbind(data.table(Method = "Het. Boot"), res_mm)
 res_pm <- cbind(data.table(Method = "Perm"), res_pm)
 
 tab <- rbind(res_sm, res_mm, res_pm)
-tab$manymeans <- ifelse(tab$manymeans, "Yes", "No")
-tab$ar1 <- ifelse(tab$ar1, "Yes", "No")
+tab$mm <- ifelse(tab$mm, "Yes", "No")
+tab$ar <- ifelse(tab$ar, "Yes", "No")
+tab$bcor <- ifelse(tab$bcor, "Yes", "No")
 
-tab <- tab[order(manymeans, ar1)]
+tab <- tab[order(mm, ar, bcor), ]
 
-digs <- c(1,1,1,1,2,2,2,3,3,3)
-xtable(tab, caption = "Power for methods", align = c("llllcccccc"),
+digs <- c(1,1,1,1,1,2,2,2,3,3,3)
+xtable(tab, caption = "Power for methods", align = c("lllllcccccc"),
        label = "tab:power_methods", digits = digs) |> print(include.rownames = FALSE)
 
 
@@ -120,76 +112,21 @@ finalSummary <- cbind(data.table(Method = c("Hom. Bootstrap", "Het. Bootstrap", 
 xtable(finalSummary, caption = "Summary of methods for Type II error",
        label = "tab:type_2_summary", digits = 3) |> print(include.rownames = FALSE)
 
-#
-#
-# ###############################33
-# # Let's repeat the above and remove shitty case where sigma = 0.025 from
-# # single means
-#
-# ff <- list.files("1000_rds_files", full.names = TRUE)
-# ff <- ff[c(1, 5:12, 2:4)]
-# ff <- ff[7:12] # Getting rid of slope = 0.005
-# res <- lapply(ff, getPowerTab)
-#
-# res_sm <- lapply(res, function(z) setDT(as.list(z[[1]]))) |> rbindlist()
-# res_mm <- lapply(res, function(z) setDT(as.list(z[[2]]))) |> rbindlist()
-# res_pm <- lapply(res, function(z) setDT(as.list(z[[3]]))) |> rbindlist()
-#
-#
-# # Only doing power on these three things yay
-# simDataSettings <- data.table(mm = c(F, T, T),
-#                               ar = c(T, T, F),
-#                               bcor = c(T, F, F))
-# simDataSettings <- rbind(simDataSettings, simDataSettings)
-# simDataSettings$sigVal <- rep(c(0.005, 0.025), each = 3)
-# names(simDataSettings) <- c("manymeans", "ar1", "bdotscorr", "sigma")
-#
-#
-# res_sm <- cbind(simDataSettings, res_sm)[order(manymeans, ar1, bdotscorr, sigma), ]
-# res_mm <- cbind(simDataSettings, res_mm)[order(manymeans, ar1, bdotscorr, sigma), ]
-# res_pm <- cbind(simDataSettings, res_pm)[order(manymeans, ar1, bdotscorr, sigma), ]
-#
-#
-# res_sm[,4:12] <- round(res_sm[,4:12], 3)
-# res_mm[,4:12] <- round(res_mm[,4:12], 3)
-# res_pm[,4:12] <- round(res_pm[,4:12], 3)
-#
-# ## so much dumb processing on this
-# res_sm[, bdotscorr := NULL]
-# res_mm[, bdotscorr := NULL]
-# res_pm[, bdotscorr := NULL]
-#
-#
-# # Optional
-# res_sm[, `:=`(Min. = NULL, Max. = NULL)]
-# res_mm[, `:=`(Min. = NULL, Max. = NULL)]
-# res_pm[, `:=`(Min. = NULL, Max. = NULL)]
-#
-# digg <- c(1,1,1,3,2,2,2,3,3,3)
-#
-# xtable(res_sm, caption = "Power for v1 bootstrap",
-#        label = "tab:bad_boot_pwr", digits = digg) |> print(include.rownames = FALSE)
-#
-#
-# xtable(res_mm, caption = "Power for v2 bootstrap",
-#        label = "tab:good_boot_pwr", digits = digg) |> print(include.rownames = FALSE)
-# xtable(res_pm, caption = "Power for permutation",
-#        label = "tab:perm_pwr", digits = digg) |> print(include.rownames = FALSE)
-#
-# finalSummary <- rbind(colMeans(res_sm[, 4:9]),
-#                       colMeans(res_mm[, 4:9]),
-#                       colMeans(res_pm[, 4:9])) |> as.data.table()
-# finalSummary <- cbind(data.table(Method = c("Bootstrap V1", "Bootstrap V2", "Permtuation")),
-#                       finalSummary)
-#
-# xtable(finalSummary, caption = "Summary of methods for Type II error",
-#        label = "tab:type_2_summary", digits = 3) |> print(include.rownames = FALSE)
-#
-#
-# bestCaseforOriginal <- cbind(data.table(method = rep(c("V1", "V2", "Perm"), each = 6)),
-#                              rbind(res_sm, res_mm, res_pm))
-# bestCaseforOriginal <- bestCaseforOriginal[manymeans == FALSE, ]
-#
-# fuckyoudigits <- c(1,1,1,1,3,2,2,2,3,3,3)
-# xtable(bestCaseforOriginal,
-#        digits = fuckyoudigits) |> print(include.rownames = FALSE)
+
+### Abbreviated version (0.25 only, but also only including NO bcor)
+tab_abr <- tab[c(1:6, 10:12), ]
+tab_abr$bcor <- NULL
+
+digs <- c(1,1,1,1,2,2,2,3,3,3)
+xtable(tab_abr, caption = "Power for methods", align = c("llllcccccc"),
+       label = "tab:power_methods", digits = digs) |> print(include.rownames = FALSE)
+
+
+finalSummary <- rbind(colMeans(res_sm[c(1,3,5), 5:10]),
+                      colMeans(res_mm[c(1,3,5), 5:10]),
+                      colMeans(res_pm[c(1,3,5), 5:10])) |> as.data.table()
+finalSummary <- cbind(data.table(Method = c("Hom. Bootstrap", "Het. Bootstrap", "Permtuation")),
+                      finalSummary)
+
+xtable(finalSummary, caption = "Summary of methods for Type II error",
+       label = "tab:type_2_summary", digits = 3) |> print(include.rownames = FALSE)

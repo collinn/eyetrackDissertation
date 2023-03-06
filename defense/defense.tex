@@ -112,7 +112,7 @@ The field is itself exceptionally broad, ranging from sentence processing, primi
 ``trink" $\Rightarrow$ ``trank" or ``trinked"? \vp
 \end{center}
 
-Particularly troublesome when we commit too early:
+Troublesome when we commit too early:
 
 \begin{center}
 ``The horse raced past the barn fell"  \vp
@@ -120,7 +120,7 @@ Particularly troublesome when we commit too early:
 
 Often can not be observed directly  \vp
 
-Limit focus to single word recognition \cn{start by introducing cohort model as an idea}
+Limit focus to single word recognition 
 
 
 
@@ -256,14 +256,12 @@ How do we measure this?
 \begin{columns}
 \begin{column}{0.45\textwidth}
 
-Visual World Paradigm introduced in 1995 \vp
+Visual World Paradigm introduced in 1995 \vspace{4mm}
 
-Eye-tracking in conjunction with spoken sentence \vp
+Eye-tracking in conjunction with spoken sentence  \vspace{4mm}
 
 ``Put the apple on the towel in the box" 
 
-
-%\includegraphics[scale=0.45]{img/tumr_fit.png}
 
 \end{column}
 \begin{column}{0.5\textwidth}  %%<--- here
@@ -294,14 +292,13 @@ Eye-tracking in conjunction with spoken sentence \vp
 \end{frame}
 
 
-\begin{frame}{Outline}\Large
-words 
+\begin{frame}{Outline}\large
+
 
 \begin{itemize}
-	\item 
-	\item Eyetracking and the VWP
-	\item Methodology and Bias
-	\item
+	\item Eye-tracking and the VWP \vp
+	\item Methodology and Bias \vp
+	\item Simulation
 \end{itemize}
 
 \end{frame}
@@ -316,7 +313,7 @@ words
 \end{frame}
 
 % just image from allopenna, magnuson and tanenhaus 
-\begin{frame}{Original study}
+\begin{frame}{Eye-tracking as activation}
 \begin{center}
 % screenshot from paper
 \includegraphics[scale=0.45]{img/allopenna_trace_compare.png}
@@ -329,7 +326,7 @@ words
 
 \begin{columns}
 \begin{column}{0.45\textwidth}
-To make the problem more tractable, curves given a (usually) parametric form, $f(t| \theta)$ \\ \vspace{2mm}
+``Proportion of fixations" method \vp
 
 Letting $z_{jt}$ represent an indicator of fixation at time $t$ for trial $j = 1, \dots, J$, we have empirical curve
 \begin{align*}
@@ -350,7 +347,7 @@ and find
 \end{frame}
 
 
-\begin{frame}{Parametric Function}
+\begin{frame}{Target -- Logistic}
 
 \vspace{-5mm}
 
@@ -385,34 +382,32 @@ f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
 \end{frame}
 
 
-\begin{frame}{Linking hypothesis}\Large
-
-Have used $f(t|\theta)$ as functional form for proportion of fixations, but relation to activation still implicit/undefined \vp
-
-\cn{``The default interpretation is greater fixation proportions indicate greater activation in the underlying processing system" (Magnuson 2019)} \vp
-
-
-Our primary proposal is that it is the underlying activation, rather than observed data, that should be modeled explicitly as $f(t|\theta)$ \vp
-
-%Under this proposal, there are major issues with proportion of fixation method
-
-\end{frame}
+%\begin{frame}{Linking hypothesis}\Large
+%
+%Have used $f(t|\theta)$ as functional form for proportion of fixations, but relation to activation still implicit/undefined \vp
+%
+%
+%
+%Our primary proposal is that it is the underlying activation, rather than observed data, that should be modeled explicitly as $f(t|\theta)$ \vp
+%
+%%Under this proposal, there are major issues with proportion of fixation method
+%
+%\end{frame}
 
 \begin{frame}{Issues}
 
-\cn{Actually, let's move delay observation bias until \textit{after} look onset introduced since its unrelated, but relevant for sim}
+\cn{``The default interpretation is greater fixation proportions indicate greater activation in the underlying processing system" (Magnuson 2019)} \vp
 
-\cn{maybe move illustration of saccade/OM/fixation to immediately after this slide?}
+Specification of linking hypothesis \vp
 
-\cn{in light of this...} Despite visual similarities between the proportion of fixations and activation, there is an issue with the equivalence
+Despite visual similarities between the proportion of fixations and activation, there is an issue with the equivalence
 
 \begin{align*}
-y_{it} \equiv f(t | \theta_i)
+y_{it} \equiv f(t | \theta_i).
 \end{align*}
 
-Eye mechanics made up of distinct mechanisms that are differentially related to activation \vp
+Eye mechanics made up of distinct mechanisms that are differentially related to activation 
 
-\cn{maybe don't specifically say anything here, save discussion for next slide then move on to added observation bias}
 
 \end{frame}
 
@@ -447,11 +442,11 @@ Eye mechanics made up of distinct mechanisms that are differentially related to 
 \begin{frame}{Added Observation Bias}
 
 
-Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation\vp
-
-\cn{We are interested in the process that probabilistically determines the \textit{location} of a fixation} \vp
-
-\cn{At some time $t$, a saccade is launched, and we know from length of saccade until \textit{at least} refractory period for fixation, it is impossible for our eyes to go anywhere else} \vp
+Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation \vspace{8mm}
+%
+%\cn{We are interested in the process that probabilistically determines the \textit{location} of a fixation} \vp
+%
+%\cn{At some time $t$, a saccade is launched, and we know from length of saccade until \textit{at least} refractory period for fixation, it is impossible for our eyes to go anywhere else} \vp
 
 By including the entire length of the fixation as ``observed" data relating to this process, we are both inflating the amount of data we have with data that is necessarily biased
 \end{frame}
@@ -482,22 +477,23 @@ By including the entire length of the fixation as ``observed" data relating to t
 \end{frame}
 
 \begin{frame}{Look Onset Method}
-\cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
+%\cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
 
 
-Only the initial moment of look onset and its location, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
+Only the initial moment of look onset and its location, $s_k$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_k$ follows
 \vspace{-2mm}
 %\begin{equation}
 %s_j \sim Bern \left[f(t_j | \theta)\right]
 %\end{equation}
 
 \begin{align*}
-s_j \sim Bern \left[f(t_j | \theta)\right].
+s_k \sim Bern \left[f(t_k | \theta)\right].
 \end{align*}
 
-This gives us instead a set of ordered pairs, $\mathcal{S} = \{(s_j, t_j)\}$ rather than a time ordered vector of proportions  \vp
+This gives us instead a set of ordered pairs, $\mathcal{S} = \{(s_k, t_k)\}_{k=1}^K$ rather than a time ordered vector of proportions  \vspace{4mm}
 
-Fortunately, we are able to use nearly an identical procedure as before, 
+We are able to use an identical procedure as before, 
+
 \begin{align*}
 \hat{\theta} = \argmin_{\theta} \mathcal{L}(f_{\theta}, \mathcal{S})
 \end{align*}
@@ -524,15 +520,15 @@ Fortunately, we are able to use nearly an identical procedure as before,
 
 \begin{frame}{Delayed Observation}\large
 
-Between the cognitive mechanism \cn{probabilistically related to activation} and the initiation of look onset is a period of oculomotor delay, $\rho$ \vp
+Between the cognitive mechanism and the initiation of look onset is a period of oculomotor delay, $\rho$ \vspace{4mm}
 
 This gives distribution of look onset,
 \vspace{-1mm}
 \begin{align*}
-s_j \sim Bern \left[f(t_j - \rho) | \theta)\right]
+s_j \sim Bern \left[f(t_j - \rho) | \theta)\right].
 \end{align*}
 
-It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
+It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vspace{4mm}
 
 
 
@@ -555,15 +551,13 @@ We show that varying degrees of randomness in this process and drastically impac
 
 \begin{frame}{Simulation}
 
-Create simulated VWP trials with eye mechanics, the goal of recovering activation curve, $f(t|\theta)$ \vp 
+Create simulated VWP trials with eye mechanics oriented towards Target, the goal of recovering activation curve, $f(t|\theta)$ \vspace{4mm}
 
-Simulating looks to Target with logistic function \vp
+Each subject draws individual $\theta_i$ and performs 300 trials. 1,000 total subjects \vspace{4mm}
 
-Each subject draws individual $\theta_i$ \cn{from empirically determined distribution} and will perform 300 trials. 1,000 total subjects \vp 
+Estimate generating function using both  methods \vspace{4mm}
 
-Will estimate generating curve using both look onset and proportion of fixation methods \vp
-
-Metric for efficacy is MISE between generating function and recovered curve
+Metric for efficacy is MISE between generating and recovered curve
 \end{frame}
 
 
@@ -587,7 +581,7 @@ Metric for efficacy is MISE between generating function and recovered curve
 %
 %\end{frame}
 
-\begin{frame}{Simulation (explain in words, could have less detail here)}
+\begin{frame}{Simulation Mechanics}
 
 \vspace{-2.5mm}
 \begin{figure}
@@ -611,7 +605,7 @@ Metric for efficacy is MISE between generating function and recovered curve
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.95\textwidth]{rep_curves_no_delay.pdf}
-\caption{Representative curves with no oculomotor delay}
+%\caption{Representative curves with no oculomotor delay}
 \end{figure}
 \end{frame}
 
@@ -682,11 +676,9 @@ Metric for efficacy is MISE between generating function and recovered curve
 %% End with list of other things that I will be doing going forward
 \begin{frame}{What else?}
 
-\cn{what else did i do in  my dissertation, i wrote some bitchin software that does stuff and i significantly improved an old method slam fuckin dunk?}
-
 \begin{itemize}
-\item \xt{bdots}
-\item more \xt{bdots}.
+\item Rewrote \xt{bdots} package (thanks Seedorff)
+\item Expand and improve upon underlying methodology
 \end{itemize}
 \end{frame}
 
@@ -701,6 +693,10 @@ Metric for efficacy is MISE between generating function and recovered curve
 \end{frame}
 
 
+\begin{frame}
+\centering
+thanks
+\end{frame}
 
 
 \begin{frame}{References}\small

@@ -200,6 +200,8 @@ Typically interested in comparing activation between groups or conditions \vspac
 \item Differentiating cognitive, specific, and non-specific impairments \vspace{2mm}
 \end{itemize}
 
+How do we measure this?
+
 
 \end{frame}
 
@@ -551,11 +553,15 @@ We show that varying degrees of randomness in this process and drastically impac
 %We show that varying degrees of randomness in this process and drastically impact error in recovery
 %\end{frame}
 
-\begin{frame}{Simulation}\large
+\begin{frame}{Simulation}
 
-Create simulated VWP trials with eye mechanics with goal of recovering activation curve, $f(t|\theta)$ \vp \vp
+Create simulated VWP trials with eye mechanics, the goal of recovering activation curve, $f(t|\theta)$ \vp 
 
-Each subject draws individual $\theta_i$ \cn{from empirically determined distribution} and will perform 300 trials. 1,000 total subjects \vp \vp
+Simulating looks to Target with logistic function \vp
+
+Each subject draws individual $\theta_i$ \cn{from empirically determined distribution} and will perform 300 trials. 1,000 total subjects \vp 
+
+Will estimate generating curve using both look onset and proportion of fixation methods \vp
 
 Metric for efficacy is MISE between generating function and recovered curve
 \end{frame}
@@ -590,15 +596,15 @@ Metric for efficacy is MISE between generating function and recovered curve
 \end{figure}
 \end{frame}
 
-\begin{frame}{notes on results section}
-[all meta commentary here, will delete slide] \vp
-
-Probably not necessary to include all simulations, I'll just choose two \vp
-
-I can make the proportion curves look as good or bad as I want by modifying  the $\gamma$ parameter. I don't think that's necessary here as I can comment as to why small changes make a large difference in subsequent analysis \vp
-
-For weibull delay, im only going to compare par bias for onset method against no delay since after the first sim there is really no reason to look at proportion method again
-\end{frame}
+%\begin{frame}{notes on results section}
+%[all meta commentary here, will delete slide] \vp
+%
+%Probably not necessary to include all simulations, I'll just choose two \vp
+%
+%I can make the proportion curves look as good or bad as I want by modifying  the $\gamma$ parameter. I don't think that's necessary here as I can comment as to why small changes make a large difference in subsequent analysis \vp
+%
+%For weibull delay, im only going to compare par bias for onset method against no delay since after the first sim there is really no reason to look at proportion method again
+%\end{frame}
 
 
 \begin{frame}

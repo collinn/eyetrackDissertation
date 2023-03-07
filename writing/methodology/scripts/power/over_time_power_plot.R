@@ -85,6 +85,7 @@ getDiffSlicesgg <- function(ff, ww, leg = FALSE) {
   #               "Homogenous Means, AR(1) Error",
   #               "Heterogenous Means, AR(1) Error",
   #               "Heterogeneous Means, No AR(1) Error")
+  tit <- ""
   sm <- lapply(rr, `[[`, 1)
   mm <- lapply(rr, `[[`, 2)
   pm <- lapply(rr, `[[`, 3)
@@ -180,4 +181,16 @@ pdf("~/dissertation/writing/methodology/img/full_power_25.pdf",
     width = 7, height = 8.5)
 ggpubr::ggarrange(b4, b5, b6, b7, b3, nrow = 3, ncol = 2,
                   common.legend = TRUE, legend = "bottom")
+dev.off()
+
+
+
+b6 <- getDiffSlicesgg(ff[9], 9, leg = TRUE)
+b6 <- b6 + ggtitle("Power Simulation")
+pdf("~/dissertation/defense/img/power_sample.pdf", width = 5, height = 5)
+b6
+dev.off()
+
+pdf("~/dissertation/defense/img/method_image.pdf", width = 5, height = 3.5)
+gridExtra::grid.arrange(pp, b6, nrow = 1)
 dev.off()

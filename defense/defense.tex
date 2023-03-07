@@ -106,19 +106,19 @@
 
 % language and cognition
 \begin{frame}{Language and Cognition}\large
-The field is itself exceptionally broad, ranging from sentence processing, priming, reading, and word formation:
+The field is itself exceptionally broad, ranging from sentence processing, priming, reading, and word formation \vspace{4mm}
+
+%\begin{center}
+%``trink" $\Rightarrow$ ``trank" or ``trinked"? \vp
+%\end{center}
+
+Troublesome when we commit too early: \vp
 
 \begin{center}
-``trink" $\Rightarrow$ ``trank" or ``trinked"? \vp
+``The horse raced past the barn fell"  \vspace{4mm}
 \end{center}
 
-Troublesome when we commit too early:
-
-\begin{center}
-``The horse raced past the barn fell"  \vp
-\end{center}
-
-Often can not be observed directly  \vp
+Often can not be observed directly  \vspace{4mm}
 
 Limit focus to single word recognition 
 
@@ -205,35 +205,12 @@ How do we measure this?
 
 \end{frame}
 
-%\begin{frame}{What's in a look?}
-%
-%\begin{columns}
-%\begin{column}{0.45\textwidth}
-%
-%\cn{maybe make picture larger and remove all words?}
-%
-%Cognitive activation is not something that can be measured directly \vspace{4mm}
-%
-%Our eyes reveal a terrifying amount of information about what we are considering \vspace{4mm}
-%
-%This has been empirically tested and confirmed in countless experiments
-%\end{column}
-%\begin{column}{0.5\textwidth}
-%\begin{center}
-%%\includegraphics[scale=0.45]{img/car_eye.jpg}
-%\includegraphics[scale=0.95]{img/edit_car_eye.pdf}
-%{\tiny Cohen 1983}
-%\end{center}
-%\end{column}
-%\end{columns}
-%
-%\end{frame}
 
-\begin{frame}{What's in a look?}
+\begin{frame}%{What's in a look?}
 \vspace{-1mm}
 \begin{figure}
 \centering
-\includegraphics[scale=0.95]{img/edit_car_eye.pdf}
+\includegraphics[scale=1.32]{img/edit_car_eye.pdf}
 \end{figure}
 \end{frame}
 
@@ -252,11 +229,11 @@ How do we measure this?
 
 
 % Enter vwp
-\begin{frame}{Visual World Paradigm}
+\begin{frame}{Visual World Paradigm}\large
 \begin{columns}
 \begin{column}{0.45\textwidth}
 
-Visual World Paradigm introduced in 1995 \vspace{4mm}
+Visual World Paradigm (VWP) introduced in 1995 \vspace{4mm}
 
 Eye-tracking in conjunction with spoken sentence  \vspace{4mm}
 
@@ -297,7 +274,12 @@ Eye-tracking in conjunction with spoken sentence  \vspace{4mm}
 
 \begin{itemize}
 	\item Eye-tracking and the VWP \vp
-	\item Methodology and Bias \vp
+	\item Methodology 
+	\begin{itemize}
+	\item Proportion of Fixations
+	\item Bias
+	\item Look Onset Method \vp
+	\end{itemize}
 	\item Simulation
 \end{itemize}
 
@@ -326,6 +308,7 @@ Eye-tracking in conjunction with spoken sentence  \vspace{4mm}
 
 \begin{columns}
 \begin{column}{0.45\textwidth}
+
 ``Proportion of fixations" method \vp
 
 Letting $z_{jt}$ represent an indicator of fixation at time $t$ for trial $j = 1, \dots, J$, we have empirical curve
@@ -346,6 +329,64 @@ and find
 \end{columns}
 \end{frame}
 
+\begin{frame}{Proportion of Fixation Data}
+
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{table}[ht]
+\centering
+\begin{tabular}{cccccc}
+\multicolumn{6}{c}{Fixation Trial Data} \\ 
+& \\
+  \hline
+Trial & $t$ & Target & Trial & $t$ & Target \\ 
+  \hline
+  1 &   0 &   0 &   2 &   0 &   1 \\ 
+    1 &   4 &   0 &   2 &   4 &   1 \\ 
+    1 &   8 &   0 &   2 &   8 &   1 \\ 
+    1 &  12 &   0 &   2 &  12 &   1 \\ 
+    1 &  16 &   0 &   2 &  16 &   1 \\ 
+    \vdots &  \vdots &   \vdots &   \vdots &  \vdots &   \vdots \\ 
+    1 & 1596 &   1 &   2 & 1596 &   1 \\ 
+    1 & 1600 &   1 &   2 & 1600 &   1 \\ 
+   \hline
+\end{tabular}
+\end{table}
+\end{column}
+
+\begin{column}{0.1\textwidth}  %%<--- here
+\centering
+{\huge $\Rightarrow$}
+\end{column}
+
+\begin{column}{0.3\textwidth}  %%<--- here
+\vspace{5mm}
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc}
+\multicolumn{2}{c}{Proportion Data} \\ 
+& \\
+  \hline
+$t$ & Target \\ 
+  \hline
+  0 & 0.00 \\ 
+    4 & 0.01 \\ 
+    8 & 0.02 \\ 
+   12 & 0.02 \\ 
+   16 & 0.04 \\ 
+   \vdots & \vdots \\ 
+  1596 & 0.91 \\ 
+  1600 & 0.92 \\ 
+   \hline
+\end{tabular}
+\end{table}
+\end{column}
+\end{columns}
+
+
+
+\end{frame}
+
 
 \begin{frame}{Target -- Logistic}
 
@@ -355,7 +396,7 @@ and find
 \begin{column}{0.45\textwidth}
 
 \begin{align*}
-f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
+f(t | \theta) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
 \end{align*}
 %\includegraphics[scale=0.45]{img/tumr_fit.png}
 \end{column}
@@ -366,13 +407,13 @@ f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
 \end{column}
 \end{columns}
 \end{frame}
-
-\begin{frame}
-\begin{center}
-%\centering
-\includegraphics[scale=1]{boat_meme.pdf}
-\end{center}
-\end{frame}
+%
+%\begin{frame}
+%\begin{center}
+%%\centering
+%\includegraphics[scale=1]{boat_meme.pdf}
+%\end{center}
+%\end{frame}
 
 \begin{frame}
 \begin{center}
@@ -394,17 +435,12 @@ f_{\theta}(t) = b + \frac{p-b}{1 + \exp \left( \frac{4s}{p-b} (c - t) \right)}
 %
 %\end{frame}
 
-\begin{frame}{Issues}
+\begin{frame}{Issues}\large
 
-\cn{``The default interpretation is greater fixation proportions indicate greater activation in the underlying processing system" (Magnuson 2019)} \vp
 
-Specification of linking hypothesis \vp
 
-Despite visual similarities between the proportion of fixations and activation, there is an issue with the equivalence
+Despite visual similarities between the proportion of fixations, $y_t$ and lexical activation $f$, there is an issue with the equivalence \vspace{6mm}
 
-\begin{align*}
-y_{it} \equiv f(t | \theta_i).
-\end{align*}
 
 Eye mechanics made up of distinct mechanisms that are differentially related to activation 
 
@@ -439,16 +475,24 @@ Eye mechanics made up of distinct mechanisms that are differentially related to 
 %\end{frame}
 
 
-\begin{frame}{Added Observation Bias}
+\begin{frame}{Added Observation Bias}\large
 
+There are two primary sources of bias to address
 
-Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation \vspace{8mm}
+\begin{itemize}
+\item Added observation bias
+\item Oculomotor delay
+\end{itemize}
+
+\vspace{6mm}
+
+Added observation bias arises from the conflation of two distinct (though likely correlated) processes: the decision to initiate an eye movement to a particular place and the duration of a fixation 
 %
 %\cn{We are interested in the process that probabilistically determines the \textit{location} of a fixation} \vp
 %
 %\cn{At some time $t$, a saccade is launched, and we know from length of saccade until \textit{at least} refractory period for fixation, it is impossible for our eyes to go anywhere else} \vp
 
-By including the entire length of the fixation as ``observed" data relating to this process, we are both inflating the amount of data we have with data that is necessarily biased
+%By including the entire length of the fixation as ``observed" data relating to this process, we are both inflating the amount of data we have with data that is necessarily biased
 \end{frame}
 
 
@@ -477,14 +521,8 @@ By including the entire length of the fixation as ``observed" data relating to t
 \end{frame}
 
 \begin{frame}{Look Onset Method}
-%\cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
-
-
-Only the initial moment of look onset and its location, $s_k$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_k$ follows
-\vspace{-2mm}
-%\begin{equation}
-%s_j \sim Bern \left[f(t_j | \theta)\right]
-%\end{equation}
+Only the initial moment of look onset and its location, $s_k$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_k$ follows 
+\vspace{-4mm}
 
 \begin{align*}
 s_k \sim Bern \left[f(t_k | \theta)\right].
@@ -500,22 +538,61 @@ We are able to use an identical procedure as before,
 
 \end{frame}
 
-%\begin{frame}{Look Onset Method}
-%\cn{As the cognitive mechanism responsible for initiating an eye movement is probabilistically (allopenna) related to activation, we argue that the instance of a look onset is a more theoretically consistent and physiologically defensible observation to treat as relevant data} \vp
-%
-%Under the look onset method, only the initial moment of look onset, $s_j$, is considered relevant in the recovery of latent activation, where a look initiated at time $t_j$ follows
-%
-%\begin{align*}
-%s_j \sim Bern(f_{\theta}(t_j))
-%\end{align*}
-%
-%This gives us instead a set of ordered pairs, $\mathcal{S} = \{(s_j, t_j)\}$ rather than a time ordered vector of proportions \\ \vp
-%
-%Fortunately, we are able to use nearly an identical procedure as before, 
-%\begin{align*}
-%\hat{\theta} = \argmin_{\theta} \mathcal{L}(f_{\theta}, \mathcal{S})
-%\end{align*}
-%\end{frame}
+\begin{frame}{Look Onset Data}
+
+
+\begin{columns}
+\begin{column}{0.45\textwidth}
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc}
+\multicolumn{2}{c}{Look Onset Data} \\ 
+& \\
+  \hline
+$t$ & Target \\ 
+  \hline
+100 &  0 \\ 
+  500 &  0 \\ 
+  900 &  1 \\ 
+  400 &  0 \\ 
+  700 &  1 \\ 
+  1400 &  0 \\ 
+   \vdots & \vdots \\ 
+   800 & 0 \\ 
+    1200 &  1 \\
+   \hline
+\end{tabular}
+\end{table}
+
+
+\end{column}
+\begin{column}{0.45\textwidth}  %%<--- here
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{cc}
+\multicolumn{2}{c}{Proportion Data} \\ 
+& \\
+  \hline
+$t$ & Target \\ 
+  \hline
+  0 & 0.00 \\ 
+    4 & 0.01 \\ 
+    8 & 0.02 \\ 
+   12 & 0.02 \\ 
+   16 & 0.04 \\ 
+   \vdots & \vdots \\ 
+  1596 & 0.91 \\ 
+  1600 & 0.92 \\ 
+   \hline
+\end{tabular}
+\end{table}
+\end{column}
+\end{columns}
+
+\end{frame}
+
 
 
 \begin{frame}{Delayed Observation}\large
@@ -530,30 +607,21 @@ s_j \sim Bern \left[f(t_j - \rho) | \theta)\right].
 
 It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vspace{4mm}
 
+We show that varying degree of randomness in this process have an impact in observed error and successful recovery
 
 
-We show that varying degrees of randomness in this process and drastically impact error in recovery
 
 \end{frame}
-%
-%\begin{frame}{Delayed Observation}\large
-%
-%\cn{too many words} \vp
-%
-%Delayed observation bias arises from the oculomotor delay between the cognitive process (of interest) and the first physiological response, denote $\rho$ \vp
-%
-%It is ``roughly" estimated to be around 200ms, and this is typically accounted for by subtracting 200ms from observations \vp
-%
-%\cn{Of course any actual bias would be the difference between the true value and the 200ms subtracted, but also has been no treatment as to the effect of randomness} \vp
-%
-%We show that varying degrees of randomness in this process and drastically impact error in recovery
-%\end{frame}
 
-\begin{frame}{Simulation}
+
+
+\begin{frame}{Simulation}\large
 
 Create simulated VWP trials with eye mechanics oriented towards Target, the goal of recovering activation curve, $f(t|\theta)$ \vspace{4mm}
 
-Each subject draws individual $\theta_i$ and performs 300 trials. 1,000 total subjects \vspace{4mm}
+Each subject draws individual $\theta_i$ and performs 300 trials \vspace{4mm}
+
+ 1,000 total subjects \vspace{4mm}
 
 Estimate generating function using both  methods \vspace{4mm}
 
@@ -561,25 +629,6 @@ Metric for efficacy is MISE between generating and recovered curve
 \end{frame}
 
 
-%\begin{frame}{Simulation -- Single Trial}\large
-%\cn{Will need to fill in with exposition, don't want dense text on slide}
-%
-%\cn{Alternatively, I could just skip a slide like this all together and just explain in picture}
-%
-%\begin{enumerate}
-%\item[1.] Look initiated at $t_0$, persisting for at least duration $\gamma$
-%\item[2.] At $t_0 + \gamma$, look towards target with probability $f(t_0 + \gamma|\theta)$
-%\item[3.] This is followed by oculomotor delay, $\rho$
-%\item[4.] At $t_0 + \gamma + \rho$, current look ends and next is immediately initiated
-%\end{enumerate}
-%
-%\vspace{5mm}
-%
-%A trial begins at $t = 0$ and continues until the cumulative duration of looks within trial exceeds 2000ms
-%
-%\cn{would also say here or next slide we run three types with various distributions of $\rho$}
-%
-%\end{frame}
 
 \begin{frame}{Simulation Mechanics}
 
@@ -590,22 +639,20 @@ Metric for efficacy is MISE between generating and recovered curve
 \end{figure}
 \end{frame}
 
-%\begin{frame}{notes on results section}
-%[all meta commentary here, will delete slide] \vp
-%
-%Probably not necessary to include all simulations, I'll just choose two \vp
-%
-%I can make the proportion curves look as good or bad as I want by modifying  the $\gamma$ parameter. I don't think that's necessary here as I can comment as to why small changes make a large difference in subsequent analysis \vp
-%
-%For weibull delay, im only going to compare par bias for onset method against no delay since after the first sim there is really no reason to look at proportion method again
-%\end{frame}
+
 
 
 \begin{frame}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{rep_curves_no_delay.pdf}
-%\caption{Representative curves with no oculomotor delay}
+\includegraphics{rep_curves_no_delay.pdf}
+\end{figure}
+\end{frame}
+
+\begin{frame}
+\begin{figure}[H]
+\centering
+\includegraphics{error_no_delay.pdf}
 \end{figure}
 \end{frame}
 
@@ -618,23 +665,34 @@ Metric for efficacy is MISE between generating and recovered curve
 \end{frame}
 
 
+\begin{frame}
+\begin{figure}
+\centering
+\includegraphics{mise_bar.pdf}
+\end{figure}
+\end{frame}
 
 \begin{frame}
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.95\textwidth]{rep_curves_weibull_delay.pdf}
+\includegraphics{rep_curves_weibull_delay.pdf}
 \end{figure}
 \end{frame}
-
-
-
 
 \begin{frame}
 \begin{figure}[H]
 \centering
-\includegraphics{compare_bar_plot.pdf}
+\includegraphics{error_weibull_delay.pdf}
 \end{figure}
 \end{frame}
+
+
+%\begin{frame}
+%\begin{figure}[H]
+%\centering
+%\includegraphics{compare_bar_plot.pdf}
+%\end{figure}
+%\end{frame}
 
 \begin{frame}
 \begin{figure}[H]
@@ -664,22 +722,31 @@ Metric for efficacy is MISE between generating and recovered curve
 %
 %\end{frame}
 
-\begin{frame}
-\begin{figure}
-\centering
-\includegraphics{mise_bar.pdf}
-\end{figure}
-\end{frame}
+
 
 
 
 %% End with list of other things that I will be doing going forward
 \begin{frame}{What else?}
 
+\xt{bdots} software
 \begin{itemize}
-\item Rewrote \xt{bdots} package (thanks Seedorff)
-\item Expand and improve upon underlying methodology
+\item Significant overhaul to interface
+\item Broad expansion of capabilities
 \end{itemize}
+\vspace{4mm}
+
+Underlying methodology
+\begin{itemize}
+\item Introduced two new methods
+\item Type I Error
+\item Power
+\end{itemize}
+
+%\begin{itemize}
+%\item Rewrote \xt{bdots} package (thanks Seedorff)
+%\item Expand and improve upon underlying methodology
+%\end{itemize}
 \end{frame}
 
 
@@ -691,6 +758,16 @@ Metric for efficacy is MISE between generating and recovered curve
 \includegraphics{bdots_examples.pdf}
 \end{center}
 \end{frame}
+
+
+\begin{frame}{Methodology}
+\vspace{-7mm}
+\begin{center}
+\includegraphics{method_image.pdf}
+\end{center}
+\end{frame}
+
+
 
 
 \begin{frame}

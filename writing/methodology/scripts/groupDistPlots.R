@@ -56,5 +56,5 @@ ggplot(dat, aes(time, true, group = id, alpha = sample, color = Condition)) +
   geom_line(lwd = 1.5) +
   scale_alpha_discrete(range = c(0.15, 0.95), guide = "none") +
   theme_bw() + theme(legend.position = "bottom") +
-  labs(y = "", x = "Time")
+  labs(y = "", x = "Time") + ggtitle("Piecewise Distribution")
 dev.off()

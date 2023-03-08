@@ -418,3 +418,4 @@ biasBarPlot2 <- function(fix, sac, sim1, sim2, tit, trim = 0,  legend = NULL, nn
   return(pp)
 
 }
+

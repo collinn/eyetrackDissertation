@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # run sims
-R CMD BATCH --no-save --no-restore "--args $SGE_TASK_ID" fwer_sim.R .$SGE_TASK_ID.Rout
+R CMD BATCH --no-save --no-restore "--args $SGE_TASK_ID" logistic_shift_sim.R .$SGE_TASK_ID.Rout
 
 #date +"%r"
 #for i in {1..16}

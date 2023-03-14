@@ -1,21 +1,19 @@
 library(eyetrackSim)
 library(bdots)
 
-
-
-sds <- expand.grid(bdotscor = c(TRUE, FALSE),
-                   ar1 = c(TRUE, FALSE),
-                   manymeans = c(FALSE, TRUE),
-                   paired = c(FALSE, TRUE))
+sds <- expand.grid(paired = c(TRUE, FALSE),
+                   pm = c(1, 2), 
+                   shift = c(100, 200))
 
 idx <- as.numeric(commandArgs(TRUE))
 
 sidx <- sds[idx, ]
 
+ccores <- 4
+
 createFits <- function(sidx) {
-  dat <- createData(paired = sidx$paired,
-                    ar1 = sidx$ar1,
-                    manymeans = sidx$manymeans)
+  dat <- createDataShiftLogistic(paired = sidx$paired,
+                                 pairMag = sidx$pm, dd = sidx$shift)
   fit <- bdotsFit(data = dat$dts,
                   y = "fixations",
                   group = "group",
@@ -23,7 +21,7 @@ createFits <- function(sidx) {
                   time = "time",
                   curveType = logistic(),
                   cores = ccores,
-                  cor = sidx$bdotscor)
+                  cor = FALSE)
   fit
 }
 
@@ -33,8 +31,6 @@ attr(res, "settings") <- sidx
 nn <- paste0("sim", idx)
 sf <- paste0("prog_txt/", nn, ".txt")
 rf <- paste0("rds_files/", nn, ".rds")
-
-ccores <- 4
 
 
 sink(file = sf)

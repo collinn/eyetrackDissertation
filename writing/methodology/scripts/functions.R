@@ -55,18 +55,18 @@ timetie <- function(mm) {
 ff <- list.files(path="~/dissertation/writing/methodology/scripts/argon/rds_files", full.names = TRUE)
 ff <- ff[c(1, 9:16, 2:8)]
 
-simDataSettings <- expand.grid(manymeans = c(TRUE, FALSE),
-                               paired = c(TRUE, FALSE),
-                               ar1 = c(TRUE, FALSE),
-                               bdotscor = c(TRUE, FALSE))
+sds <- expand.grid(bdotscor = c(TRUE, FALSE),
+                   ar1 = c(TRUE, FALSE),
+                   manymeans = c(FALSE, TRUE),
+                   paired = c(FALSE, TRUE))
 
 
 gg <- lapply(ff, getFWER)
 fwer <- rbindlist(lapply(gg, `[[`, 1))
 tfwer <- timeSliceFwer(gg, median)
 
-fwer <- as.data.table(cbind(simDataSettings, fwer))[order(rev(manymeans), ar1, decreasing = TRUE), ]
-tfwer <- as.data.table(cbind(simDataSettings, tfwer))[order(rev(manymeans), ar1, decreasing = TRUE)]
+fwer <- as.data.table(cbind(sds, fwer))[order(rev(manymeans), ar1, decreasing = TRUE), ]
+tfwer <- as.data.table(cbind(sds, tfwer))[order(rev(manymeans), ar1, decreasing = TRUE)]
 
 fwer <- fwer[order(manymeans), ]
 tfwer <- tfwer[order(manymeans), ]

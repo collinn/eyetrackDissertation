@@ -7,6 +7,8 @@ sds <- expand.grid(bdotscor = c(TRUE, FALSE),
                    ar1 = c(TRUE, FALSE),
                    manymeans = c(FALSE, TRUE),
                    paired = c(FALSE, TRUE))
+sds <- as.data.table(sds)
+sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
 
 idx <- as.numeric(commandArgs(TRUE))
 
@@ -44,15 +46,15 @@ for (i in seq_len(N)) {
 
   sm <- bdotsBoot(formula = fixations ~ group(A, B),
                   bdObj = fit, singleMeans = TRUE,
-                  cores = ccores)$sigTime
+                  cores = ccores)#$sigTime
 
   mm <- bdotsBoot(formula = fixations ~ group(A, B),
                   bdObj = fit, singleMeans = FALSE,
-                  cores = ccores)$sigTime
+                  cores = ccores)#$sigTime
 
   pm <- suppressMessages(bdotsBoot(formula = fixations ~ group(A, B),
-                                   bdObj = fit, permutation = TRUE, skipDist = TRUE,
-                                   cores = ccores))$sigTime
+                                   bdObj = fit, permutation = TRUE, skipDist = FALSE,
+                                   cores = ccores))#$sigTime
 
   res[[i]] <- list(singleMeans = sm,
                    manyMeans = mm,

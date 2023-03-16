@@ -1,3 +1,7 @@
+library(bdots)
+library(eyetrackSim)
+
+#sigs <- readRDS(ff[16])
 
 ## This compute overall TIE across all time points
 getFWER <- function(y) {

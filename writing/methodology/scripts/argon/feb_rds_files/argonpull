@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rsync -avze "ssh -p 40" collin@argon.hpc.uiowa.edu:/Users/collin/eyetrackSims/feb_tie/feb_rds_files/ .
+

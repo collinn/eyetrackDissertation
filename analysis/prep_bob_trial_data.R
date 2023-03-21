@@ -10,7 +10,7 @@ names(trials) <- c("trial", "rt")
 ## Only keep these subjects
 ## Get rid of non-regular subjects
 sub <- fread("~/dissertation/data/trace_n_things/subject_protocol.txt")
-sub <- sub[Protocol == "N", ] # 40 of them
+#sub <- sub[Protocol == "N", ] # 40 of them
 keepsub <- sub$subjectID
 
 ###############
@@ -20,9 +20,10 @@ keepsub <- sub$subjectID
 looks <- fread("~/dissertation/data/trace_n_things/looks-matched_human.txt")
 
 ## Get rid of non-regular subjects
-looks <- looks[subject %in% keepsub, ]
+#looks <- looks[subject %in% keepsub, ]
+looks <- merge(looks, sub, by.x = "subject", by.y = "subjectID")
 
-looks <- merge(looks, trials)
+looks <- merge(looks, trials, by = "trial")
 # only keep before rt
 looks <- looks[time < rt, ]
 
@@ -67,9 +68,9 @@ fwrite(looks, "~/dissertation/data/bob_trace_data/human_looks_rt_cut.csv")
 dts <- fread("~/dissertation/data/trace_n_things/Events-matched-sac-fix.txt")
 
 # Keep only TD
-dts <- dts[subject %in% keepsub, ]
+dts <- merge(dts, sub, by.x = "subject", by.y = "subjectID")
 
-dts <- merge(dts, trials)
+dts <- merge(dts, trials, by = "trial")
 
 # starttimemod not starttime and endtime to capture initial
 dts <- dts[starttimemod <= 2300 & endtimemod >= 0, ]
@@ -101,7 +102,7 @@ dts <- dts[!is.na(endtimemod), ]
 
 dts$trial <- NULL
 colnames(dts) <- c("subject", "starttime", "endtime",
-                   "target", "cohort")
+                   "target", "cohort", "Protocol")
 fwrite(dts, file = "~/dissertation/data/bob_trace_data/human_saccades_rt_cut.csv")
 
 
@@ -114,7 +115,7 @@ fwrite(dts, file = "~/dissertation/data/bob_trace_data/human_saccades_rt_cut.csv
 looks2 <- fread("~/dissertation/data/trace_n_things/looks-matched_human.txt")
 
 ## Get rid of non-regular subjects
-looks2 <- looks2[subject %in% keepsub, ]
+looks2 <- merge(looks2, sub, by.x = "subject", by.y = "subjectID")
 
 # Not doing this here
 #looks <- looks[time < rt, ]
@@ -153,8 +154,8 @@ fwrite(looks2, "~/dissertation/data/bob_trace_data/human_looks_rt_nocut.csv")
 
 dts2 <- fread("~/dissertation/data/trace_n_things/Events-matched-sac-fix.txt")
 ## Keep only TD
-dts2 <- dts2[subject %in% keepsub, ]
-dts2 <- merge(dts2, trials)
+dts2 <- merge(dts2, sub, by.x = "subject", by.y = "subjectID")
+dts2 <- merge(dts2, trials, by = "trial")
 
 # starttimemod not starttime XX(let's let 2 be the worst and see how it compares)
 # now lets try no RT and correct time to see
@@ -187,7 +188,7 @@ dts2 <- dts2[!is.na(endtimemod), ]
 
 dts2$trial <- NULL
 colnames(dts2) <- c("subject", "starttime", "endtime",
-                   "target", "cohort")
+                   "target", "cohort", "Protocol")
 fwrite(dts2, file = "~/dissertation/data/bob_trace_data/human_saccades_rt_nocut.csv")
 
 

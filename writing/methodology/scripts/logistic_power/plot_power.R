@@ -3,7 +3,7 @@ library(eyetrackSim)
 library(ggplot2)
 library(gridExtra)
 
-ff <- list.files("rds_files", full.names = TRUE)
+ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
 
 
 sds <- expand.grid(paired = c(TRUE, FALSE),

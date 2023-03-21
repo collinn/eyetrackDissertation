@@ -62,6 +62,9 @@ ff <- ff[c(1, 9:16, 2:8)]
 ff <- list.files("~/dissertation/writing/methodology/scripts/argon/2000_rds_files", full.names = TRUE, pattern = "rds")
 ff <- ff[c(1, 5:12, 2:4)]
 
+ff <- list.files("~/dissertation/writing/methodology/scripts/argon/feb_rds_files", full.names = TRUE, pattern = "rds")
+ff <- ff[c(1, 5:12, 2:4)]
+
 ff <- list.files("~/dissertation/writing/methodology/scripts/argon/old_lmer_rds_files", full.names = TRUE)
 ff <- ff[c(1, 5:12, 2:4)]
 

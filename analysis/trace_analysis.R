@@ -5,7 +5,7 @@ library(data.table)
 library(ggplot2)
 library(gridExtra)
 library(bdots)
-library(eyetrackSim)
+library(eyetrackSim)kk
 
 setwd("~/dissertation/analysis/")
 ## Relevant data
@@ -25,36 +25,36 @@ sacs[, group := "A"]
 if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")) {
   load("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
 } else {
-  fit_looks <- bdotsFit(data = looks, 
-                        subject = "subject", 
-                        time = "time", 
-                        y = "target", 
-                        group = "group", 
+  fit_looks <- bdotsFit(data = looks,
+                        subject = "subject",
+                        time = "time",
+                        y = "target",
+                        group = "group",
                         curveType = logistic())
-  
-  fit_looks_rt <- bdotsFit(data = looksrt, 
-                         subject = "subject", 
-                         time = "time", 
-                         y = "target", 
-                         group = "group", 
+
+  fit_looks_rt <- bdotsFit(data = looksrt,
+                         subject = "subject",
+                         time = "time",
+                         y = "target",
+                         group = "group",
                          curveType = logistic())
-  
+
   #sacs <- sacs[starttime <= 2000, ]
-  
-  fit_sacs  <- bdotsFit(data = sacs, 
-                        subject = "subject", 
-                        time = "starttime", 
-                        y = "target", 
-                        group = "group", 
-                        curveType = logistic())  
-  fit_sacs_rt  <- bdotsFit(data = sacsrt, 
-                         subject = "subject", 
-                         time = "starttime", 
-                         y = "target", 
-                         group = "group", 
-                         curveType = logistic())  
-  
-  save(fit_looks, fit_looks_rt, fit_sacs, fit_sacs_rt, 
+
+  fit_sacs  <- bdotsFit(data = sacs,
+                        subject = "subject",
+                        time = "starttime",
+                        y = "target",
+                        group = "group",
+                        curveType = logistic())
+  fit_sacs_rt  <- bdotsFit(data = sacsrt,
+                         subject = "subject",
+                         time = "starttime",
+                         y = "target",
+                         group = "group",
+                         curveType = logistic())
+
+  save(fit_looks, fit_looks_rt, fit_sacs, fit_sacs_rt,
        file = "~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
 }
 
@@ -64,7 +64,7 @@ if (file.exists("~/dissertation/data/saccade_look_fits/target_fits_bdots.RData")
 idxrm0 <- which(fit_looks$fitCode >= 5 | fit_looks$fitCode >= 5)
 idxrm1 <- which(fit_looks_rt$fitCode >= 5 | fit_looks_rt$fitCode >= 5)
 
-# Remove these from saccades 
+# Remove these from saccades
 qq <- coef(fit_sacs)
 idxrm2 <- which(qq[,3] < 0 | qq[,4] < 0 | qq[,1] > qq[,2])
 
@@ -97,7 +97,7 @@ plot(time, f1, type = 'l', col = 'red', ylim = c(0, 1), ylab = "proportions")
 lines(time, f2, type = 'l', col = 'blue')
 lines(time, f3, type = 'l', col = 'green', lwd=3)
 lines(time, f4, type = 'l', col = 'purple')
-legend(1000, .250, legend = c("look w rt", "look wo rt", "sac w rt", "sac wo rt"), 
+legend(1000, .250, legend = c("look w rt", "look wo rt", "sac w rt", "sac wo rt"),
        col = c("red", "blue", "green", "purple"), lwd = c(1,1,1,1))
 
 
@@ -117,7 +117,7 @@ plot(time, f1, type = 'l', col = 'red', ylim = c(0, 1), ylab = "proportions")
 lines(time, f2, type = 'l', col = 'blue')
 lines(time, f3, type = 'l', col = 'green')
 lines(time, f4, type = 'l', col = 'purple')
-legend(1000, .250, legend = c("look w rt cut", "look wo rt", "sac w rt cut", "sac wo rt"), 
+legend(1000, .250, legend = c("look w rt cut", "look wo rt", "sac w rt cut", "sac wo rt"),
        col = c("red", "blue", "green", "purple"), lwd = 1)
 
 lines(trace_luce$time, trace_luce$targ1, col = 'orange', lwd = 2)
@@ -126,37 +126,37 @@ lines(trace_luce$time, trace_luce$targ1, col = 'orange', lwd = 2)
 ##################################3
 ## Ok, time to repeat with cohort data (gulp)
 
-# # 
-# # fit_looks_g <- bdotsFit(data = looks, 
-# #                       subject = "subject", 
-# #                       time = "time", 
-# #                       y = "cohort", 
-# #                       group = "group", 
+# #
+# # fit_looks_g <- bdotsFit(data = looks,
+# #                       subject = "subject",
+# #                       time = "time",
+# #                       y = "cohort",
+# #                       group = "group",
 # #                       curveType = doubleGauss())
-# 
-# fit_looks2_g <- bdotsFit(data = looks2, 
-#                        subject = "subject", 
-#                        time = "time", 
-#                        y = "cohort", 
-#                        group = "group", 
+#
+# fit_looks2_g <- bdotsFit(data = looks2,
+#                        subject = "subject",
+#                        time = "time",
+#                        y = "cohort",
+#                        group = "group",
 #                        curveType = doubleGauss())
-# 
-# 
-# # fit_sacs_g  <- bdotsFit(data = sacs, 
-# #                       subject = "subject", 
-# #                       time = "starttime", 
-# #                       y = "cohort", 
-# #                       group = "group", 
-# #                       curveType = doubleGauss2())  
-# fit_sacs2_g  <- bdotsFit(data = sacs2, 
-#                        subject = "subject", 
-#                        time = "starttime", 
-#                        y = "cohort", 
-#                        group = "group", 
-#                        curveType = doubleGauss())  
-# 
-# 
+#
+#
+# # fit_sacs_g  <- bdotsFit(data = sacs,
+# #                       subject = "subject",
+# #                       time = "starttime",
+# #                       y = "cohort",
+# #                       group = "group",
+# #                       curveType = doubleGauss2())
+# fit_sacs2_g  <- bdotsFit(data = sacs2,
+#                        subject = "subject",
+#                        time = "starttime",
+#                        y = "cohort",
+#                        group = "group",
+#                        curveType = doubleGauss())
+#
+#
 # colMeans(coef(fit_looks2_g[c(1:37, 39:40)]))
-# 
-# 
-# 
+#
+#
+#

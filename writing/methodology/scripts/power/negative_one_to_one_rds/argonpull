@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rsync -avze "ssh -p 40" collin@argon.hpc.uiowa.edu:/Users/collin/powerSims/negative_one_to_one_rds_files/ .
+

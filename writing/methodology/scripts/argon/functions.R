@@ -63,7 +63,8 @@ ff <- list.files("~/dissertation/writing/methodology/scripts/argon/2000_rds_file
 ff <- ff[c(1, 5:12, 2:4)]
 
 ff <- list.files("~/dissertation/writing/methodology/scripts/argon/feb_rds_files", full.names = TRUE, pattern = "rds")
-ff <- ff[c(1, 5:12, 2:4)]
+#ff <- ff[c(1, 5:12, 2:4)]
+ff <- ff[c(1, 9:16, 2:8)]
 
 ff <- list.files("~/dissertation/writing/methodology/scripts/argon/old_lmer_rds_files", full.names = TRUE)
 ff <- ff[c(1, 5:12, 2:4)]
@@ -73,7 +74,11 @@ sds <- expand.grid(bdotscor = c(TRUE, FALSE),
                    manymeans = c(FALSE, TRUE),
                    paired = c(FALSE, TRUE))
 sds <- as.data.table(sds)
-sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
+
+if (length(ff) != 16) {
+  sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
+}
+
 
 
 

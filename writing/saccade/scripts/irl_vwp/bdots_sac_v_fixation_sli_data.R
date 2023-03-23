@@ -1,6 +1,7 @@
 
 
 library(bdots)
+library(ggplot2)
 
 looks <- fread("~/dissertation/data/bob_trace_data/human_looks_rt_cut.csv")
 sac <- fread("~/dissertation/data/bob_trace_data/human_saccades_rt_cut.csv")
@@ -50,7 +51,7 @@ fit_s <- bdotsFit(data = sac,
 save.image("~/dissertation/analysis/irl_comparison/fit_data.rds")
 load("~/dissertation/analysis/irl_comparison/fit_data.rds")
 
-
+load("~/dissertation/analysis/irl_comparison/irl_comparison.rds")
 ## 6 different formulas we can look at
 f1 <- y ~ Protocol(CF, N)
 f2 <- y ~ Protocol(CF, NLI)
@@ -68,8 +69,18 @@ boot_s1 <- bdotsBoot(f1, fit_s, permutation = TRUE)
 boot_l2 <- bdotsBoot(f2, fit_l, permutation = TRUE)
 boot_s2 <- bdotsBoot(f2, fit_s, permutation = TRUE)
 
-plot(boot_l2)
-plot(boot_s2)
+p1 <- plot(boot_l2, plotDiffs = FALSE)$bootPlot
+p2 <- plot(boot_s2, plotDiffs = FALSE)$bootPlot
+
+pdf("~/dissertation/writing/saccade/img/irl_data_prop_1.pdf")
+p1 <- p1 + ggtitle("Bootstrapped Fits -- Proportion of Fixations")
+p1
+dev.off()
+pdf("~/dissertation/writing/saccade/img/irl_data_onset_1.pdf")
+p2 <- p2 + ggtitle("Bootstrapped Fits -- Look Onset")
+p2
+dev.off()
+
 
 ## Round 3
 boot_l3 <- bdotsBoot(f3, fit_l, permutation = TRUE)
@@ -79,8 +90,17 @@ boot_s3 <- bdotsBoot(f3, fit_s, permutation = TRUE)
 boot_l4 <- bdotsBoot(f4, fit_l, permutation = TRUE)
 boot_s4 <- bdotsBoot(f4, fit_s, permutation = TRUE)
 
-plot(boot_l4)
-plot(boot_s4)
+p3 <- plot(boot_l4, plotDiffs = FALSE)$bootPlot
+p4 <- plot(boot_s4, plotDiffs = FALSE)$bootPlot
+
+pdf("~/dissertation/writing/saccade/img/irl_data_prop_2.pdf")
+p3 <- p3 + ggtitle("Bootstrapped Fits -- Proportion of Fixations")
+p3
+dev.off()
+pdf("~/dissertation/writing/saccade/img/irl_data_onset_2.pdf")
+p4 <- p4 + ggtitle("Bootstrapped Fits -- Look Onset")
+p4
+dev.off()
 
 ## Round 5
 boot_l5 <- bdotsBoot(f5, fit_l, permutation = TRUE)

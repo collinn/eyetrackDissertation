@@ -1,0 +1,300 @@
+---
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, fig.align = 'center', fig.height = 4, fig.width = 6)
+library(ggplot2)
+library(bdots)
+library(gridExtra)
+```
+
+# Irl data
+
+6 way comparison of the 4 groups in bob's sli paper. Only two group comparisons yielded any differences
+
+## set 1
+
+```{r, include = FALSE}
+load("~/dissertation/analysis/irl_comparison/irl_comparison.rds")
+
+p1 <- plot(boot_l2, plotDiffs = FALSE)$bootPlot 
+p2 <- plot(boot_s2, plotDiffs = FALSE)$bootPlot 
+p1 <- p1 + ggtitle("Bootstrapped Fits -- Proportion of Fixations")
+p2 <- p2 + ggtitle("Bootstrapped Fits -- Look Onset")
+```
+
+```{r, fig.width = 10}
+grid.arrange(p1, p2, nrow = 1)
+```
+
+## set 2
+
+```{r, include=FALSE}
+p3 <- plot(boot_l4, plotDiffs = FALSE)$bootPlot
+p4 <- plot(boot_s4, plotDiffs = FALSE)$bootPlot
+
+p3 <- p3 + ggtitle("Bootstrapped Fits -- Proportion of Fixations")
+p4 <- p4 + ggtitle("Bootstrapped Fits -- Look Onset")
+```
+
+```{r, fig.width = 10}
+grid.arrange(p3, p4, nrow = 1)
+```
+
+# power with onset vs proportion
+
+In this first batch (with 100 simulations), changed logistic peak from 0.8 to 0.885 and changed double gauss mean from 630 to 700
+
+```{r, echo = FALSE, fig.align='center'}
+powerHist <- function(y, tit) {
+  y <- readRDS(y)
+  ons <- y[1, ]
+  fix <- y[2, ]
+
+  timesig <- function(mm) {
+    time <- seq(0, 2000, 4)
+    vec <- vector("numeric", length = length(time))
+
+    if (is.null(dim(mm))) {
+      vec <- as.logical(vec)
+      return(vec)
+    }
+
+    sm <- split(mm, row(mm))
+    bv <- lapply(sm, function(m) {
+      sigt <- do.call(seq, as.list(c(m, 4)))
+    })
+    bv <- Reduce(union, bv)
+    rr <- time %in% bv # logical vec
+    return(rr)
+  }
+
+  TIME <- seq(0, 2000, 4)
+
+  ons_mat <- sapply(ons, timesig)
+  ons_mat <- apply(ons_mat, 2, function(z) TIME[z])
+  ons_mat <- Reduce("c", ons_mat)
+
+  fix_mat <- sapply(fix, timesig)
+  fix_mat <- apply(fix_mat, 2, function(z) TIME[z])
+  fix_mat <- Reduce("c", fix_mat)
+
+  s1 <- hist(ons_mat, breaks = seq(0, 2000, 40), plot = FALSE)$counts
+  s2 <- hist(fix_mat, breaks = seq(0, 2000, 40), plot = FALSE)$counts
+
+  yy <- max(s1, s2)
+  hist(ons_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
+       xlab = "Time", col = alpha("steelblue", alpha = 0.5))
+  hist(fix_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
+       xlab = "Time", col = alpha("tomato", alpha = 0.5), add = TRUE)
+}
+
+ff <- list.files("~/dissertation/writing/saccade/scripts/sim_bdots_power_methods/rds_files", full.names = TRUE, pattern = "rds")
+
+
+
+
+powerHist(ff[1], "no delay lg")
+powerHist(ff[2], "norm delay lg")
+powerHist(ff[3], "weib delay lg")
+
+powerHist(ff[4], "no delay dg")
+powerHist(ff[5], "norm delay dg")
+powerHist(ff[6], "weib delay dg")
+
+```
+
+In this second batch (N = 250), I changed logistic crossover 765 to 700 and left dg same as before (not all simulations of this are finished)
+
+```{r, echo = FALSE, fig.align='center'}
+ff <- list.files("~/dissertation/writing/saccade/scripts/sim_bdots_power_methods/alt_rds_files", full.names = TRUE, pattern = "rds")
+
+powerHist(ff[1], "norm delay lg")
+powerHist(ff[2], "weib delay lg")
+powerHist(ff[3], "norm delay dg")
+```
+
+
+# Logistic shift
+
+try to determine power between these two methods in case of 100ms and  200ms shift in crossover with differing levels of variability (need to do that 4-way analysis but haven't)
+
+```{r, include=FALSE}
+
+ff <- list.files("~/dissertation/writing/methodology/scripts/logistic_power/rds_files/", full.names = TRUE, pattern = "rds")
+
+## Given signifiance mat, need to return length 401 bool vector
+timetiePower <- function(mm) {
+  time <- seq(0, 1600, 4)
+  vec <- vector("numeric", length = length(time))
+
+  if (is.null(dim(mm))) {
+    vec <- as.logical(vec)
+    return(vec)
+  }
+
+  # each of these into a list
+  sm <- split(mm, row(mm))
+  bv <- lapply(sm, function(m) {
+    #sigt <- do.call(seq, as.list(c(m, by = 0.005)))
+    time[time >= m[1] & time <= m[2]] # for rounding
+  })
+  bv <- Reduce(union, bv)
+  rr <- time %in% bv #round(time,3) %in% round(bv, 3)
+  return(rr)
+}
+
+
+
+
+getDiffSlicesgg <- function(ff, ww, leg = TRUE) {
+  rr <- readRDS(ff)
+
+  tt <- attributes(rr)[[1]] #|> unlist()
+
+  vs <- ifelse(tt$pm == 1, "\nLow Var", "\nHigh Var")
+
+  tit <- paste0("Paired: ", tt$paired, vs, "\nShift: ", tt$shift)
+  sm <- lapply(rr, `[[`, 1)
+  mm <- lapply(rr, `[[`, 2)
+  pm <- lapply(rr, `[[`, 3)
+
+  smm <- sapply(sm, timetiePower) |> rowSums()
+  mmm <- sapply(mm, timetiePower) |> rowSums()
+  pmm <- sapply(pm, timetiePower) |> rowSums()
+  time <- seq(0, 1600, 4)
+
+  dat <- data.table(Method = rep(c("Hom. Boot",
+                                   "Het. Boot",
+                                   "Permutation"), each = 401),
+                    Power = c(smm, mmm, pmm),
+                    Time = rep(time, 3))
+
+  ll <- length(rr)
+
+  pp <- ggplot(dat, aes(Time, Power, color = Method)) + theme_bw() + ggtitle(tit) +
+    geom_line(linewidth=1) + #geom_abline(slope = 0, intercept = 5, color = 'red', linetype = "dotted")
+    scale_color_manual(values = c("#00BFC4", "#7CAE00", "#C77CFF")) + theme(legend.position = "bottom")
+
+  if (!leg) pp <- pp + theme(legend.position = "none")
+  return(pp)
+}
+
+## Shift of 100
+p1 <- getDiffSlicesgg(ff[1], 1)
+p2 <- getDiffSlicesgg(ff[2], 2)
+p3 <- getDiffSlicesgg(ff[3], 3)
+p4 <- getDiffSlicesgg(ff[4], 4)
+
+## Shift of 200
+p5 <- getDiffSlicesgg(ff[5], 5)
+p6 <- getDiffSlicesgg(ff[6], 6)
+p7 <- getDiffSlicesgg(ff[7], 7)
+p8 <- getDiffSlicesgg(ff[8], 8)
+```
+
+```{r, fig.width=10, fig.height=10}
+grid.arrange(p1, p2, p3, p4, nrow = 2)
+
+grid.arrange(p5, p6, p7, p8, nrow = 2)
+```
+
+
+# Tables
+
+Coming back to FWER now that I have the paired permutation "fixed". Not sure exactly yet but will explore on my own time
+
+```{r}
+library(xtable)
+
+getFWER <- function(y) {
+  sigs <- readRDS(y)
+
+  sm <- sapply(sigs, function(x) !is.null(x[[1]])) |> mean()
+  mm <- sapply(sigs, function(x) !is.null(x[[2]])) |> mean()
+  pm <- sapply(sigs, function(x) !is.null(x[[3]])) |> mean()
+
+  smt <- sapply(sigs, function(x) timetie(x[[1]])) |> rowMeans()
+  mmt <- sapply(sigs, function(x) timetie(x[[2]])) |> rowMeans()
+  pmt <- sapply(sigs, function(x) timetie(x[[3]])) |> rowMeans()
+
+  fwer <- data.table(sm = sm, mm = mm, pm = pm)
+  tsmat <- matrix(c(smt, mmt, pmt), byrow = TRUE, nrow = 3,
+                  dimnames = list(c("sm", "mm", "pm"), NULL))
+  return(list(fwer = fwer, timeSliceMat = tsmat))
+}
+
+## This takes the list returned by getfwer
+timeSliceFwer <- function(y, f = median) {
+  nn <- length(y)
+  y <- lapply(y, `[[`, 2)
+  y <- lapply(y, function(z) {
+    apply(z, 1, f)
+  })
+  y <- Reduce(rbind, y)
+  #y <- sapply(y, rowMeans)
+  #rownames(y) <- paste0("sim", 1:8)
+  y
+}
+
+## Given signifiance mat, need to return length 401 bool vector
+timetie <- function(mm) {
+  time <- seq(0, 1600, 4)
+  vec <- vector("numeric", length = length(time))
+
+  if (is.null(dim(mm))) {
+    vec <- as.logical(vec)
+    return(vec)
+  }
+
+  # each of these into a list
+  sm <- split(mm, row(mm))
+  bv <- lapply(sm, function(m) {
+    sigt <- do.call(seq, as.list(c(m, 4)))
+  })
+  bv <- Reduce(union, bv)
+  rr <- time %in% bv
+  return(rr)
+}
+
+
+ff <- list.files("~/dissertation/writing/methodology/scripts/argon/feb_rds_files", full.names = TRUE, pattern = "rds")
+#ff <- ff[c(1, 5:12, 2:4)]
+ff <- ff[c(1, 9:16, 2:8)]
+
+# don't have manymeans false paired true
+ff <- ff[c(1:8, 13:16)]
+
+
+sds <- expand.grid(bdotscor = c(TRUE, FALSE),
+                   ar1 = c(TRUE, FALSE),
+                   manymeans = c(FALSE, TRUE),
+                   paired = c(FALSE, TRUE))
+sds <- as.data.table(sds)
+
+if (length(ff) != 16) {
+  sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
+}
+
+
+
+
+gg <- lapply(ff, getFWER)
+fwer <- rbindlist(lapply(gg, `[[`, 1))
+tfwer <- timeSliceFwer(gg, median)
+
+fwer <- as.data.table(cbind(sds, fwer))[order(rev(manymeans), ar1, decreasing = TRUE), ]
+tfwer <- as.data.table(cbind(sds, tfwer))[order(rev(manymeans), ar1, decreasing = TRUE)]
+
+fwer <- fwer[order(manymeans), ]
+tfwer <- tfwer[order(manymeans), ]
+
+fwers <- split(fwer, by = "paired")
+tfwers <- split(tfwer, by = "paired")
+
+
+fwers[[2]][, c(1,3:7)] #|> xtable() |> print(include.rownames = FALSE)
+# Unpaired
+fwers[[1]][, c(1,3:7)] #|> xtable() |> print(include.rownames = FALSE)
+```

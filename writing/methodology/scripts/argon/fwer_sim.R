@@ -6,18 +6,28 @@ library(bdots)
 sds <- expand.grid(bdotscor = c(TRUE, FALSE),
                    ar1 = c(TRUE, FALSE),
                    manymeans = c(FALSE, TRUE),
-                   paired = c(FALSE, TRUE))
+                   paired = c(FALSE, TRUE),
+                   pairedType = 1)
 sds <- as.data.table(sds)
 sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
 
-idx <- as.numeric(commandArgs(TRUE))
+## Now need to make a pairedType 1/2
+dat <- sds[paired == TRUE, ]
+dat1 <- copy(dat)
+dat1$pairedType <- 2
+
+sds <- rbind(sds, dat1)
+
+
+datidx <- as.numeric(commandArgs(TRUE))
 
 sidx <- sds[idx, ]
 
 createFits <- function(sidx) {
-  dat <- createData(paired = sidx$paired,
+  dat <- createData_feb(paired = sidx$paired,
                     ar1 = sidx$ar1,
-                    manymeans = sidx$manymeans)
+                    manymeans = sidx$manymeans,
+                    pairedType = sidx$pairedType) # this is ignored if not paired
   fit <- bdotsFit(data = dat$dts,
                   y = "fixations",
                   group = "group",
@@ -29,7 +39,7 @@ createFits <- function(sidx) {
   fit
 }
 
-N <- 250
+N <- 500
 res <- vector("list", length = N)
 attr(res, "settings") <- sidx
 nn <- paste0("sim", idx)
@@ -46,15 +56,15 @@ for (i in seq_len(N)) {
 
   sm <- bdotsBoot(formula = fixations ~ group(A, B),
                   bdObj = fit, singleMeans = TRUE,
-                  cores = ccores)#$sigTime
+                  cores = ccores)$sigTime
 
   mm <- bdotsBoot(formula = fixations ~ group(A, B),
                   bdObj = fit, singleMeans = FALSE,
-                  cores = ccores)#$sigTime
+                  cores = ccores)$sigTime
 
   pm <- suppressMessages(bdotsBoot(formula = fixations ~ group(A, B),
                                    bdObj = fit, permutation = TRUE, skipDist = FALSE,
-                                   cores = ccores))#$sigTime
+                                   cores = ccores))$sigTime
 
   res[[i]] <- list(singleMeans = sm,
                    manyMeans = mm,

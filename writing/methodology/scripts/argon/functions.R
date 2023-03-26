@@ -10,12 +10,14 @@ getFWER <- function(y) {
   sm <- sapply(sigs, function(x) !is.null(x[[1]])) |> mean()
   mm <- sapply(sigs, function(x) !is.null(x[[2]])) |> mean()
   pm <- sapply(sigs, function(x) !is.null(x[[3]])) |> mean()
+  pmm <- sapply(sigs, function(x) !is.null(x[[4]])) |> mean()
 
   smt <- sapply(sigs, function(x) timetie(x[[1]])) |> rowMeans()
   mmt <- sapply(sigs, function(x) timetie(x[[2]])) |> rowMeans()
   pmt <- sapply(sigs, function(x) timetie(x[[3]])) |> rowMeans()
+  #pmtm <- sapply(sigs, function(x) timetie(x[[4]])) |> rowMeans()
 
-  fwer <- data.table(sm = sm, mm = mm, pm = pm)
+  fwer <- data.table(sm = sm, mm = mm, pm = pm, pmm = pmm)
   tsmat <- matrix(c(smt, mmt, pmt), byrow = TRUE, nrow = 3,
                   dimnames = list(c("sm", "mm", "pm"), NULL))
   return(list(fwer = fwer, timeSliceMat = tsmat))
@@ -56,30 +58,21 @@ timetie <- function(mm) {
 
 ##########3---------------------------------------------------------
 
-ff <- list.files(path="~/dissertation/writing/methodology/scripts/argon/rds_files", full.names = TRUE)
+ff <- list.files("~/dissertation/writing/methodology/scripts/argon/rds_files", full.names = TRUE)
 ff <- ff[c(1, 9:16, 2:8)]
 
-ff <- list.files("~/dissertation/writing/methodology/scripts/argon/2000_rds_files", full.names = TRUE, pattern = "rds")
-ff <- ff[c(1, 5:12, 2:4)]
-
-ff <- list.files("~/dissertation/writing/methodology/scripts/argon/feb_rds_files", full.names = TRUE, pattern = "rds")
-#ff <- ff[c(1, 5:12, 2:4)]
-ff <- ff[c(1, 9:16, 2:8)]
-
-ff <- list.files("~/dissertation/writing/methodology/scripts/argon/old_lmer_rds_files", full.names = TRUE)
-ff <- ff[c(1, 5:12, 2:4)]
-
+## Sim settings
 sds <- expand.grid(bdotscor = c(TRUE, FALSE),
                    ar1 = c(TRUE, FALSE),
                    manymeans = c(FALSE, TRUE),
-                   paired = c(FALSE, TRUE))
+                   paired = c(FALSE, TRUE),
+                   pairedType = 1)
 sds <- as.data.table(sds)
-
-if (length(ff) != 16) {
-  sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
-}
-
-
+sds <- sds[!(manymeans == FALSE & paired == TRUE), ]
+dat <- sds[paired == TRUE, ]
+dat1 <- copy(dat)
+dat1$pairedType <- 2
+sds <- rbind(sds, dat1)
 
 
 gg <- lapply(ff, getFWER)

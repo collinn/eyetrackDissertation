@@ -2,8 +2,8 @@ library(eyetrackSim)
 library(bdots)
 
 sds <- expand.grid(paired = c(TRUE, FALSE),
-                   pm = c(1, 2), 
-                   shift = c(100, 200))
+                   xosd = c(60, 120),
+                   shift = c(50, 150))
 
 idx <- as.numeric(commandArgs(TRUE))
 
@@ -13,7 +13,8 @@ ccores <- 4
 
 createFits <- function(sidx) {
   dat <- createDataShiftLogistic(paired = sidx$paired,
-                                 pairMag = sidx$pm, dd = sidx$shift)
+                                 dd = sidx$shift,
+                                 xosd = sidx$xosd)
   fit <- bdotsFit(data = dat$dts,
                   y = "fixations",
                   group = "group",

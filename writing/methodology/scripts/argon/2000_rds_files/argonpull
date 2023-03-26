@@ -1,4 +1,0 @@
-#!/bin/bash
-
-rsync -avze "ssh -p 40" collin@argon.hpc.uiowa.edu:/Users/collin/eyetrackSims/typeIerror/2000_rds_files/ .
-

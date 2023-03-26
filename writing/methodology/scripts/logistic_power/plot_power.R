@@ -7,8 +7,8 @@ ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
 
 
 sds <- expand.grid(paired = c(TRUE, FALSE),
-                   pm = c(1, 2),
-                   shift = c(100,200))
+                   xosd = c(60, 120),
+                   shift = c(50, 150))
 
 ## Given signifiance mat, need to return length 401 bool vector
 timetiePower <- function(mm) {
@@ -39,9 +39,9 @@ getDiffSlicesgg <- function(ff, ww, leg = TRUE) {
 
   tt <- attributes(rr)[[1]] #|> unlist()
 
-  vs <- ifelse(tt$pm == 1, "\nLow Var", "\nHigh Var")
+  vs <- ifelse(tt$xosd == 60, "\nCrossover SD: 60", "\nCrossover SD: 120")
 
-  tit <- paste0("Paired: ", tt$paired, vs, "\nShift: ", tt$shift)
+  tit <- paste0("Paired: ", tt$paired, vs, "\nCrossover Shift: ", tt$shift)
   sm <- lapply(rr, `[[`, 1)
   mm <- lapply(rr, `[[`, 2)
   pm <- lapply(rr, `[[`, 3)
@@ -73,10 +73,10 @@ getDiffSlicesgg(ff[3], 3)
 getDiffSlicesgg(ff[4], 4)
 
 ## Shift of 100
-p1 <- getDiffSlicesgg(ff[1], 1)
-p2 <- getDiffSlicesgg(ff[2], 2)
-p3 <- getDiffSlicesgg(ff[3], 3)
-p4 <- getDiffSlicesgg(ff[4], 4)
+p1 <- getDiffSlicesgg(ff[1], 1, leg = FALSE)
+p2 <- getDiffSlicesgg(ff[2], 2, leg = FALSE)
+p3 <- getDiffSlicesgg(ff[3], 3, leg = FALSE)
+p4 <- getDiffSlicesgg(ff[4], 4, leg = FALSE)
 
 grid.arrange(p3, p4, nrow = 1) # little var
 grid.arrange(p1, p2, nrow = 1) # big var
@@ -84,12 +84,15 @@ grid.arrange(p1, p2, nrow = 1) # big var
 grid.arrange(p1, p2, p3, p4, nrow = 2)
 
 ## Shift of 200
-p5 <- getDiffSlicesgg(ff[5], 5)
-p6 <- getDiffSlicesgg(ff[6], 6)
-p7 <- getDiffSlicesgg(ff[7], 7)
-p8 <- getDiffSlicesgg(ff[8], 8)
+p5 <- getDiffSlicesgg(ff[5], 5, leg = FALSE)
+p6 <- getDiffSlicesgg(ff[6], 6, leg = FALSE)
+p7 <- getDiffSlicesgg(ff[7], 7, leg = FALSE)
+p8 <- getDiffSlicesgg(ff[8], 8, leg = TRUE)
 
 grid.arrange(p5, p6, nrow = 1)
 grid.arrange(p7, p8, nrow = 1)
 
 grid.arrange(p5, p6, p7, p8, nrow = 2)
+
+grid.arrange(p1, p2, p3, p4,
+             p5, p6, p7, p8, nrow = 4)

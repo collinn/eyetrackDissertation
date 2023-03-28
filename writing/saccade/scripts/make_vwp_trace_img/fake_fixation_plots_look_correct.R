@@ -63,11 +63,18 @@ dd2 <- melt(d2, id.vars = 'cycle', variable.name = "word", value.name = "activat
 dd3 <- melt(d3, id.vars = 'cycle', variable.name = "word", value.name = "activation")
 dd4 <- melt(d4, id.vars = 'cycle', variable.name = "word", value.name = "activation")
 
+dd3$activation <- dd3$activation*.85
+dd2$activation <- dd2$activation*.75
+
 dat <- rbindlist(list(dd1, dd2, dd3, dd4))
+
+dat <- rbindlist(list(dd2, dd3, dd1, dd4))
 
 library(ggplot2)
 
-ggplot(dat[cycle < 70, ], aes(cycle, activation, color = word)) + geom_line(linewidth = 3) +
+pdf("fake_proportion.pdf", width = 3, height = 3)
+ggplot(dat[cycle < 70, ], aes(cycle, activation, color = word)) + geom_line(linewidth = 1) +
   theme_classic() +
   theme(legend.position = "none", axis.text = element_blank(), axis.ticks = element_blank()) +
   labs(x = "Time", y = "Proportion of Fixation")
+dev.off()

@@ -9,7 +9,7 @@ sds <- data.table(mm = rep(c(F, T, T, T, T), 2),
                   #sigVal = 0.05,
                   slope = rep(c(0.025, 0.25), each = 5))
 
-ff <- list.files("~/dissertation/writing/methodology/scripts/power/negative_one_to_one_rds", full.names = TRUE,
+ff <- list.files("~/dissertation/writing/methodology/scripts/power/rds_files", full.names = TRUE,
                   pattern = "rds")
 ff <- ff[c(1, 3:10, 2)]
 
@@ -86,7 +86,7 @@ getDiffSlicesgg <- function(ff, ww, leg = FALSE) {
   #               "Homogenous Means, AR(1) Error",
   #               "Heterogenous Means, AR(1) Error",
   #               "Heterogeneous Means, No AR(1) Error")
-  tit <- ""
+  #tit <- ""
   sm <- lapply(rr, `[[`, 1)
   mm <- lapply(rr, `[[`, 2)
   pm <- lapply(rr, `[[`, 3)

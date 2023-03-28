@@ -10,14 +10,14 @@ getFWER <- function(y) {
   sm <- sapply(sigs, function(x) !is.null(x[[1]])) |> mean()
   mm <- sapply(sigs, function(x) !is.null(x[[2]])) |> mean()
   pm <- sapply(sigs, function(x) !is.null(x[[3]])) |> mean()
-  pmm <- sapply(sigs, function(x) !is.null(x[[4]])) |> mean()
+  #pmm <- sapply(sigs, function(x) !is.null(x[[4]])) |> mean()
 
   smt <- sapply(sigs, function(x) timetie(x[[1]])) |> rowMeans()
   mmt <- sapply(sigs, function(x) timetie(x[[2]])) |> rowMeans()
   pmt <- sapply(sigs, function(x) timetie(x[[3]])) |> rowMeans()
   #pmtm <- sapply(sigs, function(x) timetie(x[[4]])) |> rowMeans()
 
-  fwer <- data.table(sm = sm, mm = mm, pm = pm, pmm = pmm)
+  fwer <- data.table(sm = sm, mm = mm, pm = pm)
   tsmat <- matrix(c(smt, mmt, pmt), byrow = TRUE, nrow = 3,
                   dimnames = list(c("sm", "mm", "pm"), NULL))
   return(list(fwer = fwer, timeSliceMat = tsmat))

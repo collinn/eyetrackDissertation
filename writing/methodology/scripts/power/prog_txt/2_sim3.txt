@@ -1,7 +1,0 @@
-[1] "starting index: 3"
-[1] "index: 3, iteration: 20"
-[1] "index: 3, iteration: 40"
-
-> proc.time()
-    user   system  elapsed 
-  29.584    2.203 2460.388 

@@ -58,6 +58,9 @@ getPowerTab <- function(ff) {
 ff <- list.files("negative_one_to_one_rds", full.names = TRUE, pattern = "rds")
 ff <- ff[c(1, 3:10, 2)]
 
+# this is slope 0.025
+ff <- ff[1:5]
+
 ## For now, only doing slope = 0.25
 ff <- ff[6:10]
 

@@ -30,8 +30,6 @@
 
 Last compiled: \today \  at \currenttime
 
-\pb{USE NATBIB; it is essential that you can run \xt{citet} and \xt{citep}}
-\cn{\\ok, done, but which of these should i replace instances of \xt{cite} with?}
 
 %\input{main.tex}
 
@@ -67,7 +65,6 @@ where
 Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It further assumes homogeneity of the mean structure, meaning that if subjects $i$ and $j$ are from the same group, we have \pb{this kind of thing does not work at all -- you define $\theta$ above. it has no subscripts. You can't just refer to $\theta_{it}$ all of a sudden -- it's never been defined. Also, $\theta$ doesn't depend on $t$ at all, in any scenario. $\theta_{it} = \theta_{jt}$}. In other words, there is no variability in the mean structure between subjects, only between groups. \cn{This is also evidenced in the original bdots algorithm: }
 
 %\begin{singlespace}
-\pb{why are you manually numbering?}
 \begin{enumerate}
 \vspace{-3mm}
 \item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \cite{oleson2017detecting} recommended specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a normal distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error.

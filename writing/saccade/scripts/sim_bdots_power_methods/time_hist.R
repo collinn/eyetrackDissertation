@@ -12,7 +12,6 @@ library(bdots)
 library(eyetrackSim)
 
 ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
-ff <- list.files("alt_rds_files", full.names = TRUE, pattern = "rds")
 
 
 ##

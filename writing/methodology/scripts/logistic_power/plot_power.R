@@ -67,10 +67,6 @@ getDiffSlicesgg <- function(ff, ww, leg = TRUE) {
   return(pp)
 }
 
-getDiffSlicesgg(ff[1], 1)
-getDiffSlicesgg(ff[2], 2)
-getDiffSlicesgg(ff[3], 3)
-getDiffSlicesgg(ff[4], 4)
 
 ## Shift of 100
 p1 <- getDiffSlicesgg(ff[1], 1, leg = FALSE)
@@ -78,10 +74,8 @@ p2 <- getDiffSlicesgg(ff[2], 2, leg = FALSE)
 p3 <- getDiffSlicesgg(ff[3], 3, leg = FALSE)
 p4 <- getDiffSlicesgg(ff[4], 4, leg = FALSE)
 
-grid.arrange(p3, p4, nrow = 1) # little var
-grid.arrange(p1, p2, nrow = 1) # big var
-
-grid.arrange(p1, p2, p3, p4, nrow = 2)
+ggpubr::ggarrange(p1, p2, p3, p4, nrow = 2, ncol = 2,
+                  common.legend = TRUE, legend = "bottom")
 
 ## Shift of 200
 p5 <- getDiffSlicesgg(ff[5], 5, leg = FALSE)
@@ -89,10 +83,5 @@ p6 <- getDiffSlicesgg(ff[6], 6, leg = FALSE)
 p7 <- getDiffSlicesgg(ff[7], 7, leg = FALSE)
 p8 <- getDiffSlicesgg(ff[8], 8, leg = TRUE)
 
-grid.arrange(p5, p6, nrow = 1)
-grid.arrange(p7, p8, nrow = 1)
-
-grid.arrange(p5, p6, p7, p8, nrow = 2)
-
-grid.arrange(p1, p2, p3, p4,
-             p5, p6, p7, p8, nrow = 4)
+ggpubr::ggarrange(p5, p6, p7, p8, nrow = 2, ncol = 2,
+                  common.legend = TRUE, legend = "bottom")

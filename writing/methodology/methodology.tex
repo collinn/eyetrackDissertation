@@ -39,43 +39,65 @@ Last compiled: \today \  at \currenttime
 
 \section{Introduction}
 
-A standard problem in psycholinguistics\pb{not really limited to psychology...processes unfolding in time are pretty ubiquitous throughout science}, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. Particularly in the case of comparing a process between experimental groups in time, while there are many appropriate techniques for demonstrating that differences \textit{exist}, such as comparing the area under the curve (AUC) of the two processes or testing for differences in the underlying parameters (if the process is being modeled in a parametric manner). However, these offer little insight with respect to identifying \textit{when} these processes are significantly different, which is often the more relevant scientific question. Testing for time differences is complicated by the fact that there are effectively an infinite number of time points that could be compared, with the test results at nearby time points highly correlated. Both of these factors complicate efforts to correct for multiple comparisons.
+A standard problem in psycholinguistics\pb{not really limited to psychology...processes unfolding in time are pretty ubiquitous throughout science}, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. 
 
-Various approaches have been proposed, such as using cluster based permutation testing \cite{Maris2007}. Here, test-statistics are computed at each time, with adjacent significant tests being combined into clusters. This controls for the family wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of tests. More recently, \cite{oleson2017detecting} used bootstrapped fits of subject-level curves and estimated the correlation structure of the test statistics in order to modify the Bonferroni correction of the significance level to control FWER. This approach, which they named bootstrapped differences of time series, was introduced in the R package \xt{bdots} \citep{seedorff2018bdots}.
+Particularly in the case of comparing a process in time between experimental groups, while there are many techniques for demonstrating \textit{that} a difference exists, few offer any insight into \textit{when} it exists. Testing for temporal differences is complicated by the fact that there are often an arbitrarily large number of time points that could be compared, depending on the sampling density, and where significance tests at nearby time points have the potential to be highly correlated. This is essentially a problem of multiple comparisons.
 
-A closer look at the specific conditions under which the original iteration of \xt{bdots} was presented raises concerns, however, involving quite restrictive assumptions that are unlikely to be met in many, if not most, situations. This includes data typically collected in the Visual World Paradigm (VWP), context in which the underlying methodology was first proposed. Specifically, it assumed a homogeneous mean structure within each of the groups being compared, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to show that such an assumption is unlikely to be true, with the resulting type I error rate being unacceptably high.
+Various approaches have been proposed for addressing this issue. The most rudimentary of these involve binary tests for identifying the existence of any difference, such as the area under the curve (AUC).  More sophisticated techniques involve the used of cluster-based permutation testing \citep{Maris2007}, whereby test statistics are computed at each observed time point and with adjacent significant tests being combined into clusters. This controls the family-wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of total tests. More recently, \citet{oleson2017detecting} introduced a modified Bonferroni correction to a series of test statistics, using estimates of autocorrelation between statistics to make the appropriate adjustments to the significance levels to control FWER. This approach, which they named bootstrapped differences in time series, was introduced in the R package, \xt{bdots} \citep{seedorff2018bdots}.
 
-Here, we present two alternatives that accommodate flexibility in the assumptions made by the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the FWER adjustment method presented for autocorrelated errors. In addition, we offer a permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the type I error rate across a number of experimental conditions, and finally we conclude with a demonstration of power in the competing methods.
+The modified Bonferonni correction used by \xt{bdots} relies on the construction of estimated distributions of time series via bootstrapping for each experimental group. These distributions, in turn, are used to construct test statistics at each observed time point. A closer look at the original iteration presents concerns as it involves quite restrictive assumptions on the data that are unlikely to be met in many, if not most situations. This includes data typically collected in the Visual World Paradigm \cn{should i have a paragraph descriping VWP? not sure where to squeeze in}, the context in which the underlying methodology was first proposed. Specifically, the original implementation assumes a homogeneous mean structure within each experimental group, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to demonstrate that this assumption is unlikely to be true, the consequence of which is a type I error rate that is unacceptably high.
+
+Here, we present two alternative methods that accommodate flexibility in the assumptions made by the original bootstrapped differences in time series algorithm. First, we propose a modified bootstrapping procedure that adequately accounts for observed between-subject variability while retaining the FWER adjustment that addresses the autocorrelated test statistics. In addition, we offer a permutation test for identifying temporal differences between groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits.
+
+We begin with a mathematical description of the problem along with the proposed alternatives to the original bootstrapping algorithm. This is followed by a simulation estimating the FWER across a number of experimental conditions. Finally, we consider two separate simulations for the assessment of power among the competing methods. This includes one simulation with a simple piecewise-linear function relating power to effect sizes; the second simulation interrogates power when the magnitudes of between-subject and within-subject variability differ. \cn{is this too much detail here?}
+
+
+
 
 \section{Methods}
 
-\pb{Define data notation here. we observe $y_{it}$ for subjects $i=1, \ldots, n$ over times $t=1, \ldots, T$. typically fall into separate groups and we want to compare those groups}
-
-\subsection{Homogeneous bootstrap}
-
-\pb{revise this in light of above} Most generally the original bdots algorithm, which we will call the \textit{homogeneous bootstrap}, proposed that we have empirically observed data in time resulting from a parametric function $f$ with an associated error: 
+In each of the methods to be described, we begin with the observation of $y_{it}$ for subjects $i = 1, \dots, n$ over times $t = 1, \dots, T$. Typically, these subjects fall into different groups $g = 1, \dots, G$, with each group containing $n_g$ subjects, and it is these groups we wish to compare in time. We further assume that the empirically observed data follows from a parametric function $f$ with associated error:
 
 \begin{equation}\label{eq:mean_structure}
-y_{it} = f(t|\theta) + \epsilon_{it}
+y_{it} = f(t|\theta_i) + \epsilon_{it}
 \end{equation}
-where 
+where $\theta_i$ is the subject-specific parameterization of $f$ and 
 \begin{equation}
 \epsilon_{it} = \phi \epsilon_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma).
 \end{equation}
-Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It further assumes homogeneity of the mean structure, meaning that if subjects $i$ and $j$ are from the same group, we have \pb{this kind of thing does not work at all -- you define $\theta$ above. it has no subscripts. You can't just refer to $\theta_{it}$ all of a sudden -- it's never been defined. Also, $\theta$ doesn't depend on $t$ at all, in any scenario. $\theta_{it} = \theta_{jt}$}. In other words, there is no variability in the mean structure between subjects, only between groups. \cn{This is also evidenced in the original bdots algorithm: }
+
+Under this paradigm, the errors could be IID normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It is generally assumed that the observed data across subjects make up a distribution for each group, either a multivariate distribution of the parameters $\theta_i$ or a distribution of resulting curves, $f(t|\theta_i)$. Ultimately, it will be from a distribution of curves that we determine the temporal characteristics of each group, with the differences in these characteristics specifically being what we are interested in identifying.
+
+With the general notation addressed, we now move to the particulars of each of the methods considered.
+
+\subsection{Homogeneous bootstrap}
+
+The original bootstrapping algorithm presented in \citet{oleson2017detecting} follows what we will call the \textit{homogeneous means} assumption. Accordingly, we will call this bootstrapping algorithm the \textit{homogeneous bootstrap}. Under the homogeneous means assumption, it is still assumed that observed data for each subject retains the mean structure given in Equation~\ref{eq:mean_structure}, but with the additional assumption that $\theta_i = \theta_j$ for all subjects $i, j$ within the same group. In other words, there is assumed to be no variability in the mean structure between subjects within the same group. This is evidenced in the original bootstrapping differences in time series algorithm:
+
 
 %\begin{singlespace}
 \begin{enumerate}
 \vspace{-3mm}
-\item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \cite{oleson2017detecting} recommended specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a normal distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error.
+\item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \cite{oleson2017detecting} recommended specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a multivariate normal distribution with mean for subject $i$, $\hat{\theta}_i$ corresponding to the point estimate and standard deviations corresponding to the standard errors, $s_i$.
 
-\item Using the approximate sampling distributions in (1.), randomly draw one bootstrap estimate for each of the model parameters on every subject \pb{MATH: $\hat{\theta}_i^{(b)} \sim ()$ or so}.
+\item Using the approximate sampling distributions in (1.), randomly draw one bootstrap estimate for each of the model parameters on every subject 
 
-\item Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap estimates across individuals  \pb{MATH}.
+\begin{equation}
+\hat{\theta}_i^{(b)} \sim N( \hat{\theta}_i, s_i^2)
+\end{equation}
 
-\item Use the mean estimates to determine the predicted population level curve, which provides the average population response at each time point.   \pb{MATH}
+\item Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap estimates across $n_g$ individuals for the $b$th bootstrap in group $g$,
 
-\item Perform steps (2)-(4) 1000 times to obtain estimates of the population curves. Use these to create estimates of the mean response and standard deviation at each of the time points.  \pb{MATH}.
+\begin{equation}
+\theta_g^{(b)} = \frac{1}{n_g} \sum_{i=1}^{n_g} \hat{\theta}_i^{(b)}
+\end{equation}
+
+\item Use the mean parameter estimates to determine a bootstrapped population level curve, which provides the average population response at each time point, $f(t| \theta_g^{(b)})$.
+
+\item Perform steps (2)-(4) 1000 times to obtain estimates of the population curves. Use these to create estimates of the mean response and standard deviation at each of the time points. For each group $g = 1, \dots, G$, this gives
+\begin{equation}
+\overline{p}_{gt} = \frac1B \sum_{b=1}^B f(t| \theta_g^{(b)}), \qquad s_{gt}^2 = \frac{1}{B-1} \sum_{b=1}^B  f(t| \theta_g^{(b)}) - \overline{p}_{gt}.
+\end{equation}
 \end{enumerate}
 %\end{singlespace}
 
@@ -83,43 +105,35 @@ Population means and standard deviations at each time point for each of the grou
 
 \subsection{Heterogeneous Bootstrap}
 
-Typically, subjects within a group demonstrate considerable variability in their mean parameter estimates. In this case, we should avoid the presumption that $\theta_i = \theta_j$, since accounting for between-subject variability within a group will be critical for obtaining a reasonable distribution of the population curves.
-
-Instead of \eqref{}
-
-\label{eq:mean_structure}
-\cn{A more likely case involving subjects in the VWP (or subjects within any group exhibiting between and within subject variability) is as such: }
-
-The distribution of parameters for subjects $i = 1, \dots, n_g$ in group $g = 1, \dots, G$ follows the distribution
+Typically, subjects within a group demonstrate considerable variability in their mean parameter estimates. In this case, we should avoid the presumption that $\theta_i = \theta_j$ as accounting for between-subject variability within a group will be critical for obtaining a reasonable distribution of the population curves. More likely, we may assume that the distribution of parameters for subjects $i = 1, \dots, n_g$ in group $g = 1, \dots, G$ follows the distribution
 
 \begin{equation}\label{eq:theta_i_dist}
-\theta_i \sim N(\mu_{g}, V_{g}).
+\theta_i \sim N(\mu_{g}, V_{g}),
 \end{equation}
-
-The uncertainty present in our estimation of $\theta_i$ can be accounted for by treating the standard errors derived when fitting the observed subject data to Equation~\ref{eq:mean_structure} as estimates of their standard deviations. This gives us a distribution for the subject's estimated parameter, 
+where $\mu_g$ and $V_g$ are the group-specific mean and variance values, respectively. Similar to what was presented in the homogeneous bootstrap algorithm, we can further account for uncertainty in our estimation of $\theta_i$ by $\hat{\theta}_i$ by treating the standard errors derived when fitting the observed data to the mean structure suggested in Equation~\ref{eq:mean_structure} as estimates of their standard deviations. This gives us a multivariate normal distribution for each subject's estimated parameter, 
 
 \begin{equation}
 \hat{\theta}_i \sim N(\theta_i, s_i^2).
 \end{equation}
 
-When obtaining reasonable estimates of the population curve, it is necessary to estimate both the observed within-subject variability found in each of the $\{s_i^2\}$ terms, \textit{as well as} the between-subject variability present in $V_{g}$. For example, let $\theta^*_{ib}$ represent a bootstrapped sample for subject $i$ in bootstrap $b = 1, \dots, B$, where
+As our goal remains as being able to obtain reasonable estimates of the population curves for each group, it is necessary to estimate both the observed within-subject variability found in each of the $\{s_i^2\}$ terms, \textit{as well as} the between-subject variability present in $V_{g}$. For example, let $\theta^*_{ib}$ represent a bootstrapped sample for subject $i$ in bootstrap $b = 1, \dots, B$, where
 
 \begin{equation}\label{eq:sub_boot_dist}
-\theta^*_{ib} \sim N(\hat{\theta}_i, s_i^2).
+\theta^*_{ib} \sim N(\hat{\theta}_i, s_i^2),
 \end{equation}
-If we were to sample \textit{without replacement}, we would obtain a homogeneous mean value from the $b$th bootstrap for group $g$, $\theta^{(hom)}_{bg}$, where
+as was done in Step (2.) of the homogeneous bootstrapping algorithm. If we were to sample \textit{without replacement}, we would obtain a homogeneous mean value from the $b$th bootstrap for group $g$, $\theta^{(hom)}_{bg}$, where
 
 \begin{equation}\label{eq:wo_rep_boot}
-\theta^{(hom)}_{bg} = \frac{1}{n_g} \sum \theta^{*}_{ib}, \quad \theta^{(hom)}_{bg} \sim N \left( \mu_{g}, \frac{1}{n_g^2} \sum s_i^2 \right).
+\theta^{(hom)}_{bg} = \frac{1}{n_g} \sum_{i=1}^{n_g} \theta^{*}_{ib}, \quad \theta^{(hom)}_{bg} \sim N \left( \mu_{g}, \frac{1}{n_g^2} \sum_{i=1}^{n_g} s_i^2 \right).
 \end{equation}
 
-Such an estimate captures the totality of the within-subject variability with each draw but fails to account for the variability in the group overall. For this reason, we sample the subjects \textit{with} replacement, creating the heterogeneous bootstrap mean $\theta_{bg}^{(het)}$, where again each $\theta_{ib}^*$ follows the distribution in Equation~\ref{eq:sub_boot_dist}, but the heterogeneous bootstrapped group mean now follows
+Such an estimate captures the totality of the within-subject variability with each draw but fails to account for the variability in the group overall. For this reason, we sample the subjects \textit{with} replacement, creating the heterogeneous bootstrap mean $\theta_{bg}^{(het)}$, where again each $\theta_{ib}^*$ follows the distribution in Equation~\ref{eq:sub_boot_dist}, but the heterogeneous bootstrapped group mean now follows \cn{indicated in hom bootstrap that it was without replacement via the enumerators on the summation, not sure how to precisely indicate that here}
 
 \begin{equation}\label{eq:w_rep_boot}
 \theta_{bg}^{(het)} \sim N \left( \mu_{g}, \frac{1}{n_g} V_{g} + \frac{1}{n_g^2} \sum s_i^2 \right).
 \end{equation}
 
-The estimated mean value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the \textit{heterogeneous bootstrap}, making the following changes to the original: \cn{make equations for this}
+The estimated mean value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the \textit{heterogeneous bootstrap}, making the following changes to the original:  \cn{I'm not sure what math to include here, how else indicate im sampling without replacement}
 
 %\begin{singlespace}
 \begin{enumerate}
@@ -139,14 +153,11 @@ where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimat
 
 
 
-\cn{A paired bootstrapping can be implemented by performing this same algorithm but ensuring that at each iteration of the bootstrap the same subjects are sampled with replacement in each group. This happened by default in the original implementation as each subject was retained in each iteration of the bootstrap.}
-
-
 \subsection{Permutation Testing}
 
 In addition to the heterogeneous bootstrap, we also introduce a permutation method for hypothesis testing. The permutation method proposed is analogous to a traditional permutation method, but with an added step mirroring that of the previous in capturing the within-subject variability. For a specified FWER of $\alpha$, the proposed permutation algorithm is as follows:
 
-\cn{need to add math here}
+\cn{not sure what additional math to add here}
 
 %\begin{singlespace}
 \begin{enumerate}
@@ -163,15 +174,24 @@ This will be our observed test statistic.
 \end{enumerate}
 %\end{singlespace}
 
-Paired permutation testing is implemented with a minor adjustment to step (3). Instead of permuting all of the labels between groups, randomly assign each subject to either retain their current group membership or to change groups. This ensures that each permuted group contains one observation from each subject.
+
+
+\subsection{Paired data}
+
+Briefly, we attend to the issue of paired data for each of the discussed methods, as this is critical for a proper assessment of both FWER and power. Specifically, in a paired setting we note that our interest is in determining the distribution of differences rather than of the respective groups. 
+
+For the homogeneous bootstrap, this is done by default: as each subject is sampled without replacement, we can be sure that each bootstrap estimate between groups contains the same subjects. For the heterogeneous bootstrap, this is done by ensuring that the same subjects sampled in each bootstrap for one group is matched identically with sampling subjects in the other. Put differently, this states that we begin by determining which subjects will be included in each bootstrap \textit{for both groups at the same time}. Lastly, in the case of permutation testing, paired data is addressed by ensuring that each permuted group contains one observation for each subjects, so that each subject in one permuted group has its corresponding observation in the other. \cn{am i saying this weird?}
 
 
 
-\section{Type I Error Simulations}
 
-We now go about comparing the type I error rate of the three methods just described. In doing so, we will consider several conditions under which the observed subject data may have been generated or fit. This includes two conditions for the mean structure, two conditions for the error structure, paired and unpaired data, and data fit with and without an AR(1) assumption. Considering each permutation of this arrangement results in sixteen different settings. Each simulation will then be examined for type I error using each of the three methods described.
+\section{FWER Simulations}
 
+We now go about comparing the type I error rate of the three methods just described. In doing so, we will consider several conditions under which the observed subject data may have been generated or fit. This includes generating data with both a homogeneous and heterogeneous means assumption, generating data with and without autocorrelated errors, and fitting data with and without an AR(1) assumption. 
 
+In addressing performance under paired and unpaired conditions, we have included two distinct but reasonable instances in which  the data may be paired, which we will elaborate further on shortly. However, as paired data becomes difficult to define under the homogeneous means assumption (in which all subjects are, in a sense, ``paired"), we will omit these settings from our final simulations. In all, this gives us sixteen different arrangements which we will examine for their family wise error rates using each of the three methods previously described.
+
+We turn now to a detailed description of how the data was generated.
 
 \subsection{Data Generation}
 
@@ -193,11 +213,12 @@ where $\theta = (p, b, s, x)$, the peak, baseline, slope, and crossover paramete
 
 
 
-We further assume that each group drew subject-specific parameters from a normal distribution, with subject $i = 1, \dots, N$ in group $g = 1, \dots, G$ following the distribution in Equation~\ref{eq:theta_i_dist}.
+We further assume that each group drew subject-specific parameters from a normal distribution, with subject $i = 1, \dots, N$ in group $g = 1, \dots, G$ following the distribution in Equation~\ref{eq:theta_i_dist}. These parameters are then used to simulate empirical data according the the mean and error structures for each simulation setting, which we detail next. 
 
-\cn{Could also expression this $\theta_i^{(g)}$? Though that may be cumbersome}
 
-\paragraph{Mean Structure} In all of the simulations presented, the distribution used in Equation~\ref{eq:tie_dist} was empirically determined from data on normal hearing subjects in the VWP (Farris-Trimble et  al., 2014 \cite{FarrisTrimble2014}). Parameters used were those fit to fixations on the Target, following the functional form of Equation~\ref{eq:logistic}. Under the assumption of between-subject homogeneity, we set $\theta_i = \theta_j$ for all subjects $i,j$, assuring that each of the subjects' observations is derived from the same mean structure, differing only in their observed error. We will call this the homogeneous means assumption.
+\paragraph{Mean Structure} In all of the simulations presented, the distribution used in Equation~\ref{eq:theta_i_dist} was empirically determined from data on normal hearing subjects in the VWP \citep{FarrisTrimble2014}. Parameters used were those fit to fixations on the Target, following the functional form of Equation~\ref{eq:logistic}. We will call this the heterogeneous means assumption.
+
+Under the assumption of between-subject homogeneity, we set $\theta_i = \theta_j$ for all subjects $i,j$, assuring that each of the subjects' observations is derived from the same mean structure, differing only in their observed error. We will call this the homogeneous means assumption.
 
 
 \paragraph{Error Structure} The error structure is of the form
@@ -207,10 +228,20 @@ e_{it} = \phi e_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma)
 \end{equation}
 where the $w_{it}$ are iid with $\sigma = 0.025$. $\phi$ corresponds to an autocorrelation parameter and is set to $\phi = 0.8$ when the generated data is to be autocorrelated and set to $\phi = 0$ when we assume the errors are all independent and identically distributed. 
 
-\paragraph{Paired Data} Finally we considered paired data, though this is only a sensible condition under the assumption of heterogeneous means. In order to construct paired data, we simply used the same parameter estimates for each subject between groups, with the observed data between subjects differing only in the observed error.
+\paragraph{Paired Data} As we previously noted, paired data is only a sensible condition under the assumption of heterogeneous means, and we limit our consideration to that case. Further, we observe that in the construction of paired data, there are two methods that seem reasonable, and we employ both of them here. In considering the construction of paired data for subject $i$, the first method proceeds as follows: we begin by drawing parameters $\theta_i$ from Equation~\ref{eq:theta_i_dist}. Denote this $\theta_{i1}$ to indicate that this is the parameter estimate for subject $i$ in group $1$. We then simulate observed data according to Equation~\ref{eq:mean_structure}. To create the paired data, we then set $\theta_{i2} = \theta_{i1}$ and again simulate observed data according to Equation~\ref{eq:mean_structure}. Critically, under this first method, the generating parameters between groups are \textit{identical}, with the only differences between the simulated data being that contributed by the error term.
+
+In the second method of obtaining paired data, we proceed as in the first, except now letting
+\begin{equation}
+\theta_{i2} = \theta_{i1} + N(0, 0.05 \cdot  V_g).
+\end{equation}
+This adds a small amount of random noise between paired parameters, simulating the degree of variability that may normally be found between conditions, even when there is no true effect.  To avoid potential confusion, the results for each of these will be presented separately. \cn{I haven't decided how to address these yet in columns}.
 
 
-Each set of conditions generates two groups, with $n = 25$ subjects in each group, with timepoints $t = 0, 4, 8, \dots, 1600$ in each trial and with $100$ simulated trials for each subject. Columns in the tables indicate homogeneity of means assumption, whether or not an AR(1) error structure was used in constructing the data, and if autocorrelation was specified in the fitting function. The last conditions helps assess the impact of correctly identifying the type of error when conducting an analysis in \xt{bdots}. Each simulation was conducted 100 times to determine the rate of type I error (time intensive and will launch 1000 for final dissertation). 
+
+
+
+
+Each set of conditions generates two groups, with $n = 25$ subjects in each group, with time points $t = 0, 4, 8, \dots, 1600$ in each trial and with $100$ simulated trials for each subject. Columns in the tables indicate homogeneity of means assumption, whether or not an AR(1) error structure was used in constructing the data, and if autocorrelation was specified in the fitting function. The last conditions help assess the impact of correctly or incorrectlyh identifying the type of error when conducting an analysis in \xt{bdots}. Each simulation was conducted 1000 times to determine the family wise error rate. 
 
 
 \subsection{Results}
@@ -234,14 +265,14 @@ The most striking results of this, however, appear when the data generation assu
   \hline
   \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
-No & Yes & Yes & 0.06 & 0.01 & 0.08 \\ 
-  No & Yes & No & 0.87 & 0.08 & 0.00 \\ 
-  No & No & Yes & 0.08 & 0.00 & 0.06 \\ 
-  No & No & No & 0.15 & 0.02 & 0.01 \\ 
-  Yes & Yes & Yes & 0.92 & 0.03 & 0.05 \\ 
-  Yes & Yes & No & 0.96 & 0.02 & 0.08 \\ 
-  Yes & No & Yes & 0.99 & 0.05 & 0.03 \\ 
-  Yes & No & No & 1.00 & 0.05 & 0.06 \\  
+No & Yes & Yes & 0.09 & 0.00 & 0.06 \\ 
+  No & Yes & No & 0.84 & 0.06 & 0.14 \\ 
+  No & No & Yes & 0.12 & 0.01 & 0.08 \\ 
+  No & No & No & 0.14 & 0.00 & 0.05 \\ 
+  Yes & Yes & Yes & 0.94 & 0.05 & 0.05 \\ 
+  Yes & Yes & No & 0.99 & 0.07 & 0.07 \\ 
+  Yes & No & Yes & 1.00 & 0.08 & 0.05 \\ 
+  Yes & No & No & 0.99 & 0.05 & 0.04 \\ 
    \hline
 \end{tabular}
 \caption{FWER for empirical parameters (unpaired)}
@@ -256,14 +287,31 @@ Paired data is given in Table~\ref{tab:fwer_paired}. Matching the conclusions dr
   \hline
   \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
-  Yes & Yes & Yes & 0.49 & 0.02 & 0.01 \\ 
-  Yes & Yes & No & 0.94 & 0.03 & 0.02 \\ 
-  Yes & No & Yes & 0.72 & 0.02 & 0.00 \\ 
-  Yes & No & No & 0.74 & 0.04 & 0.00 \\ 
+Yes & Yes & Yes & 0.10 & 0.00 & 0.12 \\ 
+  Yes & Yes & No & 0.75 & 0.06 & 0.12 \\ 
+  Yes & No & Yes & 0.12 & 0.00 & 0.11 \\ 
+  Yes & No & No & 0.11 & 0.01 & 0.13 \\ 
    \hline
 \end{tabular}
-\caption{FWER for empirical parameters (paired)}
+\caption{FWER for empirical parameters (paired setting 1)}
 \label{tab:fwer_paired}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccccc}
+  \hline
+  \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
+  \hline
+Yes & Yes & Yes & 0.48 & 0.04 & 0.10 \\ 
+  Yes & Yes & No & 0.93 & 0.07 & 0.12 \\ 
+  Yes & No & Yes & 0.81 & 0.04 & 0.08 \\ 
+  Yes & No & No & 0.81 & 0.07 & 0.09 \\
+   \hline
+\end{tabular}
+\caption{FWER for empirical parameters (paired settings 2)}
+\label{tab:fwer_paired2}
 \end{table}
 
 \subsubsection{Median per comparison error rate}
@@ -280,14 +328,14 @@ It is also worth commenting on the permutation test median per-comparison error 
   \hline
   \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
-No & Yes & Yes & 0.01 & 0.00 & 0.04  \\ 
-  No & Yes & No & 0.31 & 0.00 & 0.04 \\ 
-  No & No & Yes & 0.00 & 0.00 & 0.02\\ 
-  No & No & No & 0.00 & 0.00 & 0.03 \\ 
-  Yes & Yes & Yes & 0.51 & 0.01 & 0.01 \\ 
-  Yes & Yes & No & 0.76 & 0.01 & 0.00 \\ 
-  Yes & No & Yes & 0.86 & 0.01 & 0.00 \\ 
-  Yes & No & No & 0.81 & 0.01 & 0.00 \\ 
+No & Yes & Yes & 0.02 & 0.00 & 0.01 \\ 
+  No & Yes & No & 0.31 & 0.01 & 0.02 \\ 
+  No & No & Yes & 0.01 & 0.00 & 0.01 \\ 
+  No & No & No & 0.00 & 0.00 & 0.01 \\ 
+  Yes & Yes & Yes & 0.59 & 0.01 & 0.01 \\ 
+  Yes & Yes & No & 0.83 & 0.02 & 0.01 \\ 
+  Yes & No & Yes & 0.84 & 0.02 & 0.01 \\ 
+  Yes & No & No & 0.82 & 0.01 & 0.01 \\ 
    \hline
 \end{tabular}
 \caption{median per comparison error rate (unpaired)}
@@ -302,16 +350,32 @@ No & Yes & Yes & 0.01 & 0.00 & 0.04  \\
   \hline
   \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
-  Yes & Yes & Yes & 0.13 & 0.00 & 0.00 \\ 
-  Yes & Yes & No & 0.52 & 0.02 & 0.00 \\ 
-  Yes & No & Yes & 0.38 & 0.01 & 0.00 \\ 
-  Yes & No & No & 0.44 & 0.01 & 0.00 \\ 
+Yes & Yes & Yes & 0.03 & 0.00 & 0.02 \\ 
+  Yes & Yes & No & 0.27 & 0.01 & 0.02 \\ 
+  Yes & No & Yes & 0.01 & 0.00 & 0.02 \\ 
+  Yes & No & No & 0.01 & 0.00 & 0.02 \\
    \hline
 \end{tabular}
-\caption{median per comparison error rate (paired)}
-\label{tab:mpc_paired}
+\caption{median per comparison error rate (paired 1)}
+\label{tab:mpc_paired1}
 \end{table}
 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{cccccc}
+  \hline
+  \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
+  \hline
+Yes & Yes & Yes & 0.14 & 0.01 & 0.02 \\ 
+  Yes & Yes & No & 0.46 & 0.01 & 0.03 \\ 
+  Yes & No & Yes & 0.44 & 0.01 & 0.01 \\ 
+  Yes & No & No & 0.41 & 0.02 & 0.02 \\ 
+   \hline
+\end{tabular}
+\caption{median per comparison error rate (paired 2)}
+\label{tab:mpc_paired2}
+\end{table}
 
 \subsection{Discussion}
 

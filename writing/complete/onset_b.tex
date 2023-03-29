@@ -181,6 +181,14 @@ For our discussions here, we will call this the proportion of fixation method (t
 \label{fig:bob_diagram_full}
 \end{figure}
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{collin_diagram_full.pdf}
+\caption{Stole this from Bob (who apparently stole it from richard aslin), plan on making my own}
+\label{fig:collin_diagram_full}
+\end{figure}
+
+
 
 As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by \xt{bdots}, are then used to construct estimates of function parameters fitted to this curve. Figure~\ref{fig:bob_diagram_full} provides an illustration.
 
@@ -445,10 +453,31 @@ where $\mathcal{P} = \{P = \{t_0, \dots, t_{n_p}\} \}$ is the set of all possibl
 In short, these hypothetical situations detail how the magnitude of total variation can have differential effects on the delay in observation. Now consider again the logistic function in Figure~\ref{fig:logistic_definition} and imagine its domain partitioned into three equally sized portions. Both the first and third, near the asymptotes, have relatively low total variation, resulting in a relatively benign effect from oculomotor delay. In contrast, the middle third contains nearly all of the variation of the function, indicating the delayed observation here will have a disproportionate impact on the successful recovery of the function. Given the clinical relevance of the both the slope and crossover parameters, as well as acknowledging the impact that these have on the overall shape of the function, we demonstrate a need in a accounting for this delay precisely where it will impact function recovery the most. This, of course, is not unique to the logistic, with the effects of the delayed observation bias compounded in the asymmetric Gaussian functions (appendix) which has a more complicated variation structure and, accordingly, more difficulty in recovering the generating curves.
 
 
+%\input{dg_appendix}
 
 
+\section{IRL data}
 
-\input{dg_appendix}
+This needs to be moved but then a lot of this document needs restructuring. At any rate, here is what we have. We use the dataset collected in \cite{mcmurray2010individual} which measured eye tracking in cohort of adolescents including 40 typically developed (N), 16 specific cognitive impaired (SCI), 20 specific language impaired (SLI), and 17 non-specific language impaired. They did a standard vwp trial and here are the details [...]. While this study predates the \xt{bdots} software,  we can go back and assess these groups doing a typical analysis.  In doing so, we did a factorial comparison of all pairwise groups, resulting in 6 total comparisons. We did this with both look onset transformed data, as well as standard proportion of fixation data. Of the six comparisons made, only two were found to have significant differences between group curves, in the comparison of CF/NLI and N/NLI. Further, these differences were only identified with the look onset method. That is, for all six comparisons, the proprotion of fixation methods failed to identify any curves that were different between groups.
+
+Should talk about the reasonable transformation I did to arrive at look onset data
+
+\begin{figure}[H]
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{irl_data_prop_1}}
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{img/irl_data_onset_1}}
+    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing CF vs NLI}
+\label{fig:irldata1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{irl_data_prop_2}}
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{img/irl_data_onset_2}}
+    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing N vs NLI}
+\label{fig:irldata2}
+\end{figure}
+
 
 
 

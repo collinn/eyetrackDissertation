@@ -85,18 +85,33 @@ tfwer <- as.data.table(cbind(sds, tfwer))[order(rev(manymeans), ar1, decreasing 
 fwer <- fwer[order(manymeans), ]
 tfwer <- tfwer[order(manymeans), ]
 
-fwers <- split(fwer, by = "paired")
-tfwers <- split(tfwer, by = "paired")
+fwer[, `:=`(bdotscor = ifelse(bdotscor, "Yes", "No"),
+            ar1 = ifelse(ar1, "Yes", "No"),
+            manymeans = ifelse(manymeans, "Yes", "No"),
+            paired = ifelse(paired, "Yes", "No"))]
+
+tfwer[, `:=`(bdotscor = ifelse(bdotscor, "Yes", "No"),
+            ar1 = ifelse(ar1, "Yes", "No"),
+            manymeans = ifelse(manymeans, "Yes", "No"),
+            paired = ifelse(paired, "Yes", "No"))]
+
+fwer <- fwer[, .(manymeans, ar1, bdotscor, paired, pairedType, sm, mm, pm)]
+tfwer <- tfwer[, .(manymeans, ar1, bdotscor, paired, pairedType, sm, mm, pm)]
+
+fwers <- split(fwer, by = c("paired", "pairedType"))
+tfwers <- split(tfwer, by = c("paired", "pairedType"))
 
 # rev(paired)
 library(xtable)
-## Paired
-fwers[[2]][, c(1,3:7)] |> xtable() |> print(include.rownames = FALSE)
-# Unpaired
-fwers[[1]][, c(1,3:7)] |> xtable() |> print(include.rownames = FALSE)
+## unpaired
+fwers[[1]][, c(1:3,6:8)] |> xtable() |> print(include.rownames = FALSE)
+# Paired #1
+fwers[[2]][, c(1:3,6:8)] |> xtable() |> print(include.rownames = FALSE)
+fwers[[3]][, c(1:3,6:8)] |> xtable() |> print(include.rownames = FALSE)
 
-tfwers[[2]][, c(1,3:7)] |> xtable() |> print(include.rownames = FALSE)
-tfwers[[1]][, c(1,3:7)] |> xtable() |> print(include.rownames = FALSE)
+tfwers[[1]][, c(1:3,6:8)] |> xtable() |> print(include.rownames = FALSE)
+tfwers[[2]][, c(1:3,6:8)] |> xtable() |> print(include.rownames = FALSE)
+tfwers[[3]][, c(1:3,6:8)] |> xtable() |> print(include.rownames = FALSE)
 
 twfer |> xtable() |> print(include.rownames = FALSE)
 

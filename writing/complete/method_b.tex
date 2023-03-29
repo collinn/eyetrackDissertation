@@ -1,10 +1,19 @@
 \section{Introduction}
 
-A standard problem in psycholinguistics\pb{not really limited to psychology...processes unfolding in time are pretty ubiquitous throughout science}, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. Particularly in the case of comparing a process between experimental groups in time, while there are many appropriate techniques for demonstrating that differences \textit{exist}, such as comparing the area under the curve (AUC) of the two processes or testing for differences in the underlying parameters (if the process is being modeled in a parametric manner). However, these offer little insight with respect to identifying \textit{when} these processes are significantly different, which is often the more relevant scientific question. Testing for time differences is complicated by the fact that there are effectively an infinite number of time points that could be compared, with the test results at nearby time points highly correlated. Both of these factors complicate efforts to correct for multiple comparisons.
+A standard problem in psycholinguistics\pb{not really limited to psychology...processes unfolding in time are pretty ubiquitous throughout science}, and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. 
 
-Various approaches have been proposed, such as using cluster based permutation testing \cite{Maris2007}. Here, test-statistics are computed at each time, with adjacent significant tests being combined into clusters. This controls for the family wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of tests. More recently, \cite{oleson2017detecting} used bootstrapped fits of subject-level curves and estimated the correlation structure of the test statistics in order to modify the Bonferroni correction of the significance level to control FWER. This approach, which they named bootstrapped differences of time series, was introduced in the R package \xt{bdots} \citep{seedorff2018bdots}.
+Particularly in the case of comparing a process in time between experimental groups, while there are many techniques for demonstrating \textit{that} a difference exists, few offer any insight into \textit{when} it exists. Testing for temporal differences is complicated by the fact that there are often an arbitrarily large number of time points that could be compared, depending on the sampling density, and where significance tests at nearby time points have the potential to be highly correlated. This is essentially a problem of multiple comparisons.
 
-A closer look at the specific conditions under which the original iteration of \xt{bdots} was presented raises concerns, however, involving quite restrictive assumptions that are unlikely to be met in many, if not most, situations. This includes data typically collected in the Visual World Paradigm (VWP), context in which the underlying methodology was first proposed. Specifically, it assumed a homogeneous mean structure within each of the groups being compared, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to show that such an assumption is unlikely to be true, with the resulting type I error rate being unacceptably high.
+Various approaches have been proposed for addressing this issue. The most rudimentary of these involve binary tests for identifying the existence of any difference, such as the area under the curve (AUC).  More sophisticated techniques involve the used of cluster-based permutation testing \cite{Maris2007}, whereby test statistics are computed at each observed time point and with adjacent significant tests being combined into clusters. This controls the family-wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of total tests. More recently, \citet{oleson2017detecting} introduced a modified Bonferroni correction to a series of test statistics, using estimates of autocorrelation between statistics to make the appropriate adjustments to the significance levels to control FWER. This approach, which they named bootstrapped differences in time series, was introduced in the R package, \xt{bdots} \citep{seedorff2018bdots}.
+
+
+
+
+A closer look at the specific conditions under which the original iteration of \xt{bdots} was presented raises concerns involving quite restrictive assumptions that are unlikely to be met in many, if not most, situations. This includes data typically collected in the Visual World Paradigm (VWP), the context in which the underlying methodology was first proposed.
+
+Specifically, the
+
+ Specifically, it assumed a homogeneous mean structure within each of the groups being compared, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to show that such an assumption is unlikely to be true, with the resulting type I error rate being unacceptably high.
 
 Here, we present two alternatives that accommodate flexibility in the assumptions made by the original bdots. First, we propose a modified bootstrapping procedure that adequately accounts for observed between subject variability while retaining the FWER adjustment method presented for autocorrelated errors. In addition, we offer a permutation test between the groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits. We begin by describing the two proposed alternatives to the original bdots bootstrap. We then outline the details of the simulations in demonstrating the type I error rate across a number of experimental conditions, and finally we conclude with a demonstration of power in the competing methods.
 
@@ -26,7 +35,6 @@ where
 Under this paradigm, the errors could be iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It further assumes homogeneity of the mean structure, meaning that if subjects $i$ and $j$ are from the same group, we have \pb{this kind of thing does not work at all -- you define $\theta$ above. it has no subscripts. You can't just refer to $\theta_{it}$ all of a sudden -- it's never been defined. Also, $\theta$ doesn't depend on $t$ at all, in any scenario. $\theta_{it} = \theta_{jt}$}. In other words, there is no variability in the mean structure between subjects, only between groups. \cn{This is also evidenced in the original bdots algorithm: }
 
 %\begin{singlespace}
-\pb{why are you manually numbering?}
 \begin{enumerate}
 \vspace{-3mm}
 \item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \cite{oleson2017detecting} recommended specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a normal distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error.
@@ -47,7 +55,7 @@ Population means and standard deviations at each time point for each of the grou
 
 Typically, subjects within a group demonstrate considerable variability in their mean parameter estimates. In this case, we should avoid the presumption that $\theta_i = \theta_j$, since accounting for between-subject variability within a group will be critical for obtaining a reasonable distribution of the population curves.
 
-Instead of \eqref{}
+Instead of  
 
 \label{eq:mean_structure}
 \cn{A more likely case involving subjects in the VWP (or subjects within any group exhibiting between and within subject variability) is as such: }
@@ -86,8 +94,8 @@ The estimated mean value remains unchanged, but the variability is now fully acc
 %\begin{singlespace}
 \begin{enumerate}
 %.\vspace{-2mm}
-\item[1.] In step (1.), the specification of AR(1) structure is \textit{optional} and can be modified with arguments to functions in \xt{bdots}. Our simulations show that while failing to include it slightly inflates the type I error in the v2 bootstrap when the data truly is autocorrelated, specifying an AR(1) structure can lead to overly conservative estimates when it is not.
-\item[2.] In step (2.), we sample subjects \textit{with replacement} and then for each drawn subject, randomly draw one bootstrap estimate for each of their model parameters based on the mean and standard errors derived from the \xt{gnls} estimate.
+\item In step (1.), the specification of AR(1) structure is \textit{optional} and can be modified with arguments to functions in \xt{bdots}. Our simulations show that while failing to include it slightly inflates the type I error in the v2 bootstrap when the data truly is autocorrelated, specifying an AR(1) structure can lead to overly conservative estimates when it is not.
+\item In step (2.), we sample subjects \textit{with replacement} and then for each drawn subject, randomly draw one bootstrap estimate for each of their model parameters based on the mean and standard errors derived from the \xt{gnls} estimate.
 \end{enumerate}
 %\end{singlespace}
 
@@ -194,7 +202,7 @@ The most striking results of this, however, appear when the data generation assu
 \centering
 \begin{tabular}{cccccc}
   \hline
-  \multicolumn{1}{p{2cm}}{\centering Heterogeneity \\ Assumption} & \multicolumn{1}{p{2cm}}{\centering Autocorrelated \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1)  \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Homogeneous \\ Bootstrap} &\multicolumn{1}{p{2cm}}{\centering Heterogeneous \\ Bootstrap} & \multicolumn{1}{p{2cm}}{\centering Permutation } \\ 
+  \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
 No & Yes & Yes & 0.06 & 0.01 & 0.08 \\ 
   No & Yes & No & 0.87 & 0.08 & 0.00 \\ 
@@ -216,7 +224,7 @@ Paired data is given in Table~\ref{tab:fwer_paired}. Matching the conclusions dr
 \centering
 \begin{tabular}{cccccc}
   \hline
-  \multicolumn{1}{p{2cm}}{\centering Heterogeneity \\ Assumption} & \multicolumn{1}{p{2cm}}{\centering Autocorrelated \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Homogeneous \\ Bootstrap} &\multicolumn{1}{p{2cm}}{\centering Heterogeneous \\ Bootstrap} & \multicolumn{1}{p{2cm}}{\centering Permutation } \\  
+  \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
   Yes & Yes & Yes & 0.49 & 0.02 & 0.01 \\ 
   Yes & Yes & No & 0.94 & 0.03 & 0.02 \\ 
@@ -238,9 +246,9 @@ It is also worth commenting on the permutation test median per-comparison error 
 
 \begin{table}[H]
 \centering
-\begin{tabular}{cccrrr}
+\begin{tabular}{cccccc}
   \hline
-  \multicolumn{1}{p{2cm}}{\centering Heterogeneity \\ Assumption} & \multicolumn{1}{p{2cm}}{\centering Autocorrelated \\ Error} & \multicolumn{1}{p{2cm}}{\centering  AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Homogeneous \\ Bootstrap} &\multicolumn{1}{p{2cm}}{\centering Heterogeneous \\ Bootstrap} & \multicolumn{1}{p{2cm}}{\centering Permutation } \\ 
+  \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
 No & Yes & Yes & 0.01 & 0.00 & 0.04  \\ 
   No & Yes & No & 0.31 & 0.00 & 0.04 \\ 
@@ -260,9 +268,9 @@ No & Yes & Yes & 0.01 & 0.00 & 0.04  \\
 
 \begin{table}[H]
 \centering
-\begin{tabular}{cccrrr}
+\begin{tabular}{cccccc}
   \hline
-  \multicolumn{1}{p{2cm}}{\centering Heterogeneity \\ Assumption} & \multicolumn{1}{p{2cm}}{\centering Autocorrelated \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Homogeneous \\ Bootstrap} &\multicolumn{1}{p{2cm}}{\centering Heterogeneous \\ Bootstrap} & \multicolumn{1}{p{2cm}}{\centering Permutation } \\ 
+  \multicolumn{1}{p{2cm}}{\centering Het. \\ Means} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Error} & \multicolumn{1}{p{2cm}}{\centering AR(1) \\ Specified} &  \multicolumn{1}{p{2cm}}{\centering Hom. \\ Boot} &\multicolumn{1}{p{2cm}}{\centering Het. \\ Boot} & \multicolumn{1}{p{2cm}}{\centering Perm. } \\ 
   \hline
   Yes & Yes & Yes & 0.13 & 0.00 & 0.00 \\ 
   Yes & Yes & No & 0.52 & 0.02 & 0.00 \\ 

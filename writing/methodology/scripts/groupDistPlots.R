@@ -23,9 +23,9 @@ dts <- rbind(dts, truedt)
 
 pdf("../img/logistic_distribution.pdf")
 ggplot(dts, aes(time, true, group = id, alpha = sample)) +
-  geom_line(lwd = 1.5) +
+  geom_line(lwd = 2) +
   scale_alpha_discrete(range = c(0.95, 0.05)) +
-  theme_bw() + theme(legend.position = "none") +
+  theme_bw() + theme(legend.position = "none", text = element_text(size = 20)) +
   labs(y = "", x = "Time")
 dev.off()
 
@@ -53,8 +53,8 @@ dat$Condition <- ifelse(dat$Condition == "A", "Effect", "No Effect")
 
 pdf("../img/piecewise_distribution.pdf")
 ggplot(dat, aes(time, true, group = id, alpha = sample, color = Condition)) +
-  geom_line(lwd = 1.5) +
+  geom_line(lwd = 2) +
   scale_alpha_discrete(range = c(0.15, 0.95), guide = "none") +
-  theme_bw() + theme(legend.position = "bottom") +
-  labs(y = "", x = "Time") + ggtitle("Piecewise Distribution")
+  theme_bw() + theme(legend.position = "right", text = element_text(size = 20)) +
+  labs(y = "", x = "Time") #+ ggtitle("Piecewise Distribution")
 dev.off()

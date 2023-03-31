@@ -40,8 +40,9 @@ getDiffSlicesgg <- function(ff, ww, leg = TRUE) {
   tt <- attributes(rr)[[1]] #|> unlist()
 
   vs <- ifelse(tt$xosd == 60, "\nCrossover SD: 60", "\nCrossover SD: 120")
+  pp <- ifelse(tt$paired, "Paired", "Not Paired")
 
-  tit <- paste0("Paired: ", tt$paired, vs, "\nCrossover Shift: ", tt$shift)
+  tit <- paste0(pp, vs, "\nCrossover Shift: ", tt$shift)
   sm <- lapply(rr, `[[`, 1)
   mm <- lapply(rr, `[[`, 2)
   pm <- lapply(rr, `[[`, 3)
@@ -61,7 +62,8 @@ getDiffSlicesgg <- function(ff, ww, leg = TRUE) {
 
   pp <- ggplot(dat, aes(Time, Power, color = Method)) + theme_bw() + ggtitle(tit) +
     geom_line(linewidth=1) + #geom_abline(slope = 0, intercept = 5, color = 'red', linetype = "dotted")
-    scale_color_manual(values = c("#00BFC4", "#7CAE00", "#C77CFF")) + theme(legend.position = "bottom")
+    scale_color_manual(values = c("#00BFC4", "#7CAE00", "#C77CFF")) +
+    theme(legend.position = "bottom", text = element_text(size = 8))
 
   if (!leg) pp <- pp + theme(legend.position = "none")
   return(pp)
@@ -74,8 +76,10 @@ p2 <- getDiffSlicesgg(ff[2], 2, leg = FALSE)
 p3 <- getDiffSlicesgg(ff[3], 3, leg = FALSE)
 p4 <- getDiffSlicesgg(ff[4], 4, leg = FALSE)
 
-ggpubr::ggarrange(p1, p2, p3, p4, nrow = 2, ncol = 2,
+pdf("~/dissertation/writing/methodology/img/log_shift_1.pdf", width = 6, height = 5)
+ggpubr::ggarrange(p2, p1, p4, p3, nrow = 2, ncol = 2,
                   common.legend = TRUE, legend = "bottom")
+dev.off()
 
 ## Shift of 200
 p5 <- getDiffSlicesgg(ff[5], 5, leg = FALSE)
@@ -83,5 +87,7 @@ p6 <- getDiffSlicesgg(ff[6], 6, leg = FALSE)
 p7 <- getDiffSlicesgg(ff[7], 7, leg = FALSE)
 p8 <- getDiffSlicesgg(ff[8], 8, leg = TRUE)
 
-ggpubr::ggarrange(p5, p6, p7, p8, nrow = 2, ncol = 2,
+pdf("~/dissertation/writing/methodology/img/log_shift_2.pdf", width = 6, height = 5)
+ggpubr::ggarrange(p6, p5, p8, p7, nrow = 2, ncol = 2,
                   common.legend = TRUE, legend = "bottom")
+dev.off()

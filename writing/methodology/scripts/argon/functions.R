@@ -58,7 +58,10 @@ timetie <- function(mm) {
 
 ##########3---------------------------------------------------------
 
+ff <- list.files("~/dissertation/writing/methodology/scripts/argon/40_rds_files", full.names = TRUE)
+
 ff <- list.files("~/dissertation/writing/methodology/scripts/argon/rds_files", full.names = TRUE)
+
 ff <- ff[c(1, 9:16, 2:8)]
 
 ## Sim settings

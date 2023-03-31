@@ -19,7 +19,7 @@ dat1$pairedType <- 2
 sds <- rbind(sds, dat1)
 
 
-datidx <- as.numeric(commandArgs(TRUE))
+idx <- as.numeric(commandArgs(TRUE))
 
 sidx <- sds[idx, ]
 
@@ -28,6 +28,11 @@ createFits <- function(sidx) {
                     ar1 = sidx$ar1,
                     manymeans = sidx$manymeans,
                     pairedType = sidx$pairedType) # this is ignored if not paired
+
+  ## Make them less reliable
+  newtime <- seq(0, 1600, by = 40)
+  dat$dts <- dat$dts[time %in% newtime, ]
+
   fit <- bdotsFit(data = dat$dts,
                   y = "fixations",
                   group = "group",
@@ -39,12 +44,12 @@ createFits <- function(sidx) {
   fit
 }
 
-N <- 500
+N <- 25
 res <- vector("list", length = N)
 attr(res, "settings") <- sidx
 nn <- paste0("sim", idx)
 sf <- paste0("prog_txt/", nn, ".txt")
-rf <- paste0("rds_files/", nn, ".rds")
+rf <- paste0("40_rds_files/", nn, ".rds")
 
 ccores <- 4
 

@@ -55,7 +55,7 @@ getPowerTab <- function(ff) {
 }
 
 # original
-ff <- list.files("negative_one_to_one_rds", full.names = TRUE, pattern = "rds")
+ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
 ff <- ff[c(1, 3:10, 2)]
 
 # this is slope 0.025
@@ -106,9 +106,9 @@ xtable(tab, caption = "Power for methods", align = c("lllllcccccc"),
        label = "tab:power_methods", digits = digs) |> print(include.rownames = FALSE)
 
 
-finalSummary <- rbind(colMeans(res_sm[, 4:9]),
-                      colMeans(res_mm[, 4:9]),
-                      colMeans(res_pm[, 4:9])) |> as.data.table()
+finalSummary <- rbind(colMeans(res_sm[, 5:10]),
+                      colMeans(res_mm[, 5:10]),
+                      colMeans(res_pm[, 5:10])) |> as.data.table()
 finalSummary <- cbind(data.table(Method = c("Hom. Bootstrap", "Het. Bootstrap", "Permtuation")),
                       finalSummary)
 

@@ -2,17 +2,6 @@ library(bdots)
 library(eyetrackSim)
 library(ggplot2)
 
-# Only doing power on these three things yay
-sds <- data.table(mm = rep(c(F, T, T, T, T), 2),
-                  ar = rep(c(T, T, T, F, F), 2),
-                  bcor = rep(c(T, T, F, T, F), 2),
-                  #sigVal = 0.05,
-                  slope = rep(c(0.025, 0.25), each = 5))
-
-ff <- list.files("~/dissertation/writing/methodology/scripts/power/rds_files", full.names = TRUE,
-                  pattern = "rds")
-ff <- ff[c(1, 3:10, 2)]
-
 ## Given signifiance mat, need to return length 401 bool vector
 timetiePower <- function(mm) {
   time <- seq(-1, 1, length.out = 401)
@@ -117,6 +106,18 @@ getDiffSlicesgg <- function(ff, ww, leg = FALSE) {
   return(pp)
 }
 
+# Only doing power on these three things yay
+sds <- data.table(mm = rep(c(F, T, T, T, T), 2),
+                  ar = rep(c(T, T, T, F, F), 2),
+                  bcor = rep(c(T, T, F, T, F), 2),
+                  #sigVal = 0.05,
+                  slope = rep(c(0.025, 0.25), each = 5))
+
+ff <- list.files("~/dissertation/writing/methodology/scripts/power/rds_files", full.names = TRUE,
+                 pattern = "rds")
+ff <- ff[c(1, 3:10, 2)]
+
+
 
 i <- 1
 
@@ -154,7 +155,9 @@ b <- getDiffSlicesgg(ff[2], 2)
 cc <- getDiffSlicesgg(ff[3], 3, leg = TRUE)
 
 pdf("~/dissertation/writing/methodology/img/typeII_time.pdf", width = 5.5, height = 7.5)
-gridExtra::grid.arrange(a,b,cc, nrow = 3)
+## 0.25 for main of paper
+ggpubr::ggarrange(b3, b4, b5, nrow = 3,
+                  common.legend = TRUE, legend = "bottom")
 dev.off()
 
 
@@ -162,16 +165,21 @@ dev.off()
 ## Delete this
 
 
-# a <- getDiffSlicesgg(ff[1], 1)
-# b <- getDiffSlicesgg(ff[2], 2)
-# cc <- getDiffSlicesgg(ff[3], 3)
-# b1 <- getDiffSlicesgg(ff[4], 4)
-# b2 <- getDiffSlicesgg(ff[5], 5)
+a <- getDiffSlicesgg(ff[1], 1)
+b <- getDiffSlicesgg(ff[2], 2)
+cc <- getDiffSlicesgg(ff[3], 3)
+b1 <- getDiffSlicesgg(ff[4], 4)
+b2 <- getDiffSlicesgg(ff[5], 5)
+
 b3 <- getDiffSlicesgg(ff[6], 6)
 b4 <- getDiffSlicesgg(ff[7], 7)
 b5 <- getDiffSlicesgg(ff[8], 8)
 b6 <- getDiffSlicesgg(ff[9], 9)
 b7 <- getDiffSlicesgg(ff[10], 10,  leg = TRUE)
+
+
+
+
 
 # gridExtra::grid.arrange(a, b, cc, b1, b2, b3, b4, b5, b6, b7, nrow = 5)
 # ggpubr::ggarrange(a, b, cc, b1, b2, b3, b4, b5, b6, b7, nrow = 5, ncol = 2,

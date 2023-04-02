@@ -44,19 +44,19 @@ Last compiled: \today \  at \currenttime
 
 \section{Introduction}
 
-A standard problem in psycholinguistics\pb{not really limited to psychology...processes unfolding in time are pretty ubiquitous throughout science} , and the cognitive sciences in general, is that of statistically analyzing a process unfolding in time. 
-
-Particularly in the case of comparing a process in time between experimental groups, while there are many techniques for demonstrating \textit{that} a difference exists, few offer any insight into \textit{when} it exists. Testing for temporal differences is complicated by the fact that when this process is continuous, there are often an arbitrarily large number of time points that could be compared. This is essentially a problem of multiple comparisons.
+A problem ubiquitous throughout the sciences, though in the cognitive sciences especially, is that of statistically analyzing a process unfolding in time. In particular, we consider the problem of comparing a process in time as it evolves differentially between two or more experimental groups. And while there are many techniques for demonstrating \textit{that} a difference exists, few offer any insight into \textit{when}. Testing for temporal differences is complicated by the fact that when this process is continuous, there are often an arbitrarily large number of time points that could be compared. This is essentially a problem of multiple comparisons.
 
 Various approaches have been proposed for addressing this issue, the most rudimentary of which involve binary tests for identifying the existence of any difference, such as the area under the curve (AUC).  More sophisticated techniques involve the used of cluster-based permutation testing \citep{Maris2007}, whereby test statistics are computed at each observed time point with adjacent significant tests being combined into clusters. This controls the family-wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of total tests. More recently, \citet{oleson2017detecting} introduced a modified Bonferroni correction to a series of test statistics, using estimates of autocorrelation between statistics to make the appropriate adjustments to the significance levels to control FWER. This approach, which they named bootstrapped differences in time series, was introduced in the R package, \xt{bdots} \citep{seedorff2018bdots}.
 
-The modified Bonferonni correction used by \xt{bdots} relies on the construction of estimated distributions of time series via bootstrapping for each experimental group. These distributions, in turn, are used to construct test statistics at each observed time point. A closer look at the original iteration presents concerns as it involves quite restrictive assumptions on the data that are unlikely to be met in many, if not most situations. This includes data typically collected in the Visual World Paradigm \cn{should i have a paragraph descriping VWP? not sure where to squeeze in}, the context in which the underlying methodology was first proposed. Specifically, the original implementation assumes a homogeneous mean structure within each experimental group, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to demonstrate that this assumption is unlikely to be true, the consequence of which is a type I error rate that is unacceptably high.
+The modified Bonferonni correction used by \xt{bdots} relies on the construction of estimated distributions of time series via bootstrapping for each experimental group. These distributions, in turn, are used to construct test statistics at each observed time point. A closer look at the original iteration presents concerns as it involves quite restrictive assumptions on the data that are unlikely to be met in many, if not most situations. 
+
+This includes data typically collected in the context of the Visual World Paradigm (VWP), a widely used experimental paradigm in language research that involves tracking eye movements from participants in response to spoken language. This is notable in that it was data collected in VWP research that motivated the \xt{bdots} methodology. There, it was maintained that the process of interest in each experimental group assumed a homogeneous mean structure, with no between-subject variability to be accounted for. Empirical data collected in a variety of (VWP) contexts can be used to demonstrate that this assumption is unlikely to be true, the consequence of which is a type I error rate that is unacceptably high. \cn{i don't think its worth mentioning here, but to address bob's concern, this does also assume no variability in the differences for a paired case, which is why hom. bootstrap still does poorly when the paired parameters aren't identical}
+
+
 
 Here, we present two alternative methods that accommodate flexibility in the assumptions made by the original bootstrapped differences in time series algorithm. First, we propose a modified bootstrapping procedure that adequately accounts for observed between-subject variability while retaining the FWER adjustment that addresses the autocorrelated test statistics. In addition, we offer a permutation test for identifying temporal differences between groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits.
 
-We begin with a mathematical description of the problem along with the proposed alternatives to the original bootstrapping algorithm. This is followed by a simulation estimating the FWER across a number of experimental conditions. Finally, we consider two separate simulations for the assessment of power among the competing methods: this includes one simulation with a simple piecewise-linear function relating power to effect sizes; the second simulation interrogates power when the magnitudes of between-subject and within-subject variability differ. \cn{is this too much detail here?}
-
-
+We begin with a mathematical description of the problem along with the proposed alternatives to the original bootstrapping algorithm. This is followed by a simulation estimating the FWER across a number of experimental conditions. Finally, we consider two separate simulations for the assessment of power among the competing methods: this includes one simulation with a simple piecewise-linear function relating power to effect sizes; the second simulation interrogates power when the magnitudes of between-subject and within-subject variability differ. 
 
 
 \section{Methods}
@@ -133,13 +133,15 @@ as was done in Step (2.) of the homogeneous bootstrapping algorithm. If we were 
 \theta^{(hom)}_{bg} = \frac{1}{n_g} \sum_{i=1}^{n_g} \theta^{*}_{ib}, \quad \theta^{(hom)}_{bg} \sim N \left( \mu_{g}, \frac{1}{n_g^2} \sum_{i=1}^{n_g} s_i^2 \right).
 \end{equation}
 
-Such an estimate captures the totality of the within-subject variability with each draw but fails to account for the variability in the group overall. For this reason, we sample the subjects \textit{with} replacement, creating the heterogeneous bootstrap mean $\theta_{bg}^{(het)}$, where again each $\theta_{ib}^*$ follows the distribution in Equation~\ref{eq:sub_boot_dist}, but the heterogeneous bootstrapped group mean now follows \cn{indicated in hom bootstrap that it was without replacement via the enumerators on the summation, not sure how to precisely indicate that here}
+Such an estimate captures the totality of the within-subject variability with each draw but fails to account for the variability in the group overall. For this reason, we sample the subjects \textit{with} replacement, creating the heterogeneous bootstrap mean $\theta_{bg}^{(het)}$, where again each $\theta_{ib}^*$ follows the distribution in Equation~\ref{eq:sub_boot_dist}, but the heterogeneous bootstrapped group mean now follows
 
 \begin{equation}\label{eq:w_rep_boot}
 \theta_{bg}^{(het)} \sim N \left( \mu_{g}, \frac{1}{n_g} V_{g} + \frac{1}{n_g^2} \sum s_i^2 \right).
 \end{equation}
 
-The estimated mean value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the \textit{heterogeneous bootstrap}, making the following changes to the original:  \cn{I'm not sure what math to include here, how else indicate im sampling without replacement}
+\cn{in the homogenous bootstrap, we sampled without replacement and this was indicated by the countable indicies on the summation. Should I include those here? Can I do so without introducing new indices?}
+
+The estimated mean value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the \textit{heterogeneous bootstrap}, making the following changes to the original:  \cn{I'm not sure what additional math to include here}
 
 %\begin{singlespace}
 \begin{enumerate}
@@ -200,12 +202,12 @@ where $\epsilon_t \sim N(0, (1 - \rho^2))$. This gives the conditional distribut
 \begin{equation}
 T_t | T_{t-1} \sim N(\rho T_{t-1}, 1 - \rho^2),
 \end{equation}
-with the joint distribution of $T_t$ and $T_{t-1}$ being bivariate normal with mean $0$, a variance of $1$, and correlation $\rho$. From this, they show that for a specified $\alpha^*$, the true FWER $\alpha$ under the null hypothesis can be expressed as 
+with the joint distribution of $T_t$ and $T_{t-1}$ being bivariate normal with mean $0$, a variance of $1$, and correlation $\rho$. From this, they show that for some $\alpha^*$, the true FWER $\alpha$ under the null hypothesis can be expressed as 
 
 \begin{equation}\label{eq:oleson_adj}
 1 - P \left( \bigcap_{t=1}^T I_t \right) = 1 - P(I_1) \prod_{t=2}^T P(I_t | I_{t-1}) = 1 - P(I_1)P(I_t|I_{t-1})^{T-1},
 \end{equation}
-where $I_t$ is the event that $|T_t| \leq z_{\left(1 - \frac{\alpha^*}{2} \right)}$. The correction is made by finding the nominal significance $\alpha^*$ that produces the desired FWER of $\alpha$. Of note here, when the tests are perfectly correlated, no adjustment to the nominal $\alpha$ is needed. Conversely, when the tests are perfectly independent, Equation~\ref{eq:oleson_adj} reduces to the standard Bonferonni correction. This correction is implemented in \xt{bdots} and is also provided outside of the bootstrapping process with the function \xt{bdots::p\_adjust} using \xt{method = "oleson"}.
+where $I_t$ is the event that $|T_t| \leq z_{\left(1 - \frac{\alpha^*}{2} \right)}$. The correction is made by finding the nominal significance $\alpha^*$ that produces the desired FWER of $\alpha$. Of note here, no adjustment to the nominal $\alpha$ is needed when the tests are perfectly correlated. Conversely, when the tests are perfectly independent, Equation~\ref{eq:oleson_adj} reduces to the standard Bonferonni correction. This correction is implemented in \xt{bdots} and is also provided outside of the bootstrapping process with the function \xt{bdots::p\_adjust} using \xt{method = "oleson"}.
 
 \section{FWER Simulations}
 
@@ -248,10 +250,9 @@ e_{it} = \phi e_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma)
 \end{equation}
 where the $w_{it}$ are iid with $\sigma = 0.025$. $\phi$ corresponds to an autocorrelation parameter and is set to $\phi = 0.8$ when the generated data is to be autocorrelated and set to $\phi = 0$ when we assume the errors are all independent and identically distributed. 
 
-\paragraph{Paired Data} As we previously noted, paired data is only a sensible condition under the assumption of heterogeneous means, and we limit our consideration to that case. Further, we observe that in the construction of paired data, there are two methods that seem reasonable, and we employ both of them here. In short, 
+\paragraph{Paired Data} As we previously noted, paired data is only a sensible condition under the assumption of heterogeneous means, and we limit our consideration to that case. Further, we observe that in the construction of paired data, there are two methods that seem reasonable, and we employ both of them here. 
 
-
- In considering the construction of paired data for subject $i$, the first method proceeds as follows: we begin by drawing parameters $\theta_i$ from Equation~\ref{eq:theta_i_dist}. Denote this $\theta_{i1}$ to indicate that this is the parameter estimate for subject $i$ in group $1$. We then simulate observed data according to Equation~\ref{eq:mean_structure}. To create the paired data, we then set $\theta_{i2} = \theta_{i1}$ and again simulate observed data according to Equation~\ref{eq:mean_structure}. Under this first method, the generating parameters between groups are \textit{identical}, with the only differences between the simulated data being that contributed by the error term.
+In considering the construction of paired data for subject $i$, the first method proceeds as follows: we begin by drawing parameters $\theta_i$ from Equation~\ref{eq:theta_i_dist}. Denote this $\theta_{i1}$ to indicate that this is the parameter estimate for subject $i$ in group $1$. We then simulate observed data according to Equation~\ref{eq:mean_structure}. To create the paired data, we then set $\theta_{i2} = \theta_{i1}$ and again simulate observed data according to Equation~\ref{eq:mean_structure}. Under this first method, the generating parameters between groups are \textit{identical}, with the only differences between the simulated data being that contributed by the error term.
 
 In the second method of obtaining paired data, we proceed as in the first, except now letting
 \begin{equation}
@@ -260,7 +261,7 @@ In the second method of obtaining paired data, we proceed as in the first, excep
 This adds a small amount of random noise between paired parameters, simulating the degree of variability that may normally be found between conditions, even when there is no true effect. Accommodating this phenomenon is relevant in situations in which the data gathering mechanism has imperfect reliability, as in the case of the VWP. It is also relevant because, as we will show, the homogeneous bootstrap is highly sensitive to these assumptions, with potentially disastrous results when these conditions are not precisely met. To avoid potential confusion, the results for each of these will be presented separately.
 
 
-Each set of conditions generates two groups, with $n = 25$ subjects in each group, with time points $t = 0, 4, 8, \dots, 1600$ in each trial and with $100$ simulated trials for each subject. Columns in the tables indicate homogeneity of means assumption, whether or not an AR(1) error structure was used in constructing the data, and if autocorrelation was specified in the fitting function. The last conditions help assess the impact of correctly or incorrectly identifying the type of error when conducting an analysis in \xt{bdots}. Finally, results will be separated by paired status. Each simulation was conducted 1000 times to determine the family-wise error rate. 
+Each set of conditions generates two groups, with $n = 25$ subjects in each group, with time points $t = 0, 4, 8, \dots, 1600$ in each trial and with $100$ simulated trials for each subject. Columns in the tables indicate homogeneity of means assumption, whether or not an AR(1) error structure was used in constructing the data, and if autocorrelation was specified in the fitting function. The last conditions help assess the impact of correctly or incorrectly identifying the type of error when conducting an analysis in \xt{bdots}. Finally, results will be separated by paired status. Each simulation was conducted 1000 times, with the proportion of simulations in which a significance difference was incorrectly identified used to determine the family-wise error rate. 
 
 
 \subsection{Results}
@@ -400,9 +401,8 @@ Yes & Yes & Yes & 0.14 & 0.01 & 0.02 \\
 
 \subsection{Discussion}
 
-\cn{rewrite}
 
-Table~\ref{tab:fwer_unpaired} and Table~\ref{tab:fwer_paired} demonstrate that under a variety of settings, both the heterogeneous bootstrap and permutation offer a FWER near the nominal alpha, making their performance similar to that of the homogeneous bootstrap in the best of cases. This includes less restrictive assumptions in which they continue to perform well while the homogeneous bootstrap maintains an unacceptably high FWER. 
+It was the control of the family-wise error rate in the context of densely sampled, highly correlated tests that first motivated the development of \xt{bdots}. And while the results presented in this section indeed demonstrate control of the FWER in under a strict set of assumptions, they also highlight the consequences when these conditions are not met. With the introduction of both the heterogeneous bootstrap and the permutation test, we have offered two alternatives that are robust to a wide variety of situations while maintaining performance similar to that of the homogeneous bootstrap in the best of cases. This is but one half of the question, however. In the following section, we present two separate simulations to determine if the robustness acquired is as the cost of significant power.
 
 
 \subsection{\cn{comments on paired}}
@@ -512,6 +512,8 @@ Hom. Bootstrap & 0.772 & 0.000 & 0.228 & 0.011 & 0.016 & 0.021 \\
 
 \subsection{Logistic Shift Power}
 
+\cn{this section seems a little short, but it really is just a quick-and-dirty look, mostly confirming questions had by the committee. Notably, I don't have a defined ``results" section, but thats probably ok? Because what else is there really to say besides look at what we did}
+
 The final set of simulations we consider seek to address concerns related to power in a paired setting, as well as to investigate the relationship between effect size and variability. We proceed with simulation settings similar to those in our investigation of the type I error in that each of the two groups under consideration draw from an empirical distribution of parameters associated with the four parameter logistic function. Unlike the situation in determining the FWER, here differences are introduced between groups by changing the crossover parameter, indicating the inflection point of the function. To simulate various effect sizes, we investigate changes in crossover of $50$ and $150$. Further, to determine the effect of between subject variability on the identification of differences, we have set the standard deviation of the crossover parameter from the empirical distribution to take values of either $60$ or $120$. Thus, the settings we will be presenting include small and large changes in light of small or large variability. Additionally, data was generated with iid errors and fit without specifying AR(1) correlation in \xt{bdots}. Finally, each of these settings will be run as paired and unpaired data, with parameters for the paired data being identical between groups (i.e., no added variability). 
 
 
@@ -536,6 +538,8 @@ A similar set of conclusions can be seen by considering the observed power prese
 
 \section{Discussion and concluding remarks}
 
+\cn{i am maybe not quite happy with this conclusion section, will continue to chew on it a little bit}
+
 We set out both to interrogate the validity of the homogeneous bootstrap assumptions and to propose two alternative methods that would be more robust under a greater variety of assumptions. In doing so, we demonstrated conclusively the utility of the heterogeneous bootstrap and permutation tests while also highlighting a major shortcoming of the original. It's worth noting, however, that the FWER adjustment proposed in \cite{oleson2017detecting} is still valid, if not slightly conservative, and with power similar to that of the permutation method. 
 
 In light of the results presented, one issue of concern is addressing the fact that a version of \xt{bdots} with the homogeneous mean assumption was presented in 2018 and remained accessible on CRAN until the end of 2022. This has implications for the number of papers in which \xt{bdots} may have demonstrated significance between groups when the underlying assumptions of homogeneous mean structure did not hold, as is likely the case in all instances related to the VWP. Concurrent with this issue is the issue of identifying current users of \xt{bdots} of this change, as results found only a month ago will be profoundly different than what is seen today. At present, I am not sure the best way to address either of these. In either case, however, it will be prudent to remove this option from the \xt{bdots} package all together, as there appears to be no obvious advantage to the homogeneous bootstrap over the others in terms of either controlling the FWER or obtaining power, even when the homogeneous mean structure assumption is met.
@@ -544,13 +548,9 @@ There are several limitations of the current paper that are worthy of further in
 
 We conclude by noting that \xt{bdots} is now equipped with two methods to effectively control the FWER when assessing the differences in time series under a greater set of underlying assumptions, including those involving the presence of highly correlated test statistics. Further, both methods presented are robust to misspecification of the error structure while maintaining an acceptable FWER and adequate power. 
 
-\section{Appendix -- Full Power Simulations}
+\section{Appendix -- Full Piecewise Power Simulations}
 
-Here we present the full collection of the linear piecewise power simulations, which, in addition to those given in Table~\ref{tab:power_methods} includes cases for heterogeneous means where autocorrelation is specified when fitting with \xt{bdots}. This is indicated in the ``AR(1) Specified" column. Additionally, plots giving the power at each time are presented in Figure~\ref{fig:time_power_plot_full}.
-
-Notably from this table, we see that in the case in which the true errors are iid, there is no measurable effect on power when an autocorrelated structure is incorrectly specified.  This is similar to the opposite situation, in which the true error does have an AR(1) structure. In this case, we observe a marginal benefit to correctly specifying an AR(1) structure. This may in fact make retaining the AR(1) assumption a reasonable default in the \xt{bdots} package.
-
-We conclude by noting that of all of the methods investigated, that using permutation testing seems to have the preferable balance between controlling the FWER and power. 
+Here we present the full collection of the linear piecewise power simulations, which, in addition to those given in Table~\ref{tab:power_methods} includes cases for heterogeneous means where autocorrelation is specified when fitting with \xt{bdots}. This is indicated in the ``AR(1) Specified" column. Notably from this table, we see that in the case in which the true errors are iid, there is no measurable effect on power when an autocorrelated structure is incorrectly specified.  This is similar to the opposite situation, in which the true error does have an AR(1) structure. In this case, we observe a marginal benefit to correctly specifying an AR(1) structure. This may in fact make retaining the AR(1) assumption a reasonable default in the \xt{bdots} package.
 
 
 \begin{figure}
@@ -584,7 +584,7 @@ Hom. Boot & No & Yes & Yes & 0.00 & 0.00 & 1.00 & 0.025 & 0.030 & 0.035 \\
   Perm & Yes & Yes & Yes & 0.03 & 0.00 & 0.97 & 0.223 & 0.335 & 0.428 \\ 
    \hline
 \end{tabular}
-\caption{Power for methods} 
+\caption{Power for full piecewise linear simulation} 
 \label{tab:power_methods_full}
 \end{table}
 \end{landscape}

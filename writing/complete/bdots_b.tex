@@ -586,9 +586,9 @@ The \xt{p\_adjust} function returns both adjusted p-values, which can be compare
 \begin{figure}[H]
 \centering
 \begin{BVerbatim}
-> unadjp
+> unadj_p
 [1] 0.5000000 0.0849965 0.0381715 0.1601033 0.0247453 0.0013016
-> adjp
+> adj_p
 [1] 0.9201915 0.1564261 0.0702501 0.2946514 0.0455408 0.0023954
 attr(,"alphastar")
 [1] 0.027168
@@ -597,7 +597,7 @@ attr(,"alphastar")
 \end{figure}
 \end{singlespace}
 
-Here, for example, we see that the last two positions of \xt{unadjp} have values less than \xt{alphastar}, identifying them as significant; alternatively, we see these same two indices in \xt{adjp} significant when compared to \xt{alpha = 0.05}
+Here, for example, we see that the last two positions of \xt{unadj\_p} have values less than \xt{alphastar}, identifying them as significant; alternatively, we see these same two indices in \xt{adj\_p} significant when compared to \xt{alpha = 0.05}
 
 \section{Discussion}
 

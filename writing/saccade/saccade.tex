@@ -8,7 +8,7 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath}
 \usepackage{graphicx}
-%\usepackage{natbib}
+\usepackage{natbib}
 \newcommand{\xt}{\texttt}
 \usepackage{listings}
 \usepackage{datetime}
@@ -48,16 +48,16 @@ Last compiled: \today \  at \currenttime
 
 \cn{[or, you know what, create a new introduction here and let what follows be the first part of next body sentence]}
 
-Spoken words create analog signals that are processed by the brain in real time. That is, as spoken word unfolds, a collection of candidate words are considered until the target word is recognized. The degree to which a particular candidate word is being considered is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
+Spoken words create analog signals that are processed by the brain in real time. That is, as spoken word unfolds, a collection of candidate words are considered until the target word is recognized \citep{MarslenWilson1987}. The degree to which a particular candidate word is being considered is known as activation. An important part of this process involves not only correctly identifying the word but also eliminating competitors. For example, we might consider a discrete unfolding of the word ``elephant" as ``el-e-phant". At the onset of ``el", a listener may activate a cohort of potential resolutions such as ``elephant", ``electricity", or ``elder", all of which may be considered competitors. With the subsequent ``el-e", words consistent with the received signal, such as ``elephant" and ``electricity" remain active competitors, while incompatible words, such as ``elder", are eliminated. Such is a rough description of this process, continuing until the ambiguity is resolved and a single word remains.
 
 %[don't like this next section]
 
 
 \cn{[start more broadly, there are a number of ways to do this, we use activation]}
 
-Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with physiological behavior. And though there are a number of relevant indices (Spivey mouse trials), we concern ourselves here with eye tracking data collected in the context of the Visual World Paradigm (VWP) \cite{tanenhaus1995integration}, an experimental model in which a participant's eye movements are tracked as the respond to spoken language. In a typical VWP experiment, participants are placed in the presence of visual objects (typically presented on a computer screen) and asked to select one in response to spoken language. The location of fixations are measured in real time, with the proportion of fixations towards any potential targeted aggregated across trials
+Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with physiological behavior. Although there are a number of relevant indices \citep{Spivey2005}, we concern ourselves here with eye tracking data collected in the context of the Visual World Paradigm (VWP) \cite{tanenhaus1995integration}, an experimental model in which a participant's eye movements are tracked as they respond to spoken language. In a typical VWP experiment, participants are placed in the presence of visual objects (typically presented on a computer screen) and asked to select one in response to spoken language. The location of fixations are measured in real time, with the proportion of fixations towards any potential targets aggregated across trials
 
-[...]
+
 
 Recently, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods. We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. We address some of these concerns directly, presenting an alternate method for relating eye-tracking data to lexical activation.
 
@@ -107,7 +107,7 @@ This brings us to the current day, where the state of things is such that VWP da
 \begin{figure}[h]
 \centering
 \includegraphics[scale=0.4]{logistic_label.png}
-\caption{An illustration of the four-parameter logistic and its associated parameters, introduced as a parametric function for fixations to target objects in McMurray 2010. Can describe the parameters in detail, but should also have the formula itself somewhere to be referenced. (Equation~\ref{eq:logistic})}
+\caption{An illustration of the four-parameter logistic (Equation~\ref{eq:logistic}) and its associated parameters, introduced as a parametric function for fixations to target objects }
 \label{fig:logistic_definition}
 \end{figure}
 

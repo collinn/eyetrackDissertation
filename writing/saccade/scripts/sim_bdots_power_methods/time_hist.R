@@ -11,23 +11,6 @@
 library(bdots)
 library(eyetrackSim)
 
-ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
-
-
-##
-y <- readRDS(ff[5])
-
-onset <- y[1,]
-fix <- y[2, ]
-
-sapply(fix, is.null) |> mean()
-sapply(onset, is.null) |> mean()
-
-
-##########################
-
-
-
 powerHist <- function(y, tit) {
   y <- readRDS(y)
   ons <- y[1, ]
@@ -70,6 +53,8 @@ powerHist <- function(y, tit) {
   hist(fix_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
        xlab = "Time", col = alpha("tomato", alpha = 0.5), add = TRUE)
 }
+
+ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
 
 powerHist(ff[1], "no delay lg")
 powerHist(ff[2], "norm delay lg")

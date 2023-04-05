@@ -40,3 +40,11 @@ ggplot(dat, aes(cycle, value, color = Word)) +
   scale_fill_manual(labels = bb) + xlab("Cycle")
 dev.off()
 
+## For dissertation
+pdf("~/dissertation/writing/saccade/img/trace_plot.pdf", width = 6, height = 4)
+ggplot(dat, aes(cycle, value, color = Word)) +
+  geom_line(size = 1) + ylab("Activation") + theme_bw() + #theme_bw(base_size=22) +
+  ggtitle("TRACE Word Activation: 'party'") +
+  scale_fill_manual(labels = bb) + xlab("Cycle")
+dev.off()
+

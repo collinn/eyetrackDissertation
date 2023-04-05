@@ -7,48 +7,36 @@ Spoken words create analog signals that are processed by the brain in real time.
 Our interest is in measuring the degree of activation of a target, relative to competitors. Activation, however, is not measured directly, and we instead rely on what can be observed with physiological behavior. Although there are a number of relevant indices of lexical activation \citep{Spivey2005}, we concern ourselves here with eye tracking data collected in the context of the Visual World Paradigm (VWP) \cite{tanenhaus1995integration}, an experimental model in which a participant's eye movements are tracked as they respond to spoken language. Recently, however, researchers have begun to reexamine some of the underlying assumptions associated with the VWP, calling into question the validity or interpretation of current methods (\cite{Magnuson2019}, \cite{mcmurray2022m}). We present here a brief history of word recognition in the context of the VWP, along with an examination of contemporary concerns. In response, we then propose a new generative model for understanding eye mechanics, accompanied by an alternative method for relating eye-tracking data to lexical activation. We follow this with a series of simulations, both in the context of recovering the trajectory of eye mechanics for individual subjects, as well as for identifying differences in trajectories between groups of individuals. Finally, we demonstrate the performance of our model with an application to data collected in prior studies. 
 
 
+\cn{these next sections``paragraphs" are a little short but i think that's ok}
+
+\paragraph{Visual World Paradigm} The Visual World Paradigm (VWP) was first introduced in 1995, making the initial link between the mental processes associated with language comprehension and eye movements \citep{tanenhaus1995integration}. A typical experiment in the VWP involves situating a subject in front of a ``visual world", commonly a computer screen today, and asking them to identify and select an object corresponding to a spoken word. The initiation of eye movements and subsequent fixations are recorded as this process unfolds, with the location of the participants' eyes serving as a proxy for which words or images are being considered. This association was first demonstrated by comparing how the mean time to initiate an eye movement to the correct object was mediated by the presence of phonological competitors (``candy" and ``candle", sharing auditory signal at word onset) and situations containing syntactic ambiguity (``Put the apple on the towel in the box" and ``Put the apple \textit{that's} on the towel in the box" in ambiguous scenarios with one or more apples). It is by comparing the trajectory of these mechanics across trials in the presence of auditory or semantic competitors that researchers have used the VWP in their investigation of spoken word recognition. For a review, see \citet{Huettig2011}, \citet{salverda2017visual}.
 
 
 
 
-\paragraph{Visual World Paradigm} The Visual World Paradigm (VWP) was first introduced in 1995, making the initial link between the mental processes associated with language comprehension and eye movements \citep{tanenhaus1995integration}. A typical experiment in the VWP involves situating a subject in front of a ``visual world", commonly a computer screen today, and asking them to identify and select an object corresponding to a spoken word. The initiation of eye movements and subsequent fixations are recorded as this process unfolds, with the location of the participants' eyes serving as a proxy for which words or images are being considered. This association was first demonstrated by comparing how the mean time to initiate an eye movement to the correct object was mediated by the presence of phonological competitors (``candy" and ``candle", sharing auditory signal at word onset) and situations containing syntactic ambiguity (``Put the apple on the towel in the box" and ``Put the apple \textit{that's} on the towel in the box" in ambiguous scenarios with one or more apples). It is by comparing the trajectory of these mechanics across trials in the presence of auditory or semantic competitors that researchers have used the VWP in their investigation of spoken word recognition. For a review, see \citet{Huettig2011}, \citet{salverda2017visual}
+\paragraph{Proportion of fixation} The interactive activation model of word recognition was first introduced in \citet{McClelland1981}, positing that word recognition takes place in a system with multiple interacting hierarchies of processing, including those made up of features, phonemes, and words. This model was later instantiated as a computer model known as TRACE \citep{elman1985speech}. Briefly, TRACE is structured as a hierarchical network model, in which input is fed into the system (typically as a string of phonemes), with potential resolutions (here, words) being represented as nodes. The TRACE model processes this input \textit{over time} and in parallel, with activation incrementally cascading from features (voicing, aspiration, etc.,) to phonemes to words. Multiple words can be activated at once, graded by consistency of the word with the received signal. Finally, the TRACE model exhibits competition, whereby the activation of a particular word functions to inhibit its competitors. This entire process continues as input is received until a single word is most active. An example of this is demonstrated in Figure~\ref{fig:trace_plot} using the current implementation of TRACE, jTRACE \citep{Strauss2007}, in which the word ``party" was provided as input. This figure shows the activation of the target word, along with a number of competitors.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=1]{trace_plot}
+\caption{TRACE activation of the word ``party", with competitors}
+\label{fig:trace_plot}
+\end{figure}
 
 
 
+It was against simulated TRACE data that \citet{allopenna1998tracking} found a tractable way of analyzing eye-tracking data collected in the VWP.  By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. 
 
-\paragraph{Proportion of fixation} It was against simulated TRACE data that \citet{allopenna1998tracking} found a tractable way of analyzing eye tracking data. By coding the period of a fixation as a 0 or 1 for each referent and taking the average of fixations towards a referent at each time point, Allopenna was able to create a ``fixation proportion" curve that largely reflected the shape and competitive dynamics of word activation suggested by TRACE, both for the target object, as well as competitors. This also served to establish a simple linking hypothesis, specifically, ``We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets." Further of note is what this linking hypothesis does not include, namely:
+This also provided an empirical grounding for an explicit linking hypothesis, relating lexical activation to eye mechanics:
 
+\begin{quote}
+We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets. [...] Note that this hypothesis does \emph{not} require stronger and less defensible assumptions about the relationship between eye  movements and attention. For example, we are not committed to the assumption that scan patterns in and of themselves reveal underlying cognitive processes.
+\end{quote}
 
-\begin{enumerate}
-\item No assumption that scanning patterns in and of themselves reveal underlying cognitive processes
-\item No assumption that the fixation location at time $t$ necessarily reveals where attention is directed (only probabilistically related to attention)
-\end{enumerate}
-
-
-Other assumptions included here include that language processing proceeds independent of vision, and that visual objects are not automatically activated. Or, more succinctly, it assumes that fixation proportions over time provide an essentially direct index of lexical activation, whereby the probability of fixating an object increases as the likelihood that it has been referred to increases.
-
-And hey let's compare it with jtrace to demonstrate what we mean \citep{Strauss2007}
+The utility in this linking hypothesis comes from its simplicity, asserting only that the probability of fixating an object increases as the likelihood it has been referred to increases. \cn{said increases twice here}. This is in contrast to a number of more involved linking hypotheses presented in \citep{Magnuson2019}.
 
 
-
-While other linking hypotheses have been presented \citep{Magnuson2019}, that there is \textit{some} link between the function of fixation proportions and activation has guided the last 25 years of VWP research.
-
-
-
-
-\paragraph{Parametric Methods and Individual Curves} While there have most certainly been advancements to the use of the VWP for speech perception and recognition (and expanded into related domains, such as sentence processing and characterizing language disorders (according to Bob)), we  limit ourselves here to one in particular. In 2010, \citet{mcmurray2010individual} expanded the domain of the VWP by introducing emphasis on individual differences in participant activation curves. Two aspects of this paper are relevant here. First, although they were not the first to introduce non-linear functions to be fit to observed data, they did introduce a number of important parametric functions in use today, namely the four (or five) parameter logistic and the double-gauss (asymmetrical gauss), the primary benefit being that the parameters of these functions are interpretable, that is, they ``describe readily observable properties." Second, which I suppose was also introduced by \citet{Mirman2008} to some degree, is specifying individual subject curves across participants. This has been critical in that:
-
-\begin{singlespace}
-\begin{enumerate}
-\vspace{-3mm}
-\item The parameters of the functions describe interpretable properties
-\item This made the idea of distributions of parameters for a particular group a relevant construct
-\end{enumerate}
-\end{singlespace}
-
-Though not stated directly (given it predates bdots by 8 years), this also served as the impetus for investigating group differences in word activation through the use of bootstrapped differences in time series \citep{oleson2017detecting} and the subsequent development of the \xt{bdots} software in R for analyzing such differences. (A history of exploring differences in group curves can be found in \citet{seedorff2018bdots}).
-
-This brings us to the current day, where the state of things is such that VWP data is widely used to measure word recognition by collecting data on individual subjects and fitting to them non-linear parametric curves with interpretable parameters. Context in hand, we are now able to introduce some of the main characters of our story, specifically how data in the VWP is understood and used. 
+\paragraph{Parametric Methods and Individual Curves} While many studies have addressed qualitative aspects of word recognition such as feedback \citep{Magnuson2003}, or priming \citep{luce1998delayed}, few had offered consideration to individual differences in activation. A first attempt was provided by \citet{Mirman2008} using mixed effects models to capture subject-specific effects by fitting observed data to polynomial functions in time. While this addressed the problem of capturing individual differences, it was burdened by the fact that polynomials are often a poor fit for VWP data, often requiring a high degree to be appropriately fit, resulting in potentially poor asymptotic behavior. Further, polynomial coefficients are often unable to be intuitively mapped onto clinically relevant properties of the functions they are intended to emulate. This was the position taken by \citet{mcmurray2010individual}, who first introduced non-linear functions to the observed data, equipped with readily interpretable and clinically relevant properties. This includes the four parameter logistic function provided in Equation~\ref{eq:logistic} as well as the double Gaussian function given in Equation~\ref{eq:dg}. Outside of serving to address psycholinguistic concerns relating to individual differences in word recognition, this advancement has been critical in shaping current statistical models used in the context of the VWP. The specification of subject-specific parameters itself implies a distribution of parameters within an experimental group, serving as an impetus for investigating group differences in word activation through the use of bootstrapped differences in time series \citep{oleson2017detecting} and the subsequent development of the \xt{bdots} software in R for analyzing such differences \citep{seedorff2018bdots}.
 
 
 
@@ -59,14 +47,15 @@ This brings us to the current day, where the state of things is such that VWP da
 \label{fig:logistic_definition}
 \end{figure}
 
+\cn{say a bit here to transition to next section?}
 
 
 \section{Analysis with VWP Data}
 
-The following section goes into more detail on the specifics
+We now shift focus to the Visual World Paradigm as it is used today. This includes first a brief description of the physiological mechanics that make up eye movements in the context of the VWP, as well as a mathematical description of the proportion of fixation method first introduced by \citet{allopenna1998tracking}.  
 
 
-\subsection{Anatomy of Eye Mechanics \cn{[this section needs new name]}}
+\subsection{Anatomy of Eye Mechanics}
 
 In the context of eye tracking data and word recognition, there are a few mechanics with which we are concerned. The first of these is activation. Even with the immediacy and (fullness? some word they use to describe dense time series here being better than yes/no response), what we observe with any eye movement is not a direct readout of the underlying activation.  Rather, there is a period of latency between the decision to launch an eye movement and the physiological response, a period known as oculomotor delay. And finally, there are they physical mechanics of the eye movements themselves, the saccade and the fixation which, together, make up a ``look". We will briefly address each of these in the reverse of the order in which they were introduced.
 
@@ -138,6 +127,8 @@ f(t|\theta) = \begin{cases}
 While both functions are commonly used in the VWP for modeling eye fixations, for simplicity we will limit the primary focus of our discussion to fixations to the Target with the four parameter logistic, though ultimately our argument is agnostic to the modeling function used, parametric or otherwise. Discussion related to the asymmetric Gaussian is treated in the appendix.
 
 
+\subsection{Proportion of Fixation Method}
+
 \subsection{VWP data}
 
 
@@ -187,7 +178,7 @@ For our discussions here, we will call this the proportion of fixation method (t
 As each individual trial is only made up of a few ballistic movements, the aggregation across trials allows for these otherwise discrete measurements to more closely represent a continuous curve. Curve fitting methods, such as those employed by \xt{bdots}, are then used to construct estimates of function parameters fitted to this curve. Figure~\ref{fig:bob_diagram_full} provides an illustration.
 
 
-\section{Look Onset}
+\section{Look Onset Method}
 
 Though eye-tracking data is what we are able to observe, it itself is not what we are interested in; rather, it is the cognitive process directing eye movements and how it relates to underlying lexical activation. How the physiological response relate to this process is known as a \textit{linking hypothesis} \cite{Magnuson2019}. In the context of the Visual World Paradigm, the linking hypothesis is often only implicitly defined, with ``the default interpretation [seeming] to be that greater fixation proportions indicate greater activation in the underlying language processing system." 
 
@@ -291,7 +282,7 @@ There are two qualities of oculomotor delay that we consider here. The first is 
 
 
 %
-\section{Simulations}
+\section{Recovery of Individual Curves}
 
 In this section we construct a number of simulations to investigate the impact of added observation bias in the recovery of the underlying activation, as well as highlight the influence of randomness in the oculomotor delay in recovery. The simulations are constructed to emulate a typical study in the Visual World Paradigm, in which individual subjects are tasked with undergoing a series of trials, during each of which subjects make a series of fixations whose locations are probabilistically associated with lexical activation. For brevity, we consider in this section only those fixations associated with the Target object, modeled with the four parameter logistic as given in Equation~\ref{eq:logistic}; simulations according to looks to competitors is treated in the index, though the phenomenon we detail here are ultimately agnostic to any particular generating function. We will begin by detailing the process of simulating a single subject. 
 
@@ -404,6 +395,33 @@ Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\
 The proportion of fixation method seems no longer tenable in the recovery the underlying lexical activation, given both the magnitude of differences presented in Table~\ref{tab:mise_sims} as well as the theoretical arguments made and illustrated in Figure~\ref{fig:folly_of_fixation}. And given that data collected via the look onset method can be adequately fit in the newest version of the \xt{bdots} software, there appears to be little to argue against its adoption.
 
 
+\section{Recovery of Group Differences}
+
+
+\section{Application to Real Data}
+
+
+This needs to be moved but then a lot of this document needs restructuring. At any rate, here is what we have. We use the dataset collected in \cite{mcmurray2010individual} which measured eye tracking in cohort of adolescents including 40 typically developed (N), 16 specific cognitive impaired (SCI), 20 specific language impaired (SLI), and 17 non-specific language impaired. They did a standard vwp trial and here are the details [...]. While this study predates the \xt{bdots} software,  we can go back and assess these groups doing a typical analysis.  In doing so, we did a factorial comparison of all pairwise groups, resulting in 6 total comparisons. We did this with both look onset transformed data, as well as standard proportion of fixation data. Of the six comparisons made, only two were found to have significant differences between group curves, in the comparison of CF/NLI and N/NLI. Further, these differences were only identified with the look onset method. That is, for all six comparisons, the proprotion of fixation methods failed to identify any curves that were different between groups.
+
+Should talk about the reasonable transformation I did to arrive at look onset data
+
+\begin{figure}[H]
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{irl_data_prop_1}}
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{img/irl_data_onset_1}}
+    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing CF vs NLI}
+\label{fig:irldata1}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{irl_data_prop_2}}
+    \subfigure[]{\includegraphics[width=0.45\textwidth]{img/irl_data_onset_2}}
+    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing N vs NLI}
+\label{fig:irldata2}
+\end{figure}
+
+
 \section{Discussion}
 
 \cn{This section needs to be tightened quite a bit.}
@@ -448,28 +466,6 @@ In short, these hypothetical situations detail how the magnitude of total variat
 
 %\input{dg_appendix}
 
-
-\section{IRL data}
-
-This needs to be moved but then a lot of this document needs restructuring. At any rate, here is what we have. We use the dataset collected in \cite{mcmurray2010individual} which measured eye tracking in cohort of adolescents including 40 typically developed (N), 16 specific cognitive impaired (SCI), 20 specific language impaired (SLI), and 17 non-specific language impaired. They did a standard vwp trial and here are the details [...]. While this study predates the \xt{bdots} software,  we can go back and assess these groups doing a typical analysis.  In doing so, we did a factorial comparison of all pairwise groups, resulting in 6 total comparisons. We did this with both look onset transformed data, as well as standard proportion of fixation data. Of the six comparisons made, only two were found to have significant differences between group curves, in the comparison of CF/NLI and N/NLI. Further, these differences were only identified with the look onset method. That is, for all six comparisons, the proprotion of fixation methods failed to identify any curves that were different between groups.
-
-Should talk about the reasonable transformation I did to arrive at look onset data
-
-\begin{figure}[H]
-    \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{irl_data_prop_1}}
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{img/irl_data_onset_1}}
-    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing CF vs NLI}
-\label{fig:irldata1}
-\end{figure}
-
-\begin{figure}[H]
-    \centering
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{irl_data_prop_2}}
-    \subfigure[]{\includegraphics[width=0.45\textwidth]{img/irl_data_onset_2}}
-    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing N vs NLI}
-\label{fig:irldata2}
-\end{figure}
 
 
 

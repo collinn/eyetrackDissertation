@@ -268,7 +268,9 @@ There are two qualities of oculomotor delay that we consider here. The first is 
 
 
 
-\section{Recovery of Individual Curves}
+\section{Recovery of Individual Curves}\label{sec:ind_curves}
+
+\cn{I should add those difference plots from defense}
 
 In this section we construct a number of simulations to investigate the impact of added observation bias in the recovery of the underlying activation, as well as highlight the influence of randomness in the oculomotor delay in recovery. The simulations are constructed to emulate a typical study in the Visual World Paradigm, in which individual subjects are tasked with undergoing a series of trials, during each of which subjects make a series of fixations whose locations are probabilistically associated with lexical activation. For brevity, we consider in this section only those fixations associated with the Target object, modeled with the four parameter logistic as given in Equation~\ref{eq:logistic}; simulations according to looks to competitors is treated in the index, though the phenomenon we detail here are ultimately agnostic to any particular generating function. We will begin by detailing the process of simulating a single subject. 
 
@@ -289,10 +291,11 @@ The simulations are performed in R, with the simulation code available on the au
 
 As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the settings in which there was no delay, normally distributed delay, or Weibull distributed delay, 981, 973, and 981 subjects were retained, respectively.
 
-[In all of the box plots I removed the top and bottom 1\% of observations, true outliers which obscured the ranges of the interquartile, relevant particularly in comparing proportion method  par bias with and without delay]
+
 
 \subsection{No Delay}
 
+\cn{maybe limit to 6 representative curves and also add difference curve}
 
 \begin{figure}[H]
 \centering
@@ -383,11 +386,27 @@ The proportion of fixation method seems no longer tenable in the recovery the un
 
 \section{Recovery of Group Differences}
 
+In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset method in the asymptotic recovery of individual curves under our generative model. Often, however, the need to specify subject-specific differences is in pursuit of a high goal, namely is identifying clinically relevant differences between groups. This problem is elaborated upon in \citet{mcmurray2010individual}, where it is noted, for example, that simply averaging across participants data has the ability to either create or mask group-level effects (i.e., large variability in the crossover parameter in the logistic function in Equation~\ref{eq:logistic} could manifest in the aggregate as a difference in slope). As such, it seems prudent to investigate the power of each of the methods discussed in identifying  clinically relevant group differences. 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{group_shift.pdf}
+\caption{Horizontal shift between groups}
+\label{fig:group_shift}
+\end{figure}
+
+We do this by simulating data for two groups, each differing 
+
+Figure~\ref{fig:group_shift} presents a demonstration of differences between two groups: first, we consider differences in the logistic function, in which the mean value of the crossover parameter is shifted horizontally by 65
+
+
+
+
 
 \section{Application to Real Data}
 
 
-This needs to be moved but then a lot of this document needs restructuring. At any rate, here is what we have. We use the dataset collected in \cite{mcmurray2010individual} which measured eye tracking in cohort of adolescents including 40 typically developed (N), 16 specific cognitive impaired (SCI), 20 specific language impaired (SLI), and 17 non-specific language impaired. They did a standard vwp trial and here are the details [...]. While this study predates the \xt{bdots} software,  we can go back and assess these groups doing a typical analysis.  In doing so, we did a factorial comparison of all pairwise groups, resulting in 6 total comparisons. We did this with both look onset transformed data, as well as standard proportion of fixation data. Of the six comparisons made, only two were found to have significant differences between group curves, in the comparison of CF/NLI and N/NLI. Further, these differences were only identified with the look onset method. That is, for all six comparisons, the proprotion of fixation methods failed to identify any curves that were different between groups.
+This needs to be moved but then a lot of this document needs restructuring. At any rate, here is what we have. We use the dataset collected in \cite{mcmurray2010individual} which measured eye tracking in cohort of adolescents including 40 typically developed (N), 16 specific cognitive impaired (SCI), 20 specific language impaired (SLI), and 17 non-specific language impaired. They did a standard vwp trial and here are the details [...]. While this study predates the \xt{bdots} software,  we can go back and assess these groups doing a typical analysis.  In doing so, we did a factorial comparison of all pairwise groups, resulting in six total comparisons. We did this with both look onset transformed data, as well as standard proportion of fixation data. Of the six comparisons made, only two were found to have significant differences between group curves, in the comparison of CF/NLI and N/NLI. Further, these differences were only identified with the look onset method. That is, for all six comparisons, the proprotion of fixation methods failed to identify any curves that were different between groups.
 
 Should talk about the reasonable transformation I did to arrive at look onset data
 

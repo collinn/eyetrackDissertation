@@ -10,6 +10,7 @@
 
 library(bdots)
 library(eyetrackSim)
+library(ggplot2)
 
 powerHist <- function(y, tit) {
   y <- readRDS(y)
@@ -48,10 +49,22 @@ powerHist <- function(y, tit) {
   s2 <- hist(fix_mat, breaks = seq(0, 2000, 40), plot = FALSE)$counts
 
   yy <- max(s1, s2)
-  hist(ons_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
-       xlab = "Time", col = alpha("steelblue", alpha = 0.5))
-  hist(fix_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
-       xlab = "Time", col = alpha("tomato", alpha = 0.5), add = TRUE)
+
+  dat <- data.table(Method = rep(c("Onset", "Proportion"),
+                                 times = c(length(ons_mat),
+                                           length(fix_mat))),
+                    Time = c(ons_mat, fix_mat))
+
+  ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+    geom_histogram(alpha = 0.5, position = "identity", binwidth = 40) +
+    ylab("Frequency") + theme_bw() + scale_fill_manual(values = c("#619CFF", "#00BA38")) +
+    scale_color_manual(values = c("#619CFF", "#00BA38")) + ggtitle(tit)
+
+
+  # hist(ons_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
+  #      xlab = "Time", col = alpha("steelblue", alpha = 0.5))
+  # hist(fix_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
+  #      xlab = "Time", col = alpha("tomato", alpha = 0.5), add = TRUE)
 }
 
 ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
@@ -63,3 +76,6 @@ powerHist(ff[3], "weib delay lg")
 powerHist(ff[4], "no delay dg")
 powerHist(ff[5], "norm delay dg")
 powerHist(ff[6], "weib delay dg")
+
+
+### Let's also do here what the actual curves look like?

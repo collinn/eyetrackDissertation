@@ -79,3 +79,59 @@ powerHist(ff[6], "weib delay dg")
 
 
 ### Let's also do here what the actual curves look like?
+bp <- eyetrackSim:::baseParams
+bp2 <- eyetrackSim:::baseParams2
+
+lg1 <- bp[fn == 1, ]$mean
+lg2 <- bp2[fn == 1, ]$mean
+dg1 <- bp[fn == 2, ]$mean
+dg2 <- bp2[fn == 2, ]$mean
+
+time <- seq(0, 2000, by = 4)
+
+lf1 <- data.table(Time = time, y = logistic_f(p = lg1, time), group = "A")
+lf2 <- data.table(Time = time, y = logistic_f(p = lg2, time), group = "B")
+
+ld <- rbind(lf1, lf2)
+
+
+df1 <- data.table(Time = time, y = doubleGauss_f(p = dg1, time), group = "B")
+df2 <- data.table(Time = time, y = doubleGauss_f(p = dg2, time), group = "A")
+dd <- rbind(df2, df1)
+
+
+
+
+p1 <- ggplot(ld, aes(Time, y, color = group)) + ylab("") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none",
+                                   text = element_text(size = 10)) +
+  ggtitle("Logistic, Crossover Shift")
+
+p2 <- ggplot(dd, aes(Time, y, color = group)) + ylab("") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none",
+                                   text = element_text(size = 10)) +
+  ggtitle("Asymmetric Gaussian, Mean Shift")
+
+pdf("~/dissertation/writing/saccade/img/group_shift.pdf", width = 7, height = 4)
+gridExtra::grid.arrange(p1, p2, nrow = 1)
+dev.off()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

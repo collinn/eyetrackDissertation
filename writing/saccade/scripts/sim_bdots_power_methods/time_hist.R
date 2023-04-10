@@ -1,19 +1,39 @@
 
-# tt <- replicate(n = N, expr = runSim_lg(idx = 1))
-# tt2 <- replicate(n = N, expr = runSim_lg(idx = 2))
-# tt3 <- replicate(n = N, expr = runSim_lg(idx = 3))
-#
-# tt4 <- replicate(n = N, expr = runSim_dg(idx = 4))
-# tt5 <- replicate(n = N, expr = runSim_dg(idx = 5))
-# tt6 <- replicate(n = N, expr = runSim_dg(idx = 6))
-
-
 library(bdots)
 library(eyetrackSim)
 library(ggplot2)
 
-powerHist <- function(y, tit) {
-  y <- readRDS(y)
+## First create group shift so that we also have diff curve
+bp <- eyetrackSim:::baseParams
+bp2 <- eyetrackSim:::baseParams2
+
+lg1 <- bp[fn == 1, ]$mean
+lg2 <- bp2[fn == 1, ]$mean
+dg1 <- bp[fn == 2, ]$mean
+dg2 <- bp2[fn == 2, ]$mean
+
+time <- seq(0, 2000, by = 4)
+
+lf1 <- data.table(Time = time, y = logistic_f(p = lg1, time), group = "A")
+lf2 <- data.table(Time = time, y = logistic_f(p = lg2, time), group = "B")
+ld <- rbind(lf1, lf2)
+
+df1 <- data.table(Time = time, y = doubleGauss_f(p = dg1, time), group = "B")
+df2 <- data.table(Time = time, y = doubleGauss_f(p = dg2, time), group = "A")
+dd <- rbind(df2, df1)
+
+## Difference vectors
+diffl <- data.table(Time = time,
+                    y = lf1$y - lf2$y)
+diffg <- data.table(Time = time,
+                    y = df1$y - df2$y)
+
+
+diffl$Method <- "Difference"
+diffg$Method <- "Difference"
+
+powerHist <- function(idx, tit) {
+  y <- readRDS(ff[idx])
   ons <- y[1, ]
   fix <- y[2, ]
 
@@ -47,7 +67,6 @@ powerHist <- function(y, tit) {
 
   s1 <- hist(ons_mat, breaks = seq(0, 2000, 40), plot = FALSE)$counts
   s2 <- hist(fix_mat, breaks = seq(0, 2000, 40), plot = FALSE)$counts
-
   yy <- max(s1, s2)
 
   dat <- data.table(Method = rep(c("Onset", "Proportion"),
@@ -55,50 +74,70 @@ powerHist <- function(y, tit) {
                                            length(fix_mat))),
                     Time = c(ons_mat, fix_mat))
 
-  ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
-    geom_histogram(alpha = 0.5, position = "identity", binwidth = 40) +
-    ylab("Frequency") + theme_bw() + scale_fill_manual(values = c("#619CFF", "#00BA38")) +
-    scale_color_manual(values = c("#619CFF", "#00BA38")) + ggtitle(tit)
 
+  if (idx %in% 1:3) {
+    ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+      geom_histogram(alpha = 0.5, position = "identity", binwidth = 40, show_guide = FALSE) +
+      ylab("Frequency") + theme_bw() + ggtitle(tit) +
+      geom_line(data = diffl, aes(x = Time, y = abs(y*20000), col = Method), linewidth = 1) +
+      scale_y_continuous(
+        # Features of the first axis
+        name = "Frequency",
+        # Add a second axis and specify its features
+        sec.axis = sec_axis( trans=~.*.000005, name="Absolute Difference")
+      ) + scale_fill_manual(values = c( "white", "#619CFF", "#00BA38")) +
+      scale_color_manual(values = c("brown1", "#619CFF", "#00BA38"))
+  } else {
+    ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+      geom_histogram(alpha = 0.5, position = "identity", binwidth = 40, show_guide = FALSE) +
+      ylab("Frequency") + theme_bw() + ggtitle(tit) +
+      geom_line(data = diffg, aes(x = Time, y = abs(y*10000), col = Method), linewidth = 1) +
+      scale_y_continuous(
+        # Features of the first axis
+        name = "Frequency",
+        # Add a second axis and specify its features
+        sec.axis = sec_axis( trans=~.*.00001, name="Absolute Difference")
+      ) + scale_fill_manual(values = c( "white", "#619CFF", "#00BA38")) +
+      scale_color_manual(values = c("brown1", "#619CFF", "#00BA38"))
+  }
 
-  # hist(ons_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
-  #      xlab = "Time", col = alpha("steelblue", alpha = 0.5))
-  # hist(fix_mat, breaks = seq(0, 2000, 40), ylim = c(0, yy), main = tit,
-  #      xlab = "Time", col = alpha("tomato", alpha = 0.5), add = TRUE)
+  # ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+  #   geom_histogram(alpha = 0.5, position = "identity", binwidth = 40) +
+  #   ylab("Frequency") + theme_bw() + scale_fill_manual(values = c("#619CFF", "#00BA38")) +
+  #   scale_color_manual(values = c("#619CFF", "#00BA38")) + ggtitle(tit)
+  #
+
 }
 
 ff <- list.files("rds_files", full.names = TRUE, pattern = "rds")
 
-powerHist(ff[1], "no delay lg")
-powerHist(ff[2], "norm delay lg")
-powerHist(ff[3], "weib delay lg")
+p1 <- powerHist(1, "Logistic, No Delay")
+p2 <- powerHist(2, "Logistic, Normal Delay")
+p3 <- powerHist(3, "Logistic, Weibull Delay")
 
-powerHist(ff[4], "no delay dg")
-powerHist(ff[5], "norm delay dg")
-powerHist(ff[6], "weib delay dg")
+p4 <- powerHist(4, "Asymmetric Gauss, No Delay")
+p5 <- powerHist(5, "Asymmetric Gauss, Normal Delay")
+p6 <- powerHist(6, "Asymmetric Gauss, Weibull Delay")
 
+pdf("~/dissertation/writing/saccade/img/diff_hist_all.pdf", width = 7, height = 8)
+ggpubr::ggarrange(p1, p4, p2, p5, p3, p6, nrow = 3, ncol = 2,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()
 
 ### Let's also do here what the actual curves look like?
-bp <- eyetrackSim:::baseParams
-bp2 <- eyetrackSim:::baseParams2
-
-lg1 <- bp[fn == 1, ]$mean
-lg2 <- bp2[fn == 1, ]$mean
-dg1 <- bp[fn == 2, ]$mean
-dg2 <- bp2[fn == 2, ]$mean
-
-time <- seq(0, 2000, by = 4)
-
-lf1 <- data.table(Time = time, y = logistic_f(p = lg1, time), group = "A")
-lf2 <- data.table(Time = time, y = logistic_f(p = lg2, time), group = "B")
-
-ld <- rbind(lf1, lf2)
 
 
-df1 <- data.table(Time = time, y = doubleGauss_f(p = dg1, time), group = "B")
-df2 <- data.table(Time = time, y = doubleGauss_f(p = dg2, time), group = "A")
-dd <- rbind(df2, df1)
+pdf("~/dissertation/writing/saccade/img/logistic_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
+ggplot(diffl, aes(Time, y)) + geom_line() + ylab("Absolute Difference") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none") +
+  ggtitle("Logistic")
+dev.off()
 
+pdf("~/dissertation/writing/saccade/img/dg_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
+ggplot(diffg, aes(Time, abs(y))) + geom_line() + ylab("Absolute Difference") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none")+
+  ggtitle("Asymmetric Gauss")
+dev.off()
 
 
 
@@ -117,29 +156,41 @@ gridExtra::grid.arrange(p1, p2, nrow = 1)
 dev.off()
 
 
-## Difference vectors
-diffl <- data.table(Time = time,
-                    y = lf1$y - lf2$y)
-diffg <- data.table(Time = time,
-                    y = df1$y - df2$y)
-
-pdf("~/dissertation/writing/saccade/img/logistic_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
-ggplot(diffl, aes(Time, y)) + geom_line() + ylab("Absolute Difference") + theme_bw() +
-  geom_line(linewidth = 1) + theme(legend.position = "none") +
-  ggtitle("Logistic")
-dev.off()
-
-pdf("~/dissertation/writing/saccade/img/dg_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
-ggplot(diffg, aes(Time, abs(y))) + geom_line() + ylab("Absolute Difference") + theme_bw() +
-  geom_line(linewidth = 1) + theme(legend.position = "none")+
-  ggtitle("Asymmetric Gauss")
-dev.off()
 
 
 
 
 
 
+# y <- ff[1]
+## With logistic data
+ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+  geom_histogram(alpha = 0.5, position = "identity", binwidth = 40) +
+  ylab("Frequency") + theme_bw() + scale_fill_manual(values = c("#619CFF", "#00BA38")) +
+  scale_color_manual(values = c("#619CFF", "#00BA38")) + ggtitle(tit) +
+  geom_line(data = diffl, aes(x = Time, y = abs(y*10000)), color = "red", linewidth = 1) +
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Frequency",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis( trans=~.*.00001, name="Absolute Difference")
+  )
+
+# y <- ff[4]
+## dg
+dat$Method <- factor(dat$Method, levels = c("Onset", "Proportion", "Difference"))
+ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+  geom_histogram(alpha = 0.5, position = "identity", binwidth = 40) +
+  ylab("Frequency") + theme_bw() + scale_fill_manual(values = c("#619CFF", "#00BA38")) +
+  scale_color_manual(values = c("#619CFF", "#00BA38")) + ggtitle(tit) +
+  geom_line(data = diffg, aes(x = Time, y = abs(y*10000), col = Method), linewidth = 1) +
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Frequency",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis( trans=~.*.00001, name="Absolute Difference")
+  ) +
+  scale_color_manual(values = c(Onset = "red", Proportion = "green", Difference = "black"))
 
 
 
@@ -147,5 +198,13 @@ dev.off()
 
 
 
-
-
+ggplot(dat, aes(x = Time, color = Method)) +
+  geom_histogram(alpha = 0, position = "identity", binwidth = 40) +
+  ylab("Frequency") + theme_bw() + ggtitle(tit) +
+  geom_line(data = diffl, aes(x = Time, y = abs(y*10000), col = Method), linewidth = 1) +
+  scale_y_continuous(
+    # Features of the first axis
+    name = "Frequency",
+    # Add a second axis and specify its features
+    sec.axis = sec_axis( trans=~.*.00001, name="Absolute Difference")
+  )

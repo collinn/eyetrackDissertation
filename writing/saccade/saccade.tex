@@ -414,22 +414,30 @@ Figure~\ref{fig:group_shift} presents a demonstration of differences between two
 \label{fig:diff_hist_all}
 \end{figure}
 
+This is important in that both it shows increased power (higher proportion of differences identified at all) plus correctly identified
 
 \section{Application to Real Data}
 
+While improved performance in the theoretical domain is a necessary condition for the adoption of the look onset method, it is not sufficient, and towards that end we turn our attention now to an application with real data. We revisit here a study conducted by \cite{mcmurray2010individual}, which collected VWP data on 93 children differing in language and cognitive abilities. This included children who were typically developed (N, $n = 40$), those with specific language impairment (SLI, $n = 20$) and non-specific language impairment (NLI, $n = 17$), and those with specific cognitive impairment (SCI, $n = 16$). Though the primary goals of this study involved both the investigation of individual differences and the mapping of particular physiological characteristics to TRACE parameters, we limit our consideration here to a standard analysis in \xt{bdots} whereby we seek to identify temporal-specific differences in the trajectory of fixations with looks to the Target, modeled with the four parameter logistic function \cn{I won't go into procedures/set up of data so maybe I just point to there? not sure if worth comment}. We do this by structuring the original data according to both the proportion of fixations and look onset methods, fitting subject-specific curves to the data, and then identifying statistically significant differences via permutation testing in \xt{bdots}. As there are four total groups, we consider each of the pairwise differences, resulting in six total differences for investigation.
 
-This needs to be moved but then a lot of this document needs restructuring. At any rate, here is what we have. We use the dataset collected in \cite{mcmurray2010individual} which measured eye tracking in cohort of adolescents including 40 typically developed (N), 16 specific cognitive impaired (SCI), 20 specific language impaired (SLI), and 17 non-specific language impaired. They did a standard vwp trial and here are the details [...]. While this study predates the \xt{bdots} software,  we can go back and assess these groups doing a typical analysis.  In doing so, we did a factorial comparison of all pairwise groups, resulting in six total comparisons. We did this with both look onset transformed data, as well as standard proportion of fixation data. Of the six comparisons made, only two were found to have significant differences between group curves, in the comparison of CF/NLI and N/NLI. Further, these differences were only identified with the look onset method. That is, for all six comparisons, the proprotion of fixation methods failed to identify any curves that were different between groups.
+\subsection{Data Preparation}
 
-Should talk about the reasonable transformation I did to arrive at look onset data
+There are a number of decisions that must be made when transforming raw eye tracking data to a format suitable for the look onset method. Briefly, we detail here the decisions made in processing data for both the proportion of fixations and for look onset. First, in all cases we removed trial data in any trials for which the subject made no fixations or selected the incorrect object in response to the auditory signal. We recorded no fixations or saccade movements (for look onset) that occurred past 2300ms, and we truncated data in each trial to end once the participant had selected the correct response.
+
+For look onset data specifically, there are a number of additional decisions to be made, particularly regarding the beginning and end of an individual trial. At the beginning of a trial when $t = 0$, for example, the eyes are already fixated on some location (typically the center), yet these are accounted for in the proportion of fixation. Regarding look onset, we must then decide whether we choose to take the first saccade launched after the beginning of the trial, resulting in a paucity of data near the beginning, or to choose to include the first saccade launched prior to the beginning of the trial which would be unrelated to the auditory stimulus (as it had not yet been received), but would offer more consistency with the data provided via the proportion of fixations. Similarly, one notes that at the end of a trial, a fixation will persist until the response has been collected (resulting in ``observed" data), whereas the final saccade launched prior to response will often be a few hundred milliseconds sooner, resulting in a similar paucity of data at the end of the trial. Ultimately, we elected to only include saccades launched after the onset of auditory stimulus and made no further accommodation for the end of the trial, and although our results were not sensitive to either of these decisions, we believe they are worth consideration in future work.
+
+
+\subsection{Results}
 
 \begin{figure}[H]
     \centering
     \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_prop_1}}
     \subfigure[]{\includegraphics[width=0.48\textwidth]{img/irl_data_onset_1}}
-    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing CF vs NLI}
+    \caption{Estimated mean curves with confidence intervals of NLI and SCI, with significant region identified using the look onset method}
 \label{fig:irldata1}
 \end{figure}
 
+Temporal differences between groups were made using permutation testing in \xt{bdots}. Of the six comparisons made, only two were found to have significant differences between group curves, those being the comparisons made between specific cognitive impairment (SCI) and non-specific language impairment (NLI), as well as between NLI and typically developed adolescents (N). Further, these differences were only identified with the look onset method, with the proportion of fixation method in both cases offering null results. Plots of the mean curves and bootstrapped confidence intervals, along with highlighted regions of identified differences, are provided in Figure~\ref{fig:irldata1} and Figure~\ref{fig:irldata2}.
 
 
 
@@ -437,9 +445,10 @@ Should talk about the reasonable transformation I did to arrive at look onset da
     \centering
     \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_prop_2}}
     \subfigure[]{\includegraphics[width=0.48\textwidth]{img/irl_data_onset_2}}
-    \caption{(a) is proportion of fixations, (b) is look onset. This is comparing N vs NLI}
+    \caption{Estimated mean curves with confidence intervals of NLI and N, with significant region identified using the look onset method}
 \label{fig:irldata2}
 \end{figure}
+
 
 
 \section{Discussion}

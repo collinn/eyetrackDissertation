@@ -31,30 +31,34 @@ fit_l <- bdotsFit(data = looks,
                   curveType = logistic_sac(startSamp = 15))
 
 
-fit_s <- bdotsFit(data = sac,
+fit_s <- bdotsFit(data = sac[Time > 0, ],
                   y = "Target",
                   time = "Time",
                   subject = "subject",
                   group = "Protocol",
                   curveType = logistic_sac(startSamp = 15))
 
+fit_l <- bdotsRefit(fit_l, subset = Protocol == "NLI")
 
 save.image("~/dissertation/analysis/irl_comparison/fit_data.rds")
 load("~/dissertation/analysis/irl_comparison/fit_data.rds")
 
 load("~/dissertation/analysis/irl_comparison/irl_comparison.rds")
 ## 6 different formulas we can look at
-#f1 <- y ~ Protocol(SCI, N)
+f1 <- y ~ Protocol(SCI, N)
 f2 <- y ~ Protocol(SCI, NLI)
-#f3 <- y ~ Protocol(SCI, SLI)
+f3 <- y ~ Protocol(SCI, SLI)
 f4 <- y ~ Protocol(N, NLI)
-#f5 <- y ~ Protocol(N, SLI)
-#f6 <- y ~ Protocol(SLI, NLI)
+f5 <- y ~ Protocol(N, SLI)
+f6 <- y ~ Protocol(SLI, NLI)
 
 
 ## Round 1
 # boot_l1 <- bdotsBoot(f1, fit_l, permutation = TRUE)
 # boot_s1 <- bdotsBoot(f1, fit_s, permutation = TRUE)
+#
+# p1 <- plot(boot_l1, plotDiffs = FALSE)$bootPlot
+# p2 <- plot(boot_s1, plotDiffs = FALSE)$bootPlot
 
 ## Round 2
 boot_l2 <- bdotsBoot(f2, fit_l, permutation = TRUE)
@@ -76,8 +80,11 @@ dev.off()
 
 
 ## Round 3
-# boot_l3 <- bdotsBoot(f3, fit_l, permutation = TRUE)
-# boot_s3 <- bdotsBoot(f3, fit_s, permutation = TRUE)
+boot_l3 <- bdotsBoot(f3, fit_l, permutation = TRUE)
+boot_s3 <- bdotsBoot(f3, fit_s, permutation = TRUE)
+
+# p1 <- plot(boot_l3, plotDiffs = FALSE)$bootPlot
+# p2 <- plot(boot_s3, plotDiffs = FALSE)$bootPlot
 
 ## Round 4
 boot_l4 <- bdotsBoot(f4, fit_l, permutation = TRUE)
@@ -95,12 +102,35 @@ p4 <- p4 + ggtitle("Bootstrapped Fits, Look Onset")
 p4
 dev.off()
 
-## Round 5
+# Round 5
 # boot_l5 <- bdotsBoot(f5, fit_l, permutation = TRUE)
 # boot_s5 <- bdotsBoot(f5, fit_s, permutation = TRUE)
 #
-# ## Round 6
-# boot_l6 <- bdotsBoot(f6, fit_l, permutation = TRUE)
-# boot_s6 <- bdotsBoot(f6, fit_s, permutation = TRUE)
+# p1 <- plot(boot_l5, plotDiffs = FALSE)$bootPlot
+# p2 <- plot(boot_s5, plotDiffs = FALSE)$bootPlot
+
+## Round 6
+boot_l6 <- bdotsBoot(f6, fit_l, permutation = TRUE)
+boot_s6 <- bdotsBoot(f6, fit_s, permutation = TRUE)
+
+p1 <- plot(boot_l6, plotDiffs = FALSE)$bootPlot
+p2 <- plot(boot_s6, plotDiffs = FALSE)$bootPlot
 
 save.image("~/dissertation/analysis/irl_comparison/irl_comparison.rds")
+
+
+
+
+
+fit_s2 <- bdotsFit(data = sac[Time > 0, ],
+                  y = "Target",
+                  time = "Time",
+                  subject = "subject",
+                  group = "Protocol",
+                  curveType = logistic_sac(startSamp = 15))
+
+boot_s2 <- bdotsBoot(f2, fit_s2, permutation = TRUE)
+boot_s4 <- bdotsBoot(f4, fit_s2, permutation = TRUE)
+
+p2 <- plot(boot_s2, plotDiffs = FALSE)$bootPlot
+p4 <- plot(boot_s4, plotDiffs = FALSE)$bootPlot

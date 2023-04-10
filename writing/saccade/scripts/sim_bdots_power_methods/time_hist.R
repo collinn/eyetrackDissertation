@@ -117,9 +117,23 @@ gridExtra::grid.arrange(p1, p2, nrow = 1)
 dev.off()
 
 
+## Difference vectors
+diffl <- data.table(Time = time,
+                    y = lf1$y - lf2$y)
+diffg <- data.table(Time = time,
+                    y = df1$y - df2$y)
 
+pdf("~/dissertation/writing/saccade/img/logistic_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
+ggplot(diffl, aes(Time, y)) + geom_line() + ylab("Absolute Difference") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none") +
+  ggtitle("Logistic")
+dev.off()
 
-
+pdf("~/dissertation/writing/saccade/img/dg_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
+ggplot(diffg, aes(Time, abs(y))) + geom_line() + ylab("Absolute Difference") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none")+
+  ggtitle("Asymmetric Gauss")
+dev.off()
 
 
 

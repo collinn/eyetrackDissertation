@@ -287,7 +287,7 @@ First, each subject $i$ randomly draws a set of parameters $\theta_i$ from an em
 
 Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ by subject $i$ will be directed towards the target with probability $f(t|\theta_i)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of randomness in oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We do this assigning $\rho$ to follow either a normal or Weibull distribution, each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. A consequence of this is that in these simulations, the bias itself is accurately accounted for by subtracting the correct mean, with the resulting error in the curve fitting process the result of the inherent variability. This does not detract from the argument being made, however, and any true bias in the mean of the oculomotor delay would asymptotically result in a horizontal shift of the observed data according to the direction and magnitude of the bias.
 
-The simulations are performed in R, with the simulation code available on the author's Github page (link?). Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
+The simulations are performed in R, with the simulation code available on the author's Github page \cn{(link?)}. Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
 
 As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the settings in which there was no delay, normally distributed delay, or Weibull distributed delay, 981, 973, and 981 subjects were retained, respectively.
 
@@ -295,7 +295,6 @@ As all of the data could not be individually inspected prior to being included i
 
 \subsection{No Delay}
 
-\cn{maybe limit to 6 representative curves and also add difference curve}
 
 \begin{figure}[H]
 \centering
@@ -304,13 +303,26 @@ As all of the data could not be individually inspected prior to being included i
 \label{fig:par_bias_no_delay}
 \end{figure}
 
+
+
+
+
+
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{rep_curves_no_delay.pdf}
+\includegraphics[width=0.9\textwidth]{rep_and_diff_no_delay.pdf}
 \caption{Representative curves with no oculomotor delay}
 \label{fig:rep_curves_no_delay}
 \end{figure}
-%
+
+
+%\begin{figure}[H]
+%\centering
+%\includegraphics[width=0.9\textwidth]{rep_curves_no_delay.pdf}
+%\caption{Representative curves with no oculomotor delay}
+%\label{fig:rep_curves_no_delay}
+%\end{figure}
+%%
 %
 %
 \subsection{Normal Delay}
@@ -324,7 +336,7 @@ As all of the data could not be individually inspected prior to being included i
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{rep_curves_normal_delay.pdf}
+\includegraphics[width=0.9\textwidth]{rep_and_diff_normal_delay.pdf}
 \caption{Representative curves with normal oculomotor delay}
 \label{fig:rep_curves_normal_delay}
 \end{figure}
@@ -342,7 +354,7 @@ As all of the data could not be individually inspected prior to being included i
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{rep_curves_weibull_delay.pdf}
+\includegraphics[width=0.9\textwidth]{rep_and_diff_weibull_delay.pdf}
 \caption{Representative curves with Weibull oculomotor delay}
 \label{fig:rep_curves_weibull_delay}
 \end{figure}
@@ -353,7 +365,7 @@ As all of the data could not be individually inspected prior to being included i
 
 \subsection{Results}
 
-[I will go back and comment on results in each of the scenarios with broader discussion of implications in each, though normal and Weibull will be similar]
+
 
 In addition to the visual summaries, we present in Table~\ref{tab:mise_sims} a summary of the mean integrated squared error (MISE) between the generating and recovered curves using each of the methods
 
@@ -418,7 +430,7 @@ This is important in that both it shows increased power (higher proportion of di
 
 \section{Application to Real Data}
 
-While improved performance in the theoretical domain is a necessary condition for the adoption of the look onset method, it is not sufficient, and towards that end we turn our attention now to an application with real data. We revisit here a study conducted by \cite{mcmurray2010individual}, which collected VWP data on 93 children differing in language and cognitive abilities. This included children who were typically developed (N, $n = 40$), those with specific language impairment (SLI, $n = 20$) and non-specific language impairment (NLI, $n = 17$), and those with specific cognitive impairment (SCI, $n = 16$). Though the primary goals of this study involved both the investigation of individual differences and the mapping of particular physiological characteristics to TRACE parameters, we limit our consideration here to a standard analysis in \xt{bdots} whereby we seek to identify temporal-specific differences in the trajectory of fixations with looks to the Target, modeled with the four parameter logistic function \cn{I won't go into procedures/set up of data so maybe I just point to there? not sure if worth comment}. We do this by structuring the original data according to both the proportion of fixations and look onset methods, fitting subject-specific curves to the data, and then identifying statistically significant differences via permutation testing in \xt{bdots}. As there are four total groups, we consider each of the pairwise differences, resulting in six total differences for investigation.
+While improved performance in the theoretical domain is a necessary condition for the adoption of the look onset method, it is not sufficient, and towards that end we turn our attention now to an application with real data. We revisit here a study conducted by \cite{mcmurray2010individual}, which collected VWP data on 93 children differing in language and cognitive abilities. This included children who were typically developed (N, $n = 40$), those with specific language impairment (SLI, $n = 20$) and non-specific language impairment (NLI, $n = 17$), and those with specific cognitive impairment (SCI, $n = 16$). Though the primary goals of this study involved both the investigation of individual differences and the mapping of particular physiological characteristics to TRACE parameters, we limit our consideration here to a standard analysis in \xt{bdots} whereby we seek to identify temporal-specific differences in the trajectory of fixations with looks to the Target, modeled with the four parameter logistic function. We do this by structuring the original data according to both the proportion of fixations and look onset methods, fitting subject-specific curves to the data, and then identifying statistically significant differences via permutation testing in \xt{bdots}. As there are four total groups, we consider each of the pairwise differences, resulting in six total differences for investigation.
 
 \subsection{Data Preparation}
 
@@ -431,8 +443,8 @@ For look onset data specifically, there are a number of additional decisions to 
 
 \begin{figure}[H]
     \centering
-    \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_prop_1}}
-    \subfigure[]{\includegraphics[width=0.48\textwidth]{img/irl_data_onset_1}}
+    \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_prop_1.pdf}}
+    \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_onset_1.pdf}}
     \caption{Estimated mean curves with confidence intervals of NLI and SCI, with significant region identified using the look onset method}
 \label{fig:irldata1}
 \end{figure}
@@ -443,8 +455,8 @@ Temporal differences between groups were made using permutation testing in \xt{b
 
 \begin{figure}[H]
     \centering
-    \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_prop_2}}
-    \subfigure[]{\includegraphics[width=0.48\textwidth]{img/irl_data_onset_2}}
+    \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_prop_2.pdf}}
+    \subfigure[]{\includegraphics[width=0.48\textwidth]{irl_data_onset_2.pdf}}
     \caption{Estimated mean curves with confidence intervals of NLI and N, with significant region identified using the look onset method}
 \label{fig:irldata2}
 \end{figure}
@@ -453,27 +465,21 @@ Temporal differences between groups were made using permutation testing in \xt{b
 
 \section{Discussion}
 
-Things the discussion section should have:
-\begin{singlespace}
-\begin{itemize}
-\item XX new model, new method, closer to cognitive mechanism of interest
-\item XX can be done with bdots
-\item XX demonstrated with individual curve recovery, power between two groups, and investigation with irl data
-\item length of fixation, informative, weight by early/late
-\item suggests experimental design (seeking vs intent)
-\item XX sparsity of data great for mixed models hmmmmmm?
-\item need to address oculomotor delay
-\end{itemize}
-\end{singlespace}
+
 
 Through our investigation, we have presented a physiologically grounded model relating eye tracking data to underlying lexical access by placing emphasis singularly on the first instance of a look. Under the assumptions of this model, we further demonstrated a significant source of bias present under the standard ``proportion of fixations" method typical of VWP data. We have proposed an alternative in response, the look onset method, which limits relevant data to the initial launching of a saccade. Under our generative model, we not only demonstrated superior recovery of individual subject-specific curves but also in the unbiased identification of temporal-specific differences between groups. The utility of this additional power was made evident in our re-examination of an existing study, in which the look onset method identified several statistically significant differences between groups, whereas the proportion of fixation method did not. And finally, the look onset method can be implemented immediately, utilizing the same analytic approach provided by the \xt{bdots} package in R.
 
 The look onset method has the further benefit of giving rise to a much sparser dataset, providing a more computationally tractable basis for algorithms with complexity which scale in the number of observations. This may be of considerable advantage in fitting mixed models to the data, potentially providing the ability to control for trial-specific variability, an option that has hitherto been infeasible. 
 
-Of likely concern to many readers will be the fact, as the look onset method retains only the initial onset of a fixation, a great deal of information is lost concerning the \textit{duration} of the fixation. It is well established \cn{CITE} that the length of a fixation is itself meaningful, with longer fixations generally associated with stronger activation. [...]
+Of likely concern to many readers will be the fact that, as the look onset method retains only the initial onset of a fixation, a great deal of information is lost concerning the \textit{duration} of the fixation. It is well established \cn{CITE} that the length of a fixation is itself meaningful, with longer fixations generally associated with stronger activation. The length of fixation may also be important when attempting to differentiate fixations associated with searching patterns (i.e., what images exist on screen?) against those associated with consideration (is this the image I've just heard?). It would be incorrect to suggest that the look onset method considers the length of fixation \textit{irrelevant}; rather, it makes no statement about it at all. In other words, by clearly delineating two separate processes, one initiating an eye movement, the other determining the duration, we free ourselves to construct far more nuanced models. For example, the length of a fixation may suggesting a weighting to the proceeding look onset, with a longer duration being indicative of intentional consideration and shorter ones being suggestive of searching behavior. These questions suggest a number of experimental designs to differentiate eye tracking behavior, particularly with regards to scanning/search behavior and experimental conditions, similar to what is demonstrated in \citep{Apfelbaum2021}.
 
 
-Of course, we know that longer fixations are relevant to the strength of consideration. One of the primary benefits of the proportion method is that it indirectly captures the duration of fixations, with longer times being associated with stronger activation. This is important when differentiating fixations associated with searching patterns (i.e., what images exist on screen?) against those associated with consideration (is this the image I've just heard?). However, implicit in the proportion of fixations method is a crucially overlooked assumption of a linear relationship between the fixation length and the activation. That is, insofar as the construction of the fixation curve is considered, a fixation persisting at 20ms after look onset (and well within the refraction period in which no new information regarding the cognitive mechanism or voluntary fixation could be obtained (see figure i haven't made yet)) is considered identical to a fixation persisting at 500ms after onset: both are undifferentiated in being recorded as either a $0$ or $1$. More likely it seems this would be more of an exponential relationship, with longer fixations offering increasingly more evidence of lexical activation. By separating the moment of onset from the look itself, we free ourselves to construct far more nuanced models. Put more succinctly, it is not that the look onset method considers the length of fixation irrelevant; rather, it makes no statement about it at all. How these mechanisms could be combined should be the focus of future research.
+It is also critical to specify a present shortcoming in how the duration of fixations are treated. Implicit in the proportion of fixations method is a crucially overlooked assumption of a linear relationship between the fixation length and the activation. That is, insofar as the construction of the fixation curve is considered, a fixation persisting at 20ms after look onset (and well within the refraction period in which no new information regarding the cognitive mechanism or voluntary fixation could be obtained, see Figure~\ref{fig:whats_in_a_look}) is considered identical to a fixation persisting at 500ms after onset: both are undifferentiated in being recorded as either a $0$ or $1$. In other words, the specific duration of a particular fixation does not directly change how the data is recorded. This is in contrast to the possibility offered by the look onset method, whereby the duration of the fixation could weight the look onset by importance.
+
+A second consideration necessary for using the length of a fixation is the composition of the fixation itself, given in Figure~\ref{fig:whats_in_a_look}. Suppose, for example, that the refractory period following each fixation was exactly 100ms and that the oculomotor delay before initiating the subsequent fixation is exactly 200ms. From this, we could conclude that 300ms of any fixation are ``built in" and have no necessary information regarding the strength of activation motivating the fixation. Without considering this information, we may determine a fixation of 500ms to be 25\% greater than a fixation of 400ms. However, once we account for the ``built in" portion of a fixation, we see that the first is associated with an intentional fixation period of 200ms, whereas the second has an intentional period of only 100ms. In this light, the first fixation might be considered 100\% greater than the latter. And while we offer no more than speculation here, this phenomenon should be taken into consideration in future research.
+
+In conclusion, we have presented a statistically defensible generative model for eye movements in the context of the Visual World Paradigm, accompanied by a novel method for aggregating and analyzing collected data. While the methods proposed are not a drastic alteration to the motivating assumptions of \citet{allopenna1998tracking}, we believe them to be a critical step forward towards a statistically sound treatment of eye tracking data in the realm of lexical activation.
+
 
 
 
@@ -485,7 +491,6 @@ Of course, we know that longer fixations are relevant to the strength of conside
 
 \section{Misc OM Discussion}
 
-[mainly exists to demonstrate that despite appearances, OM delay still worth further investigation]
 
 Outside of a demonstration of its existence and potential consequence, little more has been said about addressing the delayed observation bias. Further, the consequences of the delayed observation (under the assumption that the mean value is correctly accounted for) seem almost trivial in comparison to the differences between it and the added observation bias. That being said, we believe there are still critical reasons for considering its significance.
 
@@ -500,7 +505,7 @@ where $\mathcal{P} = \{P = \{t_0, \dots, t_{n_p}\} \}$ is the set of all possibl
 In short, these hypothetical situations detail how the magnitude of total variation can have differential effects on the delay in observation. Now consider again the logistic function in Figure~\ref{fig:logistic_definition} and imagine its domain partitioned into three equally sized portions. Both the first and third, near the asymptotes, have relatively low total variation, resulting in a relatively benign effect from oculomotor delay. In contrast, the middle third contains nearly all of the variation of the function, indicating the delayed observation here will have a disproportionate impact on the successful recovery of the function. Given the clinical relevance of the both the slope and crossover parameters, as well as acknowledging the impact that these have on the overall shape of the function, we demonstrate a need in a accounting for this delay precisely where it will impact function recovery the most. This, of course, is not unique to the logistic, with the effects of the delayed observation bias compounded in the asymmetric Gaussian functions (appendix) which has a more complicated variation structure and, accordingly, more difficulty in recovering the generating curves.
 
 
-%\input{dg_appendix}
+\input{dg_appendix}
 
 
 

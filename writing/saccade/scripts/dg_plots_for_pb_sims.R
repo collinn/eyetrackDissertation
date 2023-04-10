@@ -72,7 +72,7 @@ biasPlot <- function(fix, sac, sim, tit, xint = 0) {
 sampleCurvePlot <- function(fix, sac, sim, tit) {
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
-  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[1:10]
+  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[1:6]
   # get pars
   truep <- subsetSim(sim, idx)$subPars$pars[, 2:7] |> as.matrix()
   fixp <- coef(fix[idx, ])
@@ -89,8 +89,8 @@ sampleCurvePlot <- function(fix, sac, sim, tit) {
     tc <- rbindlist(tc)
   }
   trueCurve <- getCurve(truep, "True")
-  sacCurve <- getCurve(sacp, "Saccade")
-  fixCurve <- getCurve(fixp, "Fixation")
+  sacCurve <- getCurve(sacp, "Look Onset")
+  fixCurve <- getCurve(fixp, "Proportion")
   plotty <- rbindlist(list(trueCurve, fixCurve, sacCurve))
 
   pp <- ggplot(plotty, aes(time, curve, color = Curve, linetype = Curve)) +
@@ -335,3 +335,99 @@ pp3
 dev.off()
 
 
+######### Differences yo
+
+
+
+###################################################
+## Time for representative curves for each group ##
+###################################################
+
+
+diffCurvePlot <- function(fix, sac, sim, tit) {
+  idx1 <- getRmvIdx(fix)
+  idx2 <- getRmvIdx(sac)
+  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[1:6]
+  # get pars
+  truep <- subsetSim(sim, idx)$subPars$pars[, 2:7] |> as.matrix()
+  fixp <- coef(fix[idx, ])
+  sacp <- coef(sac[idx, ])
+
+  getCurve <- function(pp, type) {
+    pp <- split(pp, seq_len(nrow(pp)))
+    rrr <- 0:2000
+    ff <- function(p) doubleGauss_f(p, rrr)
+    tc <- lapply(pp, function(x) data.table(curve = ff(x), Curve = type, time = rrr))
+    for (i in seq_along(tc)) {
+      tc[[i]]$id <- i
+    }
+    tc <- rbindlist(tc)
+  }
+  trueCurve <- getCurve(truep, "True")
+  sacCurve <- getCurve(sacp, "Look Onset")
+  fixCurve <- getCurve(fixp, "Proportion")
+
+  fixCurve$curve <- fixCurve$curve - trueCurve$curve
+  sacCurve$curve <- sacCurve$curve - trueCurve$curve
+
+  plotty <- rbindlist(list(fixCurve, sacCurve))
+
+
+  pp <- ggplot(plotty, aes(time, curve, color = Curve, linetype = Curve)) +
+    geom_line(linewidth = 1) +
+    scale_linetype_manual(values = c("solid", "solid")) +
+    scale_color_manual(values = c("#619CFF", "#00BA38")) +
+    facet_wrap(~id, nrow = 2) + theme_bw() + labs(y = "Activation", x = "Time") +
+    ggtitle(paste0("Representative Error Curves, ", tit)) +
+    suppressWarnings(scale_x_discrete(limits = c(0, 750, 1500))) + theme(legend.position = "bottom")
+
+  pp
+}
+
+
+
+
+
+## Starting with fixed
+pp1 <- sampleCurvePlot(dg_fit_fix_no_delay,
+                       dg_fit_sac_no_delay,
+                       dg_sim_no_delay,
+                       tit = "No Delay")
+pp1d <- diffCurvePlot(dg_fit_fix_no_delay,
+                      dg_fit_sac_no_delay,
+                      dg_sim_no_delay,
+                      tit = "No Delay")
+
+pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_no_delay.pdf", width = 7, height = 7)
+ggpubr::ggarrange(pp1, pp1d, nrow = 2, ncol = 1,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()
+
+
+
+pp3 <- sampleCurvePlot(dg_fit_fix_weibull,
+                       dg_fit_sac_weibull,
+                       dg_sim_weibull,
+                       tit = "Weibull Delay")
+pp3d <- diffCurvePlot(dg_fit_fix_weibull,
+                      dg_fit_sac_weibull,
+                      dg_sim_weibull,
+                      tit = "Weibull Delay")
+pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_weibull_delay.pdf", width = 7, height = 7)
+ggpubr::ggarrange(pp3, pp3d, nrow = 2, ncol = 1,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()
+
+
+pp4 <- sampleCurvePlot(dg_fit_fix_normal,
+                       dg_fit_sac_normal,
+                       dg_sim_normal,
+                       tit = "Normal Delay")
+pp4d <- diffCurvePlot(dg_fit_fix_normal,
+                      dg_fit_sac_normal,
+                      dg_sim_normal,
+                      tit = "Normal Delay")
+pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_normal_delay.pdf", width = 7, height = 7)
+ggpubr::ggarrange(pp4, pp4d, nrow = 2, ncol = 1,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()

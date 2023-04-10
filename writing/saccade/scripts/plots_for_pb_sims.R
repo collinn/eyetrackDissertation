@@ -82,7 +82,7 @@ biasPlot <- function(fix, sac, sim, tit, xint = 0, trim = 0) {
 sampleCurvePlot <- function(fix, sac, sim, tit) {
   idx1 <- getRmvIdx(fix)
   idx2 <- getRmvIdx(sac)
-  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[11:20]
+  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[11:16]
   # get pars
   truep <- subsetSim(sim, idx)$subPars$pars[, 2:5] |> as.matrix()
   fixp <- coef(fix[idx, ])
@@ -303,35 +303,6 @@ biasBarPlot(fit_fix_normal,
 dev.off()
 
 
-###################################################
-## Time for representative curves for each group ##
-###################################################
-
-## Starting with fixed
-pp1 <- sampleCurvePlot(fit_fix_no_delay,
-                      fit_sac_no_delay,
-                      sim_no_delay,
-                      tit = "No Delay")
-pdf("../img/rep_curves_no_delay.pdf", width = 7, height = 4)
-pp1
-dev.off()
-
-pp3 <- sampleCurvePlot(fit_fix_weibull,
-                      fit_sac_weibull,
-                      sim_weibull,
-                      tit = "Weibull Delay")
-pdf("../img/rep_curves_weibull_delay.pdf", width = 7, height = 4)
-pp3
-dev.off()
-
-
-pp4 <- sampleCurvePlot(fit_fix_normal,
-                       fit_sac_normal,
-                       sim_normal,
-                       tit = "Normal Delay")
-pdf("../img/rep_curves_normal_delay.pdf", width = 7, height = 4)
-pp4
-dev.off()
 
 ###############################################################################
 ## Bar plots for Defense
@@ -471,3 +442,113 @@ biasBarPlot2 <- function(fix, sac, sim1, sim2, tit, trim = 0,  legend = NULL, nn
   return(pp)
 
 }
+
+
+
+######### Difference plots
+diffCurvePlot <- function(fix, sac, sim, tit) {
+  idx1 <- getRmvIdx(fix)
+  idx2 <- getRmvIdx(sac)
+  idx <- setdiff(seq_len(nrow(fix)), c(idx1, idx2))[11:16]
+  # get pars
+  truep <- subsetSim(sim, idx)$subPars$pars[, 2:5] |> as.matrix()
+  fixp <- coef(fix[idx, ])
+  sacp <- coef(sac[idx, ])
+
+  getCurve <- function(pp, type) {
+    pp <- split(pp, seq_len(nrow(pp)))
+    rrr <- 0:1600
+    ff <- function(p) logistic_f(p, rrr)
+    tc <- lapply(pp, function(x) data.table(curve = ff(x), Curve = type, time = rrr))
+    for (i in seq_along(tc)) {
+      tc[[i]]$id <- i
+    }
+    tc <- rbindlist(tc)
+  }
+  trueCurve <- getCurve(truep, "True")
+  sacCurve <- getCurve(sacp, "Look Onset")
+  fixCurve <- getCurve(fixp, "Proportion")
+
+  fixCurve$curve <- fixCurve$curve - trueCurve$curve
+  sacCurve$curve <- sacCurve$curve - trueCurve$curve
+
+  plotty <- rbindlist(list(fixCurve, sacCurve))
+
+
+  pp <- ggplot(plotty, aes(time, curve, color = Curve, linetype = Curve)) +
+    geom_line(linewidth = 1) +
+    scale_linetype_manual(values = c("solid", "solid")) +
+    scale_color_manual(values = c("#619CFF", "#00BA38")) +
+    facet_wrap(~id, nrow = 2) + theme_bw() + labs(y = "Activation", x = "Time") +
+    ggtitle(paste0("Representative Error Curves, ", tit)) +
+    suppressWarnings(scale_x_discrete(limits = c(0, 750, 1500))) + theme(legend.position = "bottom")
+
+  pp
+}
+
+## Starting with fixed
+pp1 <- diffCurvePlot(fit_fix_no_delay,
+                     fit_sac_no_delay,
+                     sim_no_delay,
+                     tit = "No Delay")
+pdf("error_no_delay.pdf", width = 4.5, height = 3.5)
+pp1
+dev.off()
+
+pp3 <- diffCurvePlot(fit_fix_weibull,
+                     fit_sac_weibull,
+                     sim_weibull,
+                     tit = "Weibull Delay")
+pdf("error_weibull_delay.pdf", width = 4.5, height = 3.5)
+pp3
+dev.off()
+
+
+
+###################################################
+## Time for representative curves for each group ##
+###################################################
+
+## Starting with fixed
+pp1 <- sampleCurvePlot(fit_fix_no_delay,
+                       fit_sac_no_delay,
+                       sim_no_delay,
+                       tit = "No Delay")
+pp1d <- diffCurvePlot(fit_fix_no_delay,
+                     fit_sac_no_delay,
+                     sim_no_delay,
+                     tit = "No Delay")
+
+pdf("~/dissertation/writing/saccade/img/rep_and_diff_no_delay.pdf", width = 7, height = 7)
+ggpubr::ggarrange(pp1, pp1d, nrow = 2, ncol = 1,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()
+
+
+
+pp3 <- sampleCurvePlot(fit_fix_weibull,
+                       fit_sac_weibull,
+                       sim_weibull,
+                       tit = "Weibull Delay")
+pp3d <- diffCurvePlot(fit_fix_weibull,
+                       fit_sac_weibull,
+                       sim_weibull,
+                       tit = "Weibull Delay")
+pdf("~/dissertation/writing/saccade/img/rep_and_diff_weibull_delay.pdf", width = 7, height = 7)
+ggpubr::ggarrange(pp3, pp3d, nrow = 2, ncol = 1,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()
+
+
+pp4 <- sampleCurvePlot(fit_fix_normal,
+                       fit_sac_normal,
+                       sim_normal,
+                       tit = "Normal Delay")
+pp4d <- diffCurvePlot(fit_fix_normal,
+                       fit_sac_normal,
+                       sim_normal,
+                       tit = "Normal Delay")
+pdf("~/dissertation/writing/saccade/img/rep_and_diff_normal_delay.pdf", width = 7, height = 7)
+ggpubr::ggarrange(pp4, pp4d, nrow = 2, ncol = 1,
+                  common.legend = TRUE, legend = "bottom")
+dev.off()

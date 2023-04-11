@@ -224,7 +224,7 @@ There are two qualities of oculomotor delay that we consider here. The first is 
 
 \section{Recovery of Individual Curves}\label{sec:ind_curves}
 
-\cn{I should add those difference plots from defense}
+
 
 In this section we construct a number of simulations to investigate the impact of added observation bias in the recovery of the underlying activation, as well as highlight the influence of randomness in the oculomotor delay in recovery. The simulations are constructed to emulate a typical study in the Visual World Paradigm, in which individual subjects are tasked with undergoing a series of trials, during each of which subjects make a series of fixations whose locations are probabilistically associated with lexical activation. For brevity, we consider in this section only those fixations associated with the Target object, modeled with the four parameter logistic as given in Equation~\ref{eq:logistic}; simulations according to looks to competitors is treated in the index, though the phenomenon we detail here are ultimately agnostic to any particular generating function. We will begin by detailing the process of simulating a single subject. 
 
@@ -237,11 +237,11 @@ In this section we construct a number of simulations to investigate the impact o
 \end{figure}
 
 
-First, each subject $i$ randomly draws a set of parameters $\theta_i$ from an empirically determined distribution based on normal hearing participants in the VWP \cite{FarrisTrimble2014} to construct a subject specific generating curve, $f(\cdot | \theta_i)$, where $f$ here is assumed to be the logistic given in Equation~\ref{eq:logistic}.   It is according to this function that the decision to initiate a look at time $t$ will subsequently direct itself to the Target with probability $f(t|\theta_i)$. We then go about simulating trials according to the following method: At some time $t_0$, a subject initiates a look. This look persists for at least a duration of $\gamma$, drawn from a gamma distribution with mean and standard deviation independent of time and previous fixations. At time $t_0+\gamma$, the subject determines the location of its next look, with the next look being directed towards the target with probability $f(t+\gamma | \theta_i)$. The decision to initiate a look is followed by a period of oculomotor delay, $\rho$, during which time the subject remains fixated in the current location. Finally, at time $t_0 + \gamma + \rho$, the subject ends the look initiated at $t_0$ and immediately begins its next look to the location determined at time $t_0 + \gamma$. For the look onset method, the only data recorded are the times of a look onset and their location: in this case, at times $t_0$ and $t_0 + \gamma + \rho$. By contrast, the proportion of fixation method records the object of fixation at 4ms intervals for the entire period of length $\gamma + \rho$. A single trial begins at $t = 0$ and continues constructing looks as described until the total duration of looks exceeds 2000ms. Each subject undergoes 300 trials, and 1,000 subjects are included in each simulation.
+First, each subject $i$ randomly draws a set of parameters $\theta_i$ from an empirically determined distribution based on normal hearing participants in the VWP \cite{FarrisTrimble2014} to construct a subject specific generating curve, $f(\cdot | \theta_i)$, where $f$ here is assumed to be the logistic given in Equation~\ref{eq:logistic}.  It is according to this function that the decision to initiate a look at time $t$ will subsequently direct itself to the Target with probability $f(t|\theta_i)$. We then go about simulating trials according to the following method: At some time $t_0$, a subject initiates a look. This look persists for at least a duration of $\gamma$, drawn from a gamma distribution with mean and standard deviation independent of time and previous fixations. At time $t_0+\gamma$, the subject determines the location of its next look, with the next look being directed towards the target with probability $f(t+\gamma | \theta_i)$. The decision to initiate a look is followed by a period of oculomotor delay, $\rho$, during which time the subject remains fixated in the current location. Finally, at time $t_0 + \gamma + \rho$, the subject ends the look initiated at $t_0$ and immediately begins its next look to the location determined at time $t_0 + \gamma$. For the look onset method, the only data recorded are the times of a look onset and their location: in this case, at times $t_0$ and $t_0 + \gamma + \rho$. By contrast, the proportion of fixation method records the object of fixation at 4ms intervals for the entire period of length $\gamma + \rho$. A single trial begins at $t = 0$ and continues constructing looks as described until the total duration of looks exceeds 2000ms. Each subject undergoes 300 trials, and 1,000 subjects are included in each simulation.
 
 Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ by subject $i$ will be directed towards the target with probability $f(t|\theta_i)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of randomness in oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We do this assigning $\rho$ to follow either a normal or Weibull distribution, each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. A consequence of this is that in these simulations, the bias itself is accurately accounted for by subtracting the correct mean, with the resulting error in the curve fitting process the result of the inherent variability. This does not detract from the argument being made, however, and any true bias in the mean of the oculomotor delay would asymptotically result in a horizontal shift of the observed data according to the direction and magnitude of the bias.
 
-The simulations are performed in R, with the simulation code available on the author's Github page (link?). Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
+The simulations are performed in R, with the simulation code available on the author's Github page \cn{(link?)}. Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
 
 As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the settings in which there was no delay, normally distributed delay, or Weibull distributed delay, 981, 973, and 981 subjects were retained, respectively.
 
@@ -249,7 +249,6 @@ As all of the data could not be individually inspected prior to being included i
 
 \subsection{No Delay}
 
-\cn{maybe limit to 6 representative curves and also add difference curve}
 
 \begin{figure}[H]
 \centering
@@ -320,7 +319,6 @@ As all of the data could not be individually inspected prior to being included i
 
 \subsection{Results}
 
-[I will go back and comment on results in each of the scenarios with broader discussion of implications in each, though normal and Weibull will be similar]
 
 In addition to the visual summaries, we present in Table~\ref{tab:mise_sims} a summary of the mean integrated squared error (MISE) between the generating and recovered curves using each of the methods
 
@@ -353,7 +351,7 @@ The proportion of fixation method seems no longer tenable in the recovery the un
 
 \section{Recovery of Group Differences}
 
-In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset method in the asymptotic recovery of individual curves under our generative model. Often, however, the need to specify subject-specific differences is in pursuit of a high goal, namely is identifying clinically relevant differences between groups. This problem is elaborated upon in \citet{mcmurray2010individual}, where it is noted, for example, that simply averaging across participants data has the ability to either create or mask group-level effects (i.e., large variability in the crossover parameter in the logistic function in Equation~\ref{eq:logistic} could manifest in the aggregate as a difference in slope). As such, it seems prudent to investigate the power of each of the methods discussed in identifying  clinically relevant group differences. 
+In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset method in the asymptotic recovery of individual curves under our generative model. Often, however, the need to specify subject-specific differences is in pursuit of a higher goal, namely the identification of clinically relevant differences between groups. This problem is elaborated upon in \citet{mcmurray2010individual}, where it is noted, for example, that simply averaging across participants data has the ability to either create or mask group-level effects (i.e., large variability in the crossover parameter in the logistic function in Equation~\ref{eq:logistic} could manifest in the aggregate as a difference in slope). As such, it seems prudent to investigate the power of each of the methods discussed in identifying clinically relevant group differences. 
 
 \begin{figure}[H]
 \centering
@@ -362,9 +360,10 @@ In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset m
 \label{fig:group_shift}
 \end{figure}
 
-We do this by simulating data for two groups, each differing 
+We proceed just as we did in Section~\ref{sec:ind_curves}, generating data according to the process previously described and recovering individual curves via each the look onset and proportion of fixation methods. What differs here, however, is that each simulation is constructed to simulate drawing two groups with 25 subjects each from empirically estimated distributions that differ from one another as a horizontal shift of 65 in the location parameters (i.e., the crossover parameter in the logistic and the mean parameter in the asymmetric Gaussian). An illustration of the mean structure of each  group and its shifted counterpart is depicted in Figure~\ref{fig:group_shift}.
 
-Figure~\ref{fig:group_shift} presents a demonstration of differences between two groups: first, we consider differences in the logistic function, in which the mean value of the crossover parameter is shifted horizontally by 65
+At first glance, the visual indication of the difference between each of the groups in Figure~\ref{fig:group_shift} can be misleading. Just as in the case of the recovery of subject-specific curves, what we are interested in here is the identification of vertical differences between groups, the magnitude of which at each time point is given in Figure~\ref{fig:difference_between_shift}. As greater differences should be easier to detect, we should anticipate a strong temporal relationship between the differences observed in Figure~\ref{fig:difference_between_shift} and the observed power, measured by taking the proportion of each of the 1000 simulations in which any statistically significant difference was identified. 
+
 
 \begin{figure}[H]
     \centering
@@ -373,6 +372,13 @@ Figure~\ref{fig:group_shift} presents a demonstration of differences between two
     \caption{difference }
 \label{fig:difference_between_shift}
 \end{figure}
+
+\subsection{Results}
+
+Results of the simulations are presented visually in Figure~\ref{fig:diff_hist_all}. Within each tile is a histogram indicating the proportion of trials in which a statistically significant difference was identified\footnote{Binwidth for each histogram is 40, which is why some proportions are greater than 1000}. Laid over each histogram are plots of the magnitude of true differences given in Figure~\ref{fig:difference_between_shift}, helping to coordinate observed power in time.
+
+There are a few general statements that apply equally to each of the simulations, and we discuss those further here. First, note that in all cases, irrespective of time, the look onset method provides greater absolute power in identifying differences, as indicated by the maximum frequency in each of this histograms. 
+
 
 \begin{figure}[H]
 \centering

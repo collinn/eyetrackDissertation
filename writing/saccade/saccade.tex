@@ -405,7 +405,11 @@ The proportion of fixation method seems no longer tenable in the recovery the un
 
 \section{Recovery of Group Differences}
 
-In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset method in the asymptotic recovery of individual curves under our generative model. Often, however, the need to specify subject-specific differences is in pursuit of a higher goal, namely the identification of clinically relevant differences between groups. This problem is elaborated upon in \citet{mcmurray2010individual}, where it is noted, for example, that simply averaging across participants data has the ability to either create or mask group-level effects (i.e., large variability in the crossover parameter in the logistic function in Equation~\ref{eq:logistic} could manifest in the aggregate as a difference in slope). As such, it seems prudent to investigate the power of each of the methods discussed in identifying clinically relevant group differences. 
+
+
+In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset method in the asymptotic recovery of individual curves under our generative model. Often, however, the need to specify subject-specific differences is in pursuit of a higher goal, namely the identification of clinically relevant differences between groups. This problem is elaborated upon in \citet{mcmurray2010individual}, where it is noted, for example, that simply averaging across participants data has the ability to either create or mask group-level effects (i.e., large variability in the crossover parameter in the logistic function in Equation~\ref{eq:logistic} could manifest in the aggregate as a difference in slope). Having demonstrated the efficacy in recovering the subject-specific curves, we now consider if differences at the subject level are preserved in the aggregate through a power analysis using each of the methods discussed for identifying clinically relevant group differences. 
+
+
 
 \begin{figure}[H]
 \centering
@@ -414,16 +418,19 @@ In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset m
 \label{fig:group_shift}
 \end{figure}
 
-We proceed just as we did in Section~\ref{sec:ind_curves}, generating data according to the process previously described and recovering individual curves via each the look onset and proportion of fixation methods. What differs here, however, is that each simulation is constructed to simulate drawing two groups with 25 subjects each from empirically estimated distributions that differ from one another as a horizontal shift of 65 in the location parameters (i.e., the crossover parameter in the logistic and the mean parameter in the asymmetric Gaussian). An illustration of the mean structure of each  group and its shifted counterpart is depicted in Figure~\ref{fig:group_shift}.
+We proceed just as we did in Section~\ref{sec:ind_curves}, generating data according to the process previously described and detailed in Figure~\ref{fig:anatomy_of_look}, recovering individual curves via each the look onset and proportion of fixation methods. What differs here, however, is that each simulation is constructed to simulate drawing two groups with 25 subjects each from empirically estimated distributions that differ from one another as a horizontal shift of 65 in the location parameters (i.e., the crossover parameter in the logistic and the mean parameter in the asymmetric Gaussian). An illustration of the mean structure of each  group and its shifted counterpart is depicted in Figure~\ref{fig:group_shift}.
 
-At first glance, the visual indication of the difference between each of the groups in Figure~\ref{fig:group_shift} can be misleading. Just as in the case of the recovery of subject-specific curves, what we are interested in here is the identification of vertical differences between groups, the magnitude of which at each time point is given in Figure~\ref{fig:difference_between_shift}. As greater differences should be easier to detect, we should anticipate a strong temporal relationship between the differences observed in Figure~\ref{fig:difference_between_shift} and the observed power, measured by taking the proportion of each of the 1000 simulations in which any statistically significant difference was identified. 
+At first glance, the visual indication of the difference between each of the groups in Figure~\ref{fig:group_shift} can be misleading. Just as in the case of the recovery of subject-specific curves, what we are interested in here is the identification of vertical differences between groups, the magnitude of which at each time point is given in Figure~\ref{fig:difference_between_shift}. As greater differences should be easier to detect, we should anticipate a strong temporal relationship between the differences observed in Figure~\ref{fig:difference_between_shift} and the observed power.
+
+Power for these methods is estimated in the following way: first, we simulate two groups of 25 subjects each by drawing function parameters from either the empirically determined multivariate normal distribution used in Section~\ref{sec:ind_curves} or from that same distribution with the location parameter shifted horizontally by 65. We proceed exactly the same way, both in recovering the curves under the look onset and proprotion of fixation method, and under conditions with no oculomotor delay, as well as Normally distributed and Weibull distributed delay. The fitted subject-specific curves are then used to create an estimate of the group distribution using the bootstrapping procedure in the \xt{bdots} package. Using the \xt{p\_adjust = "oleson"} adjustment for the nominal alpha, temporal regions identified as statistically significant are recorded. We repeat this process 1000 times, taking at each 4ms time point the proportion of instances in which statistically significant differences were identified.
+
 
 
 \begin{figure}[H]
     \centering
     \subfigure[]{\includegraphics[]{logistic_difference.pdf}} 
     \subfigure[]{\includegraphics[]{dg_difference.pdf}} 
-    \caption{difference }
+    \caption{Plot of error curves between shifted groups}
 \label{fig:difference_between_shift}
 \end{figure}
 
@@ -437,11 +444,30 @@ There are a few general statements that apply equally to each of the simulations
 \begin{figure}[H]
 \centering
 \includegraphics{diff_hist_all.pdf}
-\caption{Horizontal shift between groups}
+\caption{Histograms of observed power and overlaid error function}
 \label{fig:diff_hist_all}
 \end{figure}
 
-This is important in that both it shows increased power (higher proportion of differences identified at all) plus correctly identified
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llcc}
+  \hline
+Curve & Delay & Look Onset & Proportion of Fixations \\ 
+  \hline
+Logistic & No Delay & 0.9527 & 0.7789 \\ 
+  Logistic & Normal Delay & 0.9503 & 0.5390 \\ 
+  Logistic & Weibull Delay & 0.9861 & 0.6404 \\ 
+  Asymmetric Gauss & No Delay & 0.9520 & 0.6554 \\ 
+  Asymmetric Gauss & Normal Delay & 0.9359 & 0.6448 \\ 
+  Asymmetric Gauss & Weibull Delay & 0.9413 & 0.8681 \\ 
+   \hline
+\end{tabular}
+\caption{Correlation of power density with difference function between methods}
+\end{table}
+
+
 
 \section{Application to Real Data}
 

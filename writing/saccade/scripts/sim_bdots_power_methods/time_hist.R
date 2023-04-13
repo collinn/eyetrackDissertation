@@ -128,7 +128,7 @@ dev.off()
 
 
 pdf("~/dissertation/writing/saccade/img/logistic_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
-ggplot(diffl, aes(Time, y)) + geom_line() + ylab("Absolute Difference") + theme_bw() +
+ggplot(diffl, aes(Time, abs(y))) + geom_line() + ylab("Absolute Difference") + theme_bw() +
   geom_line(linewidth = 1) + theme(legend.position = "none") +
   ggtitle("Logistic")
 dev.off()

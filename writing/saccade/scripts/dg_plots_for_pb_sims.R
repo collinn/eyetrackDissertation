@@ -211,6 +211,7 @@ biasBarPlot <- function(fix, sac, sim, tit, trim = 0) {
     facet_wrap(~variable, scales = "free") + theme_bw() +
     scale_fill_manual(values = c("#619CFF", "#00BA38"),
                       breaks = c("Look Onset", "Proportion")) +
+    theme(axis.text.y = element_blank(), legend.position = "bottom") +
     ggtitle(tit)
   #scale_fill_manual(values = c("#C77CFF", "#00BFC4"))
 }

@@ -37,6 +37,22 @@ powerHist <- function(idx, tit) {
   ons <- y[1, ]
   fix <- y[2, ]
 
+  ## OVERALL POWER BECAUSE PATRICK WANTS TO KNOW
+  ons_power <- vapply(ons, function(x) !is.null(x), logical(1)) |> mean()
+  fix_power <- vapply(fix, function(x) !is.null(x), logical(1)) |> mean()
+
+  ons_power
+  fix_power
+
+  # ons_p_lab <- expression(paste("1 - ", beta, " = ", ons_power))
+  # fix_p_lab <- expression(paste("1 - ", beta, " = ", fix_power))
+  #
+  # annotations <- data.table(X = c(Inf, Inf),
+  #                           Y = c(Inf, Inf),
+  #                           text = c(ons_p_lab, fix_p_lab),
+  #                           x_adjust = c(0, 1),
+  #                           y_adjust = c(0, 0))
+
   timesig <- function(mm) {
     time <- seq(0, 2000, 4)
     vec <- vector("numeric", length = length(time))

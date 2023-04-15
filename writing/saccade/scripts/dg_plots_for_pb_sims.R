@@ -390,6 +390,11 @@ diffCurvePlot <- function(fix, sac, sim, tit) {
 
 
 ## Starting with fixed
+TRIM <- 1.0
+p1 <- biasBarPlot(dg_fit_fix_no_delay,
+                       dg_fit_sac_no_delay,
+                       dg_sim_no_delay,
+                       tit = "No Delay", trim = TRIM)
 pp1 <- sampleCurvePlot(dg_fit_fix_no_delay,
                        dg_fit_sac_no_delay,
                        dg_sim_no_delay,
@@ -399,12 +404,17 @@ pp1d <- diffCurvePlot(dg_fit_fix_no_delay,
                       dg_sim_no_delay,
                       tit = "No Delay")
 
-pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_no_delay.pdf", width = 7, height = 7)
-ggpubr::ggarrange(pp1, pp1d, nrow = 2, ncol = 1,
+pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_no_delay.pdf", width = 7, height = 9.5)
+ggpubr::ggarrange(p1, pp1, pp1d, nrow = 3, ncol = 1,
                   common.legend = TRUE, legend = "bottom")
 dev.off()
 
 
+
+p3 <- biasBarPlot(dg_fit_fix_weibull,
+                       dg_fit_sac_weibull,
+                       dg_sim_weibull,
+                       tit = "Weibull Delay", trim= TRIM)
 
 pp3 <- sampleCurvePlot(dg_fit_fix_weibull,
                        dg_fit_sac_weibull,
@@ -414,11 +424,16 @@ pp3d <- diffCurvePlot(dg_fit_fix_weibull,
                       dg_fit_sac_weibull,
                       dg_sim_weibull,
                       tit = "Weibull Delay")
-pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_weibull_delay.pdf", width = 7, height = 7)
-ggpubr::ggarrange(pp3, pp3d, nrow = 2, ncol = 1,
+pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_weibull_delay.pdf", width = 7, height = 9.5)
+ggpubr::ggarrange(p3, pp3, pp3d, nrow = 3, ncol = 1,
                   common.legend = TRUE, legend = "bottom")
 dev.off()
 
+
+p4 <- biasBarPlot(dg_fit_fix_normal,
+                       dg_fit_sac_normal,
+                       dg_sim_normal,
+                       tit = "Normal Delay", trim = TRIM)
 
 pp4 <- sampleCurvePlot(dg_fit_fix_normal,
                        dg_fit_sac_normal,
@@ -428,7 +443,7 @@ pp4d <- diffCurvePlot(dg_fit_fix_normal,
                       dg_fit_sac_normal,
                       dg_sim_normal,
                       tit = "Normal Delay")
-pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_normal_delay.pdf", width = 7, height = 7)
-ggpubr::ggarrange(pp4, pp4d, nrow = 2, ncol = 1,
+pdf("~/dissertation/writing/saccade/img/dg_rep_and_diff_normal_delay.pdf", width = 7, height = 9.5)
+ggpubr::ggarrange(p4, pp4, pp4d, nrow = 3, ncol = 1,
                   common.legend = TRUE, legend = "bottom")
 dev.off()

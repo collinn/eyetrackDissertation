@@ -176,14 +176,15 @@ Paired statistics can also be constructed in both the bootstrap and permutation 
 
 A demonstration of power and FWER control for both the heterogeneous bootstrap and permutation test are given in Chapter 4.
 
-%\subsubsection{Odds and Ends}
-%
-%Both of the methods presented are able to accommodate paired assumptions with minor adjustments to their algorithms. In the case of the bootstrap, we simply must take care to ensure that for each iteration, the collection of subjects sampled in one group with replacement are also sampled in the other, ensuring that each bootstrapped estimate comes from the same distribution. Likewise, paired testing is implemented through permutation testing by modifying the shuffling process so that each subject has one set of observations in each of the permuted groups.
+
+In the following sections, we detail the two major components of an analysis using the \xt{bdots} package, curve fitting and then identifying statistically significant differences in time series. In doing so, we will begin with a high level explanation of the major changes that have been made, along with a detailed description of the function syntaxes. We then concretize this discussion with a real world example along with illustrations of function calls and return objects.
 
 
-\section{Example Analysis}
+\section{Curve Fitting}
 
-In this next section we are going to review a worked example of a typical use of the \xt{bdots} package. We will use as our illustration a study \citep{Kapoor} \cn{is this citation correct?} comparing tumor growth for the 451LuBr cell line in mice data with repeated measures in five treatment groups.
+The first step in performing an analysis with \xt{bdots} involves specifying the parametric function which defines the mean structure from Equation~\ref{eq:mean_structure} and fitting curves to the observed data for each subject.
+
+Throughout this discussion and into the next section, we will use as our real world example a comparison of tumor growth for the 451LuBr cell line in mice with repeated measures across five treatment groups. A depiction of this data is given in Figure~\ref{fig:mouse_head}.
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -207,14 +208,15 @@ In this next section we are going to review a worked example of a typical use of
 \end{figure}
 \end{singlespace}
 
-A new feature of \xt{bdots} is the ability to fit and analyze subjects with non-homogeneous time samples, which we see in the \xt{Day} variable values in the mouse data in Figure~\ref{fig:mouse_head}. For the present analysis, we are interested in determining if and when the trajectory of tumor growth, measured in volume, changes between any two treatment groups.
-
-There are two primary functions in the \xt{bdots} package: one for fitting the observed data to a parametric function and another for estimating group distributions and identifying time windows where they differ significantly. The first of these, \xt{bfit}, is addressed in the next section.
+A new feature of \xt{bdots} is the ability to fit and analyze subjects with non-homogeneous time samples, which we see in the \xt{Day} variable values in the mouse data in Figure~\ref{fig:mouse_head}. For the present analysis, we will be interested in determining if and when the trajectory of tumor growth (measured in volume) changes between any two treatment groups.
 
 
-\subsection{Curve Fitting}
+There are two primary functions in the \xt{bdots} package: one for fitting the observed data to a parametric function and another for estimating group distributions and identifying time windows where they differ significantly. The first of these, \xt{bfit}, is the topic of this section.
 
-The curve fitting process is performed with the \texttt{bfit} function (previously \texttt{bdotsFit}), taking the following arguments:
+
+\subsection{The \xt{bfit} Function}
+
+The curve fitting process is performed with the function \texttt{bfit} , taking the following arguments:
 
 
 \begin{figure}[h!]
@@ -227,12 +229,17 @@ bfit(data, subject, time, y, group, curveType, ar, ...)
 
 
 
-The \xt{data} argument takes the name of the dataset being used. \xt{subject} is the subject identifier column in the data and should be passed as a character.  The \xt{time} and \xt{y} arguments are column names of the time variable and outcome, respectively. Similarly, \xt{group} takes as an argument a character vector of each of the group columns that are meant to be fit, accommodating the fact that \xt{bdots} is now able to fit an arbitrary number of groups at once, provided that the outcomes in each group adopt the same parametric form. This brings us to the \xt{curveType} argument, which is addressed in the next section. 
+The \xt{data} argument takes the name of the dataset being used. \xt{subject} is the subject identifier column in the data and should be passed as a character. It is important to note here that the identification of paired data is now done automatically; in determining if two experimental groups are paired, \xt{bdots} checks that the intersection of subjects in each of the groups are identical with the subjects in each of the groups individually. As such, it will be important for the user to be sure that if the data is paired that the subject identifiers are the same between subject groups. 
 
-[say this somewhere] It is important to note here that the identification of paired data is done automatically; in determining if two experimental groups are paired, \xt{bdots} checks that the intersection of subjects in each of the groups are identical with the subjects in each of the groups individually.
+The \xt{time} and \xt{y} arguments are column names of the time variable and outcome, respectively. Similarly, \xt{group} takes as an argument a character vector of each of the group columns that are meant to be fit, accommodating the fact that \xt{bdots} is now able to fit an arbitrary number of groups at once, provided that the outcomes in each group adopt the same parametric form. This brings us to the \xt{curveType} argument, which is used to specify details of the parametric function to which the data will be fit. As this argument is more involved, we will address it separately in the next section.
 
 
-\paragraph{Curve functions} Whereas the previous iteration of \xt{bdots} had a separate fitting function for each parametric form (i.e., \xt{logistic.fit} for fitting data to a four-parameter logistic), we are now able to specify the curves we wish to fit independent of the fitting function \xt{bfit}. This is done with the \xt{curveType} argument. Unlike the previous arguments which took either a \xt{data.frame} or character  vector, \xt{curveType} takes as an argument a function call, for example, \xt{logistic()}. In short, this allows the user to pass additional arguments to further specify the curve. For example, among the parametric functions included in \xt{bdots} is now the \xt{polynomial} function, taking as an additional argument the number of degrees we wish to use. To fit the observed data with a five parameter polynomial in \xt{bfit}, one would then pass the argument \xt{curveType = polynomial(degree = 5)}. Curve functions currently included in \xt{bdots} are \xt{logistic()}, \xt{doubleGauss()}, \xt{expCurve()}, and \xt{polynomial()}. \xt{bfit} can also accept user-created curves; detailed vignettes for writing your own can be found with \xt{vignette("bdots")}.
+
+\paragraph{Curve functions} Whereas the previous iteration of \xt{bdots} had a separate fitting function for each parametric form (i.e., \xt{logistic.fit} for fitting data to a four-parameter logistic), we are now able to specify the curves we wish to fit independent of the fitting function, passed as an argument to \xt{bfit}. This is done with the argument \xt{curveType}. Unlike the previous arguments which took either a \xt{data.frame} or character  vector, \xt{curveType} takes as an argument a function call, for example, \xt{logistic()}. In short, this allows the user to pass additional arguments to further specify the curve. For example, among the parametric functions included in \xt{bdots} is now the \xt{polynomial} function, taking as an additional argument the number of degrees we wish to use. To fit the observed data with a five parameter polynomial in \xt{bfit}, one would then pass the argument \xt{curveType = polynomial(degree = 5)}. Curve functions currently included in \xt{bdots} are \xt{logistic()}, \xt{doubleGauss()}, \xt{expCurve()}, and \xt{polynomial()}. In addition to the functions provided by default in the \xt{bdots} package, \xt{bfit} can also accept user-created curves; a detailed explanation of how this is done is provided in the appendix as well as with \xt{vignette("bdots")}.
+
+
+
+
 
 We fit the mouse data to an exponential curve with \xt{expCurve()} and using the column names found in Figure~\ref{fig:mouse_head}:
 
@@ -252,7 +259,7 @@ mouse_fit <- bfit(data = mouse, subject = "ID", time = "Day",
 \paragraph{Return Object and Generics}
 
 
-The function \texttt{bfit} returns an object of class \texttt{bdotsObj}, inheriting from class \texttt{data.table}. As such, each row uniquely identifies one combination of subject and group values. Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested \xt{gnls} object. Inheriting from \xt{data.table} also permits us to use \xt{data.table} syntax to subset the object as in Figure~\ref{fig:plot_fits}, for example, where we elect to only plot the first four subjects.
+The function \xt{bfit} returns an object of class \xt{bdotsObj}, inheriting from class \xt{data.table}. As such, each row uniquely identifies one combination of subject and group values. Included in this row are the subject identifier, group classification, summary statistics regarding the curves, and a nested \xt{gnls} object. Inheriting from \xt{data.table} also permits us to use \xt{data.table} syntax to subset the object as in Figure~\ref{fig:plot_fits}, for example, where we elect to only plot the first four subjects.
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -397,6 +404,10 @@ plot(mouse_fit[1:4, ])
 \caption{Plot of \xt{mouse\_fit}, using  \xt{ggplot2} (default) and \xt{data.table} syntax to subset to only the first four observations}
 \label{fig:plot_fits}
 \end{figure}
+
+
+
+
 
 \subsection{Bootstrapping}
 

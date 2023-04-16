@@ -73,7 +73,7 @@ where $\theta_i$ is the subject-specific parameterization of $f$, and with
 
 Under this paradigm, the errors are permitted to be either iid normal (with $\phi = 0$) or have an AR(1) structure, with $0 < \phi < 1$. It is generally assumed that the observed data across subjects make up a distribution for each group, specified as either a multivariate distribution of the parameters $\theta_i$ or a distribution of resulting curves, $f(t|\theta_i)$. Ultimately, it will be from a distribution of curves that we determine the temporal characteristics of each group, with the differences in these temporal characteristics being what we are interested in identifying. With the general notation addressed, we now move to the particulars of each of the methods considered.
 
-\subsection{Homogeneous bootstrap}
+\subsection{Homogeneous Bootstrap}
 
 The original bootstrapping algorithm presented in \citet{oleson2017detecting} follows what we will call the \textit{homogeneous means} assumption. Accordingly, we will call this bootstrapping algorithm the \textit{homogeneous bootstrap}. Under the homogeneous means assumption, it is still assumed that observed data for each subject retains the mean structure given in Equation~\ref{eq:mean_structure}, but with the additional assumption that $\theta_i = \theta_j$ for all subjects $i, j$ within the same group. In other words, there is assumed to be no variability in the mean structure between subjects within the same group. This is evidenced in the original bootstrapping differences in time series algorithm, which samples without replacement at each bootstrapping step:
 
@@ -184,7 +184,7 @@ This will be our observed test statistic.
 
 
 
-\subsection{Paired data}
+\subsection{Paired Data}
 
 Briefly, we attend to the issue of paired data for each of the discussed methods, as this is critical for a proper assessment of both FWER and power. Specifically, in a paired setting we note that our interest is in determining the distribution of paired differences rather than of the respective groups. 
 
@@ -405,15 +405,6 @@ Yes & Yes & Yes & 0.14 & 0.01 & 0.02 \\
 It was the control of the family-wise error rate in the context of densely sampled, highly correlated tests that first motivated the development of \xt{bdots}. And while the results presented in this section indeed demonstrate control of the FWER in under a strict set of assumptions, they also highlight the consequences when these conditions are not met. With the introduction of both the heterogeneous bootstrap and the permutation test, we have offered two alternatives that are robust to a wide variety of situations while maintaining performance similar to that of the homogeneous bootstrap in the best of cases. This is but one half of the question, however. In the following section, we present two separate simulations to determine if the robustness acquired is as the cost of significant power.
 
 
-\subsection{\cn{comments on paired}}
-
-\cn{this section should all be in blue, just want to document what happens when reducing number of time points and/or increasing variability and impact FWER}
-
-\cn{So in doing  this, I went from 0-1600 at 4ms intervals to 40ms intervals and also turned up the noise on the simulated data, all in effect making the generating functions more difficult to recover. This had the desired effect in the paired setting, where hom. boot did poorly in nearly all cases while het. boot and permutation did nearly the the same. The problem is that in the non-paired setting, hom bootstrap is now a disaster. This is problematic in that we want to be able to demonstrate that we recover the same FWER as Oleson 2017 under the conditions that they had specified.}
-
-\cn{I think my solution to this is going to just be to include both of the paired cases above as I have it and elaborate in the discussion that though the tables seem to suggest paired hom bootstrap is fine, its a complete disaster when even the slightest amount of difficulty is introduced in recovering those parameters. }
-
-\cn{potentially another solution, just present the ``standard" paired case, where they are identical, and include a dedicated section on paired data to demonstrate that any deviance from this results in disaster. Because having the two different methods above feels clunky}
 
 \section{Power Simulations}
 
@@ -536,7 +527,7 @@ A similar set of conclusions can be seen by considering the observed power prese
 \label{fig:log_shift_2}
 \end{figure}
 
-\section{Discussion and concluding remarks}
+\section{Discussion}
 
 \cn{i am maybe not quite happy with this conclusion section, will continue to chew on it a little bit}
 
@@ -548,7 +539,9 @@ There are several limitations of the current paper that are worthy of further in
 
 We conclude by noting that \xt{bdots} is now equipped with two methods to effectively control the FWER when assessing the differences in time series under a greater set of underlying assumptions, including those involving the presence of highly correlated test statistics. Further, both methods presented are robust to misspecification of the error structure while maintaining an acceptable FWER and adequate power. 
 
-\section{Appendix -- Full Piecewise Power Simulations}
+\section*{Appendix}
+
+\section{Full Piecewise Power Simulations}
 
 Here we present the full collection of the linear piecewise power simulations, which, in addition to those given in Table~\ref{tab:power_methods} includes cases for heterogeneous means where autocorrelation is specified when fitting with \xt{bdots}. This is indicated in the ``AR(1) Specified" column. Notably from this table, we see that in the case in which the true errors are iid, there is no measurable effect on power when an autocorrelated structure is incorrectly specified.  This is similar to the opposite situation, in which the true error does have an AR(1) structure. In this case, we observe a marginal benefit to correctly specifying an AR(1) structure. This may in fact make retaining the AR(1) assumption a reasonable default in the \xt{bdots} package.
 

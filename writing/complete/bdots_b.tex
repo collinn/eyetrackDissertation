@@ -2,9 +2,9 @@
 
 
 
-In 2017, Oleson et al. introduced a method for detecting time-specific differences in the trajectory of outcomes between experimental groups \cite{oleson2017detecting}. Particularly in the case of a densely sampled time series, the construction of evaluating differences at each point in time results in a series of highly correlated test statistics expanding the family-wise error rate, accommodated with an adjustment to the nominal alpha based on this autocorrelation. This was followed up with in 2018 with the introduction of the \xt{bdots} package to CRAN \cite{seedorff2018bdots}. Here, we introduce the second version of \texttt{bdots}, an update to the package that broadly expands the capabilities of the original. 
+In 2017,  \citet{oleson2017detecting} introduced a method for detecting time-specific differences in the trajectory of outcomes between experimental groups. Particularly in the case of a densely sampled time series, the construction of evaluating differences at each point in time results in a series of highly correlated test statistics expanding the family-wise error rate, accommodated with an adjustment to the nominal alpha based on this autocorrelation. This was followed up with in 2018 with the introduction of the \xt{bdots} package to CRAN \cite{seedorff2018bdots}. Here, we introduce the second version of \texttt{bdots}, an update to the package that broadly expands the capabilities of the original. 
 
-This manuscript is not intended to serve as a complete guide for using the \xt{bdots} package. Instead, the purpose is to showcase major changes and improvements, with those seeking a more comprehensive treatment directed to the package vignettes. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of the package use:
+This manuscript is not intended to serve as a complete guide for using the \xt{bdots} package. Instead, the purpose is to showcase major changes and improvements, with those seeking a more comprehensive treatment directed to the package vignettes. Rather than taking a ``compare and contrast" approach, we will first enumerate the major changes, followed by a general demonstration of package use:
 
 \begin{singlespace}
 \begin{enumerate}
@@ -22,7 +22,7 @@ This manuscript is not intended to serve as a complete guide for using the \xt{b
 
 We start by clearly delineating the type of problem that \xt{bdots} has been created to solve.
 
-\paragraph{Bootstrapped differences in time series}
+\paragraph{Bootstrapped Differences in Time Series}
 
 A typical problem in the analysis of differences of time series, and the kind that \xt{bdots} is intended to solve, involves that of two or more experimental groups containing subjects whose responses are measured over time. This may include the growth of tumors in  mice or the change in the proportion of fixations over time in the context of the VWP. In either case, we assume that each of the subjects $i = 1, \dots, n$ in the groups being considered has observed data of the following form:
 
@@ -31,7 +31,7 @@ y_{it} = f(t | \theta_i) + \epsilon_{it}
 \end{equation}
 
 
-where $f$ represents a functional mean structure while the error structure of $\epsilon_{it}$ is open to being either IID or possess an AR(1) structure. At present, \xt{bdots} requires that each of the subjects being compared have the same parametric function $f$, though is not strictly necessary at the theoretical level and future directions of the package include accommodating non-parametric functions. While each of the subjects are required to be of the same parametric form $f(\cdot | \theta)$, each differs in their instance of their own subject-specific parameters, $\theta_i$.
+where $f$ represents a functional mean structure while the error structure of $\epsilon_{it}$ is open to being either IID or possess an AR(1) structure. At present, \xt{bdots} requires that each of the subjects being compared have the same parametric function $f$, though is not strictly necessary at the theoretical level and future goals of the package include accommodating non-parametric functions. While the underlying trajectories of each of the subjects are required to be of the same parametric form $f(\cdot | \theta)$, each differs in their instance of their own subject-specific parameters, $\theta_i$.
 
 An explicit assumption of the current iteration of \xt{bdots} is that each subject $i$s' parameters within a group $g = 1, \dots, G$ is drawn from a group level distribution
 
@@ -43,7 +43,7 @@ Bootstrapping parameters to estimate this distribution and evaluating the functi
 
 \paragraph{Homogeneous Means Assumption}
 
-The assumption presented in Equation~\ref{eq:group_dist} differs from the original iteration of \xt{bdots} in a critical way. In \cite{oleson2017detecting}, there was no assumption of variability between subject parameters, congruent the assumption that $\theta_i = \theta_j$ for all subjects $i, j$ within an experimental group. The most relevant consequence of the homogeneous means assumption is that only within-subject variability is estimated, inflating the type I error when this assumption does not hold (see Chapter 3 for a discussion). For now, we will give a methodological overview of the process used by \xt{bdots} along with a presentation of an updated bootstrapping process and the introduction of a permutation test.
+The assumption presented in Equation~\ref{eq:group_dist} differs from the original iteration of \xt{bdots} in a critical way. In \cite{oleson2017detecting}, there was no assumption of variability between subject parameters, congruent with the assumption that $\theta_i = \theta_j$ for all subjects $i, j$ within an experimental group. The most relevant consequence of the homogeneous means assumption is that only within-subject variability is estimated, inflating the type I error when this assumption does not hold (see Chapter 3 for a discussion). For now, we will give a methodological overview of the process used by \xt{bdots} along with a presentation of an updated bootstrapping process and the introduction of a permutation test.
 
 
 
@@ -54,7 +54,7 @@ A standard analysis using \xt{bdots} consists of two steps: fitting the observed
 
 
 
-\subsection{Establishing subject-level curves \cn{not sure if these should be subsections or paragraphs}}
+\subsection{Establishing Subject-Specific Curves}
 
 We begin with the assumption that for subject $i$ in group $g$, we have collected observed data of the form given in Equation~\ref{eq:mean_structure}, with the subject specific parameter $\theta_i$ following the distribution in Equation~\ref{eq:group_dist}. Each subject is then fit in \xt{bdots} via the nonlinear curve fitting function \xt{nlme::gnls}, returning for each set of observed data an estimated set of parameters $\hat{\theta}_i$ and their associated standard errors. Assuming large sample normality, we are able to construct a sampling distribution for each subject:
 
@@ -88,7 +88,7 @@ Note that the distribution in Equation~\ref{eq:het_boot_dist} differs from that 
 
 The final population curves from (4) can be used to create estimates of the mean response and an associated standard deviation at each time point for each of the groups bootstrapped. These estimates are used both for plotting and in the construction of confidence intervals. They also can be, but do not necessarily have to be, used to construct a test statistic, which is the topic of our next section.
 
-\subsection{Hypothesis testing for statistically significant differences}
+\subsection{Hypothesis Testing for Statistically Significant Differences}
 
 We now turn our attention to the primary goal of an analysis in \xt{bdots}, the identification of time windows in which the distribution of curves of two groups differ significantly. A problem unique to the ones addressed by \xt{bdots} is that of multiple testing; and especially in densely sampled time series, we must account for multiple testing while controlling the family-wise error rate (FWER). There are primarily two ways by which we are able to do this which we detail below.
 
@@ -102,7 +102,7 @@ T_t^{(b)} = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2
 where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimates at each time point $t$ and for groups $1$ and $2$, respectively. As was demonstrated in \cite{oleson2017detecting}, these test statistics can be highly correlated in the presence of densely sampled test statics, leading to an inflated type I error. The FWER in this case can be controlled with the Oleson adjustment proposed in original bootstrap paper. In addition to this, adjustments to the nominal alpha can also be made using all of the adjustments present in \xt{p.adjust} from the R \xt{stats} package.
 
 
-\subsubsection{Permutation testing}
+\subsubsection{Permutation Testing}
 
 In addition to modified correction based on the bootstrapped test statistics, \xt{bdots} provides a permutation test for controlling the FWER without any additional assumptions of autocorrelation. 
 
@@ -229,7 +229,7 @@ The number of columns will depend on the total number of groups specified, with 
 Several methods exist for this object, including \texttt{plot}, \texttt{summary}, and \texttt{coef}, returning a matrix of fitted coefficients obtained from \texttt{gnls}. 
 
 
-\paragraph{Fit Codes}\label{sec:fitcode}
+\paragraph{Fitting Diagnostics}\label{sec:fitcode}
 
 The \xt{bdots} package was originally introduced to address a very narrow scope of problems, and the \xt{fitCode} designation is an artifact of this original intent. Specifically, it assumed that all of the observed data was of the form given in Equation~\ref{eq:mean_structure} where the observed time series was dense and the errors were autocorrelated. Autocorrelated errors can be specified in the \xt{gnls} package (used internally by \xt{bdots}) when generating subject fits, though there were times when the fitter would be incapable of converging on  a solution. In that instance, the autocorrelation assumption was dropped and constructing a fit was reattempted.
 
@@ -324,7 +324,7 @@ Non-AR1,   0.8 < R2 <= 0.95  -- 16
 Non-AR1,   R2 < 0.8          -- 11 
 No Fit                       -- 0 
 \end{BVerbatim}
-\caption{Abridged output from the summary function (missing summary information for groups B-E. Note that this includes data on the formula used, the quality of fits and mean parameter estimates by group, and a summary of all fits combined}
+\caption{Abridged output from the summary function. Note that this includes data on the formula used, the quality of fits and mean parameter estimates by group, and a summary of all fits combined}
 \end{figure}
 \end{singlespace}
 
@@ -452,7 +452,7 @@ plot(mouse_boot)
 
 \section{Ancillary Functions}
 
-Include here are a number of different function in \xt{bdots} facilitating  analysis but are otherwise not strictly necessary
+Included here are a number of different function in \xt{bdots} facilitating  analysis but are otherwise not strictly necessary
 
 \subsection{Refitting}
 
@@ -559,7 +559,9 @@ There are sometimes cases in which we are interested in determining the correlat
 \xt{bcorr(fit, "value", ciBands, method = "pearson")} 
 \end{center}
 
-Need to elaborate here with example
+An example vignette demonstrating the use of this function in more detail is included in the appendix. 
+
+\cn{Need to elaborate here with example}
 
 \subsection{$\alpha$ Adjustment}
 
@@ -610,11 +612,8 @@ While significant improvements have been made, there is room for further expansi
 
 \section{Appendix}
 
-This section currently commented out. Involves instructions for fitting difference of difference and nested groups. Also may possibly include custom curve fitting.
 
-%
-
-\subsection{Formula for nested groups and difference of differences} 
+\subsection{Formula Syntax for Nested Groups and Difference of Differences} 
 
 The formula syntax introduced in Section \ref{sec:formula} is straightforward enough in the case in which we are interested in comparing two groups within a single category, as was the case when we compared two treatment groups, both within the \xt{Treatment} column. As \xt{bdots} now allows multiple groups to be fit at once, there may be situations in which we need more precision in specifying what exactly we wish to compare. Consider for example an artificial dataset that contains some outcome \xt{y} for a collection of vehicles, consisting of eight distinct groups, nested in order of vehicle origin (foreign or domestic), vehicle class (car or truck), and vehicle color (red or blue)
 

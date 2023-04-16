@@ -174,7 +174,7 @@ We then going about using permutations to construct a null distribution against 
 
 Paired statistics can also be constructed in both the bootstrap and permutation methods. This is implemented by ensuring that at each bootstrap the same subjects are selected for each group or by ensuring that each permuted group contains one observation from each subject.
 
-A demonstration of power and FWER control for both the heterogeneous bootstrap and permutation test are given in Chapter 3.
+A demonstration of power and FWER control for both the heterogeneous bootstrap and permutation test are given in Chapter 4.
 
 %\subsubsection{Odds and Ends}
 %
@@ -207,7 +207,7 @@ In this next section we are going to review a worked example of a typical use of
 \end{figure}
 \end{singlespace}
 
-A new feature of \xt{bdots} is the ability to fit and analyze subjects with non-homogeneous time samples, which we see in the \xt{Day} variable values in the mouse data in Figure~\ref{fig:mouse_head}. For the present analysis, we are interested in determining if and when the trajectory of tumor growth, measured in (Volume?) changes between any two treatment groups.
+A new feature of \xt{bdots} is the ability to fit and analyze subjects with non-homogeneous time samples, which we see in the \xt{Day} variable values in the mouse data in Figure~\ref{fig:mouse_head}. For the present analysis, we are interested in determining if and when the trajectory of tumor growth, measured in volume, changes between any two treatment groups.
 
 There are two primary functions in the \xt{bdots} package: one for fitting the observed data to a parametric function and another for estimating group distributions and identifying time windows where they differ significantly. The first of these, \xt{bfit}, is addressed in the next section.
 
@@ -484,7 +484,7 @@ plot(mouse_boot)
 \end{BVerbatim}
 
 \includegraphics{img/mouse_boot_plot.pdf}
-\caption{Bootstrapped distributions with regions of significant difference determined via permutation testing \cn{There are some obvious issues with time for non-homogenous samples, namely, what do we use for bootstrapping? It will be quick fix, whatever we decide, but I don't think ``union of all observed times" is going to work. Here, I artificially cut it back to only 0-60}}
+\caption{Bootstrapped distributions with regions of significant difference determined via permutation testing}
 \end{figure}
 %
 %Depending on user needs, these plots can be recreated both without confidence bands or without the additional difference curve
@@ -659,7 +659,7 @@ While significant improvements have been made, there is room for further expansi
 
 
 
-\section{Appendix}
+\section*{Appendix}
 
 
 %

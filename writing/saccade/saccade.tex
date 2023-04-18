@@ -12,6 +12,7 @@
 \newcommand{\xt}{\texttt}
 \usepackage{listings}
 \usepackage{datetime}
+\usepackage{xcolor}
 
 \usepackage{subfigure}
 \usepackage{float}
@@ -21,6 +22,8 @@
 \usepackage{color}
 \providecommand{\pb}[1]{\textcolor{red}{#1}}
 \providecommand{\cn}[1]{\textcolor{blue}{#1}}
+
+\providecommand{\cmt}[1]{\textcolor{purple}{#1}}
 
 \DeclareMathOperator*{\argmax}{arg\!\max}
 \DeclareMathOperator*{\argmin}{arg\!\min}
@@ -78,7 +81,7 @@ It was against simulated TRACE data that \citet{allopenna1998tracking} found a t
 We made the general assumption that the probability of initiating an eye movement to fixate on a target object $o$ at time $t$ is a direct function of the probability that $o$ is the target given the speech input and where the probability of fixating $o$ is determined by the activation level of its lexical entry relative to the activation of other potential targets. [...] Note that this hypothesis does \emph{not} require stronger and less defensible assumptions about the relationship between eye  movements and attention. For example, we are not committed to the assumption that scan patterns in and of themselves reveal underlying cognitive processes. \citep{allopenna1998tracking}
 \end{quote}
 
-The utility in this linking hypothesis comes from its simplicity, asserting only that the probability of fixating an object increases as the likelihood it has been referred to increases. \cn{said increases twice here}. This is in contrast to a number of more involved linking hypotheses presented in \citep{Magnuson2019}.
+The utility in this linking hypothesis comes from its simplicity, asserting only that the probability of fixating an object increases as the likelihood it has been referred to also increases. This is in contrast to a number of more involved linking hypotheses presented in \citep{Magnuson2019}.
 
 
 \begin{figure}[H]
@@ -101,7 +104,7 @@ We now shift focus to the physiological mechanics of eye movements in the contex
 
 \subsection{Anatomy of Eye Mechanics}
 
-While a number of experimental methods are used as real-time indices of lexical access \citep{Spivey2005}, we concern ourselves here with the use of eye tracking, given that ``eye movements to objects in the workspace are closely time-locked to referring expressions in the unfolding speech stream, providing a sensitive and nondistruptive measure of spoken language comprehension during continuous speech \citep{allopenna1998tracking}." This process in its entirety is made up of several interrelated components, including activation and the visual-motor system, oculomotor delay, and mechanics of eye movement itself. We briefly introduce each of these components in turn, while providing a visual summary in Figure \cn{make figure for this}
+While a number of experimental methods are used as real-time indices of lexical access \citep{Spivey2005}, we concern ourselves here with the use of eye tracking, given that ``eye movements to objects in the workspace are closely time-locked to referring expressions in the unfolding speech stream, providing a sensitive and non-disruptive measure of spoken language comprehension during continuous speech \citep{allopenna1998tracking}." This process in its entirety is made up of several interrelated components, including activation and the visual-motor system, oculomotor delay, and mechanics of eye movement itself. We briefly introduce each of these components in turn, while providing a visual summary in Figure \cmt{updating figures for this}
 
 \begin{figure}[H]
 \centering
@@ -143,7 +146,7 @@ We now consider how the aforementioned mechanics relate to the visual world para
 
 An individual trial of the VWP may be short, lasting anywhere from 1000ms to 2500ms before the correct image is selected. Prior to selecting the correct image, the participant's eyes scan the environment, considering images as potential candidates to the spoken word. As this process unfolds, a snapshot of the eye is taken at a series of discrete steps (typically every 4ms) indicating where on the screen the participant is fixated. A single trial of the VWP typically contains no more than four to eight total ``looks" before the correct image is clicked, resulting in a paucity of data in any given trial.
 
-To be clear, eye trackers themselves only record $x$ and $y$ coordinates of the eye at any given time, and it is only after the fact that ``psychophysical" attributes are mapped onto the data (saccades, fixations, blinks, etc.,). We adopt the strategy of prior work in discussing eye tracking data in terms of their physiological mapping, as this will be crucial in constructing a physiologically relevant understanding of the problem at hand \cite{mcmurray2002look}.
+To be clear, eye trackers themselves only record $x$ and $y$ coordinates of the eye at any given time, and it is only after the fact that ``psycho-physical" attributes are mapped onto the data (saccades, fixations, blinks, etc.,). We adopt the strategy of prior work in discussing eye tracking data in terms of their physiological mapping, as this will be crucial in constructing a physiologically relevant understanding of the problem at hand \cite{mcmurray2002look}.
 
 \begin{figure}[H]
 \centering
@@ -177,7 +180,7 @@ As mentioned previously, fixations to the Target in a VWP experiment are often m
 f(t|\theta) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)} + b.
 \end{equation}
 
-Similarly, a six parameter asymmetric Gaussian function (Figure \cn{make figure}), often used for fixations to competitors, is given as
+Similarly, a six parameter asymmetric Gaussian function (Figure \cmt{updating figures}), often used for fixations to competitors, is given as
 
 \begin{equation} \label{eq:dg}
 f(t|\theta) = \begin{cases}
@@ -197,9 +200,12 @@ To this end, and in light of the discussion of the mechanics presented here, we 
 
 \section{Look Onset Method}
 
-\cn{here have black box image of lexical activation and visual motor and point this to CM which can be modeled with curve}
+\cmt{image illustrating (black box) relationship between underlying activation, visual/motor system, and how these jointly  manifest as the initiation of an eye movement}
 
-\cn{talk about here maybe linking hypothesis but i think this would be a good time to articulate the fact that look onset and duration of fixation governed by entirely separate processes. Also worthwhile to bring up that OM is AGAIN a separate process. so let's break these into different pieces and label the ones we know}
+
+In this section, we argue from the physiologically grounded model given in Figure~\ref{fig:whats_in_a_look} for a new method
+
+In this section, we present a new method for utilizing data in the Visual World Paradigm in pursuit of the recovery of latent activation. From the physiologically grounded model presented in Figure~\ref{fig:whats_in_a_look}, we argue for delineating the several related but ultimately \emph{distinct} processes associated with eye mechanics. The primary of these, and the focus of the method we present here, is that of the cognitive mechanism responsible for initiating eye movements. Additionally, we consider the processes responsible for the duration of a fixation, as well as that governing oculomotor delay.
 
 \subsection{Look Onset Method}
 
@@ -228,7 +234,7 @@ To explicitly summarize our position, we contend that the mechanism downstream t
 
 \subsection{Added Observation Bias}
 
-The look onset method begins with the assumption that relevant mechanism in the recovery of the underlying activation is the binomially distributed mechanism determining the location of a look, where the probability of initiating a look to e.g., the Target is determined by the strength of the underlying lexical activation. The look onset method accomodates this assumption by recording as the only relevant data the initial moment a saccade is launched along with its subsequent destination. In contrast, the proportion of fixation method includes the \textit{entire} duration of a fixation with an indicator $\{0,1\}$, despite not having observed any additional behavior associated with the cognitive mechanism responsible for initiating an eye movement at that time. By using the entire fixation, it both obscures data that is relevant to the mechanism of interest (onset) while also conflating it with data generated by a fundamentally different process. This introduces what I call \textit{added observation bias}.
+The look onset method begins with the assumption that relevant mechanism in the recovery of the underlying activation is the binomially distributed mechanism determining the location of a look, where the probability of initiating a look to e.g., the Target is determined by the strength of the underlying lexical activation. The look onset method accommodates this assumption by recording as the only relevant data the initial moment a saccade is launched along with its subsequent destination. In contrast, the proportion of fixation method includes the \textit{entire} duration of a fixation with an indicator $\{0,1\}$, despite not having observed any additional behavior associated with the cognitive mechanism responsible for initiating an eye movement at that time. By using the entire fixation, it both obscures data that is relevant to the mechanism of interest (onset) while also conflating it with data generated by a fundamentally different process. This introduces what I call \textit{added observation bias}.
 
 
 To illustrate, consider a situation in which a participant in a VWP trial initiates a look to the Target object at time $t$ with probability $f(t|\theta)$. Under the both the look onset and proportion of fixation methods, we would mark with an indicator at time $t$ the location of the look. For a fixation with a duration of length $n$, however, the proportion of fixation method would also mark with \textit{the same indicator} values at $t+1, t+2, \dots, t+n$ the outcome of the random variable drawn with probability $f(t|\theta)$. The consequences of this are twofold: first, by not distinguishing between the initial onset and subsequent fixation, we are ``adding" observations to our observed data by including points in which no additional observations regarding the underlying process had been made. And second, these added observations are inherently biased: at time $t+n$, we are still recording outcomes drawn with probabilities $f(t|\theta)$, despite the fact that at $t+n$, the underlying activation would then be $f(t+n | \theta)$. The result of these combined is a distorted  estimate of the underlying activation. A depiction of this phenomenon is given in Figure~\ref{fig:folly_of_fixation}.
@@ -281,45 +287,44 @@ First, each subject $i$ randomly draws a set of parameters $\theta_i$ from an em
 
 Three total simulations were performed to investigate the biases identified in the previous section, each differing only in the random distribution of the oculomotor delay parameter, $\rho$. In the first simulation, we set $\rho = 0$ to remove any oculomotor delay. In this scenario, a look initiated at time $t$ by subject $i$ will be directed towards the target with probability $f(t|\theta_i)$. Doing so removes any potential bias from delayed observation and allows us to identify the effects of the added observation bias in isolation. In the remaining simulations we probe the effects of randomness in oculomotor delay, investigating what effect uncertainty may have in our recovery of the generating function. We do this assigning $\rho$ to follow either a normal or Weibull distribution, each with a mean value of 200ms. As is standard in a VWP analysis, we subtracted 200ms from each observed point prior to fitting the data. A consequence of this is that in these simulations, the bias itself is accurately accounted for by subtracting the correct mean, with the resulting error in the curve fitting process the result of the inherent variability. This does not detract from the argument being made, however, and any true bias in the mean of the oculomotor delay would asymptotically result in a horizontal shift of the observed data according to the direction and magnitude of the bias.
 
-The simulations are performed in R, with the simulation code available on the author's Github page (github.com/collinn). Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
+The simulations are performed in R, with the simulation code available on the author's GitHub page (github.com/collinn). Simulated data was fit to the four parameter logistic function using \xt{bdots v2.0.0}.
 
 As all of the data could not be individually inspected prior to being included in the analysis, subjects were excluded from consideration if fitted parameters from either the look onset method or the proportion of fixation method resulted in a peak less than the slope, or if the crossover or slope were negative. In the settings in which there was no delay, normally distributed delay, or Weibull distributed delay, 981, 973, and 981 subjects were retained, respectively.
 
 
 \subsection{Results}
 
+Presented together are results from each of the simulations, beginning first with a collection of visual summaries. Simulations settings under each of the assumptions for oculomotor delay are displayed as a panel in Figure~\ref{fig:panel_no_delay},~\ref{fig:panel_normal_delay}, and~\ref{fig:panel_weibull_delay}. Each panel starts with a box plot showing the observed bias $(E(T) - \theta)$ for each of the retained subjects. Following this is a representative sample of subject-specific curves under each method, alongside error curves demonstrating the difference between the generating and recovered curves. 
+
+The results presented for no oculomotor delay in Figure~\ref{fig:panel_no_delay} serve to highlight the impact of the added observation bias in isolation, and from this we observe a few things. As predicted, we see positive bias in the crossover parameter for the look onset method, consistent with the observation that the majority of ``observations" are underestimates of the true probability (as would be true in all monotone functions). As more time passes before the inflection point is reached, this has the secondary effect of ``flattening" the estimated curve, an effect that we also see with the slight negative bias present in the slope parameter. In contrast, the recovery of each of the parameters under the look onset method appear to be unbiased.
+
+These observations are again reflected in the presentation of representative curves, in all cases resulting in a curve estimated from the proportion of fixation method that is horizontally shifted right of the generating curve and also less steep. There is an interesting phenomenon whereby the horizontal shift in the representative curves visually appears to be a small difference -- however, the bias between the true and recovered curves is not horizontal but vertical, and the magnitude of error between these is more obviously demonstrated in the representative error curves making up the last portion of the panel. This is especially important considering the fact that it is precisely this portion of the curve that is most sensitive to bias in recovery. The consequences of this are discussed briefly in the appendix. 
+
+For the remaining panels, we see that the primary effects of oculomotor delay are that of increased variability in the recovery of parameters. We also seem evidence of bias in the recovery of all parameters for \textit{both} methods in the case of Weibull delay, demonstrating that even when we make unbiased adjustments for oculomotor delay as we did here, the highly non-linear nature of these curves can result in downstream difficulties. This especially highlights the need for effectively addressing the effects of variability in oculomotor delay.
 
 \begin{figure}[H]
 \centering
 \includegraphics{rep_and_diff_no_delay.pdf}
-\caption{Parameter bias with no oculomotor delay (x axis labels scrunched)}
-\label{fig:par_bias_no_delay}
+\caption{cmt}
+\label{fig:panel_no_delay}
 \end{figure}
-
-
-
 
 
 \begin{figure}[H]
 \centering
 \includegraphics{rep_and_diff_normal_delay.pdf}
-\caption{Representative curves with normal oculomotor delay}
-\label{fig:rep_curves_normal_delay}
+\caption{cmt}
+\label{fig:panel_normal_delay}
 \end{figure}
 
 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.9\textwidth]{rep_and_diff_weibull_delay.pdf}
-\caption{Representative curves with Weibull oculomotor delay}
-\label{fig:rep_curves_weibull_delay}
+\includegraphics{rep_and_diff_weibull_delay.pdf}
+\caption{cmt}
+\label{fig:panel_weibull_delay}
 \end{figure}
-
-
-
-
-
 
 
 
@@ -349,7 +354,7 @@ Look Onset & No Delay & 0.17 & 0.32 & 0.56 \\
 \label{tab:mise_sims}
 \end{table}
 
-The proportion of fixation method seems no longer tenable in the recovery the underlying lexical activation, given both the magnitude of differences presented in Table~\ref{tab:mise_sims} as well as the theoretical arguments made and illustrated in Figure~\ref{fig:folly_of_fixation}. And given that data collected via the look onset method can be adequately fit in the newest version of the \xt{bdots} software, there appears to be little to argue against its adoption.
+Overall, these results conclusively demonstrate both the devastating effect of added observation under the assumptions illustrated in Figure~\ref{fig:anatomy_of_look} as well as the need to consider the effects of variability associated with oculomotor delay, even when unbiased adjustments are able to be made. 
 
 
 \section{Recovery of Group Differences}
@@ -358,30 +363,31 @@ The proportion of fixation method seems no longer tenable in the recovery the un
 
 In Section~\ref{sec:ind_curves}, we demonstrated the utility of the look onset method in the asymptotic recovery of individual curves under our generative model. Often, however, the need to specify subject-specific differences is in pursuit of a higher goal, namely the identification of clinically relevant differences between groups. This problem is elaborated upon in \citet{mcmurray2010individual}, where it is noted, for example, that simply averaging across participants data has the ability to either create or mask group-level effects (i.e., large variability in the crossover parameter in the logistic function in Equation~\ref{eq:logistic} could manifest in the aggregate as a difference in slope). Having demonstrated the efficacy in recovering the subject-specific curves, we now consider if differences at the subject level are preserved in the aggregate through a power analysis using each of the methods discussed for identifying clinically relevant group differences. 
 
-
-
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.9\textwidth]{group_shift.pdf}
-\caption{Horizontal shift between groups}
-\label{fig:group_shift}
+    \centering
+    \subfigure[]{\includegraphics[]{logistic_shift.pdf}} 
+    \subfigure[]{\includegraphics[]{logistic_difference.pdf}} 
+    \caption{Plot of logistic groups with horizontal shift, alongside difference curve}
+\label{fig:logistic_shift}
 \end{figure}
 
-We proceed just as we did in Section~\ref{sec:ind_curves}, generating data according to the process previously described and detailed in Figure~\ref{fig:anatomy_of_look}, recovering individual curves via each the look onset and proportion of fixation methods. What differs here, however, is that each simulation is constructed to simulate drawing two groups with 25 subjects each from empirically estimated distributions that differ from one another as a horizontal shift of 65 in the location parameters (i.e., the crossover parameter in the logistic and the mean parameter in the asymmetric Gaussian). An illustration of the mean structure of each  group and its shifted counterpart is depicted in Figure~\ref{fig:group_shift}.
-
-At first glance, the visual indication of the difference between each of the groups in Figure~\ref{fig:group_shift} can be misleading. Just as in the case of the recovery of subject-specific curves, what we are interested in here is the identification of vertical differences between groups, the magnitude of which at each time point is given in Figure~\ref{fig:difference_between_shift}. As greater differences should be easier to detect, we should anticipate a strong temporal relationship between the differences observed in Figure~\ref{fig:difference_between_shift} and the observed power.
-
-Power for these methods is estimated in the following way: first, we simulate two groups of 25 subjects each by drawing function parameters from either the empirically determined multivariate normal distribution used in Section~\ref{sec:ind_curves} or from that same distribution with the location parameter shifted horizontally by 65. We proceed exactly the same way, both in recovering the curves under the look onset and proprotion of fixation method, and under conditions with no oculomotor delay, as well as Normally distributed and Weibull distributed delay. The fitted subject-specific curves are then used to create an estimate of the group distribution using the bootstrapping procedure in the \xt{bdots} package. Using the \xt{p\_adjust = "oleson"} adjustment for the nominal alpha, temporal regions identified as statistically significant are recorded. We repeat this process 1000 times, taking at each 4ms time point the proportion of instances in which statistically significant differences were identified.
 
 
+We proceed just as we did in Section~\ref{sec:ind_curves}, generating data according to the process previously described and detailed in Figure~\ref{fig:anatomy_of_look}, recovering individual curves via each the look onset and proportion of fixation methods. What differs here, however, is that each simulation is constructed to simulate drawing two groups with 25 subjects each from empirically estimated distributions that differ from one another as a horizontal shift of 65 in the location parameters (i.e., the crossover parameter in the logistic and the mean parameter in the asymmetric Gaussian). An illustration of the mean structure of each group and its shifted counterpart is depicted in Figures~\ref{fig:logistic_shift} and~\ref{fig:dg_shift} for the logistic and asymmetric Gaussian, respectively.
 
 \begin{figure}[H]
     \centering
-    \subfigure[]{\includegraphics[]{logistic_difference.pdf}} 
+    \subfigure[]{\includegraphics[]{dg_shift.pdf}} 
     \subfigure[]{\includegraphics[]{dg_difference.pdf}} 
-    \caption{Plot of error curves between shifted groups}
-\label{fig:difference_between_shift}
+    \caption{Plot of asymmetric Gaussian groups with horizontal shift, alongside difference curve}
+\label{fig:dg_shift}
 \end{figure}
+
+Just as in the case of the recovery of subject-specific curves, what we are interested in here is the identification of vertical differences between groups, the magnitude of which at each time point is given in Figures~\ref{fig:logistic_shift} and~\ref{fig:dg_shift} as well. As greater differences should be easier to detect, we should anticipate a strong temporal relationship between the magnitudes of difference  and the observed power.
+
+Power for these methods is estimated in the following way: first, we simulate two groups of 25 subjects each by drawing function parameters from either the empirically determined multivariate normal distribution used in Section~\ref{sec:ind_curves} or from that same distribution with the location parameter shifted horizontally by 65. We proceed exactly the same way, both in recovering the curves under the look onset and proportion of fixation method, and under conditions with no oculomotor delay, as well as Normally distributed and Weibull distributed delay. The fitted subject-specific curves are then used to create an estimate of the group distribution using the bootstrapping procedure in the \xt{bdots} package. Using the \xt{p\_adjust = "oleson"} adjustment for the nominal alpha, temporal regions identified as statistically significant are recorded. We repeat this process 1000 times, taking at each 4ms time point the proportion of instances in which statistically significant differences were identified.
+
+
 
 \subsection{Results}
 
@@ -393,7 +399,7 @@ Power for these methods is estimated in the following way: first, we simulate tw
 \end{figure}
 
 
-Results of the simulations are presented visually in Figure~\ref{fig:diff_hist_all}. Within each tile is a histogram indicating the proportion of trials in which a statistically significant difference was identified\footnote{Binwidth for each histogram is 40, which is why some proportions are greater than 1000}. Laid over each histogram are plots of the magnitude of true differences given in Figure~\ref{fig:difference_between_shift}, helping to coordinate observed power in time. In the top right of each histogram is an estimate of total power, indicating the proportion of simulations in which \textit{any} difference was identified. Finally, the correlation between the error curve and power density for each of the setting simulations is provided in Table~\ref{tab:correlation_power}.
+Results of the simulations are presented visually in Figure~\ref{fig:diff_hist_all}. Within each tile is a histogram indicating the proportion of trials in which a statistically significant difference was identified\footnote{Binwidth for each histogram is 40, which is why some proportions are greater than 1000}. Laid over each histogram are plots of the error curves from Figures~\ref{fig:logistic_shift} and~\ref{fig:dg_shift}, helping to coordinate observed power in time. In the top right of each histogram is an estimate of total power, indicating the proportion of simulations in which \textit{any} difference was identified. Finally, the correlation between the error curve and power density for each of the setting simulations is provided in Table~\ref{tab:correlation_power}.
 
 
 \begin{table}[H]
@@ -414,7 +420,7 @@ Logistic & No Delay & 0.9527 & 0.7789 \\
 \label{tab:correlation_power}
 \end{table}
 
-There are several conclusions that can be readily drawn from the results presented. First, Figure~\ref{fig:diff_hist_all} demonstrates that in each case, the observed overall power was greater for the look onset method. In conjunction with this is the observation that the magnitude of temporal power in the look onset method closely matches the magnitude of absolute difference, which is corroborated by the correlations presented in Table~\ref{tab:correlation_power}. A corollary of this observation is that clinically relevance differences that are detected by the proportion of fixation method may be temporally misaligned. 
+There are several conclusions that can be readily drawn from the results presented. First, Figure~\ref{fig:diff_hist_all} demonstrates that in each case, the observed overall power was greater for the look onset method \cmt{still need to add power to the plot as text}. In conjunction with this is the observation that the magnitude of temporal power in the look onset method closely matches the magnitude of absolute difference, which is corroborated by the correlations presented in Table~\ref{tab:correlation_power}. A corollary of this observation is that clinically relevance differences that are detected by the proportion of fixation method may be temporally misaligned. 
 
 
 

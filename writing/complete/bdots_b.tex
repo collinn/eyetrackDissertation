@@ -409,14 +409,14 @@ Note that this is an \textit{expression} in R and is written without quotation m
 
 \cn{I still think the extended formula syntax belongs in the appendix. It is completely out of left fucking field to bring in a car example here, and the mouse data does not naturally accommodate anything we wish to detail}
 
-There are two special cases to consider when writing this syntax. The first is the situation that arises in the case of multiple or nested groups, the second when a difference of difference analysis is conducted. We will describe these in the next section, though it is important to note here that the mouse data being used to provide illustration to the package use does not naturally accommodate either of these extensions. As such, we will begin by briefly introducing a mock data set
+There are two special cases to consider when writing this syntax. The first is the situation that arises in the case of multiple or nested groups, the second when a difference of difference analysis is conducted. We will describe these in the next section, though it is important to note here that the mouse data being used to provide illustration to the package use does not naturally accommodate either of these extensions. As such, we will begin by briefly introducing a mock data set and then using it to illustrate the extensions of the syntax.
 
 
 \paragraph{Formula Syntax for Nested Groups and the Difference of Differences} 
 
 The formula syntax introduced in Section \ref{sec:formula} is straightforward enough in the case in which we are interested in comparing two groups within a single category, as was the case when we compared two treatment groups, both within the \xt{Treatment} column. As \xt{bdots} now allows multiple groups to be fit at once, there may be situations in which we need more precision in specifying what exactly we wish to compare. Consider for example an artificial dataset that contains some outcome \xt{y} for a collection of vehicles, consisting of eight distinct groups, nested in order of vehicle origin (foreign or domestic), vehicle class (car or truck), and vehicle color (red or blue)
 
-We will illustrate use of the updated \xt{bdots} package with a worked example, using an artificial dataset to help detail some of the newer aspects of the package. The dataset will consist of outcomes for a collection of vehicles, consisting of eight distinct groups. These groups will be nested in order of vehicle origin (foreign or domesetic), vehicle class (car or truck), and vehicle color (red or blue). Further, vehicles of different color but within the same origin and class groups will be considered paired observations. A table detailing the relationship of the groups is given in Table~\ref{tab:vehicle}.
+We will illustrate use of the updated \xt{bdots} package with a worked example, using an artificial dataset to help detail some of the newer aspects of the package. The dataset will consist of outcomes for a collection of vehicles, consisting of eight distinct groups. These groups will be nested in order of vehicle origin (foreign or domestic), vehicle class (car or truck), and vehicle color (red or blue). Further, vehicles of different color but within the same origin and class groups will be considered paired observations. A table detailing the relationship of the groups is given in Table~\ref{tab:vehicle}.
 
 \begin{table}[H]
 \centering
@@ -557,10 +557,10 @@ Included here are a number of different function in \xt{bdots} facilitating  ana
 
 \subsection{Refitting}
 
-There are sometimes situations in which the fitted function returned by \texttt{bfit} is a poor fit. The nonlinear curve fitting algorithm used by \xt{nlme::gnls} in \xt{bfit} can be sensitive to starting parameters. Sensible starting parameters are computed from the observed data as part of the curve fitting functions (i.e., within the \xt{logistic()} function), though these can often be improved upon.
+There are sometimes situations in which the fitted function returned by \xt{bfit} is a poor fit. The nonlinear curve fitting algorithm used by \xt{nlme::gnls} in \xt{bfit} can be sensitive to starting parameters. Sensible starting parameters are computed from the observed data as part of the curve fitting functions (i.e., within the \xt{logistic()} function), though these can often be improved upon.
 
 
-The quality of the fit can be evidenced by the \texttt{fitCode} or via a visual inspection of the fitted functions against the observations for each subject.  When this occurs, there are several options available to the user, all of which are provided through the function \texttt{brefit} (previously \texttt{bdotsRefit}). \texttt{brefit} takes the following arguments:
+The quality of the fit can be evidenced by the \xt{fitCode} or via a visual inspection of the fitted functions against the observations for each subject.  When this occurs, there are several options available to the user, all of which are provided through the function \xt{brefit}. \xt{brefit} takes the following arguments:
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -589,9 +589,9 @@ When an argument is passed to subset, the \xt{fitCode} is completely ignored.
 
 To assist with the refitting process is the argument \xt{quickRefit}. When set to \xt{TRUE}, \xt{brefit} will take the average coefficients of accepted fits within a group and use those as new starting parameters for poor fits. The new fits will be retained if they have a larger $R^2$ value by default. When set to \xt{quickRefit = FALSE}, the user will be guided through a set of prompts to refit each of the curves manually. 
 
-Finally, the \texttt{paramDT} argument allows for a \xt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \xt{data.table} requires the same format as that returned by \xt{bdots::coefWriteout}. The use of this functionality is covered in more detail in the \xt{bdots} vignettes and is a useful way for reproducing a \xt{bdotsObj} from a plain text file. 
+Finally, the \xt{paramDT} argument allows for a \xt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \xt{data.table} requires the same format as that returned by \xt{bdots::coefWriteout}. The use of this functionality is covered in more detail in the \xt{bdots} vignettes and is a useful way for reproducing a \xt{bdotsObj} from a plain text file. 
 
-When \texttt{quickRefit = FALSE}, the user is put through a series of prompts along with a series of diagnostics for each of the subjects to be refit. Here, for example, is the option to refit subject 11 from the mouse data:
+When \xt{quickRefit = FALSE}, the user is put through a series of prompts along with a series of diagnostics for each of the subjects to be refit. Here, for example, is the option to refit subject 11 from the mouse data:
 
 
 \begin{singlespace}
@@ -649,12 +649,12 @@ refit <- brefit(refit, ...) # pass in the refitted object
 
 
 
-A final note should be said regarding the option to delete a subject. As \xt{bdots} now automatically determines if subjects are paired based on subject identifiers (necessary for  calculations in significance testing), it is critical that if a subject has a poor fit in one group and must be removed that he or she is also removed from all additional groups in order to retain paired status. This can be overwritten with a final prompt in the \texttt{brefit} function before they are removed. The removal of subjects can also be done with the ancillary function, \texttt{bdRemove}, useful for removing subjects without undergoing the entire refitting process. See \xt{help(bdRemove)} for details.
+A final note should be said regarding the option to delete a subject. As \xt{bdots} now automatically determines if subjects are paired based on subject identifiers (necessary for  calculations in significance testing), it is critical that if a subject has a poor fit in one group and must be removed that he or she is also removed from all additional groups in order to retain paired status. This can be overwritten with a final prompt in the \xt{brefit} function before they are removed. The removal of subjects can also be done with the ancillary function, \xt{bdRemove}, useful for removing subjects without undergoing the entire refitting process. See \xt{help(bdRemove)} for details.
 
 
 \subsection{Correlations}
 
-There are sometimes cases in which we are interested in determining the correlation of a fixed attribute with group outcome responses across time . This can be done with the \texttt{bcorr} function (previously \texttt{bdotsCorr}), which takes as an argument an object of class \texttt{bdotsObj} as well as a character vector representing a column from the original dataset used in \texttt{bfit}
+There are sometimes cases in which we are interested in determining the correlation of a fixed attribute with group outcome responses across time . This can be done with the \xt{bcorr} function (previously \xt{bdotsCorr}), which takes as an argument an object of class \xt{bdotsObj} as well as a character vector representing a column from the original dataset used in \xt{bfit}
 
 \begin{center}
 \xt{bcorr(fit, "value", ciBands, method = "pearson")} 
@@ -664,7 +664,7 @@ See the vignettes included in the appendix for a more detailed example of how th
 
 \subsection{$\alpha$ Adjustment}
 
-There may also be situations in which users wish to make an adjustment to autorcorrelated test statistics using the modified Bonferonni adjustment provided in \cite{oleson2017detecting}, though in a different context than what is done in \xt{bdots}. To facilitate this, we introduce an extension to the \texttt{p.adjust} function, \texttt{p\_adjust}, identical to \texttt{p.adjust} except that it accepts method \texttt{"oleson"} and takes additional arguments \texttt{rho}, and \texttt{df}. \texttt{rho} determines the autocorrelation estimate for the oleson adjustment while \texttt{df} returns the degrees of freedom used to compute the original vector of t-statistics. If an estimate of \texttt{rho} isn't available, one can be computed on a vector of t-statistics using the \texttt{ar1Solver} function in \xt{bdots}:
+There may also be situations in which users wish to make an adjustment to autorcorrelated test statistics using the modified Bonferonni adjustment provided in \cite{oleson2017detecting}, though in a different context than what is done in \xt{bdots}. To facilitate this, we introduce an extension to the \xt{p.adjust} function, \xt{p\_adjust}, identical to \xt{p.adjust} except that it accepts method \xt{"oleson"} and takes additional arguments \xt{rho}, and \xt{df}. \xt{rho} determines the autocorrelation estimate for the oleson adjustment while \xt{df} returns the degrees of freedom used to compute the original vector of t-statistics. If an estimate of \xt{rho} isn't available, one can be computed on a vector of t-statistics using the \xt{ar1Solver} function in \xt{bdots}:
 
 
 \begin{singlespace}
@@ -739,7 +739,7 @@ We turn our attention now to the curve function itself, using as an example a cu
 \end{figure}
 
 \begin{enumerate}
-\item The first part of the curve function is the collection of arguments to be passed, also known as formals. Each curve function should have an argument \xt{dat}, which takes a \xt{data.frame} as described in Figure~\ref{fig:curve_split}, as well as arguments \xt{y} and \xt{time} which will take character strings indicating which columns of \xt{dat} represent the outcome and time variables, respectively. Following this is the prespecified argument \xt{params = NULL}, which is used by \xt{bdots} during the refitting process, where the estimated starting parameters for the function are retrieved from outside the curve fitting function. During the initial fitting process, however, these arguments are generally constructed from the observed data. The only exception to this would be if the user decided to specify the initial starting parameters for \textit{all} subjects when calling \xt{bfit}, as in the call
+\item The first part of the curve function is the collection of arguments to be passed, also known as formals. Each curve function should have an argument \xt{dat}, which takes a \xt{data.frame} as described in Figure~\ref{fig:curve_split}, as well as arguments \xt{y} and \xt{time} which will take character strings indicating which columns of \xt{dat} represent the outcome and time variables, respectively. Following this is the prespecified argument \xt{params = NULL}, which is used by \xt{bdots} during the refitting process, where the estimated starting parameters for the function are retrieved from outside the curve fitting function. During the initial fitting process, however, these arguments are generally constructed from the observed data. The only exception to this would be if the user decided to specify the initial starting parameters for \emph{all} subjects when calling \xt{bfit}, as in the call
 
 \begin{singlespace}
 \begin{figure}[H]
@@ -876,125 +876,6 @@ By utilizing an existing fitting function while substituting the method by which
 \section{CRAN Vignettes}
 
 \cmt{in process of reformatting vigenttes from R to pdf here}
-
-%%% Commented out stuff for the logistic function
-
-%\begin{singlespace}
-%\begin{figure}[H]
-%\centering
-%\begin{BVerbatim}
-%logistic <- function(dat, y, time, params = NULL, ...) {
-%    
-%    ## Function to estimate starting pars based on subject data
-%    logisticPars <- function(dat, y, time, ...) {
-%        time <- dat[[time]]
-%        y <- dat[[y]]
-%        if (var(y) == 0) {
-%            return(NULL)
-%        }
-%        mini <- min(y)
-%        peak <- max(y)
-%        r <- (peak - mini)
-%        cross <- time[which.min(abs(0.5 * r - y))]
-%        q75 <- 0.75 * r + mini
-%        q25 <- 0.25 * r + mini
-%        time75 <- time[which.min(abs(q75 - y))]
-%        time25 <- time[which.min(abs(q25 - y))]
-%        tr <- time75 - time25
-%        tr <- ifelse(tr == 0, median(time), tr)
-%        slope <- (q75 - q25)/tr
-%        return(c(mini = mini, peak = peak, slope = slope, cross = cross))
-%    }
-%    if (is.null(params)) {
-%        params <- logisticPars(dat, y, time)
-%    }
-%    
-%    if (is.null(params)) {
-%        return(NULL)
-%    }
-%    y <- str2lang(y)
-%    time <- str2lang(time)
-%    ff <- bquote(.(y) ~ mini + (peak - mini)/(1 + exp(4 * slope * 
-%        (cross - (.(time)))/(peak - mini))))
-%    attr(ff, "parnames") <- names(params)
-%    return(list(formula = ff, params = params))
-%}
-%\end{BVerbatim}
-%\caption{Original curve fun, might find way to make it simpler}
-%\end{figure}
-%\end{singlespace}
-%
-%
-%
-%
-%\begin{singlespace}
-%\begin{figure}
-%\begin{BVerbatim}
-%logisticPars_dist <- function(dat, y, time, startSamp = 8, ...) {
-%    time <- dat[[time]]
-%    y <- dat[[y]]
-%    if (var(y) == 0) return(NULL)
-%    spars <- data.frame(param = c("mini", "peak", "slope", "cross"),
-%                        mean = c(0.115, 0.885, 0.0016, 765),
-%                        sd = c(0.12, 0.12, 0.00075, 85),
-%                        min = c(0, 0.5, 0.0009, 300), 
-%                        max = c(0.3, 1, 0.01, 1100))
-%    # logistic function
-%    fn <- function(p, t) {
-%        p[1] + (p[2] - p[1])/(1 + exp(4 * p[3] * ((p[4] - t)/(p[2] -p[1]))))
-%    }
-%    rpars <- vector("list", length = startSamp)
-%    for (i in seq_len(startSamp)) {
-%        maxFix <- Inf
-%        while (maxFix > 1 | maxFix < 0.6) {
-%            tryPars[[i]] <- Inf
-%            while (any(spars[, rpars[[i]] <= min | rpars[[i]] >= max])) {
-%                rpars[[i]] <- spars[, rnorm(length(rpars[[i]])) * sd + mean]
-%            }
-%            maxFix <- max(fn(rpars[[i]], time))
-%        }
-%    }
-%    r2 <- vector("numeric", length = startSamp)
-%    for (i in seq_len(startSamp)) {
-%        yhat <- fn(rpars[[i]], time)
-%        r2[i] <- mean((y - yhat)^2)
-%    }
-%    finalPars <- rpars[[which.min(r2)]]
-%    names(finalPars) <- c("mini", "peak", "slope", "cross")
-%    return(finalPars)
-%}
-%\end{BVerbatim}
-%\caption{proposed alternative using distribution for start pars}
-%\end{figure}
-%\end{singlespace}
-%
-%
-%
-%\begin{singlespace}
-%\begin{figure}
-%\begin{BVerbatim}
-%logistic_dist <- function(dat, y, time, startSamp, params = NULL, ...) {
-%    
-%    ## Function to estimate starting pars based on subject data
-%    logisticPars_dist <- (...)
-%    
-%    if (is.null(params)) {
-%        params <- logisticPars_dist(dat, y, time, startSamp)
-%    }
-%    if (is.null(params)) {
-%        return(NULL)
-%    }
-%    y <- str2lang(y)
-%    time <- str2lang(time)
-%    ff <- bquote(.(y) ~ mini + (peak - mini)/(1 + exp(4 * slope * 
-%        (cross - (.(time)))/(peak - mini))))
-%    attr(ff, "parnames") <- names(params)
-%    return(list(formula = ff, params = params))
-%}
-%\end{BVerbatim}
-%\caption{proposed alternative for finding parameters}
-%\end{figure}
-%\end{singlespace}
 
 
 

@@ -143,33 +143,30 @@ dev.off()
 ### Let's also do here what the actual curves look like?
 
 
-pdf("~/dissertation/writing/saccade/img/logistic_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
+pdf("~/dissertation/writing/saccade/img/logistic_difference.pdf", width = 3.15, height = 3.5)#, width = 7, height = 4)
 ggplot(diffl, aes(Time, abs(y))) + geom_line() + ylab("Absolute Difference") + theme_bw() +
   geom_line(linewidth = 1) + theme(legend.position = "none") +
-  ggtitle("Logistic")
+  ggtitle("Difference Curve")
 dev.off()
 
-pdf("~/dissertation/writing/saccade/img/dg_difference.pdf", width = 3, height = 3.5)#, width = 7, height = 4)
+pdf("~/dissertation/writing/saccade/img/logistic_shift.pdf", width = 3.15, height = 3.5)#, width = 7, height = 4)
+ggplot(ld, aes(Time, y, color = group)) + ylab("") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none") +
+  ggtitle("Logistic, Crossover Shift")
+dev.off()
+
+pdf("~/dissertation/writing/saccade/img/dg_difference.pdf", width = 3.15, height = 3.5)#, width = 7, height = 4)
 ggplot(diffg, aes(Time, abs(y))) + geom_line() + ylab("Absolute Difference") + theme_bw() +
   geom_line(linewidth = 1) + theme(legend.position = "none")+
-  ggtitle("Asymmetric Gauss")
+  ggtitle("Difference Curve")
 dev.off()
-
-
-
-p1 <- ggplot(ld, aes(Time, y, color = group)) + ylab("") + theme_bw() +
-  geom_line(linewidth = 1) + theme(legend.position = "none",
-                                   text = element_text(size = 10)) +
-  ggtitle("Logistic, Crossover Shift")
-
-p2 <- ggplot(dd, aes(Time, y, color = group)) + ylab("") + theme_bw() +
-  geom_line(linewidth = 1) + theme(legend.position = "none",
-                                   text = element_text(size = 10)) +
+pdf("~/dissertation/writing/saccade/img/dg_shift.pdf", width = 3.15, height = 3.5)#, width = 7, height = 4)
+ggplot(dd, aes(Time, y, color = group)) + ylab("") + theme_bw() +
+  geom_line(linewidth = 1) + theme(legend.position = "none") +
   ggtitle("Asymmetric Gaussian, Mean Shift")
-
-pdf("~/dissertation/writing/saccade/img/group_shift.pdf", width = 7, height = 4)
-gridExtra::grid.arrange(p1, p2, nrow = 1)
 dev.off()
+
+
 
 
 

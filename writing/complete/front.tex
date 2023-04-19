@@ -26,8 +26,12 @@
 
 
 \newcommand{\abstextwithesis}
-{
-\cmt{abstract}
+{ % main abstract
+In 1995 the Visual World Paradigm was first introduced as an experimental paradigm relating eye-tracking data to lexical activation. This was done by measuring the location of a participant's visual fixation in real time in response to a spoken word. Shortly following this was the introduction of the ``proportion of fixations" method, whereby indicators of fixations in the VWP were aggregated across trials at dense time slices, creating an ostensible curve demonstrating the proportion of trials in which participants were fixated on particular objects at each time. In 2017, methods were introduced to make temporal analysis of these curves tractable via bootstrapping and a novel $\alpha$ correction to counteract the multiple comparison problems implicit in densely sampled time series. 
+
+This dissertation improves upon the field in multiple ways. First, we reintroduce the \xt{bdots} package with a dramatically simplified user interface. Most prominent among these changes include the ability for users to create and fit parametric functions independent the \xt{bdots} software as well as the introduction of permutation testing for identifying temporal differences between groups. We also identify and correct methodological issues found in the original bootstrapping algorithm that, when unaccounted for, potentially lead to family-wise error rates of over 90\%. Both this correction and the newly introduced permutation test demonstrate quality maintenance of the FWER across a robust collection of underlying assumptions without significant losses in power. 
+
+And finally, we propose a new generative model that links eye mechanics to lexical activation, along with a novel ``look onset" method that seeks to replace the proportion of fixations method. We demonstrate asymptotic consistency between our generative model and the look onset method, both with regards to the recovery of subject-specific activation curves, as well as with the identification of systematic temporal differences between groups. We conclude by demonstrating this utility with data collected from prior studies as well as by providing a number of avenues for future research. 
 }
 
 
@@ -39,9 +43,10 @@
 }
 
 \newcommand{\pubabstextwithesis}
-{
-\cmt{abstract}
+{ % public abstract
+In 1995 the Visual World Paradigm was first introduced as an experimental paradigm relating eye-tracking data to lexical activation. This was done by measuring the location of a participant's visual fixation in real time in response to a spoken word. Shortly following this was the introduction of the ``proportion of fixations" method, whereby indicators of fixations in the VWP were aggregated across trials at dense time slices, creating an ostensible curve to help visualize and quantify the time course of lexical activation. In 2017, methods were introduced to make temporal analysis of these curves tractable via bootstrapping and a novel $\alpha$ correction to counteract the multiple comparison problems implicit in densely sampled time series. 
 
+This dissertation contributes to the field in multiple ways. First, we reintroduce the \xt{bdots} package that significantly enhances researchers' ability to draw conclusions from VWP studies. Accompanying this are drastic changes to the underlying methodology to accommodate a far more robust set of assumptions regarding data generation. And finally, we introduce a generative model for relating eye mechanics to lexical activation alongside a novel look onset method that seeks to replace the proportion of fixation method currently in use.
 }
 
 \beforepreface

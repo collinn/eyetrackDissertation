@@ -80,7 +80,6 @@ The original bootstrapping algorithm presented in \citet{oleson2017detecting} fo
 
 %\begin{singlespace}
 \begin{enumerate}
-\vspace{-3mm}
 \item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \citet{oleson2017detecting} recommends specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a multivariate normal distribution with mean for subject $i$, $\hat{\theta}_i$ corresponding to the point estimate and standard deviations corresponding to the standard errors, $s_i$.
 
 \item Using the approximate sampling distributions in (1), randomly draw one bootstrap estimate for each of the model parameters on every subject 

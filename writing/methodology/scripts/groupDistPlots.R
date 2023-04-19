@@ -21,11 +21,11 @@ truedt <- data.table(id = 999, time = time, group = "A",
                      true = tf, fixations = tf, sample = FALSE)
 dts <- rbind(dts, truedt)
 
-pdf("../img/logistic_distribution.pdf")
+pdf("../img/logistic_distribution.pdf", width = 5, height = 4)
 ggplot(dts, aes(time, true, group = id, alpha = sample)) +
-  geom_line(lwd = 2) +
+  geom_line(lwd = 1) +
   scale_alpha_discrete(range = c(0.95, 0.05)) +
-  theme_bw() + theme(legend.position = "none", text = element_text(size = 20)) +
+  theme_bw() + theme(legend.position = "none") +
   labs(y = "", x = "Time")
 dev.off()
 
@@ -51,10 +51,10 @@ dat$Condition <- dat$group
 
 dat$Condition <- ifelse(dat$Condition == "A", "Effect", "No Effect")
 
-pdf("../img/piecewise_distribution.pdf")
+pdf("../img/piecewise_distribution.pdf", width = 5, height = 4)
 ggplot(dat, aes(time, true, group = id, alpha = sample, color = Condition)) +
-  geom_line(lwd = 2) +
+  geom_line(lwd = 1) +
   scale_alpha_discrete(range = c(0.15, 0.95), guide = "none") +
-  theme_bw() + theme(legend.position = "right", text = element_text(size = 20)) +
+  theme_bw() + theme(legend.position = "right") +
   labs(y = "", x = "Time") #+ ggtitle("Piecewise Distribution")
 dev.off()

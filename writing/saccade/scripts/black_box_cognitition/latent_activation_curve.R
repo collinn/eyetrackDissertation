@@ -6,8 +6,8 @@ dat$V7 <- NULL
 names(dat) <- c("cycle", "partial", "apart", "pap", "da", "artial")
 
 pdf("activation_plot.pdf", width = 4, height = 4)
-with(dat, plot(cycle, partial, type = 'l', xaxt='n', yaxt='n', ylab="", xlab="",
-               lwd = 2))
+with(dat, plot(cycle, partial, type = 'l', xaxt='n', yaxt='n', lwd = 2.5,  bty = 'l', xlab = "", ylab = ""))
+title(ylab = "Activation", xlab = "Time", line = 0.1, cex.lab = 1.2)
 dev.off()
 #
 # dat1 <- copy(dat)

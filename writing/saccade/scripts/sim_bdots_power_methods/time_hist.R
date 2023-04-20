@@ -2,6 +2,7 @@
 library(bdots)
 library(eyetrackSim)
 library(ggplot2)
+library(rlang)
 
 ## First create group shift so that we also have diff curve
 bp <- eyetrackSim:::baseParams
@@ -44,9 +45,9 @@ powerHist <- function(idx, tit) {
   ons_power
   fix_power
 
-  # ons_p_lab <- expression(paste("1 - ", beta, " = ", ons_power))
-  # fix_p_lab <- expression(paste("1 - ", beta, " = ", fix_power))
-  #
+  ons_p_lab <- expr(paste("1 - ", beta, " = ", !!ons_power))
+  fix_p_lab <- expr(paste("1 - ", beta, " = ", !!fix_power))
+
   # annotations <- data.table(X = c(Inf, Inf),
   #                           Y = c(Inf, Inf),
   #                           text = c(ons_p_lab, fix_p_lab),
@@ -92,7 +93,7 @@ powerHist <- function(idx, tit) {
 
 
   if (idx %in% 1:3) {
-    ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+    pp <- ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
       geom_histogram(alpha = 0.5, position = "identity", binwidth = 40, show_guide = FALSE) +
       ylab("Frequency") + theme_bw() + ggtitle(tit) +
       geom_line(data = diffl, aes(x = Time, y = abs(y*20000), col = Method), linewidth = 1) +
@@ -104,7 +105,7 @@ powerHist <- function(idx, tit) {
       ) + scale_fill_manual(values = c( "white", "#619CFF", "#00BA38")) +
       scale_color_manual(values = c("brown1", "#619CFF", "#00BA38"))
   } else {
-    ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
+    pp <- ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
       geom_histogram(alpha = 0.5, position = "identity", binwidth = 40, show_guide = FALSE) +
       ylab("Frequency") + theme_bw() + ggtitle(tit) +
       geom_line(data = diffg, aes(x = Time, y = abs(y*10000), col = Method), linewidth = 1) +
@@ -117,11 +118,10 @@ powerHist <- function(idx, tit) {
       scale_color_manual(values = c("brown1", "#619CFF", "#00BA38"))
   }
 
-  # ggplot(dat, aes(x = Time, color = Method, fill = Method)) +
-  #   geom_histogram(alpha = 0.5, position = "identity", binwidth = 40) +
-  #   ylab("Frequency") + theme_bw() + scale_fill_manual(values = c("#619CFF", "#00BA38")) +
-  #   scale_color_manual(values = c("#619CFF", "#00BA38")) + ggtitle(tit)
-  #
+  pp <- pp + annotate("text", x = Inf, y = Inf, label = ons_p_lab,
+                color = "#00BA38",  size = 4, vjust=2, hjust=1.1)
+  pp <- pp + annotate("text", x = Inf, y = Inf, label = fix_p_lab,
+                color = "#619CFF",  size = 4, vjust=3.1, hjust=1.1)
 
 }
 
@@ -169,6 +169,31 @@ dev.off()
 
 
 
+## OVERALL POWER BECAUSE PATRICK WANTS TO KNOW
+ons_power <- vapply(ons, function(x) !is.null(x), logical(1)) |> mean()
+fix_power <- vapply(fix, function(x) !is.null(x), logical(1)) |> mean()
+
+ons_power
+fix_power
+
+ons_p_lab <- expression(paste("1 - ", beta, " = ", 0.52))
+fix_p_lab <- expression(paste("1 - ", beta, " = ", 0.48))
+
+annotations <- data.table(X = c(Inf, Inf),
+                          Y = c(Inf, Inf),
+                          text = c(ons_p_lab, fix_p_lab),
+                          x_adjust = c(0, 1),
+                          y_adjust = c(0, 0))
+p1 + annotate("text", x = 1000, y = 4000, label = ons_p_lab, parse = TRUE,
+              color = "#619CFF")
+
+
+p1 <- p1 + annotate("text", x = Inf, y = Inf, label = ons_p_lab, parse = TRUE,
+              color = "#00BA38",  size = 6, vjust=2, hjust=1.1)
+p1 + annotate("text", x = Inf, y = Inf, label = fix_p_lab, parse = TRUE,
+              color = "#619CFF",  size = 6, vjust=3.1, hjust=1.1)
+
+p1 + geom_text(aes(label = ons_p_lab), )
 
 ########## Table of correlations between error and hist?
 

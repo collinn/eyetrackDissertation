@@ -1,6 +1,6 @@
 ---
 title: "Refit with Saved Parameters"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Refit with Saved Parameters}
   %\VignetteEngine{knitr::rmarkdown}

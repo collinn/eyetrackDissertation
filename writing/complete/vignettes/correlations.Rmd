@@ -1,6 +1,6 @@
 ---
-title: "correlations"
-output: rmarkdown::html_vignette
+title: "Correlation Function"
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{Correlations}
   %\VignetteEngine{knitr::rmarkdown}

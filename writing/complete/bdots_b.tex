@@ -30,8 +30,6 @@ A typical problem in the analysis of differences in time series, and the kind th
 \begin{equation}\label{eq:mean_structure1}
 y_{it} = f(t | \theta_i) + \epsilon_{it} 
 \end{equation}
-
-
 where $f$ represents a functional mean structure while the error structure of $\epsilon_{it}$ is open to being either IID or possess an AR(1) structure. At present, \xt{bdots} requires that each of the subjects being compared have the same parametric function $f$. This is not strictly necessary at the theoretical level, and future goals of the package include accommodating non-parametric functions. While the mean structures for each of the subjects is required to be of the same parametric form $f(\cdot | \theta)$, each differs in their instance of their own subject-specific parameters, $\theta_i$.
 
 An explicit assumption of the current iteration of \xt{bdots} is that each subject $i$s' parameters within a group $g = 1, \dots, G$ is drawn from a group level distribution
@@ -40,7 +38,7 @@ An explicit assumption of the current iteration of \xt{bdots} is that each subje
 \theta_i \sim N(\mu_g, V_g).
 \end{equation}
 
-Bootstrapping these parameters gives an estimate of this distribution, which is then in turn to construct a distribution of functions $f$. This in turn gives a representation of the temporal changes in group characteristics. It is precisely the identification of if and when these temporal changes differ between groups that \xt{bdots} seeks to accomplish.
+Bootstrapping these parameters gives an estimate of this distribution, which is then in turn used to construct a distribution of functions $f$. This in turn gives a representation of the temporal changes in group characteristics. It is precisely the identification of if and when these temporal changes differ between groups that \xt{bdots} seeks to accomplish.
 
 
 \paragraph{Homogeneous Means Assumption}
@@ -71,9 +69,9 @@ Just as in \citet{oleson2017detecting}, this distribution provides an estimate o
 
 \subsection{Estimating Group Distributions}\label{sec:group_dist}
 
-To help clarify the discussion that follows, we begin by reiterating a few important points. First, each subject that we consider in a \xt{bdots} analysis has a set of subject-specific parameters, $\theta_i$, which define the shape of their time series, itself assumed to be a parametric function. The collection of parameters of all subjects within a particular group make up a distribution of group parameters, the distribution given in Equation~\ref{eq:group_dist}. And although this distribution is specifically a distribution of \textit{parameters}, any sample of parameters from this distribution can be used to  construct a distribution of \textit{functions} that define a time series. In other words, we begin by observing a time series for each subject. We then fit parametric functions to these observed time series. These estimated parameters themselves make up a distribution of parameters. This distribution of parameters can then be used to construction a distribution of time series. 
+To help clarify the discussion that follows, we begin by reiterating a few important points. First, each subject that we consider in a \xt{bdots} analysis has a set of subject-specific parameters, $\theta_i$, which define the shape of their time series, itself assumed to be a parametric function. The collection of parameters of all subjects within a particular group make up a distribution of group parameters, the distribution given in Equation~\ref{eq:group_dist}. And although this distribution is specifically a distribution of \textit{parameters}, any sample of parameters from this distribution can be used to  construct a distribution of \textit{functions} that define a time series. In other words, we begin by observing a time series for each subject. We then fit parametric functions to these observed time series. These estimated parameters themselves make up a distribution of parameters. This distribution of parameters can then be used to construct a distribution of time series. 
 
-In addition to the distribution of group parameters (Equation~\ref{eq:group_dist}), we have also described a distribution of subject-specific parameters (Equation~\ref{eq:sub_dist}). The motivation for the distribution given in Equation~\ref{eq:sub_dist} is as follows: for each individual subject, we wish to recover an estimate of the parameters that would be used to fit parametric function to the observed time series data. In doing so, there is some degree of uncertainty that comes from the curve fitting process as evidenced by the standard errors. This accounts for within-subject variability. The insight of \citet{oleson2017detecting} was that this \textit{within-subject variability} should be accounted for when estimating the \textit{between-subject variability} present in the distribution of group parameters. That is, if each individual subjects' estimate was associated with a high degree of uncertainty, it would be appropriate for this uncertainty to be reflected in the total uncertainty representing the entire group.
+In addition to the distribution of group parameters (Equation~\ref{eq:group_dist}), we have also described a distribution of subject-specific parameters (Equation~\ref{eq:sub_dist}). The motivation for the distribution given in Equation~\ref{eq:sub_dist} is as follows: for each individual subject, we wish to recover an estimate of the parameters that would be used to fit a parametric function to the observed time series data. In doing so, there is some degree of uncertainty that comes from the curve fitting process as evidenced by the standard errors. This accounts for within-subject variability. The insight of \citet{oleson2017detecting} was that this \textit{within-subject variability} should be accounted for when estimating the \textit{between-subject variability} present in the distribution of group parameters. That is, if each individual subjects' estimate was associated with a high degree of uncertainty, it would be appropriate for this uncertainty to be reflected in the total uncertainty representing the entire group.
 
 With this in mind, we now propose the following algorithm for creating bootstrapped estimates of the \textit{group level distributions}:
 
@@ -105,7 +103,7 @@ We now turn our attention to the primary goal of an analysis in \xt{bdots}, the 
 
 \subsubsection{$\alpha$ Adjustment}
 
-The first method whereby we control the FWER involves making adjustments to the nominal alpha value such as the case with a Bonferonni correction. Just as in the original iteration of \xt{bdots}, we are able to construct first test statistics from the bootstrapped estimates described in the previous section. These bootstrapped test statistics $T_t^{(b)}$ can be written as 
+The first method whereby we control the FWER involves making adjustments to the nominal alpha value such as the case with a Bonferonni correction. Just as in the original iteration of \xt{bdots}, we are able to first construct test statistics from the bootstrapped estimates described in the previous section. These bootstrapped test statistics $T_t^{(b)}$ can be written as 
 
 \begin{equation}\label{eq:test_statistic}
 T_t^{(b)} = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2t}^2}},
@@ -117,7 +115,7 @@ where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimat
 
 In addition to modified correction based on the bootstrapped test statistics, \xt{bdots} provides a permutation test for controlling the FWER without any additional assumptions of autocorrelation. 
 
-In doing so, we begin by creating an observed test statistic in the following way: first, taking each subject's estimated parameter $\hat{\theta}_i$, we find the subject's corresponding parametric curve $f(t|\hat{\theta}_i)$. Within each group, we use \textit{these} curves to create estimates of the mean population curves and associated standard errors at each each point\footnote{This differs from the bootstrapped test statistic in which the mean of the subjects' parameters was used to fit a population curve, i.e., $\frac1n \sum f(t|\theta_i)$ compared with $f \left( t | \frac1n \sum \theta_i \right)$. The implications of this have not been investigated any further}. Letting $p_{gt}$ and $s_{gt}^2$ represent the mean population curve and standard error for group $g$ at time $t$, we define our observed permutation test statistic, 
+In doing so, we begin by creating an observed test statistic in the following way: first, taking each subject's estimated parameter $\hat{\theta}_i$, we find the subject's corresponding parametric curve $f(t|\hat{\theta}_i)$. Within each group, we use \textit{these} curves to create estimates of the mean population curves and associated standard errors at each point\footnote{This differs from the bootstrapped test statistic in which the mean of the subjects' parameters was used to fit a population curve, i.e., $\frac1n \sum f(t|\theta_i)$ compared with $f \left( t | \frac1n \sum \theta_i \right)$. The implications of this have not been investigated any further}. Letting $p_{gt}$ and $s_{gt}^2$ represent the mean population curve and standard error for group $g$ at time $t$, we define our observed permutation test statistic, 
 
 \begin{equation}\label{eq:perm_stat}
 T_t^{(p)} = \frac{|\overline{p}_{1t} - \overline{p}_{2t}|}{\sqrt{s_{1t}^2 + s_{2t}^2}}.
@@ -452,7 +450,6 @@ Beginning with a simple case, suppose we want to investigate the difference in o
 \begin{center}
 \tt y $\sim$ Origin(foreign, domestic)
 \end{center}
-
 just as we did in the mouse data example: here, the name of the group variable \xt{Origin}, followed by the values we are interested in comparing, \xt{domestic} and \xt{foreign}. Alternatively, if we wanted to limit our investigation to only foreign and domestic \textit{trucks}, we would do this by including an extra term specifying the group and the desired value. In this case:
 
 \begin{center}
@@ -621,7 +618,7 @@ Choose (1-6):
 \end{figure}
 \end{singlespace}
 
-There are a number of options provided in this list. The first, of course, keeps the original fit of the presented subject and moves on to the next subject in the list. The second option takes the values of the fitted parameter and ``jitters" them, changing each of the values by a prespecified magnitude. Given the sensitivity of \xt{nlme::gnls} to starting parameters, this is sometimes enough for the fitter to converge on a better fit for the observed data. Alternatively, the third option gives the user the ability to select the starting parameters manually. The third option gives the user the ability to attempting refitting the observed data without an AR(1) error assumption, though this is only relevant if such an assumption exists. Option (5) reprints summary information and option (6) allows the user to delete the subject all together.
+There are a number of options provided in this list. The first, of course, keeps the original fit of the presented subject and moves on to the next subject in the list. The second option takes the values of the fitted parameter and ``jitters" them, changing each of the values by a prespecified magnitude. Given the sensitivity of \xt{nlme::gnls} to starting parameters, this is sometimes enough for the fitter to converge on a better fit for the observed data. Alternatively, the third option gives the user the ability to select the starting parameters manually. The third option gives the user the ability to attempt refitting the observed data without an AR(1) error assumption, though this is only relevant if such an assumption exists. Option (5) reprints summary information and option (6) allows the user to delete the subject all together.
 
 When any attempt to refit the observed under new conditions is presented (options (2)-(4)), a plot is rendered comparing the original fit side-by-side with the new alternative, Figure~\ref{fig:refit_plot}.
 
@@ -702,7 +699,7 @@ Here, for example, we see that the last two positions of \xt{unadj\_p} have valu
 \section{Discussion}
 
 
-The original implementation of \xt{bdots} set out to address a narrow set of problems. Previous solutions beget new opportunities, however, and it is in this space that the second iteration of \xt{bdots} has sought to expand. Since then, the interface between user and application has been significantly revamped, creating a intuitive, reproducible workflow that is able to quickly and simply address a broader range of problems. The underlying methodology has also been improved and expanded upon, offering better control of the family-wise error rate.
+The original implementation of \xt{bdots} set out to address a narrow set of problems. Previous solutions beget new opportunities, however, and it is in this space that the second iteration of \xt{bdots} has sought to expand. Since then, the interface between user and application has been significantly revamped, creating an intuitive, reproducible workflow that is able to quickly and simply address a broader range of problems. The underlying methodology has also been improved and expanded upon, offering better control of the family-wise error rate.
 
 While significant improvements have been made, there is room for further expansion. The most obvious of these is the need to include support for non-parametric functions, the utility of which cannot be overstated. Not only would this alleviate the need for the researcher to specify in advance a functional form for the data, it would implicitly accommodate more heterogeneity of functional forms within a group. Along with this, the current implementation is also limited in the quality-of-fit statistics used in the fitting steps to assess performance. $R^2$ and the presence of autocorrelation are relevant to only a subset of the types of data that can be fit, and allowing users more flexibility in specifying this metric is an active goal for future work. In all, future directions of this package will be primarily focused on user interface, non-parametric functions, and greater flexibility in defining metrics for fitted objects.
 
@@ -717,7 +714,7 @@ While significant improvements have been made, there is room for further expansi
 
 One of the most significant changes in the newest version of \xt{bdots} is the ability to specify the parametric curve independently of the fitting function. Not only does this simplify a typical analysis, reducing all fitting operations to the single function \xt{bfit}, it also provides users with a way to modify this function to meet their own needs. In this section we will detail how the curve function is used in \xt{bdots} and how users can write their own. Finally, we will conclude with an example of how this was used in Chapter 3 to create adequate fits with the  look onset method when the typical method for constructing estimated starting parameters based on the proportion of fixation method failed.
 
-To begin, it is important to understand a little of how \xt{bdots} works internally. In the curve fitting steps using \xt{bfit}, the data is split by subject and group, creating a list whereby each element is the set of all observations for a single subject (i.e., in a paired setting, an individual subject would have two separate elements in this list). Ultimately, the data in each element will be used to construct a set of estimated parameters and standard errors for each subject provided by the function \xt{lmer::gnls}. Doing so requires both (1) a formula to which  we fit the data and (2) starting parameter estimates. Proving the both of these is the role of the curve function. Figure~\ref{fig:curve_split} provides an illustration of this process.
+To begin, it is important to understand a little of how \xt{bdots} works internally. In the curve fitting steps using \xt{bfit}, the data is split by subject and group, creating a list whereby each element is the set of all observations for a single subject (i.e., in a paired setting, an individual subject would have two separate elements in this list). Ultimately, the data in each element will be used to construct a set of estimated parameters and standard errors for each subject provided by the function \xt{lmer::gnls}. Doing so requires both (1) a formula to which  we fit the data and (2) starting parameter estimates. Providing the both of these is the role of the curve function. Figure~\ref{fig:curve_split} provides an illustration of this process.
 
 
 
@@ -752,8 +749,8 @@ fit <- bfit(dat, "y", "time", curveFun = linear(intercept = 0, slope = 1).
 This should not be common. Following the \xt{params} argument, any other arguments specific to the curve function could be included. Although there are none for \xt{linear}, an example of when they might be used would be for \xt{polynomial}, in which the degree of the polynomial to be fit would be included. Finally, there is the \xt{...} argument, which is needed to accommodate the passing of any additional arguments from \xt{bfit} that are not a part of the curve function. Generally, this is not needed by the users but should be included nonetheless. 
 
 \item Also included in a curve function is a second function to estimate starting parameters from the observed data. While not strictly necessary that it be included \textit{within} the curve function, it is useful for keeping the curve function self contained; parameter estimating functions defined outside of the curve function will otherwise still be used if they exist in the users calling environment. For estimating starting parameters for a linear function we see here the function \xt{linearPars}, taking as  its arguments \xt{dat}, \xt{y}, and \xt{time}. In this example, we check in case \xt{var(y) == 0}, which causes issues for \xt{lmer::gnls}, though in general it is a good idea to check for any other potential issues when estimating starting parameters (negative values for a logistic, for example). Importantly, this function returns a named vector, with the names of the parameters needing to match the parameter names in the formula given in (5). 
-\item As detailed in (1), with the argument \xt{params = NULL}, the curve function should begin by estimating starting parameters. When different parameters are passed into \xt{params}, this is skipped
-\item This is a quick check on the result from (3). Had \xt{linearPars} returned a \xt{NULL} object, the curve function itself should return a \xt{NULL} object so that it is not passed to the fitter
+\item As detailed in (1), with the argument \xt{params = NULL}, the curve function should begin by estimating starting parameters. When different parameters are passed into \xt{params}, this is skipped.
+\item This is a quick check on the result from (3). Had \xt{linearPars} returned a \xt{NULL} object, the curve function itself should return a \xt{NULL} object so that it is not passed to the fitter.
 \item Finally, we have the most intricate part of the curve function, which is the construction of the formula object to be used by \xt{lmer::gnls}. The first two lines of this use the base R function \xt{str2lang} which turns a character string into an R language object (specifically, an unevaluated expression), making the names of the outcome and time variable suitable for a formula. The next line using the base R function \xt{bquote}. The function \xt{quote} returns its argument exactly as it was passed as an unevaluated expression; \xt{bquote} does the same but first substituting any of its elements wrapped in \xt{.()}. As it is written here, this will return a formula object using \xt{slope} and \xt{intercept} as is, but while replacing \xt{.(y)} and \xt{.(time)} with the appropriate names based on the column names in \xt{dat}. Finally, the names of the parameters are included as attributes to the formula object and the curve function concludes by returning a named list including both the formula object, as well as the named vector of parameters.
 \end{enumerate}
 
@@ -872,22 +869,5 @@ dgaussPars_dist <- function(dat, y, time, startSamp = 8) {
 
 By utilizing an existing fitting function while substituting the method by which the starting parameters are estimated, we were able to go from recovering less than half of the simulated starting parameters successfully to well over 80\%.
 
-\section{CRAN Vignettes}
-
-Included here are the collection of vignettes that are included with the \xt{bdots} packages. In order, these are:
-
-\begin{enumerate}
-\item \textbf{\xt{bdots}} This is the primary vignette used to introduce new users to the package. It includes information on fitting parametric functions to subject data, a brief tutorial on refitting, and a description of the bootstrapping process as well as the \xt{bdots} formula syntax
-\item \textbf{Refitting with Saved Parameters} This vignette illustrates how to save the fitted coefficients from the fitting step (or after refitting) and how to load them back into R to recreate a fitted \xt{bdotsObj} object. This has been primarily used by users who have created subject-specific parameters in other software (i.e., MATLAB) who wish to import them to \xt{bdots}
-\item \textbf{Correlations} This vignette details the \xt{bdotsCor} function to find the correlation of a fixed value (i.e., vocabulary scores or IQ tests) with the group fitted curves at each time point
-\item \textbf{User Curve Functions} This vignette offers detailed instructions for users who wish to create and import their own custom parametric curve functions
-\end{enumerate}
-
-
-
-\includepdf[pages=-]{vignettes/bdots.pdf}
-\includepdf[pages=-]{vignettes/refit.pdf}
-\includepdf[pages=-]{vignettes/correlations.pdf}
-\includepdf[pages=-]{vignettes/curve_functions.pdf}
 
 

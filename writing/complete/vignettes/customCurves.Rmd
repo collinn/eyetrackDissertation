@@ -1,6 +1,6 @@
 ---
 title: "User Curve Functions"
-output: rmarkdown::html_vignette
+output: pdf_document
 vignette: >
   %\VignetteIndexEntry{User Curve Functions}
   %\VignetteEngine{knitr::rmarkdown}

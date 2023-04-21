@@ -86,6 +86,24 @@
 
 \input{method_b.tex}
 
+\Chapter{CRAN Vignettes}
+
+Included here are the collection of vignettes that are included with the \xt{bdots} packages. In order, these are:
+
+\begin{enumerate}
+\item \textbf{\xt{bdots}} This is the primary vignette used to introduce new users to the package. It includes information on fitting parametric functions to subject data, a brief tutorial on refitting, and a description of the bootstrapping process as well as the \xt{bdots} formula syntax
+\item \textbf{Refitting with Saved Parameters} This vignette illustrates how to save the fitted coefficients from the fitting step (or after refitting) and how to load them back into R to recreate a fitted \xt{bdotsObj} object. This has been primarily used by users who have created subject-specific parameters in other software (i.e., MATLAB) who wish to import them to \xt{bdots}
+\item \textbf{Correlations} This vignette details the \xt{bdotsCor} function to find the correlation of a fixed value (i.e., vocabulary scores or IQ tests) with the group fitted curves at each time point
+\item \textbf{User Curve Functions} This vignette offers detailed instructions for users who wish to create and import their own custom parametric curve functions
+\end{enumerate}
+
+
+
+\includepdf[pages=-]{vignettes/bdots.pdf}
+\includepdf[pages=-]{vignettes/refitCoef.pdf}
+\includepdf[pages=-]{vignettes/correlations.pdf}
+\includepdf[pages=-]{vignettes/customCurves.pdf}
+
 \bibliography{../bib/dissertation}
 
 \end{document}

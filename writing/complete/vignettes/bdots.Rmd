@@ -125,7 +125,7 @@ The final step is the bootstrapping process, performed with `bdotsBoot`. First, 
   : Here, we are interested specifically in the difference between two fitted curves. For our example case here, this may be the difference between curves for `DB_cond == 50` and `DB_cond == 65` nested within either the `Cohort` or `Unrelated_Cohort` `LookTypes` (but not both). 
 
 2. Difference of Difference Curves
- : In this case, we are considering the difference of two difference curves similar to the one found above. For example, we may denote the difference between `DB_cond` `50` and `65` within the `Corhort` group as $\text{diff}_{\text{Cohort}}$ and the differences between `DB_cond` `50` and `65` within `Unrelated_Corhort` as $\text{diff}_{\text{Unrelated_Cohort}}$. The difference of difference function will then return an analysis of $\text{diff}_{\text{Cohort}}$  - $\text{diff}_{\text{Unrelated_Cohort}}$ 
+ : In this case, we are considering the difference of two difference curves similar to the one found above. For example, we may denote the difference between `DB_cond` `50` and `65` within the `Corhort` group as $\text{diff}_{\text{Cohort}}$ and the differences between `DB_cond` `50` and `65` within `Unrelated_Corhort` as $\text{diff}_{\text{UnrelatedCohort}}$. The difference of difference function will then return an analysis of $\text{diff}_{\text{Cohort}}$  - $\text{diff}_{\text{UnrelatedCohort}}$ 
 
 We can express the type of curve that we wish to fit with a modified formula syntax. It’s helpful to read as “the difference of LHS between elements of RHS”
 
@@ -141,7 +141,7 @@ Outcome ~ Group1(value1, value2) + Group2(value3)
 
 That is, we might read this as “difference of Outcome for value1 and value2 within Group1.”
 
-With our working example, we would find the difference of `DB_cond == 50` and `DB_cond == 65` within `LookType == "Cohort"` with
+With our working example, we would find the difference of $`DB_cond == 50`$ and `DB_cond == 65` within `LookType == "Cohort"` with
 
 ```{r, eval = FALSE}
 ## Must add LookType(Cohort) to specify

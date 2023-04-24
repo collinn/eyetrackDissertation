@@ -2,15 +2,15 @@
 
 A problem ubiquitous throughout the sciences, though in the cognitive sciences especially, is that of statistically analyzing a process unfolding in time. In particular, we consider the problem of comparing a process in time as it evolves differentially between two or more experimental groups. And while there are many techniques for demonstrating \textit{that} a difference exists, few offer any insight into \textit{when}. Testing for temporal differences is complicated by the fact that when this process is continuous, there are often an arbitrarily large number of time points that could be compared. This is essentially a problem of multiple comparisons.
 
-Various approaches have been proposed for addressing this issue, the most rudimentary of which involve binary tests for identifying the existence of any difference, such as the area under the curve (AUC).  More sophisticated techniques involve the used of cluster-based permutation testing \citep{Maris2007}, whereby test statistics are computed at each observed time point with adjacent significant tests being combined into clusters. This controls the family-wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of total tests. More recently, \citet{oleson2017detecting} introduced a modified Bonferroni correction to a series of test statistics, using estimates of autocorrelation between statistics to make the appropriate adjustments to the significance levels to control FWER. This approach, which they named bootstrapped differences in time series, was introduced in the R package, \xt{bdots} \citep{seedorff2018bdots}.
+Various approaches have been proposed for addressing this issue, the most rudimentary of which involve binary tests for identifying the existence of any difference, such as the area under the curve (AUC).  More sophisticated techniques involve the used of cluster-based permutation testing \citep{Maris2007}, whereby test statistics are computed at each observed time point with adjacent significant tests being combined into clusters. This controls the family-wise error rate (FWER) by reducing adjacent test statistics into a single cluster, thereby reducing the number of total tests. More recently, \citet{oleson2017detecting} introduced a modified Bonferroni correction to a series of test statistics, using estimates of autocorrelation between statistics to make the appropriate adjustments to the significance levels to control FWER. This approach, which they named bootstrapped differences in time series, was introduced in the R package \xt{bdots} \citep{seedorff2018bdots}.
 
-The modified Bonferonni correction used by \xt{bdots} relies on the construction of estimated distributions of time series via bootstrapping for each experimental group. These distributions, in turn, are used to construct test statistics at each observed time point. A closer look at the original iteration presents concerns as it involves quite restrictive assumptions on the data that are unlikely to be met in many, if not most situations. 
+The modified Bonferonni correction used by \xt{bdots} relies on the construction of estimated distributions of time series via bootstrapping for each experimental group. These distributions are then used to construct test statistics at each observed time point. A closer look at the original iteration presents concerns as it involves quite restrictive assumptions on the data that are unlikely to be met in many, if not most situations. 
 
-This includes data typically collected in the context of the Visual World Paradigm (VWP), a widely used experimental paradigm in language research that involves tracking eye movements from participants in response to spoken language. This is notable in that it was data collected in VWP research that motivated the \xt{bdots} methodology. There, it was maintained that the process of interest in each experimental group assumed a homogeneous mean structure, with no between-subject variability to be accounted for. Empirical data collected in a variety of contexts suggests that this assumption is unlikely to be true, the consequence of which is a type I error rate that is unacceptably high. \cn{i don't think its worth mentioning here, but to address bob's concern, this does also assume no variability in the differences for a paired case, which is why hom. bootstrap still does poorly when the paired parameters aren't identical}
+This includes data typically collected in the context of the Visual World Paradigm (VWP), a widely used experimental paradigm in language research that involves tracking eye movements from participants in response to spoken language. This is notable in that it was data collected in VWP research that motivated the \xt{bdots} methodology. There it was maintained that the process of interest in each experimental group assumed a homogeneous mean structure, with no between-subject variability to be accounted for, and an assumption we will explore in more detail in the following section. Empirical data collected in a variety of contexts suggests that this assumption is unlikely to be true, the consequence of which is a family-wise error rate that is unacceptably high. 
 
 
 
-Here, we present two alternative methods that accommodate flexibility in the assumptions made by the original bootstrapped differences in time series algorithm. First, we propose a modified bootstrapping procedure that adequately accounts for observed between-subject variability while retaining the FWER adjustment that addresses the autocorrelated test statistics. In addition, we offer a permutation test for identifying temporal differences between groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits.
+In this manuscript we present two alternative methods that accommodate flexibility in the assumptions made by the original bootstrapped differences in time series algorithm. First, we propose a modified bootstrapping procedure that adequately accounts for observed between-subject variability while retaining the FWER adjustment that addresses the autocorrelated test statistics. In addition, we offer a permutation test for identifying temporal differences between groups, borrowing from the insight of the original bdots in that it also captures within-subject variability as demonstrated in the standard errors in the model fits but with fewer assumptions regarding the relation between observed test statistics.
 
 We begin with a mathematical description of the problem along with the proposed alternatives to the original bootstrapping algorithm. This is followed by a simulation estimating the FWER across a number of experimental conditions. Finally, we consider two separate simulations for the assessment of power among the competing methods: this includes one simulation with a simple piecewise-linear function relating power to effect sizes; the second simulation interrogates power when the magnitudes of between-subject and within-subject variability differ. 
 
@@ -18,7 +18,6 @@ We begin with a mathematical description of the problem along with the proposed 
 \section{Methods}
 
 In each of the methods to be described, we begin with the observation of $y_{it}$ for subjects $i = 1, \dots, n$ over times $t = 1, \dots, T$. Typically, these subjects fall into different groups $g = 1, \dots, G$, with each group containing $n_g$ subjects. We further assume that the empirically observed data follows from a parametric function $f$ with associated error:
-
 \begin{equation}\label{eq:mean_structure}
 y_{it} = f(t|\theta_i) + \epsilon_{it}
 \end{equation}
@@ -39,17 +38,14 @@ The original bootstrapping algorithm presented in \citet{oleson2017detecting} fo
 \item For each subject, fit a nonlinear regression model to obtain $\hat{\theta}_i$. \citet{oleson2017detecting} recommends specifying an AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a multivariate normal distribution with mean for subject $i$, $\hat{\theta}_i$ corresponding to the point estimate and standard deviations corresponding to the standard errors, $s_i$.
 
 \item Using the approximate sampling distributions in (1), randomly draw one bootstrap estimate for each of the model parameters on every subject 
-
 \begin{equation}
 \hat{\theta}_i^{(b)} \sim N( \hat{\theta}_i, s_i^2)
 \end{equation}
 
 \item Once a bootstrap estimate has been collected for each parameter and for every subject, for each parameter, find the mean of the bootstrap estimates across $n_g$ individuals for the $b$th bootstrap in group $g$,
-
 \begin{equation}
 \theta_g^{(b)} = \frac{1}{n_g} \sum_{i=1}^{n_g} \hat{\theta}_i^{(b)}
 \end{equation}
-
 \item Use the mean parameter estimates to determine a bootstrapped population level curve, which provides the average population response at each time point, $f(t| \theta_g^{(b)})$.
 
 \item Perform steps (2)-(4) B times to obtain estimates of the population curves. Use these to create estimates of the mean response and standard deviation at each of the time points. For each group $g = 1, \dots, G$, this gives
@@ -67,34 +63,27 @@ Population means and standard deviations at each time point for each of the grou
 \subsection{Heterogeneous Bootstrap}
 
 Typically, subjects within a group demonstrate considerable variability in their mean parameter estimates. In this case, we should avoid the presumption that $\theta_i = \theta_j$, as accounting for between-subject variability within a group will be critical for obtaining a reasonable distribution of the population curves. More likely, we may assume that the distribution of parameters for subjects $i = 1, \dots, n_g$ in group $g = 1, \dots, G$ follows the distribution
-
 \begin{equation}\label{eq:theta_i_dist}
 \theta_i \sim N(\mu_{g}, V_{g}),
 \end{equation}
 where $\mu_g$ and $V_g$ are the group-specific mean and variance values, respectively. In contrast to the previous set of assumptions, we call this the \emph{heterogeneous means} assumption Similar to what was presented in the homogeneous bootstrap algorithm, we can further account for uncertainty in our estimation of $\theta_i$ by $\hat{\theta}_i$ by treating the standard errors derived when fitting the observed data to the mean structure suggested in Equation~\ref{eq:mean_structure} as estimates of their standard deviations. This gives us a multivariate normal distribution for each subject's estimated parameter, 
-
 \begin{equation}
 \hat{\theta}_i \sim N(\theta_i, s_i^2).
 \end{equation}
-
 As our goal remains as being able to obtain reasonable estimates of the population curves for each group, it is necessary to estimate both the observed within-subject variability found in each of the $\{s_i^2\}$ terms, \textit{as well as} the between-subject variability present in $V_{g}$. For example, let $\theta^*_{ib}$ represent a bootstrapped sample for subject $i$ in bootstrap $b = 1, \dots, B$, where
-
 \begin{equation}\label{eq:sub_boot_dist}
 \theta^*_{ib} \sim N(\hat{\theta}_i, s_i^2),
 \end{equation}
 as was done in Step (2.) of the homogeneous bootstrapping algorithm. If we were to sample \textit{without replacement}, we would obtain a homogeneous mean value from the $b$th bootstrap for group $g$, $\theta^{(hom)}_{bg}$, where
-
 \begin{equation}\label{eq:wo_rep_boot}
 \theta^{(hom)}_{bg} = \frac{1}{n_g} \sum_{i=1}^{n_g} \theta^{*}_{ib}, \quad \theta^{(hom)}_{bg} \sim N \left( \mu_{g}, \frac{1}{n_g^2} \sum_{i=1}^{n_g} s_i^2 \right).
 \end{equation}
 
 Such an estimate captures the totality of the within-subject variability with each draw but fails to account for the variability in the group overall. For this reason, we sample the subjects \textit{with} replacement, creating the heterogeneous bootstrap mean $\theta_{bg}^{(het)}$, where again each $\theta_{ib}^*$ follows the distribution in Equation~\ref{eq:sub_boot_dist}, but the heterogeneous bootstrapped group mean now follows
-
 \begin{equation}\label{eq:w_rep_boot}
 \theta_{bg}^{(het)} \sim N \left( \mu_{g}, \frac{1}{n_g} V_{g} + \frac{1}{n_g^2} \sum s_i^2 \right).
 \end{equation}
 
-\cn{in the homogenous bootstrap, we sampled without replacement and this was indicated by the countable indicies on the summation. Should I include those here? Can I do so without introducing new indices?}
 
 The estimated mean value remains unchanged, but the variability is now fully accounted for. We therefore present a modified version of the bootstrap which we call the \textit{heterogeneous bootstrap}, making the following changes to the original:  \cn{I'm not sure what additional math to include here}
 
@@ -107,7 +96,6 @@ The estimated mean value remains unchanged, but the variability is now fully acc
 %\end{singlespace}
 
 Just as with the homogeneous bootstrap, these bootstrap estimates are used to create test statistics $T_t$ at each time point, written
-
 \begin{equation}
 T_t^{(b)} = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2t}^2}},
 \end{equation}
@@ -119,14 +107,11 @@ where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimat
 
 In addition to the heterogeneous bootstrap, we also introduce a permutation method for hypothesis testing. The permutation method proposed is analogous to a traditional permutation method, but with an added step mirroring that of the previous in capturing the within-subject variability. For a specified FWER of $\alpha$, the proposed permutation algorithm is as follows:
 
-\cn{not sure what additional math to add here}
-
 %\begin{singlespace}
 \begin{enumerate}
 \vspace{-2mm}
 \item For each subject, fit the nonlinear function with \textit{optional} AR(1) autocorrelation structure for model errors. Assuming large sample normality, the sampling distribution of each estimator can be approximated by a normal distribution with mean corresponding to the point estimate and standard deviation corresponding to the standard error
 \item Using the mean parameter estimates derived in (1), find each subject's corresponding fixation curve. Within each group, use these to derive the mean and standard deviations of the population level curves at each time point, denoted $\overline{p}_{gt}$ and $s_{gt}^2$ for $g = 1,2$. Use these values to compute a permutation test statistic $T_t^{(p)}$ at each time point,
-
 \begin{equation}
 T_t^{(p)} = \frac{|\overline{p}_{1t} - \overline{p}_{2t}|}{\sqrt{s_{1t}^2 + s_{2t}^2}}.
 \end{equation}
@@ -157,7 +142,6 @@ where $\epsilon_t \sim N(0, (1 - \rho^2))$. This gives the conditional distribut
 T_t | T_{t-1} \sim N(\rho T_{t-1}, 1 - \rho^2),
 \end{equation}
 with the joint distribution of $T_t$ and $T_{t-1}$ being bivariate normal with mean $0$, a variance of $1$, and correlation $\rho$. From this, they show that for some $\alpha^*$, the true FWER $\alpha$ under the null hypothesis can be expressed as 
-
 \begin{equation}\label{eq:oleson_adj}
 1 - P \left( \bigcap_{t=1}^T I_t \right) = 1 - P(I_1) \prod_{t=2}^T P(I_t | I_{t-1}) = 1 - P(I_1)P(I_t|I_{t-1})^{T-1},
 \end{equation}
@@ -172,7 +156,6 @@ We now go about comparing the family-wise error rate of the three methods just d
 \subsection{Data Generation}
 
 Data was generated according to Equation~\ref{eq:mean_structure}, with the parametric function $f(t|\theta)$ belonging to the family of four-parameter logistic curves defined:
-
 \begin{equation}\label{eq:logistic}
 f(t | \theta) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)} + b
 \end{equation}
@@ -197,7 +180,6 @@ Under the homogeneous means assumption, we set $\theta_i = \theta_j$ for all sub
 
 
 \paragraph{Error Structure} The error structure is of the form
-
 \begin{equation}
 e_{it} = \phi e_{i, t-1} + w_{it}, \quad w_{it} \sim N(0, \sigma)
 \end{equation}
@@ -366,16 +348,12 @@ In our assessment of power among the presented methods, we examine two distinct 
 \subsection{Piecewise Linear Power}
 
 To better understand the relationship between effect size and power, we have created a simple example consisting of two simulated experimental groups whose mean structure is a simple piecewise linear function defined on the interval $(-1, 1)$ as follows:
-
-%^^To determine power, two experimental groups were simulated with mean structures of the following form:
-
 \begin{equation}\label{eq:piecewise_form}
 y = \begin{cases}
 b \quad &x < 0 \\
 mx + b \quad &x \geq 0
 \end{cases}
 \end{equation}
-
 The set of parameters drawn from each subject include a baseline parameter, $b$, as well as a slope parameter, $m$, which were each drawn from a univariate normal distribution. To distinguish experimental groups, one designated as being the ``Effect" group, other other being ``No Effect", we set the slope parameter of the ``No Effect" group to be identically $m = 0$, while the ``Effect" group had a slope parameter that was normally distributed with a mean value $\mu_m = 0.25$. Both groups drew their baseline parameter, $b$, from a normal distribution with mean $\mu_b = 0$. As a consequence of this, and following from Equation~\ref{eq:piecewise_form}, there should be no difference between groups when $x < 0$, with an effect size for the ``Effect" group being $mx$ for all $x \geq 0$. This was done for two reasons. First, by intentionally including an interval in which there is no difference, we are able to observe power in the context of type I error as well. That is, achieving a higher power when $x \geq 0$ will be of little value if differences are equally (and incorrectly) identified when $x < 0$. The second reason for having set our problem up this way was to give us the ability to observe changes in power in conjunction with changes in effect size, mediated by increasing values in $x$. A visual depiction of each of these groups is given in Figure~\ref{fig:distribution_piece}. \cn{maybe i separate those images and bring that down here. Perhaps I should make a similar distribution plot for differences in logistic shift?}
 
 
@@ -421,7 +399,7 @@ Hom. Boot & No & Yes & 0.00 & 0.00 & 1.00 & 0.025 & 0.030 & 0.035 \\
   Perm & Yes & Yes & 0.04 & 0.00 & 0.96 & 0.245 & 0.365 & 0.440 \\ 
    \hline
 \end{tabular}
-\caption{caption} 
+\caption{Summary of FWER and power across methods} 
 \label{tab:power_methods}
 \end{table}
 

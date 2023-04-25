@@ -71,7 +71,7 @@ head(corr_noci)
 From here, we are able to use the `data.tables` themselves for whatever we may be 
 interested in. We also have a plotting method associated with this object
 
-```{r, fig.align='center', fig.width = 6, fig.height=6}
+```{r, fig.align='center', fig.width = 4, fig.height=4}
 ## Default is no bands
 plot(corr_ci)
 
@@ -86,6 +86,6 @@ plot(corr_ci, window = c(750, 1500))
 Because this object is a `data.table`, we have full use of subsetting capabilities 
 for our plots
 
-```{r, fig.align='center', fig.width = 6, fig.height=4}
+```{r, fig.align='center', fig.width = 4, fig.height=4}
 plot(corr_ci[Group2 == "50", ])
 ```

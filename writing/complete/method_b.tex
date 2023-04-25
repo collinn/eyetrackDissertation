@@ -162,13 +162,19 @@ f(t | \theta) = \frac{p-b}{1 + \exp \left(\frac{4s}{\text{p}-b} (x - t) \right)}
 where $\theta = (p, b, s, x)$, the peak, baseline, slope, and crossover parameters, respectively.
 
 
+%\begin{figure}
+%    \centering
+%\includegraphics{logistic_distribution.pdf}
+%    \caption{50 samples from the generating distribution of the four-parameter logistic in Equation~\ref{eq:logistic} used for testing FWER}
+%\label{fig:distribution_log}
+%\end{figure}
+
 \begin{figure}
     \centering
-\includegraphics{logistic_distribution.pdf}
+\includegraphics{log_dist_2.pdf}
     \caption{50 samples from the generating distribution of the four-parameter logistic in Equation~\ref{eq:logistic} used for testing FWER}
 \label{fig:distribution_log}
 \end{figure}
-
 
 
 We further assume that each group drew subject-specific parameters from a multivariate normal distribution, with subject $i = 1, \dots, N$ in group $g = 1, \dots, G$ following the distribution in Equation~\ref{eq:theta_i_dist}. These parameters are then used to simulate empirical data according the the mean and error structures for each simulation setting, which we detail next. 

@@ -26,14 +26,12 @@ We start by clearly describing the type of problem that \xt{bdots} has been crea
 \paragraph{Bootstrapped differences in time series}
 
 A typical problem in the analysis of differences in time series, and the kind that \xt{bdots} is intended to solve, involves that of two or more experimental groups containing subjects whose responses are measured over time. This may include the growth of tumors in  mice or the change in the proportion of fixations over time in the context of the VWP. In either case, we assume that each of the subjects $i = 1, \dots, n$  has observed data of the following form:
-
 \begin{equation}\label{eq:mean_structure1}
 y_{it} = f(t | \theta_i) + \epsilon_{it} 
 \end{equation}
 where $f$ represents a functional mean structure while the error structure of $\epsilon_{it}$ is assumed to be either IID or to possess an AR(1) structure. At present, \xt{bdots} requires that each of the subjects being compared have the same parametric function $f$. This is not strictly necessary at the theoretical level, and future goals of the package include accommodating non-parametric functions. While the mean structures for each of the subjects is required to be of the same parametric form $f(\cdot | \theta)$, each differs in their instance of their own subject-specific parameters, $\theta_i$.
 
 An explicit assumption of the current iteration of \xt{bdots} is that each subject $i$s' parameters within a group $g = 1, \dots, G$ is drawn from a group level distribution
-
 \begin{equation}\label{eq:group_dist}
 \theta_i \sim N(\mu_g, V_g).
 \end{equation}
@@ -57,7 +55,6 @@ A standard analysis using \xt{bdots} consists of two steps: fitting the observed
 \subsection{Estimating Subject-Specific Curves}
 
 We begin with the assumption that for subject $i$ in group $g$, we have collected observed data of the form given in Equation~\ref{eq:mean_structure1}, with the subject specific parameter $\theta_i$ following the distribution in Equation~\ref{eq:group_dist}. Each subject is then fit in \xt{bdots} via the nonlinear curve fitting function \xt{nlme::gnls}, returning for each set of observed data an estimated set of parameters $\hat{\theta}_i$ and their associated standard errors. From these estimates we are able to construct a sampling distribution for each subject:
-
 \begin{equation}\label{eq:sub_dist}
 \hat{\theta}_i \sim N(\theta_i, s_i^2).
 \end{equation}
@@ -103,7 +100,6 @@ We now turn our attention to the primary goal of an analysis in \xt{bdots}, the 
 \subsubsection{$\alpha$ Adjustment}
 
 The first method whereby we control the FWER involves making adjustments to the nominal alpha value such as the case with a Bonferonni correction. Just as in the original iteration of \xt{bdots}, we are able to first construct test statistics from the bootstrapped estimates described in the previous section. These bootstrapped test statistics $T_t^{(b)}$ can be written as 
-
 \begin{equation}\label{eq:test_statistic}
 T_t^{(b)} = \frac{(\overline{p}_{1t} - \overline{p}_{2t})}{\sqrt{s_{1t}^2 + s_{2t}^2}},
 \end{equation}
@@ -113,7 +109,6 @@ where $\overline{p}_{gt}$ and $s_{gt}^2$ are mean and standard deviation estimat
 \subsubsection{Permutation Testing}
 
 In addition to modified correction based on the bootstrapped test statistics, \xt{bdots} provides a permutation test for controlling the FWER without any additional assumptions of autocorrelation. In doing so, we begin by creating an observed test statistic in the following way: first, taking each subject's estimated parameter $\hat{\theta}_i$, we find the subject's corresponding parametric curve $f(t|\hat{\theta}_i)$. Within each group, we use \textit{these} curves to create estimates of the mean population curves and associated standard errors at each point\footnote{This differs from the bootstrapped test statistic in which the mean of the subjects' parameters was used to fit a population curve, i.e., $\frac1n \sum f(t|\theta_i)$ compared with $f \left( t | \frac1n \sum \theta_i \right)$. The implications of this have not been investigated any further}. Letting $p_{gt}$ and $s_{gt}^2$ represent the mean population curve and standard error for group $g$ at time $t$, we define our observed permutation test statistic, 
-
 \begin{equation}\label{eq:perm_stat}
 T_t^{(p)} = \frac{|\overline{p}_{1t} - \overline{p}_{2t}|}{\sqrt{s_{1t}^2 + s_{2t}^2}}.
 \end{equation}.
@@ -170,7 +165,7 @@ There are two primary functions in the \xt{bdots} package: one for fitting the o
 
 \paragraph{The \xt{bfit} Function}
 
-The curve fitting process is performed with the function \texttt{bfit} , taking the following arguments:
+The curve fitting process is performed with the function \texttt{bfit}, taking the following arguments:
 
 
 \begin{figure}[h!]
@@ -180,8 +175,6 @@ bfit(data, subject, time, y, group, curveType, ar, ...)
 \end{BVerbatim}
 \caption{Main arguments to \xt{bfit}, though see \xt{help(bfit)} for additional options}
 \end{figure}
-
-
 
 The \xt{data} argument takes the name of the dataset being used. \xt{subject} is the subject identifier column in the data and should be passed as a character. It is important to note here that the identification of paired data is now done automatically; in determining if two experimental groups are paired, \xt{bdots} checks that the intersection of subjects in each of the groups are identical with the subjects in each of the groups individually. As such, it will be important for the user to be sure that if the data is paired that the subject identifiers are the same between subject groups. 
 
@@ -387,15 +380,11 @@ The \xt{formula} argument is new to  \xt{bdots} and will be discussed in the nex
 \paragraph{Formula} \label{sec:formula}
 
 As the \xt{bfit} function is now able to create fits for an arbitrary number of groups at once, we rely on a formula syntax in \xt{bboot} to specify precisely which groups differences we wish to compare. Let \xt{y} designate the outcome variable indicated in the \xt{bfit} function and let \xt{group} be one of the group column names to which our functions were fit. Further, let \xt{val1} and \xt{val2} be two values within the \xt{group} column. The general syntax for the \xt{bboot} function takes the following form:
-
-
 \begin{center}
 \tt y $\sim$ group(val1, val2)
 \end{center}
 
 Note that this is an \textit{expression} in R and is written without quotation marks. To give a more concrete example, suppose we wished to compare the difference in tumor growth curves given as \xt{Volume} for A and B from the \xt{Treatment} column in our mouse data (Figure~\ref{fig:mouse_head}). We would do so with the following syntax:
-
-
 \begin{center}
 \tt Volume $\sim$ Treatment(A, B)
 \end{center}
@@ -438,30 +427,23 @@ The formula syntax introduced in Section \ref{sec:formula} is straightforward en
 
 
 Beginning with a simple case, suppose we want to investigate the difference in outcome between all foreign and domestic vehicles. Notionally, we would write
-
 \begin{center}
 \tt y $\sim$ Origin(foreign, domestic)
 \end{center}
 just as we did in the mouse data example: here, the name of the group variable \xt{Origin}, followed by the values we are interested in comparing, \xt{domestic} and \xt{foreign}. Alternatively, if we wanted to limit our investigation to only foreign and domestic \textit{trucks}, we would do this by including an extra term specifying the group and the desired value. In this case:
-
 \begin{center}
 \tt y $\sim$ Origin(foreign, domestic) + Class(truck).
 \end{center}
 Similarly, to compare only foreign and domestic \textit{red} trucks, we would add an additional term for color:
-
 \begin{center}
 \tt y $\sim$ Origin(foreign, domestic) + Class(truck) + Color(red)
 \end{center}
 
 There are also instances in which we might be considered in the interaction between two groups. Although there is no native way to handle interactions in \xt{bdots}, this can be done indirectly through the difference of differences \citep{McMurray2019}. To illustrate, suppose we are interested in understanding how the color of the vehicle differentially impacts outcome based on the vehicle class. In such a case, we might look at the difference in outcome between red cars and red trucks and then compare this against the difference between blue cars and blue trucks. Any difference between these two differences would give information regarding the differential impact of color between each of the two classes. This is done in \xt{bdots} using the \xt{diffs} syntax in the formula:
-
-%\textbf{FOUND SOURCE FOR THIS:} \textit{McMurray, Klein-Packard, Tomblin 2019, real time mechanics..pg 7}
-
 \begin{center}
 \tt diffs(y, Class(car, truck)) $\sim$ Color(red, blue)
 \end{center}
 Here, the \textit{outcome} that we are considering is the difference between vehicle classes, with the groups we are interested in comparing being color. This is helpful in remembering which term goes on the left hand side of the formula. Similar as to the case before, if we wanted to limit this difference of differences investigation to only include domestic vehicles, we can do so by including an additional term:
-
 \begin{center}
 \tt diffs(y, Class(car, truck)) $\sim$ Color(red, blue) + Origin(domestic).
 \end{center}
@@ -473,13 +455,10 @@ We now return to a description of the process of estimating group differences wi
 \paragraph{Summary and Analysis}
 
 Let's begin first by running \xt{bboot} to compare the difference in tumor growth between treatment groups A and E in our mouse data using permutations to test for regions of significant difference. 
-
-
 \begin{center}
 \tt mouse\_boot <- bboot(Volume $\sim$ Treatment(A, E), bdObj = mouse\_fit, permutation = TRUE)
 \end{center}
 This returns an object of class \xt{bdotsBootObj}. A summary method is included to display relevant information:
-
 \begin{singlespace}
 \begin{figure}[H]
 \centering
@@ -572,7 +551,6 @@ To assist with the refitting process is the argument \xt{quickRefit}. When set t
 Finally, the \xt{paramDT} argument allows for a \xt{data.table} with columns for subject, group identifiers, and parameters to be passed in as a new set of starting parameters. This \xt{data.table} requires the same format as that returned by \xt{bdots::coefWriteout}. The use of this functionality is covered in more detail in the \xt{bdots} vignettes and is a useful way for reproducing a \xt{bdotsObj} from a plain text file. 
 
 When \xt{quickRefit = FALSE}, the user is put through a series of prompts along with a series of diagnostics for each of the subjects to be refit. Here, for example, is the option to refit subject ID 11 from the mouse data:
-
 
 \begin{singlespace}
 \begin{figure}[H]
